@@ -12,9 +12,10 @@
 #include "Shaders.h"
 #include "Vertex.h"
 
+using namespace DirectX;
+
 struct CB_VS_vertexshader {
-	float offsetX = 0;
-	float offsetY = 0;
+	DirectX::XMMATRIX mx;
 };
 
 
@@ -48,7 +49,7 @@ private:
 		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		cbd.MiscFlags = 0;
-		cbd.ByteWidth = sizeof(CB_VS_vertexshader) + (16 - (sizeof(CB_VS_vertexshader) % 16));
+		cbd.ByteWidth = static_cast<UINT>(sizeof(CB_VS_vertexshader) + (16 - (sizeof(CB_VS_vertexshader) % 16)));
 		cbd.StructureByteStride = 0;
 
 		HRESULT hr = device->CreateBuffer(&cbd, 0, &constantBuffer);
@@ -88,8 +89,13 @@ public:
 
 	void Draw(ID3D11DeviceContext* deviceCtx) {
 		CB_VS_vertexshader data;
-		data.offsetX = 0.0f;
-		data.offsetY = 0.5f;
+		
+		data.mx = XMMatrixScaling(0.5f, 1.0f, 1.0f);
+		data.mx *= XMMatrixRotationRollPitchYaw(0.0f, 0.0f, DirectX::XM_PIDIV2); //Counter clockwise rotation 90 degrees
+		data.mx *= XMMatrixTranslation(0.0f, -0.5f, 0.0f);
+
+		data.mx = DirectX::XMMatrixTranspose(data.mx); //Convert to row-major for HLSL
+
 		D3D11_MAPPED_SUBRESOURCE map;
 		HRESULT hr = deviceCtx->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
 		CopyMemory(map.pData, &data, sizeof(CB_VS_vertexshader));

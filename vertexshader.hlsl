@@ -1,7 +1,6 @@
 cbuffer c_buffer : register(b0)
 {
-    float offsetX;
-    float offsetY;
+    float4x4 mx;
 };
 
 struct VS_INPUT
@@ -18,7 +17,8 @@ struct VS_OUTPUT
 
 VS_OUTPUT main(VS_INPUT input) {
     VS_OUTPUT output;
-    output.pos = float4(input.pos + float3(offsetX, offsetY, 0), 1.0f);
+    //output.pos = float4(input.pos + float3(offsetX, offsetY, 0), 1.0f);
+    output.pos = mul(float4(input.pos, 1.0f), mx);
     //output.col = input.col;
     output.texCoord = input.texCoord;
     
