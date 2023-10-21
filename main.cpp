@@ -18,6 +18,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	Engine engine;
 	engine.Init(hInstance);
 	
+	HRESULT hr = CoInitialize(NULL);
+	if(FAILED(hr)) {
+		return 999;
+	}
+
 	while(engine.Service()) {
 
 		engine.Render();

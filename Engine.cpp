@@ -11,7 +11,7 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 }
 
 void Engine::Render() {
-	gfx.TestRender();
+	gfx.Render();
 }
 
 bool Engine::Service() {

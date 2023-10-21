@@ -50,6 +50,9 @@
     <ClInclude Include="DebugMsg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VertexBufferObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="vertexshader.hlsl">

@@ -1,9 +1,17 @@
-﻿  compilation object save succeeded; see C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\vertexshader.cso
-  Engine.cpp
+﻿  Engine.cpp
+C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(50,1): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
+C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(51,1): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
+C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(60,26): warning C4244: 'argument': conversion from 'SIZE_T' to 'UINT', possible loss of data
   Graphics.cpp
-C:\Users\Plokie\source\repos\dx11-proj\Graphics.cpp(148,19): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Graphics.cpp(149,20): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Graphics.cpp(277,37): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(50,1): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
+C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(51,1): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
+C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(60,26): warning C4244: 'argument': conversion from 'SIZE_T' to 'UINT', possible loss of data
+C:\Users\Plokie\source\repos\dx11-proj\Graphics.cpp(157,19): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
+C:\Users\Plokie\source\repos\dx11-proj\Graphics.cpp(158,20): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
+C:\Users\Plokie\source\repos\dx11-proj\Graphics.cpp(338,37): warning C4305: 'initializing': truncation from 'double' to 'float'
   main.cpp
+C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(50,1): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
+C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(51,1): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
+C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(60,26): warning C4244: 'argument': conversion from 'SIZE_T' to 'UINT', possible loss of data
   Generating Code...
   dx11-test.vcxproj -> C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe

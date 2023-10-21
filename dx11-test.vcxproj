@@ -157,6 +157,7 @@
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="VertexBufferObject.h" />
     <ClInclude Include="WinManager.h" />
   </ItemGroup>
   <ItemGroup>

@@ -3,7 +3,7 @@
 using namespace std;
 //using namespace DirectX;
 
-bool Graphics::InitDX(HWND hwnd, int width, int height) {
+bool Graphics::ChooseAdapter() {
 	// Get current DXGI factory (i think its like a state of the system devices)
 	IDXGIFactory* dxFactory = nullptr;
 	HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&dxFactory);
@@ -14,19 +14,19 @@ bool Graphics::InitDX(HWND hwnd, int width, int height) {
 	// Iterator variables for looping through the adapters
 	IDXGIAdapter* itAdapter;
 	DXGI_ADAPTER_DESC itDesc;
-	
+
 	// Stores the current largest adapter (GPU) found (and its info)
 	SIZE_T mostMem = 0;
-	IDXGIAdapter* bestAdapter = nullptr;
+	targetAdapter = nullptr;
 	DXGI_ADAPTER_DESC bestAdapterDesc;
-	
+
 	UINT index = 0; // Loop through each adapter
 	while(SUCCEEDED(dxFactory->EnumAdapters(index, &itAdapter))) {
 		itAdapter->GetDesc(&itDesc); //Get desc, and compare video mem
 		if(itDesc.DedicatedVideoMemory > mostMem) {
 			// If its bigger than current, use this as best gpu
 			mostMem = itDesc.DedicatedVideoMemory;
-			bestAdapter = itAdapter;
+			targetAdapter = itAdapter;
 			bestAdapterDesc = itDesc;
 		}
 
@@ -39,9 +39,10 @@ bool Graphics::InitDX(HWND hwnd, int width, int height) {
 		exit(11);
 		return false;
 	}
+	return true;
+}
 
-	//MessageBox(0, bestAdapterDesc.Description, 0, 0); //debug box showing best gpu
-
+bool Graphics::SetupSwapChain(HWND hwnd, int width, int height) {
 	// Create swapchain description to set swapchain information when creating device
 	DXGI_SWAP_CHAIN_DESC scd;
 	ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
@@ -59,14 +60,14 @@ bool Graphics::InitDX(HWND hwnd, int width, int height) {
 
 	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	scd.BufferCount = 1;
-	
+
 	scd.OutputWindow = hwnd;
 	scd.Windowed = true;
 	scd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH; //Allows to swtich between fullscreen, windowed, borderless, etc....
 
-	hr = D3D11CreateDeviceAndSwapChain(
-		bestAdapter,
+	HRESULT hr = D3D11CreateDeviceAndSwapChain(
+		targetAdapter,
 		D3D_DRIVER_TYPE_UNKNOWN,
 		NULL,						//Software driver someting
 		NULL,						//FLAGS
@@ -100,6 +101,10 @@ bool Graphics::InitDX(HWND hwnd, int width, int height) {
 		return false;
 	}
 
+	return true;
+}
+
+bool Graphics::SetupDepthBuffer(int width, int height) {
 	D3D11_TEXTURE2D_DESC dDesc;
 	dDesc.Width = width;
 	dDesc.Height = height;
@@ -113,7 +118,7 @@ bool Graphics::InitDX(HWND hwnd, int width, int height) {
 	dDesc.CPUAccessFlags = 0;
 	dDesc.MiscFlags = 0;
 
-	hr = device->CreateTexture2D(&dDesc, 0, &depthBuffer);
+	HRESULT hr = device->CreateTexture2D(&dDesc, 0, &depthBuffer);
 	if(FAILED(hr)) {
 		exit(14);
 		return false;
@@ -124,9 +129,10 @@ bool Graphics::InitDX(HWND hwnd, int width, int height) {
 		exit(15);
 		return false;
 	}
+	return true;
+}
 
-	deviceCtx->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
-
+bool Graphics::SetupDepthStencil() {
 	D3D11_DEPTH_STENCIL_DESC dsDesc;
 	ZeroMemory(&dsDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
 
@@ -134,12 +140,15 @@ bool Graphics::InitDX(HWND hwnd, int width, int height) {
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
-	hr = device->CreateDepthStencilState(&dsDesc, &depthStencilState);
+	HRESULT hr = device->CreateDepthStencilState(&dsDesc, &depthStencilState);
 	if(FAILED(hr)) {
 		exit(16);
 		return false;
 	}
+	return true;
+}
 
+bool Graphics::SetupViewport(int width, int height) {
 	D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 
@@ -151,16 +160,64 @@ bool Graphics::InitDX(HWND hwnd, int width, int height) {
 	viewport.MaxDepth = 1.0f;
 
 	deviceCtx->RSSetViewports(1, &viewport);
+	return true;
+}
 
+bool Graphics::SetupRasterizer() {
 	D3D11_RASTERIZER_DESC rasterizerDesc;
 	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
 
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 	rasterizerDesc.CullMode = D3D11_CULL_BACK;
-	hr = device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
+	HRESULT hr = device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
 	if(FAILED(hr)) {
 		exit(17); return false; //Failed to create rasterizer state
 	}
+	return true;
+}
+
+bool Graphics::SetupSamplerState() {
+	D3D11_SAMPLER_DESC sd;
+	ZeroMemory(&sd, sizeof(D3D11_SAMPLER_DESC));
+	sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sd.MinLOD = 0;
+	sd.MaxLOD = D3D11_FLOAT32_MAX;
+	
+	HRESULT hr = device->CreateSamplerState(&sd, &samplerState);
+	if(FAILED(hr)) {
+		exit(18); return false;
+	}
+	return true;
+}
+
+// Can be called when resolution changed
+bool Graphics::InitResolution(HWND hwnd, int width, int height) {
+	SetupSwapChain(hwnd, width, height);
+
+	SetupDepthBuffer(width, height);
+
+	deviceCtx->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+
+	SetupDepthStencil();
+
+	SetupViewport(width, height);
+
+	SetupRasterizer();
+	return true;
+}
+
+bool Graphics::InitDX(HWND hwnd, int width, int height) {
+	ChooseAdapter();
+
+	//MessageBox(0, targetAdapter.Description, 0, 0); //debug box showing best gpu name
+
+	InitResolution(hwnd, width, height);
+
+	SetupSamplerState();
 	
 	return true;
 }
@@ -171,7 +228,8 @@ bool Graphics::InitShaders() {
 
 	D3D11_INPUT_ELEMENT_DESC layout[] = {
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
+		//{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 	
 	UINT numElements = ARRAYSIZE(layout);
@@ -208,56 +266,59 @@ bool Graphics::InitShaders() {
 	return true;
 }
 
+bool Graphics::CreateBuffer(UINT stride, UINT bindFlags, ID3D11Buffer** targetBuffer, void* arr, UINT exitCode = 1337) {
+	//BUFFER
+	D3D11_BUFFER_DESC desc;
+	ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC)); // Clear out any garbage
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.ByteWidth = stride;
+	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA data;
+	ZeroMemory(&data, sizeof(D3D11_SUBRESOURCE_DATA));
+	data.pSysMem = arr;
+
+	HRESULT hr = device->CreateBuffer(&desc, &data, targetBuffer);
+	if(FAILED(hr)) {
+		exit(exitCode);
+		return false;
+	}// Failed to create buffer
+	return true;
+}
+
 bool Graphics::InitScene() {
 	Vertex v[] = {
-		Vertex( 0.0f,  0.5f, 1.0f, 1.0f, 0.0f, 0.0f), //top
-		Vertex( 0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 0.0f), //right
-		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f), //left
+		Vertex(-1.0f, -1.0f, 1.0f, 0.0f, 1.0f), //bottom-left
+		Vertex(-1.0f,  1.0f, 1.0f, 0.0f, 0.0f), //top-left
+		Vertex( 1.0f,  1.0f, 1.0f, 1.0f, 0.0f), //top-right
+		Vertex( 1.0f, -1.0f, 1.0f, 1.0f, 1.0f), //bottom-right
 	};
 
-	D3D11_BUFFER_DESC vbDesc;
-	ZeroMemory(&vbDesc, sizeof(D3D11_BUFFER_DESC)); // Clear out any garbage
-
-	vbDesc.Usage = D3D11_USAGE_DEFAULT;
-	vbDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v);
-	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vbDesc.CPUAccessFlags = 0;
-	vbDesc.MiscFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA vbData;
-	ZeroMemory(&vbData, sizeof(D3D11_SUBRESOURCE_DATA));
-	vbData.pSysMem = v;
-
-	HRESULT hr = device->CreateBuffer(&vbDesc, &vbData, &vertexBuffer);
-	if(FAILED(hr)) exit(40); // Failed to create vertex buffer
-
-
-	/// TRI 2
-
-	Vertex v2[] = {
-		Vertex( 0.0f,  0.2f, 0.5f, 0.0f, 0.0f, 1.0f), //top
-		Vertex( 0.2f, -0.2f, 0.5f, 0.0f, 1.0f, 0.0f), //right
-		Vertex(-0.2f, -0.2f, 0.5f, 1.0f, 0.0f, 0.0f), //left
+	DWORD indices[] = {
+		0,1,2,
+		0,2,3,
 	};
 
-	ZeroMemory(&vbDesc, sizeof(D3D11_BUFFER_DESC)); // Clear out any garbage
+	
 
-	vbDesc.Usage = D3D11_USAGE_DEFAULT;
-	vbDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v2);
-	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vbDesc.CPUAccessFlags = 0;
-	vbDesc.MiscFlags = 0;
+	vbo->Populate(device, v, indices, ARRAYSIZE(v), ARRAYSIZE(indices));
 
-	ZeroMemory(&vbData, sizeof(D3D11_SUBRESOURCE_DATA));
-	vbData.pSysMem = v2;
+	// Load png tex
+	//hr = CreateWICTextureFromFile(device, L"Data\\Textures\\img.png", nullptr, &tex);
 
-	hr = device->CreateBuffer(&vbDesc, &vbData, &vertexBuffer2);
-	if(FAILED(hr)) exit(41); // Failed to create vertex buffer
+	// Load dds tex (faster + accurate colour space)
+	HRESULT hr = CreateDDSTextureFromFile(device, L"Data\\Textures\\img.dds", nullptr, &tex, 0, 0); 
+
+	if(FAILED(hr)) exit(41);
 
 	return true;
 }
 
 bool Graphics::Init(HWND hwnd, int width, int height) {
+	vbo = new VBO();
+
 	if(!InitDX(hwnd, width, height)) {
 		return false;
 	}
@@ -273,12 +334,12 @@ bool Graphics::Init(HWND hwnd, int width, int height) {
 	return true;
 }
 
-void Graphics::TestRender() {
+void Graphics::Render() {
 	float bgCol[] = {1.0, 0.6, 1.0, 1.0};
 	deviceCtx->ClearRenderTargetView(renderTargetView, bgCol);
 	deviceCtx->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	// DRAW SCENE
+	//
 
 	deviceCtx->IASetInputLayout(vertexShader.GetInputLayout());
 	deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -286,17 +347,24 @@ void Graphics::TestRender() {
 
 	deviceCtx->OMSetDepthStencilState(depthStencilState, 0);
 
+	deviceCtx->PSSetSamplers(0, 1, &samplerState);
+
 	deviceCtx->VSSetShader(vertexShader.GetShader(), NULL, 0);
 	deviceCtx->PSSetShader(pixelShader.GetShader(), NULL, 0);
 
-	UINT stride = sizeof(Vertex);
+	deviceCtx->PSSetShaderResources(0, 1, &tex);
+
+	
+	// DRAW SCENE
+
+	/*UINT stride = sizeof(Vertex);
 	UINT offset = 0;
-	deviceCtx->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-	deviceCtx->Draw(3, 0);
+	deviceCtx->IASetVertexBuffers(0, 1, &vbo->vertexBuffer, &stride, &offset);
+	deviceCtx->IASetIndexBuffer(vbo->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
+	deviceCtx->DrawIndexed(6, 0, 0);*/
 
-	deviceCtx->IASetVertexBuffers(0, 1, &vertexBuffer2, &stride, &offset);
-	deviceCtx->Draw(3, 0);
+	vbo->Draw(deviceCtx);
 
 	//
 
