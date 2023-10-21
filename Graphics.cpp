@@ -160,9 +160,9 @@ bool Graphics::InitShaders() {
 
 bool Graphics::InitScene() {
 	Vertex v[] = {
-		Vertex( 0.0f,  0.5f), //top
-		Vertex( 0.5f, -0.5f), //right
-		Vertex(-0.5f, -0.5f), //left
+		Vertex( 0.0f,  0.5f, 1.0f, 0.0f, 0.0f), //top
+		Vertex( 0.5f, -0.5f, 0.0f, 1.0f, 0.0f), //right
+		Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 1.0f), //left
 	};
 
 	D3D11_BUFFER_DESC vbDesc;
