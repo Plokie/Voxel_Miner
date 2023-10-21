@@ -1,4 +1,5 @@
-﻿  main.cpp
-  Shaders.cpp
-  Generating Code...
+﻿  Graphics.cpp
+C:\Users\Plokie\source\repos\dx11-proj\Graphics.cpp(110,19): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
+C:\Users\Plokie\source\repos\dx11-proj\Graphics.cpp(111,20): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
+C:\Users\Plokie\source\repos\dx11-proj\Graphics.cpp(203,37): warning C4305: 'initializing': truncation from 'double' to 'float'
   dx11-test.vcxproj -> C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe

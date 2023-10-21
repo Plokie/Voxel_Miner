@@ -20,3 +20,15 @@ public:
 		if(shader_buffer) shader_buffer->Release();
 	}
 };
+
+class PixelShader {
+private:
+	ID3D11PixelShader* shader;
+	ID3D10Blob* shader_buffer;
+public:
+	bool Init(ID3D11Device* device, std::wstring path);
+
+	ID3D11PixelShader* GetShader() { return shader; }
+	ID3D10Blob* GetBuffer() { return shader_buffer; }
+
+};

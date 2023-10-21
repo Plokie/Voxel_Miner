@@ -7,6 +7,9 @@
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
+      <FullPath>C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\pixelshader.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
       <FullPath>C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\vertexshader.cso</FullPath>
     </ContentFile>
   </ContentFiles>

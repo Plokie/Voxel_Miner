@@ -101,6 +101,16 @@ bool Graphics::InitDX(HWND hwnd, int width, int height) {
 	}
 
 	deviceCtx->OMSetRenderTargets(1, &renderTargetView, 0);
+
+	D3D11_VIEWPORT viewport;
+	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	viewport.Width = width;
+	viewport.Height = height;
+
+	deviceCtx->RSSetViewports(1, &viewport);
 	
 	return true;
 }
@@ -111,6 +121,7 @@ bool Graphics::InitShaders() {
 
 	D3D11_INPUT_ELEMENT_DESC layout[] = {
 		{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 	
 	UINT numElements = ARRAYSIZE(layout);
@@ -134,8 +145,41 @@ bool Graphics::InitShaders() {
 	}
 	// ------------
 
+	// INIT PIXEL SHADERS ------------
 
+	if(!pixelShader.Init(device, shaderFolder + L"pixelshader.cso")) {
+		exit(21);
+		return false;
+	}
+
+	// --------------------
 	
+
+	return true;
+}
+
+bool Graphics::InitScene() {
+	Vertex v[] = {
+		Vertex( 0.0f,  0.5f), //top
+		Vertex( 0.5f, -0.5f), //right
+		Vertex(-0.5f, -0.5f), //left
+	};
+
+	D3D11_BUFFER_DESC vbDesc;
+	ZeroMemory(&vbDesc, sizeof(D3D11_BUFFER_DESC)); // Clear out any garbage
+
+	vbDesc.Usage = D3D11_USAGE_DEFAULT;
+	vbDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v);
+	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vbDesc.CPUAccessFlags = 0;
+	vbDesc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA vbData;
+	ZeroMemory(&vbData, sizeof(D3D11_SUBRESOURCE_DATA));
+	vbData.pSysMem = v;
+
+	HRESULT hr = device->CreateBuffer(&vbDesc, &vbData, &vertexBuffer);
+	if(FAILED(hr)) exit(40); // Failed to create vertex buffer
 
 	return true;
 }
@@ -149,6 +193,10 @@ bool Graphics::Init(HWND hwnd, int width, int height) {
 		return false;
 	}
 
+	if(!InitScene()) {
+		return false;
+	}
+
 	return true;
 }
 
@@ -156,12 +204,24 @@ void Graphics::TestRender() {
 	float bgCol[] = {1.0, 0.6, 1.0, 1.0};
 	deviceCtx->ClearRenderTargetView(renderTargetView, bgCol);
 
+	// DRAW SCENE
+
+	deviceCtx->IASetInputLayout(vertexShader.GetInputLayout());
+	deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	deviceCtx->VSSetShader(vertexShader.GetShader(), NULL, 0);
+	deviceCtx->PSSetShader(pixelShader.GetShader(), NULL, 0);
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	deviceCtx->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+
+	// num vertices to draw, offset
+	deviceCtx->Draw(3, 0);
+
+	//
+
+
 	swapChain->Present(0, NULL);
 }
 
-Graphics::~Graphics() {
-	if(device) device->Release();
-	if(deviceCtx) deviceCtx->Release();
-	if(swapChain) swapChain->Release();
-	if(renderTargetView) renderTargetView->Release();
-}

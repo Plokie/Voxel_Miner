@@ -8,6 +8,7 @@
 #pragma comment(lib,"DXGI.lib")
 
 #include "Shaders.h"
+#include "Vertex.h"
 
 class Graphics {
 private:
@@ -16,17 +17,24 @@ private:
 	IDXGISwapChain* swapChain;					// Used to swap frames while rendering. Buffered rendering
 	ID3D11RenderTargetView* renderTargetView;	// Render target window
 
-	//ID3D11InputLayout* inputLayout;				// Used for shader inputs, the layout being passed
-
 	VertexShader vertexShader;
-	//ID3D10Blob* vertex_shader_buffer;			// 
+	PixelShader pixelShader;
+
+	ID3D11Buffer* vertexBuffer;
 
 	bool InitDX(HWND hwnd, int width, int height);
 	bool InitShaders();
+	bool InitScene();
 public:
 	bool Init(HWND hwnd, int width, int height);
 
 	void TestRender();
 
-	~Graphics();
+	~Graphics() {
+		if(device) device->Release();
+		if(deviceCtx) deviceCtx->Release();
+		if(swapChain) swapChain->Release();
+		if(renderTargetView) renderTargetView->Release();
+		if(vertexBuffer) vertexBuffer->Release();
+	}
 };
