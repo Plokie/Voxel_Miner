@@ -1,5 +1,4 @@
-﻿  Engine.cpp
-  WinManager.cpp
-  main.cpp
+﻿  main.cpp
+  Shaders.cpp
   Generating Code...
   dx11-test.vcxproj -> C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe

@@ -2,11 +2,11 @@
 
 void Engine::Init(_In_ HINSTANCE hInstance) {
 	if(!winMgr.Init(hInstance)) {
-		exit(-1);
+		exit(991);
 	}
 
 	if(!gfx.Init(winMgr.window, winMgr.width, winMgr.height)) {
-		exit(-2);
+		exit(992);
 	}
 }
 

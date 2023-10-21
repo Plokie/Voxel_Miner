@@ -5,7 +5,11 @@
       <FullPath>C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
-  <ContentFiles />
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\vertexshader.cso</FullPath>
+    </ContentFile>
+  </ContentFiles>
   <SatelliteDlls />
   <NonRecipeFileRefs />
 </Project>

@@ -33,7 +33,7 @@ bool Graphics::InitDX(HWND hwnd, int width, int height) {
 		index++;
 	}
 	dxFactory->Release();
-	itAdapter->Release();
+	//itAdapter->Release();
 
 	if(mostMem == 0) { // something has gone terribly wrong (no gpus!) (or the gpu that does exist has 0 vram)
 		exit(11);
@@ -105,14 +105,50 @@ bool Graphics::InitDX(HWND hwnd, int width, int height) {
 	return true;
 }
 
-bool Graphics::Init(HWND hwnd, int width, int height) {
-	//
-	// Extra stuff here, non-init-dx related (shaders etc)
-	//
+bool Graphics::InitShaders() {
+
+	// INPUT ASSEMBLER ---
+
+	D3D11_INPUT_ELEMENT_DESC layout[] = {
+		{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
+	};
 	
+	UINT numElements = ARRAYSIZE(layout);
+
+	
+	// ---
+
+	// INIT VERTEX SHADERS ---------
+	std::wstring shaderFolder = L"";
+#pragma region GetShaderPath
+#ifdef _DEBUG
+		shaderFolder = L"x64\\Debug\\";
+#else
+		shaderFolder = L"x64\\Release\\";
+#endif
+
+
+	if(!vertexShader.Init(device, shaderFolder + L"vertexshader.cso", layout, numElements)) {
+		exit(20);
+		return false;
+	}
+	// ------------
+
+
+	
+
+	return true;
+}
+
+bool Graphics::Init(HWND hwnd, int width, int height) {
 	if(!InitDX(hwnd, width, height)) {
 		return false;
 	}
+
+	if(!InitShaders()) {
+		return false;
+	}
+
 	return true;
 }
 
