@@ -42,26 +42,27 @@ private:
 	ID3D11ShaderResourceView* tex;
 
 	bool ChooseAdapter();
-	bool SetupSwapChain(HWND hwnd, int width, int height);
-	bool SetupDepthBuffer(int width, int height);
+	bool SetupSwapChain(HWND hwnd);
+	bool SetupDepthBuffer();
 	bool SetupDepthStencil();
-	bool SetupViewport(int width, int height);
+	bool SetupViewport();
 	bool SetupRasterizer();
 	bool SetupSamplerState();
 
 
-	bool InitResolution(HWND hwnd, int width, int height);
+	bool InitResolution(HWND hwnd);
 
-	bool InitDX(HWND hwnd, int width, int height);
+	bool InitDX(HWND hwnd);
 	bool InitShaders();
 	bool InitScene();
 public:
+	int windowWidth=0, windowHeight=0;
 
 	bool CreateBuffer(UINT stride, UINT bindFlags, ID3D11Buffer** targetBuffer, void* arr, UINT exitCode);
 
 	bool Init(HWND hwnd, int width, int height);
 
-	void Render();
+	void Render(float dTime);
 
 	~Graphics() {
 		if(device) device->Release();

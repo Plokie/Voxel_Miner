@@ -62,9 +62,9 @@ private:
 
 
 public:
-	ID3D11Buffer* vertexBuffer;
-	ID3D11Buffer* indexBuffer;
-	ID3D11Buffer* constantBuffer;
+	ID3D11Buffer* vertexBuffer = nullptr;
+	ID3D11Buffer* indexBuffer = nullptr;
+	ID3D11Buffer* constantBuffer = nullptr;
 
 	SIZE_T indexCount = 0;
 
@@ -72,8 +72,8 @@ public:
 		//indexCount = sizeof(DWORD) / sizeof(indices);
 		this->indexCount = indexCount;
 
-		CreateBuffer(device, sizeof(Vertex) * vertexCount, D3D11_BIND_VERTEX_BUFFER, &(vertexBuffer), vertices, 40);
-		CreateBuffer(device, sizeof(DWORD) * indexCount, D3D11_BIND_INDEX_BUFFER, &(indexBuffer), indices, 41);
+		CreateBuffer(device, static_cast<UINT>(sizeof(Vertex) * vertexCount), D3D11_BIND_VERTEX_BUFFER, &(vertexBuffer), vertices, 40);
+		CreateBuffer(device, static_cast<UINT>(sizeof(DWORD) * indexCount), D3D11_BIND_INDEX_BUFFER, &(indexBuffer), indices, 41);
 		/*CreateBuffer(
 			device, 
 			sizeof(CB_VS_c_vertexshader) + (16 - (sizeof(CB_VS_c_vertexshader)%16)), 
@@ -87,14 +87,21 @@ public:
 		CreateCBuffer(device);
 	}
 
-	void Draw(ID3D11DeviceContext* deviceCtx) {
+	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX baseMx) {
 		CB_VS_vertexshader data;
 		
-		data.mx = XMMatrixScaling(0.5f, 1.0f, 1.0f);
-		data.mx *= XMMatrixRotationRollPitchYaw(0.0f, 0.0f, DirectX::XM_PIDIV2); //Counter clockwise rotation 90 degrees
-		data.mx *= XMMatrixTranslation(0.0f, -0.5f, 0.0f);
 
-		data.mx = DirectX::XMMatrixTranspose(data.mx); //Convert to row-major for HLSL
+		//Local transformations
+		data.mx = XMMatrixIdentity();
+		data.mx *= XMMatrixRotationRollPitchYaw(0.0f, XM_PI/4.0f, 0.0f); //Rotate Y-axis 45 deg
+		//data.mx = XMMatrixScaling(0.5f, 1.0f, 1.0f);
+		//data.mx *= XMMatrixTranslation(0.0f, -0.5f, 0.0f);
+
+		//Apply world + view + project matrix
+		data.mx *= baseMx;
+
+		//Convert to row-major for HLSL
+		data.mx = DirectX::XMMatrixTranspose(data.mx); 
 
 		D3D11_MAPPED_SUBRESOURCE map;
 		HRESULT hr = deviceCtx->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
@@ -108,7 +115,7 @@ public:
 		deviceCtx->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 		deviceCtx->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-		deviceCtx->DrawIndexed(indexCount, 0, 0);
+		deviceCtx->DrawIndexed((UINT)indexCount, 0, 0);
 	}
 
 

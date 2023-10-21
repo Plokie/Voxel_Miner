@@ -156,6 +156,7 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Shaders.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexBufferObject.h" />
     <ClInclude Include="WinManager.h" />

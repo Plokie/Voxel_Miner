@@ -1,17 +1,10 @@
 ﻿  Engine.cpp
-C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(75,1): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(76,1): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(111,26): warning C4244: 'argument': conversion from 'SIZE_T' to 'UINT', possible loss of data
   Graphics.cpp
-C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(75,1): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(76,1): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(111,26): warning C4244: 'argument': conversion from 'SIZE_T' to 'UINT', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Graphics.cpp(157,19): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Graphics.cpp(158,20): warning C4244: '=': conversion from 'int' to 'FLOAT', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Graphics.cpp(338,37): warning C4305: 'initializing': truncation from 'double' to 'float'
   main.cpp
-C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(75,1): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(76,1): warning C4267: 'argument': conversion from 'size_t' to 'UINT', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\VertexBufferObject.h(111,26): warning C4244: 'argument': conversion from 'SIZE_T' to 'UINT', possible loss of data
+C:\Users\Plokie\source\repos\dx11-proj\Timer.h(63,25): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const _Rep', possible loss of data
+          with
+          [
+              _Rep=double
+          ]
   Generating Code...
   dx11-test.vcxproj -> C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe

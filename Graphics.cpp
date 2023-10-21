@@ -42,13 +42,13 @@ bool Graphics::ChooseAdapter() {
 	return true;
 }
 
-bool Graphics::SetupSwapChain(HWND hwnd, int width, int height) {
+bool Graphics::SetupSwapChain(HWND hwnd) {
 	// Create swapchain description to set swapchain information when creating device
 	DXGI_SWAP_CHAIN_DESC scd;
 	ZeroMemory(&scd, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-	scd.BufferDesc.Width = width;
-	scd.BufferDesc.Height = height;
+	scd.BufferDesc.Width = windowWidth;
+	scd.BufferDesc.Height = windowHeight;
 	scd.BufferDesc.RefreshRate.Numerator = 60;	//VSync refresh rate if used/needed
 	scd.BufferDesc.RefreshRate.Denominator = 1;
 	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -104,10 +104,10 @@ bool Graphics::SetupSwapChain(HWND hwnd, int width, int height) {
 	return true;
 }
 
-bool Graphics::SetupDepthBuffer(int width, int height) {
+bool Graphics::SetupDepthBuffer() {
 	D3D11_TEXTURE2D_DESC dDesc;
-	dDesc.Width = width;
-	dDesc.Height = height;
+	dDesc.Width = windowWidth;
+	dDesc.Height = windowHeight;
 	dDesc.MipLevels = 1;
 	dDesc.ArraySize = 1;
 	dDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -148,14 +148,14 @@ bool Graphics::SetupDepthStencil() {
 	return true;
 }
 
-bool Graphics::SetupViewport(int width, int height) {
+bool Graphics::SetupViewport() {
 	D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = width;
-	viewport.Height = height;
+	viewport.Width = (float)windowWidth;
+	viewport.Height = (float)windowHeight;
 	viewport.MinDepth = 0.0f;
 	viewport.MaxDepth = 1.0f;
 
@@ -195,27 +195,27 @@ bool Graphics::SetupSamplerState() {
 }
 
 // Can be called when resolution changed
-bool Graphics::InitResolution(HWND hwnd, int width, int height) {
-	SetupSwapChain(hwnd, width, height);
+bool Graphics::InitResolution(HWND hwnd) {
+	SetupSwapChain(hwnd);
 
-	SetupDepthBuffer(width, height);
+	SetupDepthBuffer();
 
 	deviceCtx->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
 	SetupDepthStencil();
 
-	SetupViewport(width, height);
+	SetupViewport();
 
 	SetupRasterizer();
 	return true;
 }
 
-bool Graphics::InitDX(HWND hwnd, int width, int height) {
+bool Graphics::InitDX(HWND hwnd) {
 	ChooseAdapter();
 
 	//MessageBox(0, targetAdapter.Description, 0, 0); //debug box showing best gpu name
 
-	InitResolution(hwnd, width, height);
+	InitResolution(hwnd);
 
 	SetupSamplerState();
 	
@@ -290,10 +290,10 @@ bool Graphics::CreateBuffer(UINT stride, UINT bindFlags, ID3D11Buffer** targetBu
 
 bool Graphics::InitScene() {
 	Vertex v[] = {
-		Vertex(-1.0f, -1.0f, 1.0f, 0.0f, 1.0f), //bottom-left
-		Vertex(-1.0f,  1.0f, 1.0f, 0.0f, 0.0f), //top-left
-		Vertex( 1.0f,  1.0f, 1.0f, 1.0f, 0.0f), //top-right
-		Vertex( 1.0f, -1.0f, 1.0f, 1.0f, 1.0f), //bottom-right
+		Vertex(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f), //bottom-left
+		Vertex(-1.0f,  1.0f, 0.0f, 0.0f, 0.0f), //top-left
+		Vertex( 1.0f,  1.0f, 0.0f, 1.0f, 0.0f), //top-right
+		Vertex( 1.0f, -1.0f, 0.0f, 1.0f, 1.0f), //bottom-right
 	};
 
 	DWORD indices[] = {
@@ -319,7 +319,10 @@ bool Graphics::InitScene() {
 bool Graphics::Init(HWND hwnd, int width, int height) {
 	vbo = new VBO();
 
-	if(!InitDX(hwnd, width, height)) {
+	windowWidth = width;
+	windowHeight = height;
+
+	if(!InitDX(hwnd)) {
 		return false;
 	}
 
@@ -334,8 +337,9 @@ bool Graphics::Init(HWND hwnd, int width, int height) {
 	return true;
 }
 
-void Graphics::Render() {
-	float bgCol[] = {1.0, 0.6, 1.0, 1.0};
+void Graphics::Render(float dTime) {
+	//float bgCol[] = {1.0, 0.6, 1.0, 1.0};
+	float bgCol[] = { 0.3f, 0.3f, 0.3f, 1.0f };
 	deviceCtx->ClearRenderTargetView(renderTargetView, bgCol);
 	deviceCtx->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -354,6 +358,26 @@ void Graphics::Render() {
 
 	deviceCtx->PSSetShaderResources(0, 1, &tex);
 
+	XMMATRIX worldMx = XMMatrixIdentity();
+	static XMVECTOR eyePos = XMVectorSet(0.0f, -10.0f, -2.0f, 0.0f);
+	static XMVECTOR lookAtPos = XMVectorSet(0.0f, 0.0f, 2.0f, 0.0f);
+	static XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+	//todo: math util function to make *this* easier (editing a float3/XMVECTOR/whatever)
+	XMFLOAT3 eyePosFloat3;
+	XMStoreFloat3(&eyePosFloat3, eyePos);
+	eyePosFloat3.y += 1.0f * dTime;
+	eyePos = XMLoadFloat3(&eyePosFloat3);
+
+
+	XMMATRIX viewMx = XMMatrixLookAtLH(eyePos, lookAtPos, up);
+
+	float FOVd = 90.0f;
+	float FOVr = (FOVd / 360.0f) * XM_2PI;
+	float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
+	float nearZ = 0.05f;
+	float farZ = 1000.0f;
+	XMMATRIX projMx = XMMatrixPerspectiveFovLH(FOVr, aspectRatio, nearZ, farZ);
 	
 	// DRAW SCENE
 
@@ -364,7 +388,7 @@ void Graphics::Render() {
 
 	deviceCtx->DrawIndexed(6, 0, 0);*/
 
-	vbo->Draw(deviceCtx);
+	vbo->Draw(deviceCtx, worldMx * viewMx * projMx);
 
 	//
 

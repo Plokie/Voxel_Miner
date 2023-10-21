@@ -10,8 +10,12 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 	}
 }
 
-void Engine::Render() {
-	gfx.Render();
+void Engine::Render(float dTime) {
+	gfx.Render(dTime);
+}
+
+void Engine::Update(float dTime) {
+
 }
 
 bool Engine::Service() {

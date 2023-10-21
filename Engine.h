@@ -10,7 +10,8 @@ private:
 public:
 	void Init(_In_ HINSTANCE hInstance);
 
-	void Render();
+	void Render(float dTime);
+	void Update(float dTime);
 
 	/// <summary>
 	/// Call at start of main while loop loop
