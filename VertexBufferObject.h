@@ -68,6 +68,8 @@ public:
 
 	SIZE_T indexCount = 0;
 
+	float debug = 0.0f;
+
 	void Populate(ID3D11Device* device, Vertex vertices[], DWORD indices[], SIZE_T vertexCount, SIZE_T indexCount) {
 		//indexCount = sizeof(DWORD) / sizeof(indices);
 		this->indexCount = indexCount;
@@ -87,13 +89,14 @@ public:
 		CreateCBuffer(device);
 	}
 
-	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX baseMx) {
+	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX baseMx, float dTime) {
 		CB_VS_vertexshader data;
 		
+		debug += dTime;
 
 		//Local transformations
 		data.mx = XMMatrixIdentity();
-		data.mx *= XMMatrixRotationRollPitchYaw(0.0f, XM_PI/4.0f, 0.0f); //Rotate Y-axis 45 deg
+		data.mx *= XMMatrixRotationRollPitchYaw(0.0f, debug, 0.0f); //Rotate Y-axis 45 deg
 		//data.mx = XMMatrixScaling(0.5f, 1.0f, 1.0f);
 		//data.mx *= XMMatrixTranslation(0.0f, -0.5f, 0.0f);
 

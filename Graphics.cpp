@@ -168,6 +168,7 @@ bool Graphics::SetupRasterizer() {
 	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
 
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	//rasterizerDesc.CullMode = D3D11_CULL_NONE;
 	rasterizerDesc.CullMode = D3D11_CULL_BACK;
 	HRESULT hr = device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
 	if(FAILED(hr)) {
@@ -290,15 +291,55 @@ bool Graphics::CreateBuffer(UINT stride, UINT bindFlags, ID3D11Buffer** targetBu
 
 bool Graphics::InitScene() {
 	Vertex v[] = {
-		Vertex(-1.0f, -1.0f, 0.0f, 0.0f, 1.0f), //bottom-left
-		Vertex(-1.0f,  1.0f, 0.0f, 0.0f, 0.0f), //top-left
-		Vertex( 1.0f,  1.0f, 0.0f, 1.0f, 0.0f), //top-right
-		Vertex( 1.0f, -1.0f, 0.0f, 1.0f, 1.0f), //bottom-right
+		Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f), //bottom-left		0  -Z
+		Vertex(-1.0f,  1.0f, -1.0f, 0.0f, 0.0f), //top-left			1
+		Vertex( 1.0f,  1.0f, -1.0f, 1.0f, 0.0f), //top-right		2
+		Vertex( 1.0f, -1.0f, -1.0f, 1.0f, 1.0f), //bottom-right		3
+
+		Vertex( 1.0f, -1.0f, 1.0f,	0.0f, 1.0f), //bottom-left		4  +Z
+		Vertex( 1.0f,  1.0f, 1.0f,	0.0f, 0.0f), //top-left			5
+		Vertex(-1.0f,  1.0f, 1.0f,	1.0f, 0.0f), //top-right			6
+		Vertex(-1.0f, -1.0f, 1.0f,	1.0f, 1.0f), //bottom-right		7
+
+		Vertex(1.0f, -1.0f, -1.0f,	0.0f, 1.0f), //bottom-left		8  +X
+		Vertex(1.0f,  1.0f, -1.0f,	0.0f, 0.0f), //top-left			9
+		Vertex(1.0f,  1.0f, 1.0f,	1.0f, 0.0f), //top-right		10
+		Vertex(1.0f, -1.0f, 1.0f,	1.0f, 1.0f), //bottom-right		11
+
+		Vertex(-1.0f, -1.0f, 1.0f,	0.0f, 1.0f), //bottom-left		12  -X
+		Vertex(-1.0f,  1.0f, 1.0f,	0.0f, 0.0f), //top-left			13
+		Vertex(-1.0f,  1.0f, -1.0f, 1.0f, 0.0f), //top-right		14
+		Vertex(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f), //bottom-right		15
+
+		Vertex(-1.0f,  1.0f, -1.0f, 0.0f, 1.0f), //					16 +Y
+		Vertex(-1.0f,  1.0f, 1.0f,	0.0f, 0.0f), //					17
+		Vertex(1.0f,  1.0f, 1.0f,	1.0f, 0.0f), //					18
+		Vertex(1.0f,  1.0f, -1.0f,	1.0f, 1.0f), //					19
+
+		Vertex(-1.0f, -1.0f, 1.0f,	0.0f, 1.0f), //					20 -Y
+		Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 0.0f), //					21
+		Vertex(1.0f, -1.0f, -1.0f,  1.0f, 0.0f), //					22
+		Vertex(1.0f, -1.0f, 1.0f,	1.0f, 1.0f), //					23
 	};
 
 	DWORD indices[] = {
-		0,1,2,
+		0,1,2, //-Z
 		0,2,3,
+
+		4,5,6, //+Z
+		4,6,7,
+
+		8,9,10, //+X
+		8,10,11,
+
+		12,13,14, //-X
+		12,14,15,
+
+		16,17,18, //+Y
+		16,18,19,
+
+		20,21,22, //-Y
+		20,22,23
 	};
 
 	
@@ -359,8 +400,8 @@ void Graphics::Render(float dTime) {
 	deviceCtx->PSSetShaderResources(0, 1, &tex);
 
 	XMMATRIX worldMx = XMMatrixIdentity();
-	static XMVECTOR eyePos = XMVectorSet(0.0f, -10.0f, -2.0f, 0.0f);
-	static XMVECTOR lookAtPos = XMVectorSet(0.0f, 0.0f, 2.0f, 0.0f);
+	static XMVECTOR eyePos = XMVectorSet(0.0f, -10.0f, -6.0f, 0.0f);
+	static XMVECTOR lookAtPos = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	static XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	//todo: math util function to make *this* easier (editing a float3/XMVECTOR/whatever)
@@ -381,14 +422,7 @@ void Graphics::Render(float dTime) {
 	
 	// DRAW SCENE
 
-	/*UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	deviceCtx->IASetVertexBuffers(0, 1, &vbo->vertexBuffer, &stride, &offset);
-	deviceCtx->IASetIndexBuffer(vbo->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	deviceCtx->DrawIndexed(6, 0, 0);*/
-
-	vbo->Draw(deviceCtx, worldMx * viewMx * projMx);
+	vbo->Draw(deviceCtx, worldMx * viewMx * projMx, dTime);
 
 	//
 

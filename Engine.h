@@ -8,6 +8,7 @@ private:
 	Graphics gfx;
 	WinManager winMgr;
 public:
+	// Initialise Engine
 	void Init(_In_ HINSTANCE hInstance);
 
 	void Render(float dTime);
@@ -16,6 +17,6 @@ public:
 	/// <summary>
 	/// Call at start of main while loop loop
 	/// </summary>
-	/// <returns>bool state, if to continue rendering</returns>
+	/// <returns>if to continue running</returns>
 	bool Service();
 };
