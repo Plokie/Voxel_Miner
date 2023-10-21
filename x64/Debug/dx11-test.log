@@ -1,6 +1,5 @@
-﻿  WinManager.cpp
+﻿  Engine.cpp
+  WinManager.cpp
   main.cpp
   Generating Code...
-C:\Users\Plokie\source\repos\dx11-proj\main.cpp(28): warning C4715: 'wWinMain': not all control paths return a value
-C:\Users\Plokie\source\repos\dx11-proj\WinManager.cpp(104): warning C4715: 'WinManager::Init': not all control paths return a value
   dx11-test.vcxproj -> C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe

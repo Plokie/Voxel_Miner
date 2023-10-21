@@ -1,11 +1,6 @@
 #include <Windows.h>
-#include <iostream>
 #include <cassert>
 
-#pragma comment(lib,"d3d11.lib")
-#pragma comment(lib)
-
-#include "SimpleMath.h"
 #include "WinManager.h"
 
 LRESULT DefaultMsgHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -69,49 +64,83 @@ LRESULT DefaultMsgHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
-bool WinManager::Init(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
-	int w(1366), h(768);
+/// <summary>
+/// Sets up a basic window
+/// </summary>
+/// <param name="hInstance"></param>
+/// <param name="hPrevInstance"></param>
+/// <param name="lpCmdLine"></param>
+/// <param name="nCmdShow"></param>
+/// <returns>True if window sucessfully created, false otherwise</returns>
+bool WinManager::Init(_In_ HINSTANCE hInstance) {
+	width = 1366;
+	height = 768;
 
 //#if defined(DEBUG) | defined(_DEBUG)
 //	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 //#endif
 
-	WNDCLASS wnd;
-	wnd.style = CS_HREDRAW | CS_VREDRAW;
-	wnd.lpfnWndProc = DefaultMsgHandler;
-	wnd.cbClsExtra = 0;
-	wnd.cbWndExtra = 0;
-	wnd.hInstance = hInstance;
-	wnd.hIcon = LoadIcon(0, IDI_APPLICATION);
-	wnd.hCursor = LoadCursor(0, IDC_ARROW);
-	wnd.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
-	wnd.lpszMenuName = 0;
-	wnd.lpszClassName = L"D3DWndClassName";
+	// Window information setup
+	wndClass.style = CS_HREDRAW | CS_VREDRAW;
+	wndClass.lpfnWndProc = DefaultMsgHandler;
+	//wnd.lpfnWndProc = DefWindowProc;
+	wndClass.cbClsExtra = 0;
+	wndClass.cbWndExtra = 0;
+	wndClass.hInstance = hInstance;
+	wndClass.hIcon = LoadIcon(0, IDI_APPLICATION);
+	wndClass.hCursor = LoadCursor(0, IDC_ARROW);
+	wndClass.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
+	wndClass.lpszMenuName = 0;
+	wndClass.lpszClassName = L"D3DWndClassName";
 
-	if(!RegisterClass(&wnd)) {
+	if(!RegisterClass(&wndClass)) {
 		MessageBox(0, L"RegisterClass failed.", 0, 0);
 		return false;
 	}
-
-	RECT R = { 0, 0, w, h };
+	
+	// Create window rect and apply to current window rect
+	RECT R = { 0, 0, width, height };
 	AdjustWindowRect(&R, WS_OVERLAPPEDWINDOW, false);
 
-	HWND mainWnd = CreateWindow(L"D3DWndClassName", L"DX11 Voxel Gen", WS_OVERLAPPEDWINDOW, 0, 0, w, h, 0, 0, hInstance, 0);
+	// Create the window
+	window = CreateWindow(
+		L"D3DWndClassName",		//Window class name
+		L"DX11 Voxel Gen",		//Window title
+		WS_OVERLAPPEDWINDOW,	//Window style
+		0, 0,					//Window X,Y position
+		width, height,			//Window X,Y size
+		0,						//Parent window
+		0,						//Sub-menu windows (children)
+		hInstance,				//Instance reference
+		0						//Empty free param to pass to window
+	);
 
+	// Show window, and update the window information
+	ShowWindow(window, SW_SHOW);
+	SetForegroundWindow(window);
+	SetFocus(window);
+	UpdateWindow(window);
 
-	ShowWindow(mainWnd, SW_SHOW);
-	UpdateWindow(mainWnd);
+	return true;
+}
+
+WinManager::~WinManager() {
+	if(window != NULL) {
+		UnregisterClass(wndClass.lpszClassName, wndClass.hInstance);
+		DestroyWindow(window);
+	}
 }
 
 bool WinManager::StartWhile() {
+
+	//Handle windows messages
 	MSG msg = { 0 };
-	if(PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+	while(PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 		if(msg.message == WM_QUIT) {
 			return false;
 		}
 	}
-
 	return true;
 }
