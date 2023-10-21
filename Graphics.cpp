@@ -100,7 +100,45 @@ bool Graphics::InitDX(HWND hwnd, int width, int height) {
 		return false;
 	}
 
-	deviceCtx->OMSetRenderTargets(1, &renderTargetView, 0);
+	D3D11_TEXTURE2D_DESC dDesc;
+	dDesc.Width = width;
+	dDesc.Height = height;
+	dDesc.MipLevels = 1;
+	dDesc.ArraySize = 1;
+	dDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	dDesc.SampleDesc.Count = 1;
+	dDesc.SampleDesc.Quality = 0;
+	dDesc.Usage = D3D11_USAGE_DEFAULT;
+	dDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	dDesc.CPUAccessFlags = 0;
+	dDesc.MiscFlags = 0;
+
+	hr = device->CreateTexture2D(&dDesc, 0, &depthBuffer);
+	if(FAILED(hr)) {
+		exit(14);
+		return false;
+	}
+
+	hr = device->CreateDepthStencilView(depthBuffer, 0, &depthStencilView);
+	if(FAILED(hr)) {
+		exit(15);
+		return false;
+	}
+
+	deviceCtx->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+
+	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	ZeroMemory(&dsDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+
+	dsDesc.DepthEnable = true;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+	hr = device->CreateDepthStencilState(&dsDesc, &depthStencilState);
+	if(FAILED(hr)) {
+		exit(16);
+		return false;
+	}
 
 	D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
@@ -109,8 +147,20 @@ bool Graphics::InitDX(HWND hwnd, int width, int height) {
 	viewport.TopLeftY = 0;
 	viewport.Width = width;
 	viewport.Height = height;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
 
 	deviceCtx->RSSetViewports(1, &viewport);
+
+	D3D11_RASTERIZER_DESC rasterizerDesc;
+	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
+
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	hr = device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
+	if(FAILED(hr)) {
+		exit(17); return false; //Failed to create rasterizer state
+	}
 	
 	return true;
 }
@@ -120,7 +170,7 @@ bool Graphics::InitShaders() {
 	// INPUT ASSEMBLER ---
 
 	D3D11_INPUT_ELEMENT_DESC layout[] = {
-		{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 	
@@ -160,9 +210,9 @@ bool Graphics::InitShaders() {
 
 bool Graphics::InitScene() {
 	Vertex v[] = {
-		Vertex( 0.0f,  0.5f, 1.0f, 0.0f, 0.0f), //top
-		Vertex( 0.5f, -0.5f, 0.0f, 1.0f, 0.0f), //right
-		Vertex(-0.5f, -0.5f, 0.0f, 0.0f, 1.0f), //left
+		Vertex( 0.0f,  0.5f, 1.0f, 1.0f, 0.0f, 0.0f), //top
+		Vertex( 0.5f, -0.5f, 1.0f, 0.0f, 1.0f, 0.0f), //right
+		Vertex(-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f), //left
 	};
 
 	D3D11_BUFFER_DESC vbDesc;
@@ -180,6 +230,29 @@ bool Graphics::InitScene() {
 
 	HRESULT hr = device->CreateBuffer(&vbDesc, &vbData, &vertexBuffer);
 	if(FAILED(hr)) exit(40); // Failed to create vertex buffer
+
+
+	/// TRI 2
+
+	Vertex v2[] = {
+		Vertex( 0.0f,  0.2f, 0.5f, 0.0f, 0.0f, 1.0f), //top
+		Vertex( 0.2f, -0.2f, 0.5f, 0.0f, 1.0f, 0.0f), //right
+		Vertex(-0.2f, -0.2f, 0.5f, 1.0f, 0.0f, 0.0f), //left
+	};
+
+	ZeroMemory(&vbDesc, sizeof(D3D11_BUFFER_DESC)); // Clear out any garbage
+
+	vbDesc.Usage = D3D11_USAGE_DEFAULT;
+	vbDesc.ByteWidth = sizeof(Vertex) * ARRAYSIZE(v2);
+	vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vbDesc.CPUAccessFlags = 0;
+	vbDesc.MiscFlags = 0;
+
+	ZeroMemory(&vbData, sizeof(D3D11_SUBRESOURCE_DATA));
+	vbData.pSysMem = v2;
+
+	hr = device->CreateBuffer(&vbDesc, &vbData, &vertexBuffer2);
+	if(FAILED(hr)) exit(41); // Failed to create vertex buffer
 
 	return true;
 }
@@ -203,11 +276,15 @@ bool Graphics::Init(HWND hwnd, int width, int height) {
 void Graphics::TestRender() {
 	float bgCol[] = {1.0, 0.6, 1.0, 1.0};
 	deviceCtx->ClearRenderTargetView(renderTargetView, bgCol);
+	deviceCtx->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	// DRAW SCENE
 
 	deviceCtx->IASetInputLayout(vertexShader.GetInputLayout());
 	deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceCtx->RSSetState(rasterizerState);
+
+	deviceCtx->OMSetDepthStencilState(depthStencilState, 0);
 
 	deviceCtx->VSSetShader(vertexShader.GetShader(), NULL, 0);
 	deviceCtx->PSSetShader(pixelShader.GetShader(), NULL, 0);
@@ -215,8 +292,10 @@ void Graphics::TestRender() {
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	deviceCtx->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	deviceCtx->Draw(3, 0);
 
-	// num vertices to draw, offset
+
+	deviceCtx->IASetVertexBuffers(0, 1, &vertexBuffer2, &stride, &offset);
 	deviceCtx->Draw(3, 0);
 
 	//

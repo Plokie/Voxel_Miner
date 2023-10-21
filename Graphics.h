@@ -20,7 +20,15 @@ private:
 	VertexShader vertexShader;
 	PixelShader pixelShader;
 
+	//todo: make into vector
 	ID3D11Buffer* vertexBuffer;
+	ID3D11Buffer* vertexBuffer2;
+
+	ID3D11DepthStencilView* depthStencilView;
+	ID3D11Texture2D* depthBuffer;
+	ID3D11DepthStencilState* depthStencilState;
+
+	ID3D11RasterizerState* rasterizerState;
 
 	bool InitDX(HWND hwnd, int width, int height);
 	bool InitShaders();
@@ -35,6 +43,14 @@ public:
 		if(deviceCtx) deviceCtx->Release();
 		if(swapChain) swapChain->Release();
 		if(renderTargetView) renderTargetView->Release();
+
 		if(vertexBuffer) vertexBuffer->Release();
+		if(vertexBuffer2) vertexBuffer2->Release();
+
+		if(depthStencilView) depthStencilView->Release();
+		if(depthBuffer) depthBuffer->Release();
+		if(depthStencilState) depthStencilState->Release();
+
+		if(rasterizerState) rasterizerState->Release();
 	}
 };
