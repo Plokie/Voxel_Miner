@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Graphics.h"
+#include "../Graphics/Graphics.h"
 #include "WinManager.h"
 
 class Engine {

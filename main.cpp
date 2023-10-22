@@ -9,8 +9,8 @@
 
 #include "SimpleMath.h"
 
-#include "Engine.h"
-#include "Timer.h"
+#include "Engine/Engine.h"
+#include "Engine/Timer.h"
 
 using namespace std;
 using namespace DirectX;
