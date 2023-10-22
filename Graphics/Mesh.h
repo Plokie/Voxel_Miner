@@ -120,15 +120,7 @@ public:
 	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX selfMx, XMMATRIX baseMx) {
 		CB_VS_vertexshader data;
 		
-
-		//Local transformations
-		data.mx = selfMx;
-		//data.mx *= XMMatrixRotationRollPitchYaw(0.0f, 0.0f, 0.0f); //Rotate Y-axis 45 deg
-		//data.mx = XMMatrixScaling(0.5f, 1.0f, 1.0f);
-		//data.mx *= XMMatrixTranslation(0.0f, -0.5f, 0.0f);
-
-		//Apply world + view + project matrix
-		data.mx *= baseMx;
+		data.mx = selfMx * baseMx;
 
 		//Convert to row-major for HLSL
 		data.mx = DirectX::XMMatrixTranspose(data.mx); 
@@ -138,7 +130,6 @@ public:
 		CopyMemory(map.pData, &data, sizeof(CB_VS_vertexshader));
 		deviceCtx->Unmap(constantBuffer, 0);
 		deviceCtx->VSSetConstantBuffers(0, 1, &constantBuffer);
-
 
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;

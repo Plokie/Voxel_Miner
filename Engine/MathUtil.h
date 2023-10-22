@@ -3,6 +3,7 @@
 #include <DirectXMath.h>
 
 using namespace DirectX;
+using namespace std;
 
 struct Vector3 {
 public:
@@ -44,12 +45,31 @@ public:
 	Vector3 operator/(float& a) {
 		return Vector3(x / a, y / a, z / a);
 	}
+	Vector3& operator/=(const float& a) {
+		this->x /= a;
+		this->y /= a;
+		this->z /= a;
+		return *this;
+	}
+
 	Vector3 operator*(float& a) {
 		return Vector3(x * a, y * a, z * a);
+	}
+	Vector3& operator*=(const float& a) {
+		this->x *= a;
+		this->y *= a;
+		this->z *= a;
+		return *this;
 	}
 
 	Vector3 operator^(Vector3& a) { //Scale vector
 		return Vector3(x * a.x, y * a.y, z * a.z);
+	}
+	Vector3& operator^=(const Vector3& a) { //Scale vector
+		this->x *= a.x;
+		this->y *= a.y;
+		this->z *= a.z;
+		return *this;
 	}
 
 	const XMVECTOR& xmVec() {

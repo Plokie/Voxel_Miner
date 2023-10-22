@@ -9,10 +9,17 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 		exit(992);
 	}
 
-	//input.Init(winMgr.window);
 	Input::Init(winMgr.window);
 
-	sceneObjects["test"] = new Object3D(gfx.GetDevice());
+	sceneObjects["test1"] = new Object3D(gfx.GetDevice());
+	sceneObjects["test2"] = new Object3D(gfx.GetDevice());
+	sceneObjects["test3"] = new Object3D(gfx.GetDevice());
+
+	sceneObjects["test1"]->transform.position = Vector3(0.f, 0.f, 0.f);
+	sceneObjects["test2"]->transform.position = Vector3(-8.f, 0.f, 0.f);
+	sceneObjects["test3"]->transform.position = Vector3(8.f, 5.f, 0.f);
+
+	sceneObjects["test2"]->transform.scale = Vector3(2.f, 2.f, 2.f);
 }
 
 void Engine::Render(float dTime) {
@@ -57,7 +64,9 @@ void Engine::Update(float dTime) {
 	}
 
 
-	sceneObjects["test"]->transform.rotation.y += 5.f * dTime;
+	sceneObjects["test1"]->transform.rotation.y += 5.f * dTime;
+	sceneObjects["test2"]->transform.rotation.y += -2.f * dTime;
+	sceneObjects["test3"]->transform.rotation += Vector3(-2.f * dTime, 2.f * dTime, -2.f * dTime);
 
 	// Keep at end
 	Input::EndUpdate();

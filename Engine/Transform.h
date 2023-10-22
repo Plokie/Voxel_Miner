@@ -24,6 +24,7 @@ public:
 		scale = Vector3(1.0f, 1.0f, 1.0f);
 	}
 
+	const XMMATRIX& mxView(); // For camera
 	const XMMATRIX& mx();
 
 	Vector3 basis(float x, float y, float z);

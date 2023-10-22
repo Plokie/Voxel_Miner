@@ -353,9 +353,8 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 	// DRAW SCENE
 
 	for(pair<string, Object3D*> pair : sceneObjects) {
-		pair.second->Draw(deviceCtx, worldMx * camera.transform.mx() * camera.GetProjectionMatrix());
+		pair.second->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
 	}
-	//mesh->Draw(deviceCtx, worldMx * camera.transform.mx() * camera.GetProjectionMatrix(), dTime);
 
 	//
 
