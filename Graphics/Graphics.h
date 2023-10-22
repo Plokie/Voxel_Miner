@@ -25,9 +25,7 @@ private:
 	VertexShader vertexShader;
 	PixelShader pixelShader;
 
-	//todo: make into vector of buffers
-	/*ID3D11Buffer* vertexBuffer;
-	ID3D11Buffer* indexBuffer;*/
+	//todo: make into vector of buffers (or gameobjects with meshes/vbos)
 	VBO* vbo;
 
 	ID3D11DepthStencilView* depthStencilView;
@@ -69,10 +67,6 @@ public:
 		if(deviceCtx) deviceCtx->Release();
 		if(swapChain) swapChain->Release();
 		if(renderTargetView) renderTargetView->Release();
-
-		/*if(vertexBuffer) vertexBuffer->Release();
-		if(indexBuffer) vertexBuffer->Release();*/
-		//if(vertexBuffer2) vertexBuffer2->Release();
 
 		if(depthStencilView) depthStencilView->Release();
 		if(depthBuffer) depthBuffer->Release();

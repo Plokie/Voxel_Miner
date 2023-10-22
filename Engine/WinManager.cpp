@@ -2,11 +2,20 @@
 #include <cassert>
 
 #include "WinManager.h"
+#include "Input.h"
 
-LRESULT DefaultMsgHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK DefaultMsgHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch(msg)
 	{
+	//case WM_CHAR:
+	//	MessageBox(0, L"WM_CHAR", 0, 0);
+	//	return 0;
+
+	case WM_INPUT:
+		Input::HandleRawInput((HRAWINPUT)lParam);
+		return 0;
+
 		// WM_ACTIVATE is sent when the window is activated or deactivated.  
 		// We pause the game when the window is deactivated and unpause it 
 		// when it becomes active.  

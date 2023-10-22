@@ -2,6 +2,7 @@
 
 #include "../Graphics/Graphics.h"
 #include "WinManager.h"
+#include "Input.h"
 
 class Engine {
 private:

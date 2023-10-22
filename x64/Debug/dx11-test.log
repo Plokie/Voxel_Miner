@@ -1,10 +1,2 @@
 ﻿  Engine.cpp
-  main.cpp
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Timer.h(63,25): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const _Rep', possible loss of data
-          with
-          [
-              _Rep=double
-          ]
-  WinManager.cpp
-  Generating Code...
   dx11-test.vcxproj -> C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe

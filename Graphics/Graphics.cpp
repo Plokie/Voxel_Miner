@@ -1,4 +1,5 @@
 #include "Graphics.h"
+#include "../Engine/Input.h"
 
 using namespace std;
 //using namespace DirectX;
@@ -405,10 +406,19 @@ void Graphics::Render(float dTime) {
 	static XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
 	//todo: math util function to make *this* easier (editing a float3/XMVECTOR/whatever)
-	XMFLOAT3 eyePosFloat3;
-	XMStoreFloat3(&eyePosFloat3, eyePos);
-	eyePosFloat3.y += 1.0f * dTime;
-	eyePos = XMLoadFloat3(&eyePosFloat3);
+	//XMFLOAT3 eyePosFloat3;
+	//XMStoreFloat3(&eyePosFloat3, eyePos);
+
+	//if(Input::IsKeyHeld(VK_SPACE)) {
+	//	eyePosFloat3.y += 10.0f * dTime;
+	//}
+
+	//if(Input::IsKeyPressed('K')) {
+	//	//MessageBox(0, L"Escape pressed", 0, 0);
+	//	eyePosFloat3.y = 0.0f;
+	//}
+
+	//eyePos = XMLoadFloat3(&eyePosFloat3);
 
 
 	XMMATRIX viewMx = XMMatrixLookAtLH(eyePos, lookAtPos, up);
