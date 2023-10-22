@@ -12,6 +12,8 @@
 #include "Shaders.h"
 #include "Vertex.h"
 #include "VertexBufferObject.h"
+#include "Camera.h"
+//#include "../Engine/World.h"
 
 using namespace DirectX;
 
@@ -54,6 +56,7 @@ private:
 	bool InitShaders();
 	bool InitScene();
 public:
+	Camera camera;
 	int windowWidth=0, windowHeight=0;
 
 	bool CreateBuffer(UINT stride, UINT bindFlags, ID3D11Buffer** targetBuffer, void* arr, UINT exitCode);

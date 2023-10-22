@@ -352,8 +352,10 @@ bool Graphics::InitScene() {
 
 	// Load dds tex (faster + accurate colour space)
 	HRESULT hr = CreateDDSTextureFromFile(device, L"Data\\Textures\\img.dds", nullptr, &tex, 0, 0); 
-
 	if(FAILED(hr)) exit(41);
+
+	camera.SetPosition(0.0f, 0.0f, -6.0f);
+	camera.SetProjectionValues(90.f, static_cast<float>(windowWidth) / static_cast<float>(windowHeight), 0.05f, 1000.f);
 
 	return true;
 }
@@ -401,9 +403,11 @@ void Graphics::Render(float dTime) {
 	deviceCtx->PSSetShaderResources(0, 1, &tex);
 
 	XMMATRIX worldMx = XMMatrixIdentity();
-	static XMVECTOR eyePos = XMVectorSet(0.0f, -10.0f, -6.0f, 0.0f);
+
+
+	/*static XMVECTOR eyePos = XMVectorSet(0.0f, -10.0f, -6.0f, 0.0f);
 	static XMVECTOR lookAtPos = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	static XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	static XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);*/
 
 	//todo: math util function to make *this* easier (editing a float3/XMVECTOR/whatever)
 	//XMFLOAT3 eyePosFloat3;
@@ -421,18 +425,21 @@ void Graphics::Render(float dTime) {
 	//eyePos = XMLoadFloat3(&eyePosFloat3);
 
 
-	XMMATRIX viewMx = XMMatrixLookAtLH(eyePos, lookAtPos, up);
+	//XMMATRIX viewMx = XMMatrixIdentity();
+	//assert(world.camera.position.xmVec());
 
-	float FOVd = 90.0f;
+	//XMMATRIX viewMx = XMMatrixLookAtLH(eyePos, lookAtPos, up);
+
+	/*float FOVd = 90.0f;
 	float FOVr = (FOVd / 360.0f) * XM_2PI;
 	float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
 	float nearZ = 0.05f;
-	float farZ = 1000.0f;
-	XMMATRIX projMx = XMMatrixPerspectiveFovLH(FOVr, aspectRatio, nearZ, farZ);
+	float farZ = 1000.0f;*/
+	//XMMATRIX projMx = XMMatrixPerspectiveFovLH(FOVr, aspectRatio, nearZ, farZ);
 	
 	// DRAW SCENE
 
-	vbo->Draw(deviceCtx, worldMx * viewMx * projMx, dTime);
+	vbo->Draw(deviceCtx, worldMx * camera.GetViewMatrix() * camera.GetProjectionMatrix(), dTime);
 
 	//
 

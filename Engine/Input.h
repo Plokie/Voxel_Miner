@@ -1,9 +1,12 @@
 #pragma once
 
 #include <Windows.h>
+#include <DirectXMath.h>
 
 #define RAWBUFF_SIZE 512
 #define KEYBUFF_SIZE 255
+
+using namespace DirectX;
 
 class Input {
 private:
@@ -11,6 +14,14 @@ private:
 	bool keyBuffer[KEYBUFF_SIZE]; //VKEY code indices
 	bool prevKeyBuffer[KEYBUFF_SIZE];
 
+	bool isMouseLocked = false;
+
+	HWND hWnd;
+	unsigned int inputAge = 0, lastMouseGetAge=-1;
+
+	RECT oldMouseClip, newMouseClip;
+
+	XMFLOAT2 prevMousePos, mousePos;
 
 	Input(){
 		ZeroMemory(&inBuffer, sizeof(unsigned char) * RAWBUFF_SIZE);
@@ -31,14 +42,14 @@ public:
 			return; //Ignore bad input
 
 		if(dwSize > RAWBUFF_SIZE) {
-			MessageBox(0, L"RAWBUFF TOO SMALL", 0, 0);
+			//MessageBox(0, L"RAWBUFF TOO SMALL", 0, 0);
 			//assert(false);
 			return; //Buffer too small
 		}
 
 		UINT result = GetRawInputData(input, RID_INPUT, Input::_Instance->inBuffer, &dwSize, sizeof(RAWINPUTHEADER));
 		if(result != dwSize) {
-			MessageBox(0, L"Get Raw Input Failed", 0, 0);
+			//MessageBox(0, L"Get Raw Input Failed", 0, 0);
 			//assert(false);
 			return; //GetRawInput failed
 		}
@@ -58,6 +69,24 @@ public:
 				}
 			}
 		}
+		else if(raw->header.dwType == RIM_TYPEMOUSE) {
+			USHORT flags = raw->data.mouse.usButtonFlags;
+
+			if(flags & RI_MOUSE_LEFT_BUTTON_DOWN) {
+			}
+			if(flags & RI_MOUSE_LEFT_BUTTON_UP) {
+			}
+			if(flags & RI_MOUSE_MIDDLE_BUTTON_DOWN) {
+			}
+			if(flags & RI_MOUSE_MIDDLE_BUTTON_UP) {
+			}
+			if(flags & RI_MOUSE_RIGHT_BUTTON_DOWN) {
+			}
+			if(flags & RI_MOUSE_RIGHT_BUTTON_UP) {
+			}
+
+
+		}
 
 	}
 
@@ -73,11 +102,56 @@ public:
 		return Input::_Instance->keyBuffer[VKEY];
 	}
 
+	static void GetMouseInformation() {
+		if(_Instance->lastMouseGetAge == _Instance->inputAge)
+			return; // The current mouse information is up to date, so exit
+
+		POINT mPos;
+		if(GetCursorPos(&mPos)) {
+			if(ScreenToClient(_Instance->hWnd, &mPos)) {
+				_Instance->mousePos = XMFLOAT2((float)mPos.x, (float)mPos.y);
+				_Instance->lastMouseGetAge = _Instance->inputAge;
+			}
+		}
+	}
+
+	static XMFLOAT2 MouseDelta() {
+		GetMouseInformation();
+		return XMFLOAT2(_Instance->mousePos.x - _Instance->prevMousePos.x, _Instance->mousePos.y - _Instance->prevMousePos.y);
+	}
+
+	static XMFLOAT2 MousePosition() {
+		GetMouseInformation();
+		return _Instance->mousePos;
+	}
+
+	static void SetMouseLocked(bool isLocked) {
+		_Instance->isMouseLocked = isLocked;
+		ShowCursor(isLocked);
+		GetClipCursor(&_Instance->oldMouseClip);
+		if(isLocked) {
+			GetWindowRect(_Instance->hWnd, &_Instance->newMouseClip);
+			ClipCursor(&_Instance->newMouseClip);
+		}
+	}
+
+	static bool GetMouseLocked() {
+		return _Instance->isMouseLocked;
+	}
+
 	/// <summary>
 	/// !!  !! MUST call at the very end of every frame in order to service for IsKeyPressed and IsKeyReleased
 	/// </summary>
 	static void EndUpdate() {
 		memcpy(&Input::_Instance->prevKeyBuffer, &Input::_Instance->keyBuffer, sizeof(bool) * KEYBUFF_SIZE); //Create duplicate of keybuffer for previous frame
+
+		_Instance->prevMousePos = _Instance->mousePos;
+
+		_Instance->inputAge++;
+
+		if(_Instance->isMouseLocked) {
+			SetCursorPos(_Instance->newMouseClip.right / 2.0f, _Instance->newMouseClip.bottom / 2.0f);
+		}
 	}
 
 	static void Init(HWND hwnd) {
@@ -85,14 +159,39 @@ public:
 			_Instance = new Input();
 		}
 
-		RAWINPUTDEVICE rid;
+		_Instance->hWnd = hwnd;
+
+		// Register Keyboard
+		/*RAWINPUTDEVICE rid;
 		rid.usUsagePage = 0x01;
 		rid.usUsage = 0x06;
 		rid.dwFlags = RIDEV_INPUTSINK;
 		rid.hwndTarget = hwnd;
 
-		if(!RegisterRawInputDevices(&rid, 1, sizeof(rid))) {
+		RAWINPUTDEVICE mouse;
+		mouse.usUsagePage = 0x01;
+		mouse.usUsage = 0x02;
+		mouse.dwFlags = RIDEV_INPUTSINK;
+		mouse.hwndTarget = hwnd;*/
+		RAWINPUTDEVICE devices[2];
+		devices[0].usUsagePage = 0x01;
+		devices[0].usUsage = 0x06;
+		devices[0].dwFlags = RIDEV_INPUTSINK;
+		devices[0].hwndTarget = hwnd;
+
+		devices[1].usUsagePage = 0x01;
+		devices[1].usUsage = 0x02;
+		devices[1].dwFlags = RIDEV_INPUTSINK;
+		devices[1].hwndTarget = hwnd;
+
+		if(!RegisterRawInputDevices(devices, 2, sizeof(devices[0]))) {
 			exit(70);
 		}
+
+		// Register mouse
+		//RAWINPUTDEVICE mRid;
+
+
+
 	}
 };

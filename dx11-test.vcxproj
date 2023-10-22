@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Graphics\Camera.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Graphics\Graphics.cpp" />
     <ClCompile Include="Engine\Input.cpp" />
@@ -153,8 +154,10 @@
     <ClCompile Include="Engine\WinManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Graphics\Camera.h" />
     <ClInclude Include="DebugMsg.h" />
     <ClInclude Include="Engine\Engine.h" />
+    <ClInclude Include="Engine\World.h" />
     <ClInclude Include="Graphics\Graphics.h" />
     <ClInclude Include="Graphics\Shaders.h" />
     <ClInclude Include="Engine\Timer.h" />
@@ -162,6 +165,8 @@
     <ClInclude Include="Graphics\VertexBufferObject.h" />
     <ClInclude Include="Engine\WinManager.h" />
     <ClInclude Include="Engine\Input.h" />
+    <ClInclude Include="Engine\MathUtil.h" />
+    <ClInclude Include="Engine\Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="pixelshader.hlsl">
