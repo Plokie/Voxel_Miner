@@ -127,11 +127,16 @@ public:
 
 	static void SetMouseLocked(bool isLocked) {
 		_Instance->isMouseLocked = isLocked;
-		ShowCursor(isLocked);
+		//ShowCursor(isLocked);
 		GetClipCursor(&_Instance->oldMouseClip);
 		if(isLocked) {
+			while(ShowCursor(false) >= 0);
 			GetWindowRect(_Instance->hWnd, &_Instance->newMouseClip);
 			ClipCursor(&_Instance->newMouseClip);
+		}
+		else {
+			while(ShowCursor(true) <= 0);
+			ClipCursor(NULL);
 		}
 	}
 
@@ -161,24 +166,14 @@ public:
 
 		_Instance->hWnd = hwnd;
 
-		// Register Keyboard
-		/*RAWINPUTDEVICE rid;
-		rid.usUsagePage = 0x01;
-		rid.usUsage = 0x06;
-		rid.dwFlags = RIDEV_INPUTSINK;
-		rid.hwndTarget = hwnd;
-
-		RAWINPUTDEVICE mouse;
-		mouse.usUsagePage = 0x01;
-		mouse.usUsage = 0x02;
-		mouse.dwFlags = RIDEV_INPUTSINK;
-		mouse.hwndTarget = hwnd;*/
 		RAWINPUTDEVICE devices[2];
+		//Keyboard
 		devices[0].usUsagePage = 0x01;
 		devices[0].usUsage = 0x06;
 		devices[0].dwFlags = RIDEV_INPUTSINK;
 		devices[0].hwndTarget = hwnd;
 
+		//Mouse
 		devices[1].usUsagePage = 0x01;
 		devices[1].usUsage = 0x02;
 		devices[1].dwFlags = RIDEV_INPUTSINK;
@@ -187,11 +182,5 @@ public:
 		if(!RegisterRawInputDevices(devices, 2, sizeof(devices[0]))) {
 			exit(70);
 		}
-
-		// Register mouse
-		//RAWINPUTDEVICE mRid;
-
-
-
 	}
 };

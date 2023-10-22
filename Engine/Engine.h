@@ -1,10 +1,16 @@
 #pragma once
 
+#include <vector>
+#include <map>
+
 #include "../Graphics/Graphics.h"
 #include "WinManager.h"
 #include "Input.h"
 #include "Transform.h"
 //#include "World.h";
+#include "Object3D.h"
+
+using namespace std;
 
 class Engine {
 private:
@@ -12,11 +18,8 @@ private:
 	WinManager winMgr;
 	//World world;
 public:
+	map<string, Object3D*> sceneObjects = {};
 	
-	/*Engine() {
-		world = World();
-	}*/
-
 	// Initialise Engine
 	void Init(_In_ HINSTANCE hInstance);
 
@@ -28,4 +31,6 @@ public:
 	/// </summary>
 	/// <returns>if to continue running</returns>
 	bool Service();
+
+	~Engine();
 };

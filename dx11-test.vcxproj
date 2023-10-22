@@ -152,21 +152,23 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Graphics\Shaders.cpp" />
     <ClCompile Include="Engine\WinManager.cpp" />
+    <ClCompile Include="Engine\Transform.cpp" />
+    <ClCompile Include="Engine\Object3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics\Camera.h" />
     <ClInclude Include="DebugMsg.h" />
     <ClInclude Include="Engine\Engine.h" />
-    <ClInclude Include="Engine\World.h" />
     <ClInclude Include="Graphics\Graphics.h" />
     <ClInclude Include="Graphics\Shaders.h" />
     <ClInclude Include="Engine\Timer.h" />
     <ClInclude Include="Graphics\Vertex.h" />
-    <ClInclude Include="Graphics\VertexBufferObject.h" />
+    <ClInclude Include="Graphics\Mesh.h" />
     <ClInclude Include="Engine\WinManager.h" />
     <ClInclude Include="Engine\Input.h" />
     <ClInclude Include="Engine\MathUtil.h" />
     <ClInclude Include="Engine\Transform.h" />
+    <ClInclude Include="Engine\Object3D.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="pixelshader.hlsl">

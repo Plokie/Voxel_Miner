@@ -291,61 +291,7 @@ bool Graphics::CreateBuffer(UINT stride, UINT bindFlags, ID3D11Buffer** targetBu
 }
 
 bool Graphics::InitScene() {
-	Vertex v[] = {
-		Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 1.0f), //bottom-left		0  -Z
-		Vertex(-1.0f,  1.0f, -1.0f, 0.0f, 0.0f), //top-left			1
-		Vertex( 1.0f,  1.0f, -1.0f, 1.0f, 0.0f), //top-right		2
-		Vertex( 1.0f, -1.0f, -1.0f, 1.0f, 1.0f), //bottom-right		3
-
-		Vertex( 1.0f, -1.0f, 1.0f,	0.0f, 1.0f), //bottom-left		4  +Z
-		Vertex( 1.0f,  1.0f, 1.0f,	0.0f, 0.0f), //top-left			5
-		Vertex(-1.0f,  1.0f, 1.0f,	1.0f, 0.0f), //top-right			6
-		Vertex(-1.0f, -1.0f, 1.0f,	1.0f, 1.0f), //bottom-right		7
-
-		Vertex(1.0f, -1.0f, -1.0f,	0.0f, 1.0f), //bottom-left		8  +X
-		Vertex(1.0f,  1.0f, -1.0f,	0.0f, 0.0f), //top-left			9
-		Vertex(1.0f,  1.0f, 1.0f,	1.0f, 0.0f), //top-right		10
-		Vertex(1.0f, -1.0f, 1.0f,	1.0f, 1.0f), //bottom-right		11
-
-		Vertex(-1.0f, -1.0f, 1.0f,	0.0f, 1.0f), //bottom-left		12  -X
-		Vertex(-1.0f,  1.0f, 1.0f,	0.0f, 0.0f), //top-left			13
-		Vertex(-1.0f,  1.0f, -1.0f, 1.0f, 0.0f), //top-right		14
-		Vertex(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f), //bottom-right		15
-
-		Vertex(-1.0f,  1.0f, -1.0f, 0.0f, 1.0f), //					16 +Y
-		Vertex(-1.0f,  1.0f, 1.0f,	0.0f, 0.0f), //					17
-		Vertex(1.0f,  1.0f, 1.0f,	1.0f, 0.0f), //					18
-		Vertex(1.0f,  1.0f, -1.0f,	1.0f, 1.0f), //					19
-
-		Vertex(-1.0f, -1.0f, 1.0f,	0.0f, 1.0f), //					20 -Y
-		Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 0.0f), //					21
-		Vertex(1.0f, -1.0f, -1.0f,  1.0f, 0.0f), //					22
-		Vertex(1.0f, -1.0f, 1.0f,	1.0f, 1.0f), //					23
-	};
-
-	DWORD indices[] = {
-		0,1,2, //-Z
-		0,2,3,
-
-		4,5,6, //+Z
-		4,6,7,
-
-		8,9,10, //+X
-		8,10,11,
-
-		12,13,14, //-X
-		12,14,15,
-
-		16,17,18, //+Y
-		16,18,19,
-
-		20,21,22, //-Y
-		20,22,23
-	};
-
-	
-
-	vbo->Populate(device, v, indices, ARRAYSIZE(v), ARRAYSIZE(indices));
+	//mesh->Init(device);
 
 	// Load png tex
 	//hr = CreateWICTextureFromFile(device, L"Data\\Textures\\img.png", nullptr, &tex);
@@ -354,14 +300,14 @@ bool Graphics::InitScene() {
 	HRESULT hr = CreateDDSTextureFromFile(device, L"Data\\Textures\\img.dds", nullptr, &tex, 0, 0); 
 	if(FAILED(hr)) exit(41);
 
-	camera.SetPosition(0.0f, 0.0f, -6.0f);
+	camera.transform.position = Vector3(0.0f, 0.0f, -6.0f);
 	camera.SetProjectionValues(90.f, static_cast<float>(windowWidth) / static_cast<float>(windowHeight), 0.05f, 1000.f);
 
 	return true;
 }
 
 bool Graphics::Init(HWND hwnd, int width, int height) {
-	vbo = new VBO();
+	//mesh = new Mesh();
 
 	windowWidth = width;
 	windowHeight = height;
@@ -381,7 +327,7 @@ bool Graphics::Init(HWND hwnd, int width, int height) {
 	return true;
 }
 
-void Graphics::Render(float dTime) {
+void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 	//float bgCol[] = {1.0, 0.6, 1.0, 1.0};
 	float bgCol[] = { 0.3f, 0.3f, 0.3f, 1.0f };
 	deviceCtx->ClearRenderTargetView(renderTargetView, bgCol);
@@ -404,42 +350,12 @@ void Graphics::Render(float dTime) {
 
 	XMMATRIX worldMx = XMMatrixIdentity();
 
-
-	/*static XMVECTOR eyePos = XMVectorSet(0.0f, -10.0f, -6.0f, 0.0f);
-	static XMVECTOR lookAtPos = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	static XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);*/
-
-	//todo: math util function to make *this* easier (editing a float3/XMVECTOR/whatever)
-	//XMFLOAT3 eyePosFloat3;
-	//XMStoreFloat3(&eyePosFloat3, eyePos);
-
-	//if(Input::IsKeyHeld(VK_SPACE)) {
-	//	eyePosFloat3.y += 10.0f * dTime;
-	//}
-
-	//if(Input::IsKeyPressed('K')) {
-	//	//MessageBox(0, L"Escape pressed", 0, 0);
-	//	eyePosFloat3.y = 0.0f;
-	//}
-
-	//eyePos = XMLoadFloat3(&eyePosFloat3);
-
-
-	//XMMATRIX viewMx = XMMatrixIdentity();
-	//assert(world.camera.position.xmVec());
-
-	//XMMATRIX viewMx = XMMatrixLookAtLH(eyePos, lookAtPos, up);
-
-	/*float FOVd = 90.0f;
-	float FOVr = (FOVd / 360.0f) * XM_2PI;
-	float aspectRatio = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
-	float nearZ = 0.05f;
-	float farZ = 1000.0f;*/
-	//XMMATRIX projMx = XMMatrixPerspectiveFovLH(FOVr, aspectRatio, nearZ, farZ);
-	
 	// DRAW SCENE
 
-	vbo->Draw(deviceCtx, worldMx * camera.GetViewMatrix() * camera.GetProjectionMatrix(), dTime);
+	for(pair<string, Object3D*> pair : sceneObjects) {
+		pair.second->Draw(deviceCtx, worldMx * camera.transform.mx() * camera.GetProjectionMatrix());
+	}
+	//mesh->Draw(deviceCtx, worldMx * camera.transform.mx() * camera.GetProjectionMatrix(), dTime);
 
 	//
 

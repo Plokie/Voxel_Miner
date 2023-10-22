@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <Windows.h>
 #include <vector>
 #include <d3d11.h>
@@ -11,11 +12,13 @@
 
 #include "Shaders.h"
 #include "Vertex.h"
-#include "VertexBufferObject.h"
+#include "Mesh.h"
 #include "Camera.h"
+#include "../Engine/Object3D.h"
 //#include "../Engine/World.h"
 
 using namespace DirectX;
+using namespace std;
 
 class Graphics {
 private:
@@ -28,7 +31,7 @@ private:
 	PixelShader pixelShader;
 
 	//todo: make into vector of buffers (or gameobjects with meshes/vbos)
-	VBO* vbo;
+	//Mesh* mesh;
 
 	ID3D11DepthStencilView* depthStencilView;
 	ID3D11Texture2D* depthBuffer;
@@ -63,7 +66,11 @@ public:
 
 	bool Init(HWND hwnd, int width, int height);
 
-	void Render(float dTime);
+	void Render(map<string, Object3D*>& sceneObjects);
+
+	ID3D11Device* GetDevice() {
+		return device;
+	}
 
 	~Graphics() {
 		if(device) device->Release();
@@ -80,6 +87,6 @@ public:
 		if(samplerState) samplerState->Release();
 		if(tex) tex->Release();
 
-		if(vbo) delete vbo;
+		//if(mesh) delete mesh;
 	}
 };
