@@ -1,7 +1,4 @@
-﻿  Engine.cpp
-  Object3D.cpp
-  Graphics.cpp
-  main.cpp
-  Generating Code...
-C:\Users\c2015437\Source\Repos\dx11-voxel\Graphics\Graphics.cpp(220): warning C4715: 'Graphics::SetupBlendState': not all control paths return a value
-  dx11-test.vcxproj -> C:\Users\c2015437\Source\Repos\dx11-voxel\x64\Debug\dx11-test.exe
+﻿  Graphics.cpp
+C:\Users\Plokie\source\repos\dx11-proj\Graphics\Graphics.cpp(411,42): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Plokie\source\repos\dx11-proj\Graphics\Graphics.cpp(238): warning C4715: 'Graphics::SetupBlendState': not all control paths return a value
+  dx11-test.vcxproj -> C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe

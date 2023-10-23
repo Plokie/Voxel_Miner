@@ -150,6 +150,24 @@ bool Graphics::SetupDepthStencil() {
 	return true;
 }
 
+bool Graphics::SetupAlphaDepthStencil() {
+	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	ZeroMemory(&dsDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+
+	dsDesc.DepthEnable = true;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	//dsDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+	//dsDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
+
+	HRESULT hr = device->CreateDepthStencilState(&dsDesc, &alphaDepthStencilState);
+	if(FAILED(hr)) {
+		exit(161);
+		return false;
+	}
+	return true;
+}
+
 bool Graphics::SetupViewport() {
 	D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
@@ -228,6 +246,8 @@ bool Graphics::InitResolution(HWND hwnd) {
 	deviceCtx->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
 	SetupDepthStencil();
+
+	SetupAlphaDepthStencil();
 
 	SetupViewport();
 
@@ -321,6 +341,8 @@ bool Graphics::InitScene() {
 	// Load png tex
 	//hr = CreateWICTextureFromFile(device, L"Data\\Textures\\img.png", nullptr, &tex);
 
+	//todo: Make textures part of mesh (vec/array of textures in mesh?)
+
 	// Load dds tex (faster + accurate colour space)
 	HRESULT hr = CreateDDSTextureFromFile(device, L"Data\\Textures\\img.dds", nullptr, &tex, 0, 0); 
 	if(FAILED(hr)) exit(41);
@@ -378,13 +400,27 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 
 	// DRAW SCENE
 
-	for(pair<string, Object3D*> pair : sceneObjects) {
-		pair.second->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), camera.transform.position);
+	vector<pair<Mesh*,XMMATRIX>> transparentMeshes = {}; // Transparent meshes to be drawn AFTER the opaque geometry
+	vector<Object3D*> objects = {};
+
+	//todo: precompute sceneObjects values vector whenever an object is appended or removed
+	for(map<string, Object3D*>::iterator it = sceneObjects.begin(); it != sceneObjects.end(); ++it) {
+		objects.push_back(it->second);
 	}
 
-	deviceCtx->OMSetDepthStencilState(NULL, 0);
+	SortObjects(objects, 0, objects.size()-1);
 
+	for(vector<Object3D*>::iterator it = objects.begin(); it != objects.end(); ++it) {
+		(*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentMeshes);
+	}
 
+	// Set depth stencil to alpha geometry mode
+	deviceCtx->OMSetDepthStencilState(alphaDepthStencilState, 0);
+
+	//Draw alpha geometry
+	for(vector<pair<Mesh*, XMMATRIX>>::iterator it = transparentMeshes.begin(); it!=transparentMeshes.end(); ++it) {
+		it->first->Draw(deviceCtx, it->second, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
+	}
 
 	//
 
@@ -392,3 +428,44 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 	swapChain->Present(0, NULL);
 }
 
+void Graphics::SortObjects(vector<Object3D*>& objects, int start, int end) {
+	// QUICKSORT OBJECTS BY DISTANCE TO CAMERA
+
+	if(start >= end) return;
+
+	int p = 0;
+	{ // PARTITION
+		float pivot = objects[start]->transform.position.sqrDistTo(camera.transform.position);
+
+		int count = 0;
+		for(int i = start + 1; i <= end; i++) {
+			if(objects[i]->transform.position.sqrDistTo(camera.transform.position) > pivot)
+				count++;
+		}
+
+		int pivotIndex = start + count;
+		//swap(objects[pivotIndex], objects[start]);
+		iter_swap(objects.begin() + pivotIndex, objects.begin() + start);
+
+		int i = start, j = end;
+		while(i < pivotIndex && j > pivotIndex) {
+			while(objects[i]->transform.position.sqrDistTo(camera.transform.position) > pivot) {
+				i++;
+			}
+			while(objects[j]->transform.position.sqrDistTo(camera.transform.position) <= pivot) {
+				j--;
+			}
+			if(i < pivotIndex && j > pivotIndex) {
+				iter_swap(objects.begin() + i++, objects.begin() + j--);
+			}
+		}
+
+		p = pivotIndex;
+	}
+
+	SortObjects(objects, start, p - 1);
+	SortObjects(objects, p + 1, end);
+
+
+	//
+}

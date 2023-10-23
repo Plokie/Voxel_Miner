@@ -125,7 +125,11 @@ public:
 		CreateBuffer(D3D11_USAGE_DYNAMIC, sizeof(CB_VS_pixelshader) + (16 - (sizeof(CB_VS_pixelshader) % 16)), D3D11_BIND_CONSTANT_BUFFER, D3D11_CPU_ACCESS_WRITE, &alphaBuffer);
 	}
 
-	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX selfMx, XMMATRIX baseMx, Vector3 camPos) {
+	bool IsTransparent() {
+		return alpha < 1.f;
+	}
+
+	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX selfMx, XMMATRIX baseMx) {
 		CB_VS_vertexshader mxData;
 		CB_VS_pixelshader alphaData;
 
@@ -152,18 +156,7 @@ public:
 		UINT offset = 0;
 		deviceCtx->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 
-		// if alpha, draw in sorted order from distance to camera?
-		//if (alpha < 1.f) {
-		//	// Sort index buffer
-		//	
-		//	//indexBuffer.
-
-		//	//CreateBuffer(D3D11_USAGE_DEFAULT, sizeof(DWORD) * ARRAYSIZE(indices), D3D11_BIND_INDEX_BUFFER, 0, &indexBuffer, indices);
-		//	deviceCtx->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-		//}
-		//else {
 		deviceCtx->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-		//}
 
 
 		deviceCtx->DrawIndexed((UINT)indexCount, 0, 0);

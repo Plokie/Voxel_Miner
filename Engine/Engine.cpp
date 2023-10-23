@@ -23,9 +23,9 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 
 	sceneObjects["test2"]->transform.scale = Vector3(2.f, 2.f, 2.f);
 
-	sceneObjects["test3"]->mesh->alpha = 0.5f;
-	sceneObjects["test2"]->mesh->alpha = 0.5f;
-	sceneObjects["test4"]->mesh->alpha = 0.5f;
+	sceneObjects["test3"]->meshes[0]->alpha = 0.5f;
+	sceneObjects["test2"]->meshes[0]->alpha = 0.5f;
+	sceneObjects["test4"]->meshes[0]->alpha = 0.5f;
 }
 
 void Engine::Render(float dTime) {
@@ -81,9 +81,9 @@ void Engine::Update(float dTime) {
 	
 
 
-	//sceneObjects["test1"]->transform.rotation.y += 5.f * dTime;
-	//sceneObjects["test2"]->transform.rotation.y += -2.f * dTime;
-	//sceneObjects["test3"]->transform.rotation += Vector3(-2.f * dTime, 2.f * dTime, -2.f * dTime);
+	sceneObjects["test1"]->transform.rotation.y += 5.f * dTime;
+	sceneObjects["test2"]->transform.rotation.y += -2.f * dTime;
+	sceneObjects["test3"]->transform.rotation += Vector3(-2.f * dTime, 2.f * dTime, -2.f * dTime);
 
 	// Keep at end
 	Input::EndUpdate();

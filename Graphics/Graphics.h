@@ -35,7 +35,9 @@ private:
 
 	ID3D11DepthStencilView* depthStencilView;
 	ID3D11Texture2D* depthBuffer;
+
 	ID3D11DepthStencilState* depthStencilState;
+	ID3D11DepthStencilState* alphaDepthStencilState;
 
 	ID3D11RasterizerState* rasterizerState;
 
@@ -50,6 +52,7 @@ private:
 	bool SetupSwapChain(HWND hwnd);
 	bool SetupDepthBuffer();
 	bool SetupDepthStencil();
+	bool SetupAlphaDepthStencil();
 	bool SetupViewport();
 	bool SetupRasterizer();
 	bool SetupSamplerState();
@@ -70,6 +73,8 @@ public:
 	bool Init(HWND hwnd, int width, int height);
 
 	void Render(map<string, Object3D*>& sceneObjects);
+
+	void SortObjects(vector<Object3D*>& objects, int startIndex, int endIndex);
 
 	ID3D11Device* GetDevice() {
 		return device;

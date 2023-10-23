@@ -82,6 +82,12 @@ public:
 		return sqrtf(sqrMagnitude());
 	}
 
+	float sqrDistTo(Vector3& otherPos) {
+		return ((otherPos.x - x) * (otherPos.x - x)) +
+			((otherPos.y - y) * (otherPos.y - y)) +
+			((otherPos.z - z) * (otherPos.z - z));
+	}
+
 	Vector3 normalized() const {
 		return Vector3(x,y,z) / magnitude();
 	}

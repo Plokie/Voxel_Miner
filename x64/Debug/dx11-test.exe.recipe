@@ -2,15 +2,15 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Users\c2015437\Source\Repos\dx11-voxel\x64\Debug\dx11-test.exe</FullPath>
+      <FullPath>C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
-      <FullPath>C:\Users\c2015437\Source\Repos\dx11-voxel\x64\Debug\pixelshader.cso</FullPath>
+      <FullPath>C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\pixelshader.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\c2015437\Source\Repos\dx11-voxel\x64\Debug\vertexshader.cso</FullPath>
+      <FullPath>C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\vertexshader.cso</FullPath>
     </ContentFile>
   </ContentFiles>
   <SatelliteDlls />
