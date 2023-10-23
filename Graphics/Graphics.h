@@ -59,7 +59,6 @@ private:
 	bool SetupBlendState();
 
 
-	bool InitResolution(HWND hwnd);
 
 	bool InitDX(HWND hwnd);
 	bool InitShaders();
@@ -70,6 +69,7 @@ public:
 
 	bool CreateBuffer(UINT stride, UINT bindFlags, ID3D11Buffer** targetBuffer, void* arr, UINT exitCode);
 
+	bool InitResolution(HWND hwnd);
 	bool Init(HWND hwnd, int width, int height);
 
 	void Render(map<string, Object3D*>& sceneObjects);

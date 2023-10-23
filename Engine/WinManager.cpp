@@ -32,8 +32,8 @@ LRESULT CALLBACK DefaultMsgHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 
 		// WM_SIZE is sent when the user resizes the window.  
 	case WM_SIZE:
-		// width = LOWORD(lParam)
-		// height = HIWORD(lParam)
+		//width = LOWORD(lParam)
+		//height = HIWORD(lParam)
 		return 0;
 
 		// WM_EXITSIZEMOVE is sent when the user grabs the resize bars.

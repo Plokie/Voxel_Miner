@@ -8,12 +8,14 @@ public:
 	Transform transform;
 	//Mesh* mesh = nullptr;
 
+	ID3D11Device* deviceRef = nullptr;
+
 	vector<Mesh*> meshes = {};
 
 	Object3D(){}
 	Object3D(ID3D11Device* device) {
-		//mesh = new Mesh();
-		//mesh->Init(device);
+		deviceRef = device;
+
 		Mesh* newMesh = new Mesh();
 		newMesh->Init(device);
 		meshes.push_back(newMesh);

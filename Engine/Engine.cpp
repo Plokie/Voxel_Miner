@@ -78,7 +78,11 @@ void Engine::Update(float dTime) {
 		//MessageBox(0, L"L MOUSE PRESSED", 0, 0);
 	}
 
-	
+	if(Input::IsKeyPressed('J')) {
+		gfx.windowWidth = winMgr.width;
+		gfx.windowHeight = winMgr.height;
+		gfx.InitResolution(winMgr.window);
+	}
 
 
 	sceneObjects["test1"]->transform.rotation.y += 5.f * dTime;

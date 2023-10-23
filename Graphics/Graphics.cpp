@@ -234,7 +234,9 @@ bool Graphics::SetupBlendState() {
 	HRESULT hr = device->CreateBlendState(&desc, &blendState);
 	if (FAILED(hr)) {
 		exit(19);
+		return false;
 	}
+	return true;
 }
 
 // Can be called when resolution changed
@@ -408,7 +410,7 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 		objects.push_back(it->second);
 	}
 
-	SortObjects(objects, 0, objects.size()-1);
+	SortObjects(objects, 0, (int)(objects.size() - 1));
 
 	for(vector<Object3D*>::iterator it = objects.begin(); it != objects.end(); ++it) {
 		(*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentMeshes);
