@@ -63,6 +63,10 @@ void Engine::Update(float dTime) {
 		gfx.camera.transform.rotation = Vector3::Zero();
 	}
 
+	if(Input::IsMouseKeyPressed(MOUSE_L)) {
+		MessageBox(0, L"L MOUSE PRESSED", 0, 0);
+	}
+
 
 	sceneObjects["test1"]->transform.rotation.y += 5.f * dTime;
 	sceneObjects["test2"]->transform.rotation.y += -2.f * dTime;
