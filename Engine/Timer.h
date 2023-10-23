@@ -60,7 +60,7 @@ public:
 			sum += dur; //benchmark elapsed time
 		}
 
-		sum /= benchTimes.size();
+		sum /= (double)benchTimes.size();
 
 		currentStartTime = time_point<steady_clock>{};
 		currentEndTime = currentStartTime + nanoseconds((long long)sum.count());

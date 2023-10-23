@@ -48,7 +48,7 @@ private:
 	ID3D11Buffer* vertexBuffer = nullptr;
 	ID3D11Buffer* indexBuffer = nullptr;
 	ID3D11Buffer* constantBuffer = nullptr;
-	ID3D11Device* pDevice;
+	ID3D11Device* pDevice = nullptr;
 
 public:
 

@@ -24,7 +24,7 @@ struct GamepadState {
 	float leftTrigger = 0.0f;
 	float rightTrigger = 0.0f;
 
-	XINPUT_STATE xState;
+	XINPUT_STATE xState = {};
 };
 
 class Input {
