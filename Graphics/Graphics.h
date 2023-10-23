@@ -44,6 +44,8 @@ private:
 	ID3D11SamplerState* samplerState;
 	ID3D11ShaderResourceView* tex;
 
+	ID3D11BlendState* blendState;
+
 	bool ChooseAdapter();
 	bool SetupSwapChain(HWND hwnd);
 	bool SetupDepthBuffer();
@@ -51,6 +53,7 @@ private:
 	bool SetupViewport();
 	bool SetupRasterizer();
 	bool SetupSamplerState();
+	bool SetupBlendState();
 
 
 	bool InitResolution(HWND hwnd);
@@ -87,6 +90,7 @@ public:
 		if(samplerState) samplerState->Release();
 		if(tex) tex->Release();
 
+		if (blendState) blendState->Release();
 		//if(mesh) delete mesh;
 	}
 };

@@ -196,6 +196,28 @@ bool Graphics::SetupSamplerState() {
 	return true;
 }
 
+bool Graphics::SetupBlendState() {
+	D3D11_BLEND_DESC desc;
+	ZeroMemory(&desc, sizeof(D3D11_BLEND_DESC));
+	
+	D3D11_RENDER_TARGET_BLEND_DESC rtbd;
+	rtbd.BlendEnable = true;
+	rtbd.SrcBlend = D3D11_BLEND::D3D11_BLEND_SRC_ALPHA; // Alpha source (is just the alpha input)
+	rtbd.DestBlend = D3D11_BLEND::D3D11_BLEND_INV_SRC_ALPHA;
+	rtbd.BlendOp = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
+	rtbd.SrcBlendAlpha = D3D11_BLEND::D3D11_BLEND_ONE;
+	rtbd.DestBlendAlpha = D3D11_BLEND::D3D11_BLEND_ZERO;
+	rtbd.BlendOpAlpha = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
+	rtbd.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE::D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	desc.RenderTarget[0] = rtbd;
+
+	HRESULT hr = device->CreateBlendState(&desc, &blendState);
+	if (FAILED(hr)) {
+		exit(19);
+	}
+}
+
 // Can be called when resolution changed
 bool Graphics::InitResolution(HWND hwnd) {
 	SetupSwapChain(hwnd);
@@ -220,6 +242,8 @@ bool Graphics::InitDX(HWND hwnd) {
 	InitResolution(hwnd);
 
 	SetupSamplerState();
+
+	SetupBlendState();
 	
 	return true;
 }
@@ -340,6 +364,7 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 	deviceCtx->RSSetState(rasterizerState);
 
 	deviceCtx->OMSetDepthStencilState(depthStencilState, 0);
+	deviceCtx->OMSetBlendState(blendState, NULL, 0xFFFFFFFF);
 
 	deviceCtx->PSSetSamplers(0, 1, &samplerState);
 
@@ -353,7 +378,7 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 	// DRAW SCENE
 
 	for(pair<string, Object3D*> pair : sceneObjects) {
-		pair.second->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
+		pair.second->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), camera.transform.position);
 	}
 
 	//

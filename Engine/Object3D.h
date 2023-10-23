@@ -14,7 +14,7 @@ public:
 		mesh->Init(device);
 	}
 
-	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX baseMx);
+	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX baseMx, Vector3 camPos);
 
 	~Object3D() {
 		if(mesh) mesh->~Mesh();

@@ -11,11 +11,16 @@
 
 #include "Shaders.h"
 #include "Vertex.h"
+#include "..\Engine\Transform.h"
 
 using namespace DirectX;
 
 struct CB_VS_vertexshader {
 	DirectX::XMMATRIX mx;
+};
+
+struct CB_VS_pixelshader {
+	float alpha = 1.0f;
 };
 
 
@@ -48,11 +53,13 @@ private:
 	ID3D11Buffer* vertexBuffer = nullptr;
 	ID3D11Buffer* indexBuffer = nullptr;
 	ID3D11Buffer* constantBuffer = nullptr;
+	ID3D11Buffer* alphaBuffer = nullptr;
 	ID3D11Device* pDevice = nullptr;
 
 public:
 
 	SIZE_T indexCount = 0;
+	float alpha = 1.0f;
 
 	void Init(ID3D11Device* device) {
 		pDevice = device;
@@ -115,26 +122,46 @@ public:
 		CreateBuffer(D3D11_USAGE_DEFAULT, sizeof(Vertex) * ARRAYSIZE(vertices), D3D11_BIND_VERTEX_BUFFER, 0, &vertexBuffer, vertices);
 		CreateBuffer(D3D11_USAGE_DEFAULT, sizeof(DWORD) * ARRAYSIZE(indices), D3D11_BIND_INDEX_BUFFER, 0, &indexBuffer, indices);
 		CreateBuffer(D3D11_USAGE_DYNAMIC, sizeof(CB_VS_vertexshader) + (16 - (sizeof(CB_VS_vertexshader) % 16)), D3D11_BIND_CONSTANT_BUFFER, D3D11_CPU_ACCESS_WRITE, &constantBuffer);
+		CreateBuffer(D3D11_USAGE_DYNAMIC, sizeof(CB_VS_pixelshader) + (16 - (sizeof(CB_VS_pixelshader) % 16)), D3D11_BIND_CONSTANT_BUFFER, D3D11_CPU_ACCESS_WRITE, &alphaBuffer);
 	}
 
-	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX selfMx, XMMATRIX baseMx) {
-		CB_VS_vertexshader data;
+	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX selfMx, XMMATRIX baseMx, Vector3 camPos) {
+		CB_VS_vertexshader mxData;
+		CB_VS_pixelshader alphaData;
+
+		alphaData.alpha = alpha;
 		
-		data.mx = selfMx * baseMx;
+		mxData.mx = selfMx * baseMx;
 
 		//Convert to row-major for HLSL
-		data.mx = DirectX::XMMatrixTranspose(data.mx); 
+		mxData.mx = DirectX::XMMatrixTranspose(mxData.mx); 
 
 		D3D11_MAPPED_SUBRESOURCE map;
 		HRESULT hr = deviceCtx->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-		CopyMemory(map.pData, &data, sizeof(CB_VS_vertexshader));
+		CopyMemory(map.pData, &mxData, sizeof(CB_VS_vertexshader));
 		deviceCtx->Unmap(constantBuffer, 0);
 		deviceCtx->VSSetConstantBuffers(0, 1, &constantBuffer);
+
+		deviceCtx->Map(alphaBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+		CopyMemory(map.pData, &alphaData, sizeof(CB_VS_pixelshader));
+		deviceCtx->Unmap(alphaBuffer, 0);
+		deviceCtx->PSSetConstantBuffers(0, 1, &alphaBuffer);
+
 
 		UINT stride = sizeof(Vertex);
 		UINT offset = 0;
 		deviceCtx->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-		deviceCtx->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+		// if alpha, draw in sorted order from distance to camera?
+		if (alpha < 0.999f) {
+			// Sort index buffer
+
+			deviceCtx->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		}
+		else {
+			deviceCtx->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		}
+
 
 		deviceCtx->DrawIndexed((UINT)indexCount, 0, 0);
 	}

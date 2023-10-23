@@ -3,4 +3,5 @@
   Graphics.cpp
   main.cpp
   Generating Code...
-  dx11-test.vcxproj -> C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe
+C:\Users\c2015437\Source\Repos\dx11-voxel\Graphics\Graphics.cpp(219): warning C4715: 'Graphics::SetupBlendState': not all control paths return a value
+  dx11-test.vcxproj -> C:\Users\c2015437\Source\Repos\dx11-voxel\x64\Debug\dx11-test.exe

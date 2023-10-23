@@ -1,3 +1,8 @@
+cbuffer alpha_buffer : register(b0)
+{
+    float alpha = 1.0f;
+}
+
 struct PS_INPUT
 {
     float4 pos : SV_POSITION;
@@ -10,6 +15,6 @@ SamplerState samplerState : SAMPLER : register(s0);
 
 float4 main(PS_INPUT input) : SV_TARGET
 {
-    float3 pixCol = tex.Sample(samplerState, input.texCoord);
-	return float4(pixCol, 1.0f);
+    float4 pixCol = tex.Sample(samplerState, input.texCoord);
+    return float4(pixCol.rgb, pixCol.a * alpha);
 }

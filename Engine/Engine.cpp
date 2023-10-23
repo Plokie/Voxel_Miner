@@ -20,6 +20,9 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 	sceneObjects["test3"]->transform.position = Vector3(8.f, 5.f, 0.f);
 
 	sceneObjects["test2"]->transform.scale = Vector3(2.f, 2.f, 2.f);
+
+	sceneObjects["test3"]->mesh->alpha = 0.5f;
+	sceneObjects["test2"]->mesh->alpha = 0.5f;
 }
 
 void Engine::Render(float dTime) {
@@ -60,7 +63,8 @@ void Engine::Update(float dTime) {
 	float lookSpeed = 5.f * dTime;
 
 	//gfx.camera.AdjustRotation(mouseDelta.y * lookSpeed, mouseDelta.x * lookSpeed, 0.0f);
-	gfx.camera.transform.rotation += Vector3(mouseDelta.y * lookSpeed, mouseDelta.x * lookSpeed, 0.f);
+	if(Input::GetMouseLocked())
+		gfx.camera.transform.rotation += Vector3(mouseDelta.y * lookSpeed, mouseDelta.x * lookSpeed, 0.f);
 
 	if(Input::IsKeyPressed(VK_ESCAPE)) {
 		Input::SetMouseLocked(!Input::GetMouseLocked());
@@ -68,7 +72,7 @@ void Engine::Update(float dTime) {
 	}
 
 	if(Input::IsMouseKeyPressed(MOUSE_L)) {
-		MessageBox(0, L"L MOUSE PRESSED", 0, 0);
+		//MessageBox(0, L"L MOUSE PRESSED", 0, 0);
 	}
 
 	
