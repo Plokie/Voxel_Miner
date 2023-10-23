@@ -140,6 +140,7 @@ bool Graphics::SetupDepthStencil() {
 	dsDesc.DepthEnable = true;
 	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	//dsDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
 
 	HRESULT hr = device->CreateDepthStencilState(&dsDesc, &depthStencilState);
 	if(FAILED(hr)) {
@@ -206,7 +207,7 @@ bool Graphics::SetupBlendState() {
 	rtbd.DestBlend = D3D11_BLEND::D3D11_BLEND_INV_SRC_ALPHA;
 	rtbd.BlendOp = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
 	rtbd.SrcBlendAlpha = D3D11_BLEND::D3D11_BLEND_ONE;
-	rtbd.DestBlendAlpha = D3D11_BLEND::D3D11_BLEND_ZERO;
+	rtbd.DestBlendAlpha = D3D11_BLEND::D3D11_BLEND_ONE;
 	rtbd.BlendOpAlpha = D3D11_BLEND_OP::D3D11_BLEND_OP_ADD;
 	rtbd.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE::D3D11_COLOR_WRITE_ENABLE_ALL;
 
@@ -380,6 +381,10 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 	for(pair<string, Object3D*> pair : sceneObjects) {
 		pair.second->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), camera.transform.position);
 	}
+
+	deviceCtx->OMSetDepthStencilState(NULL, 0);
+
+
 
 	//
 

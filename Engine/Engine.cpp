@@ -14,15 +14,18 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 	sceneObjects["test1"] = new Object3D(gfx.GetDevice());
 	sceneObjects["test2"] = new Object3D(gfx.GetDevice());
 	sceneObjects["test3"] = new Object3D(gfx.GetDevice());
+	sceneObjects["test4"] = new Object3D(gfx.GetDevice());
 
 	sceneObjects["test1"]->transform.position = Vector3(0.f, 0.f, 0.f);
 	sceneObjects["test2"]->transform.position = Vector3(-8.f, 0.f, 0.f);
 	sceneObjects["test3"]->transform.position = Vector3(8.f, 5.f, 0.f);
+	sceneObjects["test4"]->transform.position = Vector3(0.f, 8.f, 0.f);
 
 	sceneObjects["test2"]->transform.scale = Vector3(2.f, 2.f, 2.f);
 
 	sceneObjects["test3"]->mesh->alpha = 0.5f;
 	sceneObjects["test2"]->mesh->alpha = 0.5f;
+	sceneObjects["test4"]->mesh->alpha = 0.5f;
 }
 
 void Engine::Render(float dTime) {
@@ -78,9 +81,9 @@ void Engine::Update(float dTime) {
 	
 
 
-	sceneObjects["test1"]->transform.rotation.y += 5.f * dTime;
-	sceneObjects["test2"]->transform.rotation.y += -2.f * dTime;
-	sceneObjects["test3"]->transform.rotation += Vector3(-2.f * dTime, 2.f * dTime, -2.f * dTime);
+	//sceneObjects["test1"]->transform.rotation.y += 5.f * dTime;
+	//sceneObjects["test2"]->transform.rotation.y += -2.f * dTime;
+	//sceneObjects["test3"]->transform.rotation += Vector3(-2.f * dTime, 2.f * dTime, -2.f * dTime);
 
 	// Keep at end
 	Input::EndUpdate();

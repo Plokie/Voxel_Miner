@@ -153,14 +153,17 @@ public:
 		deviceCtx->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 
 		// if alpha, draw in sorted order from distance to camera?
-		if (alpha < 0.999f) {
-			// Sort index buffer
+		//if (alpha < 1.f) {
+		//	// Sort index buffer
+		//	
+		//	//indexBuffer.
 
-			deviceCtx->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-		}
-		else {
-			deviceCtx->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-		}
+		//	//CreateBuffer(D3D11_USAGE_DEFAULT, sizeof(DWORD) * ARRAYSIZE(indices), D3D11_BIND_INDEX_BUFFER, 0, &indexBuffer, indices);
+		//	deviceCtx->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		//}
+		//else {
+		deviceCtx->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		//}
 
 
 		deviceCtx->DrawIndexed((UINT)indexCount, 0, 0);
