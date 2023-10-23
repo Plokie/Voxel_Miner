@@ -1,7 +1,12 @@
 #pragma once
 
 #include <Windows.h>
-#include <DirectXMath.h>
+#include <Xinput.h>
+
+#pragma comment(lib,"XInput.lib")
+#pragma comment(lib,"Xinput9_1_0.lib")
+
+#include "MathUtil.h"
 
 #define RAWBUFF_SIZE 512
 #define KEYBUFF_SIZE 255
@@ -9,7 +14,18 @@
 
 using namespace DirectX;
 
-typedef enum { MOUSE_L, MOUSE_R, MOUSE_M, MOUSE_4, MOUSE_5 };
+enum { MOUSE_L, MOUSE_R, MOUSE_M, MOUSE_4, MOUSE_5 };
+
+struct GamepadState {
+	int port = -1;
+	Vector2 leftStick = Vector2();
+	Vector2 rightStick = Vector2();
+	Vector2 deadzone = Vector2(0.125f, 0.125f);
+	float leftTrigger = 0.0f;
+	float rightTrigger = 0.0f;
+
+	XINPUT_STATE xState;
+};
 
 class Input {
 private:
@@ -40,11 +56,43 @@ private:
 	}
 	static Input* _Instance;
 public:
-	
-
 	Input(Input& other) = delete;
 	void operator=(const Input&) = delete;
 
+	GamepadState gamepads[4];
+		
+	static void UpdatePads() {
+		for(DWORD i = 0; i < 4; i++) {
+			GamepadState& state = _Instance->gamepads[i];
+			state.port = -1;
+			ZeroMemory(&state.xState, sizeof(XINPUT_STATE));
+			if(XInputGetState(i, &state.xState) == ERROR_SUCCESS) {
+				Vector2 lStick = Vector2((float)state.xState.Gamepad.sThumbLX / 32767.f, (float)state.xState.Gamepad.sThumbLY / 32767.f);
+				Vector2 rStick = Vector2((float)state.xState.Gamepad.sThumbRX / 32767.f, (float)state.xState.Gamepad.sThumbRY / 32767.f);
+				state.leftTrigger = (float)state.xState.Gamepad.bLeftTrigger / 255.f;
+				state.rightTrigger = (float)state.xState.Gamepad.bRightTrigger / 255.f;
+				state.port = i;
+
+				state.leftStick = lStick;
+				state.rightStick = rStick;
+			}
+		}
+	}
+
+	static bool IsPadButtonHeld(int idx, USHORT KEY) {
+		if(_Instance->gamepads[idx].port != -1) {
+			return (_Instance->gamepads[idx].xState.Gamepad.wButtons & KEY) != 0;
+		}
+		return false;
+	}
+
+	static const Vector2& LeftAxis(int idx) {
+		return _Instance->gamepads[idx].leftStick;
+	};
+
+	static const Vector2& RightAxis(int idx) {
+		return _Instance->gamepads[idx].rightStick;
+	};
 
 	static void HandleRawInput(HRAWINPUT input) {
 
@@ -189,8 +237,10 @@ public:
 		_Instance->inputAge++;
 
 		if(_Instance->isMouseLocked) {
-			SetCursorPos(_Instance->newMouseClip.right / 2.0f, _Instance->newMouseClip.bottom / 2.0f);
+			SetCursorPos(_Instance->newMouseClip.right / 2, _Instance->newMouseClip.bottom / 2);
 		}
+
+		UpdatePads();
 	}
 
 	static void Init(HWND hwnd) {
@@ -199,7 +249,7 @@ public:
 		}
 
 		_Instance->hWnd = hwnd;
-		
+
 
 		RAWINPUTDEVICE devices[2];
 		//Keyboard
@@ -215,7 +265,8 @@ public:
 		devices[1].hwndTarget = hwnd;
 
 		if(!RegisterRawInputDevices(devices, 2, sizeof(devices[0]))) {
-			exit(70);
+			//exit(70);
+			MessageBox(0, L"Failed to register input devices", 0, 0);
 		}
 
 		GetMouseInformation();

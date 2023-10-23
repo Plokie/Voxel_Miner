@@ -26,7 +26,7 @@ private:
 		D3D11_BUFFER_DESC desc;
 		ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC)); // Clear out any garbage
 		desc.Usage = usage;
-		desc.ByteWidth = stride;
+		desc.ByteWidth = (UINT)stride;
 		desc.BindFlags = bindFlags;
 		desc.CPUAccessFlags = CPUAccessFlags;
 		desc.MiscFlags = 0;

@@ -1,26 +1,8 @@
 ﻿  Engine.cpp
-C:\Users\Plokie\source\repos\dx11-proj\Graphics\Mesh.h(29,20): warning C4244: '=': conversion from 'SIZE_T' to 'UINT', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Input.h(12,61): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-MOUSE_L>' when no variable is declared
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Input.h(184,86): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Input.h(184,47): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
   Input.cpp
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Input.h(12,61): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-MOUSE_L>' when no variable is declared
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Input.h(184,86): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Input.h(184,47): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
   WinManager.cpp
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Input.h(12,61): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-MOUSE_L>' when no variable is declared
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Input.h(184,86): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Input.h(184,47): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
   Graphics.cpp
-C:\Users\Plokie\source\repos\dx11-proj\Graphics\Mesh.h(29,20): warning C4244: '=': conversion from 'SIZE_T' to 'UINT', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Input.h(12,61): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-MOUSE_L>' when no variable is declared
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Input.h(184,86): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Input.h(184,47): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
   main.cpp
-C:\Users\Plokie\source\repos\dx11-proj\Graphics\Mesh.h(29,20): warning C4244: '=': conversion from 'SIZE_T' to 'UINT', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Input.h(12,61): warning C4091: 'typedef ': ignored on left of '<unnamed-enum-MOUSE_L>' when no variable is declared
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Input.h(184,86): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Engine\Input.h(184,47): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 C:\Users\Plokie\source\repos\dx11-proj\Engine\Timer.h(63,25): warning C4244: 'argument': conversion from 'unsigned __int64' to 'const _Rep', possible loss of data
           with
           [

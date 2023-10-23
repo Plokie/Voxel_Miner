@@ -52,6 +52,10 @@ void Engine::Update(float dTime) {
 		gfx.camera.transform.position -= Vector3(0, camSpeed, 0);
 	}
 
+	if(Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_A)) {
+		gfx.camera.transform.position += Vector3(0, camSpeed, 0);
+	}
+
 	XMFLOAT2 mouseDelta = Input::MouseDelta();
 	float lookSpeed = 5.f * dTime;
 
@@ -66,6 +70,8 @@ void Engine::Update(float dTime) {
 	if(Input::IsMouseKeyPressed(MOUSE_L)) {
 		MessageBox(0, L"L MOUSE PRESSED", 0, 0);
 	}
+
+	
 
 
 	sceneObjects["test1"]->transform.rotation.y += 5.f * dTime;
