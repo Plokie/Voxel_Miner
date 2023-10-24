@@ -25,13 +25,17 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 	sceneObjects["test2"] = new Object3D(gfx.GetDevice());
 	sceneObjects["test3"] = new Object3D(gfx.GetDevice());
 	sceneObjects["test4"] = new Object3D(gfx.GetDevice());
+	sceneObjects["floor"] = new Object3D(gfx.GetDevice());
 
 	sceneObjects["test1"]->transform.position = Vector3(0.f, 0.f, 0.f);
 	sceneObjects["test2"]->transform.position = Vector3(-8.f, 0.f, 0.f);
 	sceneObjects["test3"]->transform.position = Vector3(8.f, 5.f, 0.f);
 	sceneObjects["test4"]->transform.position = Vector3(0.f, 8.f, 0.f);
 
+	sceneObjects["floor"]->transform.position = Vector3(0.f, -10.f, 0.f);
+
 	sceneObjects["test2"]->transform.scale = Vector3(2.f, 2.f, 2.f);
+	sceneObjects["floor"]->transform.scale = Vector3(100.f, 1.f, 100.f);
 
 	sceneObjects["test3"]->meshes[0]->alpha = 0.5f;
 	sceneObjects["test2"]->meshes[0]->alpha = 0.5f;

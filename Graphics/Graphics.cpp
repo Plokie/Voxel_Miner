@@ -200,7 +200,9 @@ bool Graphics::SetupRasterizer() {
 bool Graphics::SetupSamplerState() {
 	D3D11_SAMPLER_DESC sd;
 	ZeroMemory(&sd, sizeof(D3D11_SAMPLER_DESC));
-	sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	//sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	//sd.Filter = D3D11_FILTER::D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+	sd.Filter = D3D11_FILTER::D3D11_FILTER_ANISOTROPIC;
 	sd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	sd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;

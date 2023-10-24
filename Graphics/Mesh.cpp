@@ -24,10 +24,10 @@ void Mesh::Init(ID3D11Device* device) {
 		Vertex(-1.0f,  1.0f, -1.0f, 1.0f, 0.0f), //top-right		14
 		Vertex(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f), //bottom-right		15
 
-		Vertex(-1.0f,  1.0f, -1.0f, 0.0f, 1.0f), //					16 +Y
+		Vertex(-1.0f,  1.0f, -1.0f, 0.0f, 100.0f), //					16 +Y
 		Vertex(-1.0f,  1.0f, 1.0f,	0.0f, 0.0f), //					17
-		Vertex(1.0f,  1.0f, 1.0f,	1.0f, 0.0f), //					18
-		Vertex(1.0f,  1.0f, -1.0f,	1.0f, 1.0f), //					19
+		Vertex(1.0f,  1.0f, 1.0f,	100.0f, 0.0f), //					18
+		Vertex(1.0f,  1.0f, -1.0f,	100.0f, 100.0f), //					19
 
 		Vertex(-1.0f, -1.0f, 1.0f,	0.0f, 1.0f), //					20 -Y
 		Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 0.0f), //					21

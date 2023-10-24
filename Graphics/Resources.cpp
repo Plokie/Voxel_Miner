@@ -36,17 +36,6 @@ wstring shaderFolder = L"x64\\Debug\\";
 wstring shaderFolder = L"x64\\Release\\";
 #endif
 
-//if (!vertexShader.Init(device, shaderFolder + L"vertexshader.cso", layout, numElements)) {
-//	exit(20);
-//}
-//// ------------
-
-//// INIT PIXEL SHADERS ------------
-
-//if (!pixelShader.Init(device, shaderFolder + L"pixelshader.cso")) {
-//	exit(21);
-//}
-
 void Resources::LoadPixelShader(const wchar_t* path, string name) {
 	InitiatedExitCheck();
 
