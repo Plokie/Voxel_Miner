@@ -17,3 +17,7 @@ bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<pai
 	}
 	return didDraw;
 }
+
+void Object3D::Update(float dTime)
+{
+}

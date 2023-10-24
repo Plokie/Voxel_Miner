@@ -63,13 +63,13 @@ void Mesh::Init(ID3D11Device* device) {
 	CreateBuffer(D3D11_USAGE_DYNAMIC, sizeof(CB_VS_pixelshader) + (16 - (sizeof(CB_VS_pixelshader) % 16)), D3D11_BIND_CONSTANT_BUFFER, D3D11_CPU_ACCESS_WRITE, &alphaBuffer);
 }
 
-void Mesh::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX selfMx, XMMATRIX baseMx) {
+void Mesh::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX selfMx, XMMATRIX worldMx) {
 	CB_VS_vertexshader mxData;
 	CB_VS_pixelshader alphaData;
 
 	alphaData.alpha = alpha;
 
-	mxData.mx = selfMx * baseMx;
+	mxData.mx = selfMx * worldMx;
 
 	//Convert to row-major for HLSL
 	mxData.mx = DirectX::XMMatrixTranspose(mxData.mx);

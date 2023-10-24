@@ -72,27 +72,27 @@ public:
 		return alpha < 1.f;
 	}
 
-	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX selfMx, XMMATRIX baseMx);
+	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX selfMx, XMMATRIX worldMx);
 
 	void SetTexture(int idx, ID3D11ShaderResourceView* tex) {
 		this->tex = tex;
 	}
 	void SetTexture(int idx, string name) {
-		this->tex = Resources::GetTexture(name);
+		SetTexture(idx, Resources::GetTexture(name));
 	}
 
 	void SetPixelShader(int idx, PixelShader* pixelShader) {
 		this->pixelShader = pixelShader;
 	}
 	void SetPixelShader(int idx, string name) {
-		this->pixelShader = Resources::GetPixelShader(name);
+		SetPixelShader(idx, Resources::GetPixelShader(name));
 	}
 
 	void SetVertexShader(int idx, VertexShader* vertexShader) {
 		this->vertexShader = vertexShader;
 	}
 	void SetVertexShader(int idx, string name) {
-		this->vertexShader = Resources::GetVertexShader(name);
+		SetVertexShader(idx, Resources::GetVertexShader(name));
 	}
 
 	Mesh() {
