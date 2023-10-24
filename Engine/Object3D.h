@@ -10,7 +10,7 @@ public:
 
 	//ID3D11Device* deviceRef = nullptr;
 
-	vector<Model*> meshes = {};
+	vector<Model*> models = {};
 
 	Object3D(){}
 	Object3D(ID3D11Device* device) {
@@ -18,18 +18,18 @@ public:
 
 		Model* newMesh = new Model();
 		newMesh->Init(device);
-		meshes.push_back(newMesh);
+		models.push_back(newMesh);
 	
 	}
 
-	bool Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<pair<Model*, XMMATRIX>>* transparentMeshes);
+	bool Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<pair<Model*, XMMATRIX>>* transparentModels);
 
 	virtual void Update(float dTime);
 
 	//virtual ~Object3D() {};
 	virtual ~Object3D() {
 		//if(mesh) mesh->~Mesh();
-		for (Model* mesh : meshes) {
+		for (Model* mesh : models) {
 			mesh->~Model();
 		}
 	};

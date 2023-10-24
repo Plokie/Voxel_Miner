@@ -406,7 +406,7 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 
 	// DRAW SCENE
 
-	vector<pair<Model*,XMMATRIX>> transparentMeshes = {}; // Transparent meshes to be drawn AFTER the opaque geometry
+	vector<pair<Model*,XMMATRIX>> transparentModels = {}; // Transparent meshes to be drawn AFTER the opaque geometry
 	vector<Object3D*> objects = {};
 
 	//todo: precompute sceneObjects values vector whenever an object is appended or removed
@@ -417,7 +417,7 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 	SortObjects(objects, 0, (int)(objects.size() - 1));
 
 	for(vector<Object3D*>::iterator it = objects.begin(); it != objects.end(); ++it) {
-		if ((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentMeshes)) {
+		if ((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentModels)) {
 			//If it drew something, return back to default error textures+shaders afterwards (so we can see missing tex objects)
 			deviceCtx->PSSetShaderResources(0, 1, &errTex);
 			deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
@@ -429,7 +429,7 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 	deviceCtx->OMSetDepthStencilState(alphaDepthStencilState, 0);
 
 	//Draw alpha geometry
-	for(vector<pair<Model*, XMMATRIX>>::iterator it = transparentMeshes.begin(); it!=transparentMeshes.end(); ++it) {
+	for(vector<pair<Model*, XMMATRIX>>::iterator it = transparentModels.begin(); it!=transparentModels.end(); ++it) {
 		it->first->Draw(deviceCtx, it->second, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
 		deviceCtx->PSSetShaderResources(0, 1, &errTex);
 		deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);

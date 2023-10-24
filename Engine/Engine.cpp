@@ -37,15 +37,15 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 	sceneObjects["test2"]->transform.scale = Vector3(2.f, 2.f, 2.f);
 	sceneObjects["floor"]->transform.scale = Vector3(100.f, 1.f, 100.f);
 
-	sceneObjects["test3"]->meshes[0]->alpha = 0.5f;
-	sceneObjects["test2"]->meshes[0]->alpha = 0.5f;
+	sceneObjects["test3"]->models[0]->alpha = 0.5f;
+	sceneObjects["test2"]->models[0]->alpha = 0.5f;
 
-	sceneObjects["test1"]->meshes[0]->SetTexture(0, "grass");
-	sceneObjects["test2"]->meshes[0]->SetTexture(0, "head");
-	sceneObjects["test3"]->meshes[0]->SetTexture(0, "pfp");
-	sceneObjects["test4"]->meshes[0]->SetTexture(0, "head");
+	sceneObjects["test1"]->models[0]->SetTexture(0, "grass");
+	sceneObjects["test2"]->models[0]->SetTexture(0, "head");
+	sceneObjects["test3"]->models[0]->SetTexture(0, "pfp");
+	sceneObjects["test4"]->models[0]->SetTexture(0, "head");
 
-	sceneObjects["test4"]->meshes[0]->SetPixelShader(0, "demopshader");
+	sceneObjects["test4"]->models[0]->SetPixelShader(0, "demopshader");
 }
 
 void Engine::Render(float dTime) {
