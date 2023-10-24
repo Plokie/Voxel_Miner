@@ -1,3 +1,6 @@
-﻿  Mesh.cpp
-  LINK : C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\dx11-test.exe not found or not built by the last incremental link; performing full link
+﻿  Engine.cpp
+  Graphics.cpp
+  main.cpp
+  Model.cpp
+  Generating Code...
   dx11-test.vcxproj -> C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\dx11-test.exe

@@ -406,7 +406,7 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 
 	// DRAW SCENE
 
-	vector<pair<Mesh*,XMMATRIX>> transparentMeshes = {}; // Transparent meshes to be drawn AFTER the opaque geometry
+	vector<pair<Model*,XMMATRIX>> transparentMeshes = {}; // Transparent meshes to be drawn AFTER the opaque geometry
 	vector<Object3D*> objects = {};
 
 	//todo: precompute sceneObjects values vector whenever an object is appended or removed
@@ -429,7 +429,7 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 	deviceCtx->OMSetDepthStencilState(alphaDepthStencilState, 0);
 
 	//Draw alpha geometry
-	for(vector<pair<Mesh*, XMMATRIX>>::iterator it = transparentMeshes.begin(); it!=transparentMeshes.end(); ++it) {
+	for(vector<pair<Model*, XMMATRIX>>::iterator it = transparentMeshes.begin(); it!=transparentMeshes.end(); ++it) {
 		it->first->Draw(deviceCtx, it->second, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
 		deviceCtx->PSSetShaderResources(0, 1, &errTex);
 		deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);

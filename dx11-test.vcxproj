@@ -155,7 +155,7 @@
     <ClCompile Include="Engine\Transform.cpp" />
     <ClCompile Include="Engine\Object3D.cpp" />
     <ClCompile Include="Graphics\Resources.cpp" />
-    <ClCompile Include="Graphics\Mesh.cpp" />
+    <ClCompile Include="Graphics\Model.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics\Camera.h" />
@@ -165,7 +165,7 @@
     <ClInclude Include="Graphics\Shaders.h" />
     <ClInclude Include="Engine\Timer.h" />
     <ClInclude Include="Graphics\Vertex.h" />
-    <ClInclude Include="Graphics\Mesh.h" />
+    <ClInclude Include="Graphics\Model.h" />
     <ClInclude Include="Engine\WinManager.h" />
     <ClInclude Include="Engine\Input.h" />
     <ClInclude Include="Engine\MathUtil.h" />
