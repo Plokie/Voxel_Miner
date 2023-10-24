@@ -275,11 +275,13 @@ bool Graphics::InitShaders() {
 
 	// INPUT ASSEMBLER ---
 
-	D3D11_INPUT_ELEMENT_DESC layout[] = {
+	D3D11_INPUT_ELEMENT_DESC newLayout[] = {
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
-		//{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
+		//{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
+
+	memcpy(&layout, &newLayout, sizeof(newLayout));
 	
 	UINT numElements = ARRAYSIZE(layout);
 
@@ -296,7 +298,7 @@ bool Graphics::InitShaders() {
 #endif
 
 
-	if(!vertexShader.Init(device, shaderFolder + L"vertexshader.cso", layout, numElements)) {
+	if(!defaultVertexShader.Init(device, shaderFolder + L"vertexshader.cso", layout, numElements)) {
 		exit(20);
 		return false;
 	}
@@ -304,7 +306,7 @@ bool Graphics::InitShaders() {
 
 	// INIT PIXEL SHADERS ------------
 
-	if(!pixelShader.Init(device, shaderFolder + L"pixelshader.cso")) {
+	if(!defaultPixelShader.Init(device, shaderFolder + L"pixelshader.cso")) {
 		exit(21);
 		return false;
 	}
@@ -346,7 +348,7 @@ bool Graphics::InitScene() {
 	//todo: Make textures part of mesh (vec/array of textures in mesh?)
 
 	// Load dds tex (faster + accurate colour space)
-	HRESULT hr = CreateDDSTextureFromFile(device, L"Data\\Textures\\img.dds", nullptr, &tex, 0, 0); 
+	HRESULT hr = CreateDDSTextureFromFile(device, L"Data\\Textures\\err.dds", nullptr, &errTex, 0, 0); 
 	if(FAILED(hr)) exit(41);
 
 	camera.transform.position = Vector3(0.0f, 0.0f, -6.0f);
@@ -384,7 +386,7 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 
 	//
 
-	deviceCtx->IASetInputLayout(vertexShader.GetInputLayout());
+	deviceCtx->IASetInputLayout(defaultVertexShader.GetInputLayout());
 	deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	deviceCtx->RSSetState(rasterizerState);
 
@@ -393,10 +395,10 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 
 	deviceCtx->PSSetSamplers(0, 1, &samplerState);
 
-	deviceCtx->VSSetShader(vertexShader.GetShader(), NULL, 0);
-	deviceCtx->PSSetShader(pixelShader.GetShader(), NULL, 0);
+	deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
+	deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
 
-	deviceCtx->PSSetShaderResources(0, 1, &tex);
+	deviceCtx->PSSetShaderResources(0, 1, &errTex);
 
 	XMMATRIX worldMx = XMMatrixIdentity();
 
@@ -413,7 +415,12 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 	SortObjects(objects, 0, (int)(objects.size() - 1));
 
 	for(vector<Object3D*>::iterator it = objects.begin(); it != objects.end(); ++it) {
-		(*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentMeshes);
+		if ((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentMeshes)) {
+			//If it drew something, return back to default error textures+shaders afterwards (so we can see missing tex objects)
+			deviceCtx->PSSetShaderResources(0, 1, &errTex);
+			deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
+			deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
+		}
 	}
 
 	// Set depth stencil to alpha geometry mode
@@ -422,6 +429,9 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 	//Draw alpha geometry
 	for(vector<pair<Mesh*, XMMATRIX>>::iterator it = transparentMeshes.begin(); it!=transparentMeshes.end(); ++it) {
 		it->first->Draw(deviceCtx, it->second, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
+		deviceCtx->PSSetShaderResources(0, 1, &errTex);
+		deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
+		deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
 	}
 
 	//

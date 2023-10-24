@@ -154,6 +154,8 @@
     <ClCompile Include="Engine\WinManager.cpp" />
     <ClCompile Include="Engine\Transform.cpp" />
     <ClCompile Include="Engine\Object3D.cpp" />
+    <ClCompile Include="Graphics\Resources.cpp" />
+    <ClCompile Include="Graphics\Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics\Camera.h" />
@@ -169,8 +171,15 @@
     <ClInclude Include="Engine\MathUtil.h" />
     <ClInclude Include="Engine\Transform.h" />
     <ClInclude Include="Engine\Object3D.h" />
+    <ClInclude Include="Graphics\Resources.h" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="demopixelshader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="pixelshader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>

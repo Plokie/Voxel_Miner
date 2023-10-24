@@ -27,11 +27,11 @@ private:
 	IDXGISwapChain* swapChain;					// Used to swap frames while rendering. Buffered rendering
 	ID3D11RenderTargetView* renderTargetView;	// Render target window
 
-	VertexShader vertexShader;
-	PixelShader pixelShader;
-
-	//todo: make into vector of buffers (or gameobjects with meshes/vbos)
-	//Mesh* mesh;
+	//todo: Make into resource collection of shaders and textures
+	VertexShader defaultVertexShader;
+	PixelShader defaultPixelShader;
+	ID3D11ShaderResourceView* errTex;
+	D3D11_INPUT_ELEMENT_DESC layout[2];
 
 	ID3D11DepthStencilView* depthStencilView;
 	ID3D11Texture2D* depthBuffer;
@@ -44,7 +44,7 @@ private:
 	IDXGIAdapter* targetAdapter;
 
 	ID3D11SamplerState* samplerState;
-	ID3D11ShaderResourceView* tex;
+	
 
 	ID3D11BlendState* blendState;
 
@@ -80,6 +80,10 @@ public:
 		return device;
 	}
 
+	D3D11_INPUT_ELEMENT_DESC* GetLayout() {
+		return layout;
+	}
+
 	~Graphics() {
 		if(device) device->Release();
 		if(deviceCtx) deviceCtx->Release();
@@ -93,7 +97,7 @@ public:
 		if(rasterizerState) rasterizerState->Release();
 
 		if(samplerState) samplerState->Release();
-		if(tex) tex->Release();
+		if(errTex) errTex->Release();
 
 		if (blendState) blendState->Release();
 		//if(mesh) delete mesh;

@@ -1,6 +1,7 @@
 #include "Engine.h"
 
 void Engine::Init(_In_ HINSTANCE hInstance) {
+
 	if(!winMgr.Init(hInstance)) {
 		exit(991);
 	}
@@ -10,6 +11,15 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 	}
 
 	Input::Init(winMgr.window);
+	
+	Resources::Init(gfx.GetDevice(), gfx.GetLayout(), 2);
+	Resources::LoadTexture(L"Data\\Textures\\err.dds", "err");
+	Resources::LoadTexture(L"Data\\Textures\\img.dds", "head");
+	Resources::LoadTexture(L"Data\\Textures\\pfp.dds", "pfp");
+	Resources::LoadTexture(L"Data\\Textures\\grass.dds", "grass");
+	Resources::LoadPixelShader(L"pixelshader.cso", "pixelshader");
+	Resources::LoadPixelShader(L"demopixelshader.cso", "demopshader");
+	Resources::LoadVertexShader(L"vertexshader.cso", "vertexshader");
 
 	sceneObjects["test1"] = new Object3D(gfx.GetDevice());
 	sceneObjects["test2"] = new Object3D(gfx.GetDevice());
@@ -25,7 +35,13 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 
 	sceneObjects["test3"]->meshes[0]->alpha = 0.5f;
 	sceneObjects["test2"]->meshes[0]->alpha = 0.5f;
-	sceneObjects["test4"]->meshes[0]->alpha = 0.5f;
+
+	sceneObjects["test1"]->meshes[0]->SetTexture(0, "grass");
+	sceneObjects["test2"]->meshes[0]->SetTexture(0, "head");
+	sceneObjects["test3"]->meshes[0]->SetTexture(0, "pfp");
+	sceneObjects["test4"]->meshes[0]->SetTexture(0, "head");
+
+	sceneObjects["test4"]->meshes[0]->SetPixelShader(0, "demopshader");
 }
 
 void Engine::Render(float dTime) {
@@ -86,6 +102,7 @@ void Engine::Update(float dTime) {
 
 
 	sceneObjects["test1"]->transform.rotation.y += 5.f * dTime;
+	sceneObjects["test4"]->transform.rotation.y += -5.f * dTime;
 	sceneObjects["test2"]->transform.rotation.y += -2.f * dTime;
 	sceneObjects["test3"]->transform.rotation += Vector3(-2.f * dTime, 2.f * dTime, -2.f * dTime);
 

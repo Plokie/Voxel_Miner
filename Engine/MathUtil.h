@@ -64,14 +64,30 @@ public:
 		return *this;
 	}
 
+	/// <summary>
+	/// This isn't a bitwise XOR, it scales the vector by another
+	/// </summary>
+	/// <param name="a"></param>
+	/// <returns></returns>
 	Vector3 operator^(const Vector3& a) { //Scale vector
 		return Vector3(x * a.x, y * a.y, z * a.z);
 	}
+	// This isn't a bitwise XOR, it scales the vector by another
 	Vector3& operator^=(const Vector3& a) { //Scale vector
 		this->x *= a.x;
 		this->y *= a.y;
 		this->z *= a.z;
 		return *this;
+	}
+
+	float operator[](int index) {
+		switch (index) {
+		case 0: return x;
+		case 1: return y;
+		case 2: return z;
+		default:throw "Index out of range";
+		}
+		
 	}
 
 	float sqrMagnitude() const {
@@ -92,7 +108,11 @@ public:
 		return Vector3(x,y,z) / magnitude();
 	}
 
-	const XMVECTOR& xmVec() {
+	/*const XMVECTOR& xmVec() {
+		return XMVectorSet(x, y, z, 0.0f);
+	}*/
+
+	operator XMVECTOR() const {
 		return XMVectorSet(x, y, z, 0.0f);
 	}
 };

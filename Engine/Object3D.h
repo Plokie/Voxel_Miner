@@ -22,7 +22,7 @@ public:
 	
 	}
 
-	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX baseMx, vector<pair<Mesh*, XMMATRIX>>* transparentMeshes);
+	bool Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<pair<Mesh*, XMMATRIX>>* transparentMeshes);
 
 	~Object3D() {
 		//if(mesh) mesh->~Mesh();

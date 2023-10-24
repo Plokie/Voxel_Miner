@@ -6,11 +6,11 @@ const XMMATRIX& Transform::mxView() {
 	mx *= XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
 
 	XMVECTOR fwdTarget = XMVector3TransformCoord(DEFAULT_FORWARD_VECTOR, mx);
-	fwdTarget += position.xmVec();
+	fwdTarget += position;
 	
 	XMVECTOR upDir = XMVector3TransformCoord(DEFAULT_UP_VECTOR, mx);
 	
-	return XMMatrixLookAtLH(position.xmVec(), fwdTarget, upDir);
+	return XMMatrixLookAtLH(position, fwdTarget, upDir);
 }
 
 const XMMATRIX& Transform::mx() {

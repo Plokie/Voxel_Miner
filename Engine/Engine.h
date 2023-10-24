@@ -9,6 +9,7 @@
 #include "Transform.h"
 //#include "World.h";
 #include "Object3D.h"
+#include "..\Graphics\Resources.h"
 
 using namespace std;
 
