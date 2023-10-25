@@ -23,6 +23,7 @@ class Mesh {
 
 	ID3D11Device* pDevice = nullptr;
 
+public:
 	Mesh* Init(ID3D11Device* device);
 
 	void LoadDefaultCube();
@@ -31,4 +32,6 @@ class Mesh {
 	void LoadIndices(int ind[], int indCount);
 
 	void LoadBuffers();
+
+	~Mesh();
 };

@@ -7,6 +7,7 @@
 #include <d3d11.h>
 
 #include "Shaders.h"
+#include "Mesh.h"
 
 
 #pragma comment(lib,"d3d11.lib")
@@ -25,6 +26,7 @@ private:
 	map<string, PixelShader*> pixelShaders = {};
 	map<string, VertexShader*> vertexShaders = {};
 	map<string, ID3D11ShaderResourceView*> textures = {};
+	map<string, Mesh*> meshes = {};
 
 	Resources(){}
 
@@ -40,10 +42,13 @@ public:
 	static void LoadTexture(const wchar_t* path, string name);
 	static void LoadPixelShader(const wchar_t* path, string name);
 	static void LoadVertexShader(const wchar_t* path, string name);
+	
+	static void LoadMesh(Mesh* mesh, string name);
 
 	static ID3D11ShaderResourceView* GetTexture(string name);
 	static PixelShader* GetPixelShader(string name);
 	static VertexShader* GetVertexShader(string name);
+	static Mesh* GetMesh(string name);
 
 	~Resources();
 };

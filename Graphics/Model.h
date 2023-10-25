@@ -13,6 +13,7 @@
 #include "Vertex.h"
 #include "..\Engine\Transform.h"
 #include "Resources.h"
+#include "Mesh.h"
 
 using namespace DirectX;
 
@@ -53,6 +54,9 @@ private:
 
 	ID3D11Buffer* vertexBuffer = nullptr;
 	ID3D11Buffer* indexBuffer = nullptr;
+
+	Mesh* mesh = nullptr;
+
 	ID3D11Buffer* constantBuffer = nullptr;
 	ID3D11Buffer* alphaBuffer = nullptr;
 	ID3D11Device* pDevice = nullptr;
@@ -93,6 +97,9 @@ public:
 	}
 	void SetVertexShader(int idx, string name) {
 		SetVertexShader(idx, Resources::GetVertexShader(name));
+	}
+	void SetMesh(Mesh* mesh) {
+		this->mesh = mesh;
 	}
 
 	Model() {

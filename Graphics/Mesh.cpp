@@ -51,10 +51,10 @@ void Mesh::LoadDefaultCube() {
 		Vertex(-1.0f,  1.0f, -1.0f, 1.0f, 0.0f), //top-right		14
 		Vertex(-1.0f, -1.0f, -1.0f, 1.0f, 1.0f), //bottom-right		15
 
-		Vertex(-1.0f,  1.0f, -1.0f, 0.0f, 100.0f), //					16 +Y
+		Vertex(-1.0f,  1.0f, -1.0f, 0.0f, 1.0f), //					16 +Y
 		Vertex(-1.0f,  1.0f, 1.0f,	0.0f, 0.0f), //					17
-		Vertex(1.0f,  1.0f, 1.0f,	100.0f, 0.0f), //					18
-		Vertex(1.0f,  1.0f, -1.0f,	100.0f, 100.0f), //					19
+		Vertex(1.0f,  1.0f, 1.0f,	1.0f, 0.0f), //					18
+		Vertex(1.0f,  1.0f, -1.0f,	1.0f, 1.0f), //					19
 
 		Vertex(-1.0f, -1.0f, 1.0f,	0.0f, 1.0f), //					20 -Y
 		Vertex(-1.0f, -1.0f, -1.0f, 0.0f, 0.0f), //					21
@@ -88,21 +88,36 @@ void Mesh::LoadDefaultCube() {
 }
 
 void Mesh::LoadVertices(Vertex vert[], int vertCount) {
-	if(pVertices != nullptr) {
-		delete[vertexCount] pVertices;
-	}
+	//if(pVertices != nullptr) {
+	//	delete[vertexCount] pVertices;
+	//}
 	pVertices = vert;
 	vertexCount = vertCount;
 }
 void Mesh::LoadIndices(int ind[], int indCount) {
-	if(pIndices != nullptr) {
-		delete[indexCount] pIndices;
-	}
+	//if(pIndices != nullptr) {
+	//	delete[indexCount] pIndices;
+	//}
 	pIndices = ind;
 	indexCount = indCount;
 }
 
 void Mesh::LoadBuffers() {
+	if(vertexBuffer) vertexBuffer->Release();
+	if(indexBuffer) indexBuffer->Release();
+	delete vertexBuffer;
+	delete indexBuffer;
 	CreateBuffer(pDevice, D3D11_USAGE_DEFAULT, sizeof(Vertex) * vertexCount, D3D11_BIND_VERTEX_BUFFER, 0, &vertexBuffer, pVertices);
 	CreateBuffer(pDevice, D3D11_USAGE_DEFAULT, sizeof(int) * indexCount, D3D11_BIND_INDEX_BUFFER, 0, &indexBuffer, pIndices);
+}
+
+Mesh::~Mesh() {
+	//if(pVertices != nullptr) {
+	//	delete[vertexCount] pVertices;
+	//}
+	//if(pIndices != nullptr) {
+	//	delete[indexCount] pIndices;
+	//}
+	if(vertexBuffer) vertexBuffer->Release();
+	if(indexBuffer) indexBuffer->Release();
 }

@@ -21,6 +21,9 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 	Resources::LoadPixelShader(L"demopixelshader.cso", "demopshader");
 	Resources::LoadVertexShader(L"vertexshader.cso", "vertexshader");
 
+	Mesh* newMesh = new Mesh();
+	Resources::LoadMesh(newMesh->Init(gfx.GetDevice()), "cube");
+
 	sceneObjects["test1"] = new Object3D(gfx.GetDevice());
 	sceneObjects["test2"] = new Object3D(gfx.GetDevice());
 	sceneObjects["test3"] = new Object3D(gfx.GetDevice());

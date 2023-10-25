@@ -52,6 +52,13 @@ void Resources::LoadVertexShader(const wchar_t* path, string name) {
 	_Instance->vertexShaders[name]->Init(_Instance->pDevice, shaderFolder + path, _Instance->layout, _Instance->layoutCount);
 }
 
+void Resources::LoadMesh(Mesh* mesh, string name) {
+	InitiatedExitCheck();
+
+	_Instance->meshes[name] = mesh;
+	_Instance->meshes[name]->LoadDefaultCube(); //TODO: load mesh either from array or from file(?)
+}
+
 ID3D11ShaderResourceView* Resources::GetTexture(string name) {
 	InitiatedExitCheck();
 
@@ -82,6 +89,16 @@ VertexShader* Resources::GetVertexShader(string name) {
 	return _Instance->vertexShaders[name];
 }
 
+Mesh* Resources::GetMesh(string name) {
+	InitiatedExitCheck();
+
+	if(!_Instance->meshes.count(name)) {
+		return nullptr;
+	}
+
+	return _Instance->meshes[name];
+}
+
 Resources::~Resources() {
 	for (pair<string,ID3D11ShaderResourceView*> texPair : _Instance->textures) {
 		texPair.second->Release();
@@ -91,6 +108,9 @@ Resources::~Resources() {
 		delete pair.second;
 	}
 	for (pair<string, VertexShader*> pair : _Instance->vertexShaders) {
+		delete pair.second;
+	}
+	for(pair<string, Mesh*> pair : _Instance->meshes) {
 		delete pair.second;
 	}
 }
