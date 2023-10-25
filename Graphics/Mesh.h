@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <vector>
 #include <d3d11.h>
+#include <string>
 #include <WICTextureLoader.h>
 #include <DDSTextureLoader.h>
 #pragma comment(lib,"d3d11.lib")
@@ -11,6 +12,8 @@
 
 #include "Vertex.h"
 #include "ExampleMeshes.h"
+
+using namespace std;
 
 class Mesh {
 	Vertex* pVertices = nullptr;
@@ -32,6 +35,8 @@ public:
 
 	void LoadVertices(Vertex vert[], int vertCount);
 	void LoadIndices(DWORD ind[], int indCount);
+
+	//void LoadFromFile(wstring path);
 
 	void LoadBuffers();
 

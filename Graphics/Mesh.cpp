@@ -58,6 +58,10 @@ void Mesh::LoadIndices(DWORD ind[], int indCount) {
 	CreateBuffer(pDevice, D3D11_USAGE_DEFAULT, sizeof(int) * indexCount, D3D11_BIND_INDEX_BUFFER, 0, &indexBuffer, pIndices);
 }
 
+//void Mesh::LoadFromFile(wstring path) {
+//	
+//}
+
 void Mesh::LoadBuffers() {
 	if(vertexBuffer) vertexBuffer->Release();
 	if(indexBuffer) indexBuffer->Release();
