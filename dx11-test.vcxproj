@@ -156,6 +156,7 @@
     <ClCompile Include="Engine\Object3D.cpp" />
     <ClCompile Include="Graphics\Resources.cpp" />
     <ClCompile Include="Graphics\Model.cpp" />
+    <ClCompile Include="Graphics\Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics\Camera.h" />
@@ -172,6 +173,7 @@
     <ClInclude Include="Engine\Transform.h" />
     <ClInclude Include="Engine\Object3D.h" />
     <ClInclude Include="Graphics\Resources.h" />
+    <ClInclude Include="Graphics\Mesh.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="demopixelshader.hlsl">

@@ -44,6 +44,7 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 	sceneObjects["test2"]->models[0]->SetTexture(0, "head");
 	sceneObjects["test3"]->models[0]->SetTexture(0, "pfp");
 	sceneObjects["test4"]->models[0]->SetTexture(0, "head");
+	sceneObjects["floor"]->models[0]->SetTexture(0, "grass");
 
 	sceneObjects["test4"]->models[0]->SetPixelShader(0, "demopshader");
 }
