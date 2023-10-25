@@ -10,28 +10,34 @@
 #pragma comment(lib,"DXGI.lib")
 
 #include "Vertex.h"
+#include "ExampleMeshes.h"
 
 class Mesh {
 	Vertex* pVertices = nullptr;
 	int vertexCount = 0;
 
-	int* pIndices = nullptr;
-	int indexCount = 0;
+	DWORD* pIndices = nullptr;
 
-	ID3D11Buffer* vertexBuffer = nullptr;
-	ID3D11Buffer* indexBuffer = nullptr;
 
 	ID3D11Device* pDevice = nullptr;
 
+	int indexCount = 0;
+	ID3D11Buffer* indexBuffer = nullptr;
 public:
+	ID3D11Buffer* vertexBuffer = nullptr; // public because i think IASetVertexBuffers needs a direct reference (not thru a func)
+
 	Mesh* Init(ID3D11Device* device);
 
 	void LoadDefaultCube();
 
 	void LoadVertices(Vertex vert[], int vertCount);
-	void LoadIndices(int ind[], int indCount);
+	void LoadIndices(DWORD ind[], int indCount);
 
 	void LoadBuffers();
+
+	ID3D11Buffer* GetVertexBuffer() const;
+	ID3D11Buffer* GetIndexBuffer() const;
+	const int GetIndexCount() const;
 
 	~Mesh();
 };

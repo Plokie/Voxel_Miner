@@ -21,14 +21,20 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 	Resources::LoadPixelShader(L"demopixelshader.cso", "demopshader");
 	Resources::LoadVertexShader(L"vertexshader.cso", "vertexshader");
 
-	Mesh* newMesh = new Mesh();
-	Resources::LoadMesh(newMesh->Init(gfx.GetDevice()), "cube");
+	Resources::LoadMesh("cube");
+	Resources::LoadMesh(exampleFloorVertices, ARRAYSIZE(exampleFloorVertices), exampleCubeIndices, ARRAYSIZE(exampleCubeIndices), "floorMesh");
 
 	sceneObjects["test1"] = new Object3D(gfx.GetDevice());
 	sceneObjects["test2"] = new Object3D(gfx.GetDevice());
 	sceneObjects["test3"] = new Object3D(gfx.GetDevice());
 	sceneObjects["test4"] = new Object3D(gfx.GetDevice());
 	sceneObjects["floor"] = new Object3D(gfx.GetDevice());
+
+	sceneObjects["test1"]->models[0]->SetMesh("cube");
+	sceneObjects["test2"]->models[0]->SetMesh("cube");
+	sceneObjects["test3"]->models[0]->SetMesh("cube");
+	sceneObjects["test4"]->models[0]->SetMesh("cube");
+	sceneObjects["floor"]->models[0]->SetMesh("floorMesh");
 
 	sceneObjects["test1"]->transform.position = Vector3(0.f, 0.f, 0.f);
 	sceneObjects["test2"]->transform.position = Vector3(-8.f, 0.f, 0.f);

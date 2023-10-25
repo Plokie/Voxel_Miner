@@ -52,8 +52,8 @@ private:
 		return true;
 	}
 
-	ID3D11Buffer* vertexBuffer = nullptr;
-	ID3D11Buffer* indexBuffer = nullptr;
+	/*ID3D11Buffer* vertexBuffer = nullptr;
+	ID3D11Buffer* indexBuffer = nullptr;*/
 
 	Mesh* mesh = nullptr;
 
@@ -67,7 +67,7 @@ private:
 
 public:
 
-	SIZE_T indexCount = 0;
+	//SIZE_T indexCount = 0;
 	float alpha = 1.0f;
 
 	void Init(ID3D11Device* device);
@@ -101,14 +101,17 @@ public:
 	void SetMesh(Mesh* mesh) {
 		this->mesh = mesh;
 	}
+	void SetMesh(string name) {
+		SetMesh(Resources::GetMesh(name));
+	}
 
 	Model() {
 
 	}
 
 	~Model() {
-		if(vertexBuffer) vertexBuffer->Release();
-		if(indexBuffer) indexBuffer->Release();
+		/*if(vertexBuffer) vertexBuffer->Release();
+		if(indexBuffer) indexBuffer->Release();*/
 		if(constantBuffer) constantBuffer->Release();
 	}
 };

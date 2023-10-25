@@ -43,7 +43,8 @@ public:
 	static void LoadPixelShader(const wchar_t* path, string name);
 	static void LoadVertexShader(const wchar_t* path, string name);
 	
-	static void LoadMesh(Mesh* mesh, string name);
+	static void LoadMesh(string name);
+	static void LoadMesh(Vertex vertices[], int vertCount, DWORD indices[], int indexCount, string name);
 
 	static ID3D11ShaderResourceView* GetTexture(string name);
 	static PixelShader* GetPixelShader(string name);

@@ -52,11 +52,21 @@ void Resources::LoadVertexShader(const wchar_t* path, string name) {
 	_Instance->vertexShaders[name]->Init(_Instance->pDevice, shaderFolder + path, _Instance->layout, _Instance->layoutCount);
 }
 
-void Resources::LoadMesh(Mesh* mesh, string name) {
+void Resources::LoadMesh(string name) {
 	InitiatedExitCheck();
 
-	_Instance->meshes[name] = mesh;
+	_Instance->meshes[name] = new Mesh();
+	_Instance->meshes[name]->Init(_Instance->pDevice);
 	_Instance->meshes[name]->LoadDefaultCube(); //TODO: load mesh either from array or from file(?)
+}
+
+void Resources::LoadMesh(Vertex vertices[], int vertCount, DWORD indices[], int indexCount, string name) {
+	InitiatedExitCheck();
+
+	_Instance->meshes[name] = new Mesh();
+	_Instance->meshes[name]->Init(_Instance->pDevice);
+	_Instance->meshes[name]->LoadVertices(vertices, vertCount);
+	_Instance->meshes[name]->LoadIndices(indices, indexCount);
 }
 
 ID3D11ShaderResourceView* Resources::GetTexture(string name) {

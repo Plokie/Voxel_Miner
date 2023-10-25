@@ -10,6 +10,7 @@
 //#include "World.h";
 #include "Object3D.h"
 #include "..\Graphics\Resources.h"
+#include "..\Graphics\ExampleMeshes.h"
 
 using namespace std;
 
