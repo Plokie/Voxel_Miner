@@ -20,6 +20,8 @@
 using namespace DirectX;
 using namespace std;
 
+#define LAYOUTSIZE 3
+
 class Graphics {
 private:
 	ID3D11Device* device;						// 
@@ -31,7 +33,7 @@ private:
 	VertexShader defaultVertexShader;
 	PixelShader defaultPixelShader;
 	ID3D11ShaderResourceView* errTex;
-	D3D11_INPUT_ELEMENT_DESC layout[2];
+	D3D11_INPUT_ELEMENT_DESC layout[LAYOUTSIZE];
 
 	ID3D11DepthStencilView* depthStencilView;
 	ID3D11Texture2D* depthBuffer;

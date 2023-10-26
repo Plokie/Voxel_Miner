@@ -1,10 +1,5 @@
-﻿  Engine.cpp
-  Object3D.cpp
-  ExampleMeshes.cpp
-  Graphics.cpp
-  Mesh.cpp
-  Model.cpp
-  Resources.cpp
-  main.cpp
-  Generating Code...
-  dx11-test.vcxproj -> C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe
+﻿C:\Users\c2015437\source\repos\dx11-voxel\pixelshader.hlsl(26,28-37): warning X3081: comma expression used where a vector constructor may have been intended
+C:\Users\c2015437\source\repos\dx11-voxel\pixelshader.hlsl(26,28-43): warning X3081: comma expression used where a vector constructor may have been intended
+  
+  compilation object save succeeded; see C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\pixelshader.cso
+  dx11-test.vcxproj -> C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\dx11-test.exe

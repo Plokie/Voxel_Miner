@@ -12,7 +12,7 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 
 	Input::Init(winMgr.window);
 	
-	Resources::Init(gfx.GetDevice(), gfx.GetLayout(), 2);
+	Resources::Init(gfx.GetDevice(), gfx.GetLayout(), LAYOUTSIZE);
 	Resources::LoadTexture(L"Data\\Textures\\err.dds", "err");
 	Resources::LoadTexture(L"Data\\Textures\\img.dds", "head");
 	Resources::LoadTexture(L"Data\\Textures\\pfp.dds", "pfp");
@@ -116,8 +116,8 @@ void Engine::Update(float dTime) {
 
 
 	sceneObjects["test1"]->transform.rotation.y += 5.f * dTime;
-	sceneObjects["test4"]->transform.rotation.y += -5.f * dTime;
-	sceneObjects["test2"]->transform.rotation.y += -2.f * dTime;
+	sceneObjects["test4"]->transform.rotation.x += -5.f * dTime;
+	sceneObjects["test2"]->transform.rotation.x += -2.f * dTime;
 	sceneObjects["test3"]->transform.rotation += Vector3(-2.f * dTime, 2.f * dTime, -2.f * dTime);
 
 	// Keep at end

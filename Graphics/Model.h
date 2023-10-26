@@ -19,6 +19,7 @@ using namespace DirectX;
 
 struct CB_VS_vertexshader {
 	DirectX::XMMATRIX mx;
+	XMMATRIX modelMx;
 };
 
 struct CB_VS_pixelshader {
@@ -76,7 +77,13 @@ public:
 		return alpha < 1.f;
 	}
 
-	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX selfMx, XMMATRIX worldMx);
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="deviceCtx"></param>
+	/// <param name="modelMx">local object mx</param>
+	/// <param name="worldMx">cam view mx * cam proj mx</param>
+	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worldMx);
 
 	void SetTexture(int idx, ID3D11ShaderResourceView* tex) {
 		this->tex = tex;

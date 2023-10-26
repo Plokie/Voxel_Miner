@@ -280,6 +280,7 @@ bool Graphics::InitShaders() {
 	D3D11_INPUT_ELEMENT_DESC newLayout[] = {
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
 		//{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
@@ -417,7 +418,7 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 	SortObjects(objects, 0, (int)(objects.size() - 1));
 
 	for(vector<Object3D*>::iterator it = objects.begin(); it != objects.end(); ++it) {
-		if ((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentModels)) {
+		if ((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), & transparentModels)) {
 			//If it drew something, return back to default error textures+shaders afterwards (so we can see missing tex objects)
 			deviceCtx->PSSetShaderResources(0, 1, &errTex);
 			deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
