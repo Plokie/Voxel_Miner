@@ -27,7 +27,7 @@ VS_OUTPUT main(VS_INPUT input) {
     
     //output.normal = -input.normal;
     
-    output.normal = mul(float4(-input.normal, 0.0f), modelMx).xyz;
+    output.normal = mul(float4(input.normal, 0.0f), modelMx).xyz;
     //output.normal = input.normal;
     
     return output;

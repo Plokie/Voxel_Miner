@@ -11,12 +11,13 @@ void Resources::InitiatedExitCheck() {
 	}
 }
 
-void Resources::Init(ID3D11Device* device, D3D11_INPUT_ELEMENT_DESC layout[], int layoutCount) {
+void Resources::Init(ID3D11Device* device, ID3D11DeviceContext* deviceCtx, D3D11_INPUT_ELEMENT_DESC layout[], int layoutCount) {
 	if (_Instance == nullptr) {
 		_Instance = new Resources();
 	}
 
 	_Instance->pDevice = device;
+	_Instance->pDeviceCtx = deviceCtx;
 	_Instance->layout = layout;
 	_Instance->layoutCount = layoutCount;
 }
@@ -28,6 +29,10 @@ void Resources::LoadTexture(const wchar_t* path, string name) {
 
 	HRESULT hr = CreateDDSTextureFromFile(_Instance->pDevice, path, nullptr, &_Instance->textures[name], 0, 0);
 	if (FAILED(hr)) exit(101);
+
+	//_Instance->pDeviceCtx->GenerateMips(_Instance->textures[name]);
+
+	
 }
 
 #ifdef _DEBUG

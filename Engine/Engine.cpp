@@ -12,7 +12,7 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 
 	Input::Init(winMgr.window);
 	
-	Resources::Init(gfx.GetDevice(), gfx.GetLayout(), LAYOUTSIZE);
+	Resources::Init(gfx.GetDevice(), gfx.GetDeviceCtx(), gfx.GetLayout(), LAYOUTSIZE);
 	Resources::LoadTexture(L"Data\\Textures\\err.dds", "err");
 	Resources::LoadTexture(L"Data\\Textures\\img.dds", "head");
 	Resources::LoadTexture(L"Data\\Textures\\pfp.dds", "pfp");

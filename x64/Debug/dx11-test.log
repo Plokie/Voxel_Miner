@@ -1,5 +1,2 @@
-﻿C:\Users\c2015437\source\repos\dx11-voxel\pixelshader.hlsl(26,28-37): warning X3081: comma expression used where a vector constructor may have been intended
-C:\Users\c2015437\source\repos\dx11-voxel\pixelshader.hlsl(26,28-43): warning X3081: comma expression used where a vector constructor may have been intended
-  
-  compilation object save succeeded; see C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\pixelshader.cso
+﻿  Resources.cpp
   dx11-test.vcxproj -> C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\dx11-test.exe

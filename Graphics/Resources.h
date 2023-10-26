@@ -20,6 +20,7 @@ using namespace DirectX;
 class Resources {
 private:
 	ID3D11Device* pDevice = nullptr;
+	ID3D11DeviceContext* pDeviceCtx = nullptr;
 	D3D11_INPUT_ELEMENT_DESC* layout = nullptr;
 	int layoutCount = 0;
 
@@ -37,7 +38,7 @@ public:
 	Resources(Resources& other) = delete;
 	void operator=(const Resources&) = delete;
 
-	static void Init(ID3D11Device* device, D3D11_INPUT_ELEMENT_DESC layout[], int layoutCount);
+	static void Init(ID3D11Device* device, ID3D11DeviceContext* deviceCtx, D3D11_INPUT_ELEMENT_DESC layout[], int layoutCount);
 
 	static void LoadTexture(const wchar_t* path, string name);
 	static void LoadPixelShader(const wchar_t* path, string name);

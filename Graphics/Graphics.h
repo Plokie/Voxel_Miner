@@ -86,6 +86,10 @@ public:
 		return layout;
 	}
 
+	ID3D11DeviceContext* GetDeviceCtx() {
+		return deviceCtx;
+	}
+
 	~Graphics() {
 		if(device) device->Release();
 		if(deviceCtx) deviceCtx->Release();
