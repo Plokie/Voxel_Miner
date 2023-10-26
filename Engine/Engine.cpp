@@ -16,7 +16,7 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 	Resources::LoadTexture(L"Data\\Textures\\err.dds", "err");
 	Resources::LoadTexture(L"Data\\Textures\\img.dds", "head");
 	Resources::LoadTexture(L"Data\\Textures\\pfp.dds", "pfp");
-	Resources::LoadTexture(L"Data\\Textures\\grass.dds", "grass");
+	Resources::LoadTexture(L"Data\\Textures\\grass2.dds", "grass");
 	Resources::LoadPixelShader(L"pixelshader.cso", "pixelshader");
 	Resources::LoadPixelShader(L"demopixelshader.cso", "demopshader");
 	Resources::LoadVertexShader(L"vertexshader.cso", "vertexshader");
