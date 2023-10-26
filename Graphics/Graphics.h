@@ -61,18 +61,29 @@ private:
 	bool SetupBlendState();
 
 
+	bool InitResolution(HWND hwnd);
 
 	bool InitDX(HWND hwnd);
 	bool InitShaders();
 	bool InitScene();
+
+	static Graphics* _Instance;
 public:
 	Camera camera;
 	int windowWidth=0, windowHeight=0;
 
+	static Graphics* Get() {
+		return _Instance;
+	}
+
 	bool CreateBuffer(UINT stride, UINT bindFlags, ID3D11Buffer** targetBuffer, void* arr, UINT exitCode);
 
-	bool InitResolution(HWND hwnd);
+
+	void SetResolution(HWND hwnd, int width, int height);
+
 	bool Init(HWND hwnd, int width, int height);
+
+	bool ReInit(HWND hwnd, int width, int height);
 
 	void Render(map<string, Object3D*>& sceneObjects);
 

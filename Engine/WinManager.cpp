@@ -4,6 +4,8 @@
 #include "WinManager.h"
 #include "Input.h"
 
+WinManager* WinManager::_Instance;
+
 LRESULT CALLBACK DefaultMsgHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch(msg)
@@ -34,6 +36,8 @@ LRESULT CALLBACK DefaultMsgHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 	case WM_SIZE:
 		//width = LOWORD(lParam)
 		//height = HIWORD(lParam)
+		WinManager::Get()->width = LOWORD(lParam);
+		WinManager::Get()->height = HIWORD(lParam);
 		return 0;
 
 		// WM_EXITSIZEMOVE is sent when the user grabs the resize bars.
@@ -49,6 +53,8 @@ LRESULT CALLBACK DefaultMsgHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 		mWinData.resizing = false;
 		if(mpMyD3D)
 			mpMyD3D->OnResize(mWinData.clientWidth, mWinData.clientHeight, *mpMyD3D);*/
+		
+		
 		return 0;
 
 		// WM_DESTROY is sent when the window is being destroyed.
@@ -82,6 +88,8 @@ LRESULT CALLBACK DefaultMsgHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 /// <param name="nCmdShow"></param>
 /// <returns>True if window sucessfully created, false otherwise</returns>
 bool WinManager::Init(_In_ HINSTANCE hInstance) {
+	_Instance = this;
+
 	width = 1366;
 	height = 768;
 

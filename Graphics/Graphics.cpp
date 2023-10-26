@@ -4,6 +4,8 @@
 using namespace std;
 //using namespace DirectX;
 
+Graphics* Graphics::_Instance;
+
 bool Graphics::ChooseAdapter() {
 	// Get current DXGI factory (i think its like a state of the system devices)
 	IDXGIFactory* dxFactory = nullptr;
@@ -76,10 +78,10 @@ bool Graphics::SetupSwapChain(HWND hwnd) {
 		NULL,						//FEATURE LEVELS SIZE
 		D3D11_SDK_VERSION,			//sdk ver
 		&scd,
-		&this->swapChain,
-		&this->device,
+		&swapChain,
+		&device,
 		NULL,						//SUPPORTED FEATURE LEVELS
-		&this->deviceCtx
+		&deviceCtx
 	);
 
 	if(FAILED(hr)) { // uh oh, swap chain setup failed
@@ -249,14 +251,16 @@ bool Graphics::InitResolution(HWND hwnd) {
 
 	deviceCtx->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
-	SetupDepthStencil();
-
-	SetupAlphaDepthStencil();
-
 	SetupViewport();
 
 	SetupRasterizer();
 	return true;
+}
+
+void Graphics::SetResolution(HWND hwnd, int width, int height) {
+	windowWidth = width;
+	windowHeight = height;
+	InitResolution(hwnd);
 }
 
 bool Graphics::InitDX(HWND hwnd) {
@@ -265,6 +269,10 @@ bool Graphics::InitDX(HWND hwnd) {
 	//MessageBox(0, targetAdapter.Description, 0, 0); //debug box showing best gpu name
 
 	InitResolution(hwnd);
+
+	SetupDepthStencil();
+
+	SetupAlphaDepthStencil();
 
 	SetupSamplerState();
 
@@ -348,8 +356,6 @@ bool Graphics::InitScene() {
 	// Load png tex
 	//hr = CreateWICTextureFromFile(device, L"Data\\Textures\\img.png", nullptr, &tex);
 
-	//todo: Make textures part of mesh (vec/array of textures in mesh?)
-
 	// Load dds tex (faster + accurate colour space)
 	HRESULT hr = CreateDDSTextureFromFile(device, L"Data\\Textures\\err.dds", nullptr, &errTex, 0, 0); 
 	if(FAILED(hr)) exit(41);
@@ -362,6 +368,8 @@ bool Graphics::InitScene() {
 
 bool Graphics::Init(HWND hwnd, int width, int height) {
 	//mesh = new Mesh();
+
+	_Instance = this;
 
 	windowWidth = width;
 	windowHeight = height;
@@ -377,6 +385,41 @@ bool Graphics::Init(HWND hwnd, int width, int height) {
 	if(!InitScene()) {
 		return false;
 	}
+
+	return true;
+}
+
+bool Graphics::ReInit(HWND hwnd, int width, int height) {
+	//mesh = new Mesh();
+
+	//_Instance = this;
+
+	windowWidth = width;
+	windowHeight = height;
+
+	ChooseAdapter();
+
+	SetupSwapChain(hwnd);
+
+	//!SetupDepthBuffer();
+	
+	//deviceCtx->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+
+	SetupViewport();
+
+	SetupRasterizer();
+
+	/*if(!InitDX(hwnd)) {
+		return false;
+	}
+
+	if(!InitShaders()) {
+		return false;
+	}
+
+	if(!InitScene()) {
+		return false;
+	}*/
 
 	return true;
 }

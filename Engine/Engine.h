@@ -16,7 +16,7 @@ using namespace std;
 
 class Engine {
 private:
-	Graphics gfx;
+	Graphics* gfx;
 	WinManager winMgr;
 	//World world;
 public:
@@ -27,6 +27,8 @@ public:
 
 	void Render(float dTime);
 	void Update(float dTime);
+
+	//void OnResizeWindow(int width, int height);
 
 	/// <summary>
 	/// Call at start of main while loop loop
