@@ -36,6 +36,6 @@ float4 main(PS_INPUT input) : SV_TARGET
     //col.r = lerp(col.r, pixCol.r, ambientLight.r);
     //col.g = lerp(col.g, pixCol.g, ambientLight.g);
     //col.b = lerp(col.b, pixCol.b, ambientLight.b);
-    
+    //return float4(input.normal, alpha);
     return float4(col.rgb, pixCol.a * alpha);
 }

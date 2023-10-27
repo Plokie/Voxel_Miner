@@ -1,2 +1,5 @@
-﻿  Engine.cpp
+﻿C:\Users\Plokie\source\repos\dx11-proj\pixelshader.hlsl(28,28-37): warning X3081: comma expression used where a vector constructor may have been intended
+C:\Users\Plokie\source\repos\dx11-proj\pixelshader.hlsl(28,28-43): warning X3081: comma expression used where a vector constructor may have been intended
+  
+  compilation object save succeeded; see C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\pixelshader.cso
   dx11-test.vcxproj -> C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe
