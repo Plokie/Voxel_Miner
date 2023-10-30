@@ -48,6 +48,7 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 	sceneObjects["floor"]->transform.scale = Vector3(100.f, 1.f, 100.f);
 
 	sceneObjects["test2"]->models[0]->alpha = 0.5f;
+	sceneObjects["test3"]->models[0]->alpha = 0.5f;
 
 	sceneObjects["test1"]->models[0]->SetTexture(0, "grass");
 	sceneObjects["test2"]->models[0]->SetTexture(0, "head");
