@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Windows.h>
-//#include "../Graphics/Graphics.h"
+#include "../Graphics/Graphics.h"
 
 class WinManager {
 	WNDCLASS wndClass;
@@ -11,6 +11,10 @@ public:
 	HWND window;
 	//Graphics* gfx;
 	int width, height;
+
+	bool minimized = false;
+	bool maximized = false;
+	bool resizing = false;
 
 	static WinManager* Get() {
 		return _Instance;

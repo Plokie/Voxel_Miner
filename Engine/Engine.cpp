@@ -109,17 +109,17 @@ void Engine::Update(float dTime) {
 		//MessageBox(0, L"L MOUSE PRESSED", 0, 0);
 	}
 
-	if(Input::IsKeyPressed('J')) {
-		//gfx.windowWidth = winMgr.width;
-		//gfx.windowHeight = winMgr.height;
-		//gfx.InitResolution(winMgr.window);
-		//gfx.SetResolution(winMgr.window, winMgr.width, winMgr.height);
+	//if(Input::IsKeyPressed('J')) {
+	//	//gfx.windowWidth = winMgr.width;
+	//	//gfx.windowHeight = winMgr.height;
+	//	//gfx.InitResolution(winMgr.window);
+	//	//gfx.SetResolution(winMgr.window, winMgr.width, winMgr.height);
 
-		//gfx.ReInit(winMgr.window, winMgr.width, winMgr.height);
-		
-		//ZeroMemory(&gfx, sizeof(Graphics));
-		//gfx.Init(winMgr.window, winMgr.width, winMgr.height);
-	}
+	//	gfx->OnResize(winMgr.window, winMgr.width, winMgr.height);
+	//	
+	//	//ZeroMemory(&gfx, sizeof(Graphics));
+	//	//gfx.Init(winMgr.window, winMgr.width, winMgr.height);
+	//}
 
 
 	sceneObjects["test1"]->transform.rotation.x += 5.f * dTime;

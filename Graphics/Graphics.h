@@ -63,6 +63,8 @@ private:
 
 	bool InitResolution(HWND hwnd);
 
+	void ResizeSwapchain();
+
 	bool InitDX(HWND hwnd);
 	bool InitShaders();
 	bool InitScene();
@@ -83,7 +85,7 @@ public:
 
 	bool Init(HWND hwnd, int width, int height);
 
-	bool ReInit(HWND hwnd, int width, int height);
+	bool OnResize(HWND hwnd, int width, int height);
 
 	void Render(map<string, Object3D*>& sceneObjects);
 

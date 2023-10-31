@@ -18,24 +18,19 @@ float4 main(PS_INPUT input) : SV_TARGET
 {
     float4 pixCol = tex.Sample(samplerState, input.texCoord);
     
+    //todo: make cbuffer input
     float3 tempLightDir = -float3(0.0f, -1.0f, 0.0f);
     
     float lightDot = dot(input.normal, tempLightDir);
     lightDot = (lightDot + 1.0f) / 2.0f;
+    lightDot += 0.25f;
     lightDot = saturate(lightDot);
-    
-    //todo: make cbuffer input
-    float3 ambientLight = (0.1f, 0.1f, 0.1f);
     
     
     float4 col = float4(pixCol.rgb * lightDot, pixCol.a);
     //col = lerp(col, pixCol, 0.3f);
-    col += float4(ambientLight, 0.0f);
+    //col += float4(ambientLight, 0.0f);
     col = saturate(col);
-    //col.a = pixCol.a;
-    //col.r = lerp(col.r, pixCol.r, ambientLight.r);
-    //col.g = lerp(col.g, pixCol.g, ambientLight.g);
-    //col.b = lerp(col.b, pixCol.b, ambientLight.b);
-    //return float4(input.normal, alpha);
+
     return float4(col.rgb, pixCol.a * alpha);
 }

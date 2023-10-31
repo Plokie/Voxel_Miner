@@ -1,2 +1,6 @@
 ﻿  Engine.cpp
+  WinManager.cpp
+  Graphics.cpp
+  main.cpp
+  Generating Code...
   dx11-test.vcxproj -> C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\dx11-test.exe

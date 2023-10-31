@@ -78,10 +78,10 @@ bool Graphics::SetupSwapChain(HWND hwnd) {
 		NULL,						//FEATURE LEVELS SIZE
 		D3D11_SDK_VERSION,			//sdk ver
 		&scd,
-		&swapChain,
-		&device,
+		&this->swapChain,
+		&this->device,
 		NULL,						//SUPPORTED FEATURE LEVELS
-		&deviceCtx
+		&this->deviceCtx
 	);
 
 	if(FAILED(hr)) { // uh oh, swap chain setup failed
@@ -104,7 +104,30 @@ bool Graphics::SetupSwapChain(HWND hwnd) {
 		return false;
 	}
 
+	backBuffer->Release();
+
 	return true;
+}
+
+void Graphics::ResizeSwapchain() {
+	HRESULT hr = this->swapChain->ResizeBuffers(1, this->windowWidth, this->windowHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+	if (FAILED(hr)) {
+		exit(11); return;
+	}
+	
+	ID3D11Texture2D* backBuffer;
+	hr = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+	if (FAILED(hr)) {
+		exit(12); //Failed to get or set back buffer
+		return;
+	}
+
+	hr = device->CreateRenderTargetView(backBuffer, NULL, &renderTargetView);
+	if (FAILED(hr)) {
+		exit(13); //Failed to create render target
+		return;
+	}
+	backBuffer->Release();
 }
 
 bool Graphics::SetupDepthBuffer() {
@@ -121,13 +144,13 @@ bool Graphics::SetupDepthBuffer() {
 	dDesc.CPUAccessFlags = 0;
 	dDesc.MiscFlags = 0;
 
-	HRESULT hr = device->CreateTexture2D(&dDesc, 0, &depthBuffer);
+	HRESULT hr = device->CreateTexture2D(&dDesc, 0, &this->depthBuffer);
 	if(FAILED(hr)) {
 		exit(14);
 		return false;
 	}
 
-	hr = device->CreateDepthStencilView(depthBuffer, 0, &depthStencilView);
+	hr = device->CreateDepthStencilView(depthBuffer, 0, &this->depthStencilView);
 	if(FAILED(hr)) {
 		exit(15);
 		return false;
@@ -144,7 +167,7 @@ bool Graphics::SetupDepthStencil() {
 	dsDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 	//dsDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;
 
-	HRESULT hr = device->CreateDepthStencilState(&dsDesc, &depthStencilState);
+	HRESULT hr = device->CreateDepthStencilState(&dsDesc, &this->depthStencilState);
 	if(FAILED(hr)) {
 		exit(16);
 		return false;
@@ -389,25 +412,36 @@ bool Graphics::Init(HWND hwnd, int width, int height) {
 	return true;
 }
 
-bool Graphics::ReInit(HWND hwnd, int width, int height) {
+bool Graphics::OnResize(HWND hwnd, int width, int height) {
 	//mesh = new Mesh();
+	if (this == nullptr) return false;
 
 	//_Instance = this;
+	if(this->renderTargetView) this->renderTargetView->Release();
+	if(this->depthBuffer) this->depthBuffer->Release();
+	if(this->depthStencilView) this->depthStencilView->Release();
+	if(this->depthStencilState) this->depthStencilState->Release();
+	if(this->alphaDepthStencilState) this->alphaDepthStencilState->Release();
+	//this->stencil
 
 	windowWidth = width;
 	windowHeight = height;
 
-	ChooseAdapter();
+	//ChooseAdapter();
 
-	SetupSwapChain(hwnd);
+	//SetupSwapChain(hwnd);
+	ResizeSwapchain();
 
-	//!SetupDepthBuffer();
+	SetupDepthStencil();
+	SetupAlphaDepthStencil();
+
+	SetupDepthBuffer();
 	
-	//deviceCtx->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	deviceCtx->OMSetRenderTargets(1, &this->renderTargetView, this->depthStencilView);
 
 	SetupViewport();
 
-	SetupRasterizer();
+	//SetupRasterizer();
 
 	/*if(!InitDX(hwnd)) {
 		return false;

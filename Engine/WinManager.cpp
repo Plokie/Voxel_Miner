@@ -8,53 +8,65 @@ WinManager* WinManager::_Instance;
 
 LRESULT CALLBACK DefaultMsgHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	WinManager* winMgr = WinManager::Get();
+	Graphics* gfx = Graphics::Get();
+
 	switch(msg)
 	{
-	//case WM_CHAR:
-	//	MessageBox(0, L"WM_CHAR", 0, 0);
-	//	return 0;
-
 	case WM_INPUT:
 		Input::HandleRawInput((HRAWINPUT)lParam);
 		return 0;
 
 		// WM_ACTIVATE is sent when the window is activated or deactivated.  
-		// We pause the game when the window is deactivated and unpause it 
-		// when it becomes active.  
+
 	case WM_ACTIVATE:
-		/*if(LOWORD(wParam) == WA_INACTIVE)
-		{
-			mWinData.appPaused = true;
-		}
-		else
-		{
-			mWinData.appPaused = false;
-		}*/
+		//if(LOWORD(wParam) == WA_INACTIVE)
 		return 0;
 
 		// WM_SIZE is sent when the user resizes the window.  
 	case WM_SIZE:
-		//width = LOWORD(lParam)
-		//height = HIWORD(lParam)
-		WinManager::Get()->width = LOWORD(lParam);
-		WinManager::Get()->height = HIWORD(lParam);
+		winMgr->width = LOWORD(lParam);
+		winMgr->height = HIWORD(lParam);
+
+		if (wParam == SIZE_MINIMIZED) {
+			winMgr->minimized = true;
+			winMgr->maximized = false;
+		}
+		else if (wParam == SIZE_MAXIMIZED) {
+			winMgr->minimized = false;
+			winMgr->maximized = true;
+			gfx->OnResize(winMgr->window, winMgr->width, winMgr->height);
+		}
+		else if (wParam == SIZE_RESTORED) {
+			if (winMgr->minimized) { // Coming from a minimized state
+				winMgr->minimized = false;
+				gfx->OnResize(winMgr->window, winMgr->width, winMgr->height);
+			}
+			else if (winMgr->maximized) { // Coming from a maximized state
+				winMgr->maximized = false;
+				gfx->OnResize(winMgr->window, winMgr->width, winMgr->height);
+			}
+			else if (winMgr->resizing) {
+
+			}
+			else {
+				gfx->OnResize(winMgr->window, winMgr->width, winMgr->height);
+			}
+		}
+		
 		return 0;
 
 		// WM_EXITSIZEMOVE is sent when the user grabs the resize bars.
 	case WM_ENTERSIZEMOVE:
-		/*mWinData.appPaused = true;
-		mWinData.resizing = true;*/
+		winMgr->resizing = true;
 		return 0;
 
 		// WM_EXITSIZEMOVE is sent when the user releases the resize bars.
 		// Here we reset everything based on the new window dimensions.
 	case WM_EXITSIZEMOVE:
-		/*mWinData.appPaused = false;
-		mWinData.resizing = false;
-		if(mpMyD3D)
-			mpMyD3D->OnResize(mWinData.clientWidth, mWinData.clientHeight, *mpMyD3D);*/
-		
-		
+		winMgr->resizing = false;
+
+		gfx->OnResize(winMgr->window, winMgr->width, winMgr->height);
 		return 0;
 
 		// WM_DESTROY is sent when the window is being destroyed.
