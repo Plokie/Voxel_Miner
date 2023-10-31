@@ -50,3 +50,8 @@ Vector3 Transform::up() {
 Vector3 Transform::down() {
 	return basis(0.f, -1.f, 0.f);
 }
+
+void Transform::TranslateLocal(float x, float y, float z)
+{
+	position += basis(x, y, z);
+}

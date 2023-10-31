@@ -145,6 +145,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game\CameraController.cpp" />
+    <ClCompile Include="Game\ExampleObject3D.cpp" />
+    <ClCompile Include="Game\GameStart.cpp" />
     <ClCompile Include="Graphics\Camera.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Graphics\ExampleMeshes.cpp" />
@@ -160,6 +163,9 @@
     <ClCompile Include="Graphics\Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Game\CameraController.h" />
+    <ClInclude Include="Game\ExampleObject3D.h" />
+    <ClInclude Include="Game\GameStart.h" />
     <ClInclude Include="Graphics\Camera.h" />
     <ClInclude Include="DebugMsg.h" />
     <ClInclude Include="Engine\Engine.h" />

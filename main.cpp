@@ -11,6 +11,7 @@
 
 #include "Engine/Engine.h"
 #include "Engine/Timer.h"
+#include "Game/GameStart.h"
 
 using namespace std;
 using namespace DirectX;
@@ -28,12 +29,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		return 999;
 	}
 
+	GameStart(&engine);
+
 
 	while(engine.Service()) {
 		dTimer.stop();
 		dTime = dTimer.get_elapsed<float>();
 		dTimer.start();
 
+		GameUpdate(&engine, dTime);
 		engine.Update(dTime);
 
 		engine.Render(dTime);

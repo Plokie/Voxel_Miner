@@ -59,8 +59,6 @@ private:
 	bool SetupRasterizer();
 	bool SetupSamplerState();
 	bool SetupBlendState();
-
-
 	bool InitResolution(HWND hwnd);
 
 	void ResizeSwapchain();
@@ -80,9 +78,6 @@ public:
 
 	bool CreateBuffer(UINT stride, UINT bindFlags, ID3D11Buffer** targetBuffer, void* arr, UINT exitCode);
 
-
-	void SetResolution(HWND hwnd, int width, int height);
-
 	bool Init(HWND hwnd, int width, int height);
 
 	bool OnResize(HWND hwnd, int width, int height);
@@ -91,17 +86,11 @@ public:
 
 	void SortObjects(vector<Object3D*>& objects, int startIndex, int endIndex);
 
-	ID3D11Device* GetDevice() {
-		return device;
-	}
+	ID3D11Device* GetDevice() { return device; }
 
-	D3D11_INPUT_ELEMENT_DESC* GetLayout() {
-		return layout;
-	}
+	D3D11_INPUT_ELEMENT_DESC* GetLayout() { return layout; }
 
-	ID3D11DeviceContext* GetDeviceCtx() {
-		return deviceCtx;
-	}
+	ID3D11DeviceContext* GetDeviceCtx() { return deviceCtx; }
 
 	~Graphics() {
 		if(device) device->Release();
@@ -119,6 +108,5 @@ public:
 		if(errTex) errTex->Release();
 
 		if (blendState) blendState->Release();
-		//if(mesh) delete mesh;
 	}
 };

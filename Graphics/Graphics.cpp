@@ -144,6 +144,9 @@ bool Graphics::SetupDepthBuffer() {
 	dDesc.CPUAccessFlags = 0;
 	dDesc.MiscFlags = 0;
 
+	//dDesc.SampleDesc.Count = 4;
+	//dDesc.SampleDesc.Quality = 1;
+
 	HRESULT hr = device->CreateTexture2D(&dDesc, 0, &this->depthBuffer);
 	if(FAILED(hr)) {
 		exit(14);
@@ -266,7 +269,6 @@ bool Graphics::SetupBlendState() {
 	return true;
 }
 
-// Can be called when resolution changed
 bool Graphics::InitResolution(HWND hwnd) {
 	SetupSwapChain(hwnd);
 
@@ -278,12 +280,6 @@ bool Graphics::InitResolution(HWND hwnd) {
 
 	SetupRasterizer();
 	return true;
-}
-
-void Graphics::SetResolution(HWND hwnd, int width, int height) {
-	windowWidth = width;
-	windowHeight = height;
-	InitResolution(hwnd);
 }
 
 bool Graphics::InitDX(HWND hwnd) {
@@ -413,23 +409,17 @@ bool Graphics::Init(HWND hwnd, int width, int height) {
 }
 
 bool Graphics::OnResize(HWND hwnd, int width, int height) {
-	//mesh = new Mesh();
 	if (this == nullptr) return false;
 
-	//_Instance = this;
 	if(this->renderTargetView) this->renderTargetView->Release();
 	if(this->depthBuffer) this->depthBuffer->Release();
 	if(this->depthStencilView) this->depthStencilView->Release();
 	if(this->depthStencilState) this->depthStencilState->Release();
 	if(this->alphaDepthStencilState) this->alphaDepthStencilState->Release();
-	//this->stencil
 
 	windowWidth = width;
 	windowHeight = height;
 
-	//ChooseAdapter();
-
-	//SetupSwapChain(hwnd);
 	ResizeSwapchain();
 
 	SetupDepthStencil();
@@ -440,20 +430,6 @@ bool Graphics::OnResize(HWND hwnd, int width, int height) {
 	deviceCtx->OMSetRenderTargets(1, &this->renderTargetView, this->depthStencilView);
 
 	SetupViewport();
-
-	//SetupRasterizer();
-
-	/*if(!InitDX(hwnd)) {
-		return false;
-	}
-
-	if(!InitShaders()) {
-		return false;
-	}
-
-	if(!InitScene()) {
-		return false;
-	}*/
 
 	return true;
 }

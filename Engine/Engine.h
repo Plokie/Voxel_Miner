@@ -19,6 +19,7 @@ private:
 	Graphics* gfx;
 	WinManager winMgr;
 	//World world;
+	static Engine* _Instance;
 public:
 	map<string, Object3D*> sceneObjects = {};
 	
@@ -28,6 +29,14 @@ public:
 	void Render(float dTime);
 	void Update(float dTime);
 
+	static Engine* Get() { return _Instance; }
+
+	Graphics* GetGraphics() { return gfx; }
+	WinManager* GetWinManager() { return &winMgr; }
+
+	Object3D* CreateObject3D(Object3D* obj, string name);
+	Object3D* CreateObject3D(Object3D* obj, string name, string meshName);
+	Object3D* CreateObject3D(Object3D* obj, string name, string meshName, string texName);
 	//void OnResizeWindow(int width, int height);
 
 	/// <summary>

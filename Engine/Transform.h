@@ -35,6 +35,8 @@ public:
 	Vector3 up();
 	Vector3 down();
 
+	void TranslateLocal(float x, float y, float z);
+
 	void operator=(const Transform& rhs) {
 		this->position = rhs.position;
 		this->rotation = rhs.rotation;
