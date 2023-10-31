@@ -19,7 +19,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     float4 pixCol = tex.Sample(samplerState, input.texCoord);
     
     //todo: make cbuffer input
-    float3 tempLightDir = -float3(0.0f, -1.0f, 0.0f);
+    float3 tempLightDir = normalize(-float3(-1.0f, -1.0f, 0.0f));
     
     float lightDot = dot(input.normal, tempLightDir);
     lightDot = (lightDot + 1.0f) / 2.0f;

@@ -1,7 +1,14 @@
 #include "GameStart.h"
 
+
+
+
+// Include all Object3D and child type references
+// ---------------------------------------
 #include "ExampleObject3D.h"
 #include "CameraController.h"
+// ---------------------------------------
+
 
 // Call game-related initialisation stuff from here
 void GameStart(Engine* engine) {
@@ -17,11 +24,11 @@ void GameStart(Engine* engine) {
 	Resources::LoadMesh(exampleFloorVertices, ARRAYSIZE(exampleFloorVertices), exampleCubeIndices, ARRAYSIZE(exampleCubeIndices), "floorMesh");
 
 	engine->CreateObject3D(new CameraController(), "CameraController");
-	engine->CreateObject3D(new ExampleObject3D(), "test1", "cube", "grass");
-	engine->CreateObject3D(new Object3D(), "test2", "cube", "head");
-	engine->CreateObject3D(new Object3D(), "test3", "cube", "pfp");
-	engine->CreateObject3D(new Object3D(), "test4", "cube", "head");
-	engine->CreateObject3D(new Object3D(), "floor", "floorMesh","grass");
+	engine->CreateObject3D(new ExampleObject3D(5.f, 0.f, 0.f), "test1", "cube", "grass");
+	engine->CreateObject3D(new ExampleObject3D(-2.f, 0.f, 0.f), "test2", "cube", "head");
+	engine->CreateObject3D(new ExampleObject3D(-2.f, 2.f, -2.f), "test3", "cube", "pfp");
+	engine->CreateObject3D(new ExampleObject3D(0.f, 5.f, 0.f), "test4", "cube", "head");
+	engine->CreateObject3D(new Object3D(), "floor", "floorMesh", "grass");
 	
 	engine->sceneObjects["test2"]->transform.position = Vector3(-8.f, 0.f, 0.f);
 	engine->sceneObjects["test3"]->transform.position = Vector3(8.f, 5.f, 0.f);

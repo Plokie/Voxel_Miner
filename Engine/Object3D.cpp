@@ -3,9 +3,7 @@
 Object3D::Object3D(ID3D11Device* device) {
 	//deviceRef = device;
 
-	Model* newMesh = new Model();
-	newMesh->Init(device);
-	models.push_back(newMesh);	
+	AddModel(device);
 }
 
 Model* Object3D::AddModel(ID3D11Device* device) {
@@ -33,4 +31,5 @@ bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<pai
 }
 
 void Object3D::Update(float dTime) {}
+
 void Object3D::Start() {}
