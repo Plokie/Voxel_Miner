@@ -225,10 +225,14 @@ bool Graphics::SetupRasterizer() {
 	return true;
 }
 
-bool Graphics::SetupSamplerState() {
+bool Graphics::SetupSamplerStateLinear() {
 	D3D11_SAMPLER_DESC sd;
 	ZeroMemory(&sd, sizeof(D3D11_SAMPLER_DESC));
 	sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	//sd.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+	//sd.Filter = D3D11_FILTER_COMPARISON_MIN_POINT_MAG_MIP_LINEAR;
+	//sd.Filter = D3D11_FILTER_COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT;
+	//sd.Filter = D3D11_FILTER_COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT;
 	//sd.Filter = D3D11_FILTER::D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
 	//sd.Filter = D3D11_FILTER::D3D11_FILTER_COMPARISON_ANISOTROPIC;
 	sd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -238,7 +242,31 @@ bool Graphics::SetupSamplerState() {
 	sd.MinLOD = 0;
 	sd.MaxLOD = D3D11_FLOAT32_MAX;
 	
-	HRESULT hr = device->CreateSamplerState(&sd, &samplerState);
+	HRESULT hr = device->CreateSamplerState(&sd, &samplerStateLinear);
+	if(FAILED(hr)) {
+		exit(18); return false;
+	}
+	return true;
+}
+
+bool Graphics::SetupSamplerStatePoint() {
+	D3D11_SAMPLER_DESC sd;
+	ZeroMemory(&sd, sizeof(D3D11_SAMPLER_DESC));
+	//sd.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sd.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+	//sd.Filter = D3D11_FILTER_COMPARISON_MIN_POINT_MAG_MIP_LINEAR;
+	//sd.Filter = D3D11_FILTER_COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT;
+	//sd.Filter = D3D11_FILTER_COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT;
+	//sd.Filter = D3D11_FILTER::D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+	//sd.Filter = D3D11_FILTER::D3D11_FILTER_COMPARISON_ANISOTROPIC;
+	sd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sd.MinLOD = 0;
+	sd.MaxLOD = D3D11_FLOAT32_MAX;
+
+	HRESULT hr = device->CreateSamplerState(&sd, &samplerStatePoint);
 	if(FAILED(hr)) {
 		exit(18); return false;
 	}
@@ -293,7 +321,8 @@ bool Graphics::InitDX(HWND hwnd) {
 
 	SetupAlphaDepthStencil();
 
-	SetupSamplerState();
+	SetupSamplerStateLinear();
+	SetupSamplerStatePoint();
 
 	SetupBlendState();
 	
@@ -308,6 +337,7 @@ bool Graphics::InitShaders() {
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TEXOFFSET", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
 		//{"COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
@@ -449,7 +479,7 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 	deviceCtx->OMSetDepthStencilState(depthStencilState, 0);
 	deviceCtx->OMSetBlendState(blendState, NULL, 0xFFFFFFFF);
 
-	deviceCtx->PSSetSamplers(0, 1, &samplerState);
+	deviceCtx->PSSetSamplers(0, 1, &samplerStatePoint);
 
 	deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
 	deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);

@@ -20,7 +20,7 @@
 using namespace DirectX;
 using namespace std;
 
-#define LAYOUTSIZE 3
+#define LAYOUTSIZE 4
 
 class Graphics {
 private:
@@ -45,7 +45,8 @@ private:
 
 	IDXGIAdapter* targetAdapter;
 
-	ID3D11SamplerState* samplerState;
+	ID3D11SamplerState* samplerStateLinear;
+	ID3D11SamplerState* samplerStatePoint;
 	
 
 	ID3D11BlendState* blendState;
@@ -57,7 +58,8 @@ private:
 	bool SetupAlphaDepthStencil();
 	bool SetupViewport();
 	bool SetupRasterizer();
-	bool SetupSamplerState();
+	bool SetupSamplerStateLinear();
+	bool SetupSamplerStatePoint();
 	bool SetupBlendState();
 	bool InitResolution(HWND hwnd);
 
@@ -104,7 +106,8 @@ public:
 
 		if(rasterizerState) rasterizerState->Release();
 
-		if(samplerState) samplerState->Release();
+		if(samplerStateLinear) samplerStateLinear->Release();
+		if(samplerStatePoint) samplerStatePoint->Release();
 		if(errTex) errTex->Release();
 
 		if (blendState) blendState->Release();

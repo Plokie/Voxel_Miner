@@ -26,7 +26,9 @@ struct CB_VS_pixelshader {
 	float alpha = 1.0f;
 };
 
-
+/// <summary>
+/// Contains a mesh and additional const buffers, textures and shaders used to render the mesh
+/// </summary>
 class Model {
 private:
 	bool CreateBuffer(D3D11_USAGE usage, SIZE_T stride, UINT bindFlags, UINT CPUAccessFlags, ID3D11Buffer** targetBuffer, void* arrSrc = nullptr) {
@@ -71,10 +73,21 @@ public:
 	//SIZE_T indexCount = 0;
 	float alpha = 1.0f;
 
-	void Init(ID3D11Device* device);
+	Model* Init(ID3D11Device* device);
 
 	bool IsTransparent() {
 		return alpha < 1.f;
+	}
+
+	static Model* Create(ID3D11Device* device) {
+		Model* newModel = new Model();
+		newModel->Init(device);
+
+		newModel->SetTexture(0, "err");
+		newModel->SetPixelShader(0, "pixelshader");
+		newModel->SetVertexShader(0, "vertexshader");
+
+		return newModel;
 	}
 
 	/// <summary>

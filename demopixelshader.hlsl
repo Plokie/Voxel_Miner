@@ -8,6 +8,8 @@ struct PS_INPUT
     float4 pos : SV_POSITION;
     //float3 col : COLOR;
     float2 texCoord : TEXCOORD;
+    float3 normal : NORMAL;
+    float2 texOffset : TEXOFFSET;
 };
 
 Texture2D tex : TEXTURE : register(t0);

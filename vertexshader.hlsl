@@ -9,6 +9,7 @@ struct VS_INPUT
     float3 pos : POSITION;
     float2 texCoord : TEXCOORD;
     float3 normal : NORMAL;
+    float2 texOffset : TEXOFFSET;
 };
 
 struct VS_OUTPUT
@@ -16,6 +17,7 @@ struct VS_OUTPUT
     float4 pos : SV_POSITION;
     float2 texCoord : TEXCOORD;
     float3 normal : NORMAL;
+    float2 texOffset : TEXOFFSET;
 };
 
 VS_OUTPUT main(VS_INPUT input) {
@@ -24,6 +26,7 @@ VS_OUTPUT main(VS_INPUT input) {
     output.pos = mul(float4(input.pos, 1.0f), mx);
     //output.col = input.col;
     output.texCoord = input.texCoord;
+    output.texOffset = input.texOffset;
     
     //output.normal = -input.normal;
     

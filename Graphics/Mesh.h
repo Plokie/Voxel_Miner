@@ -15,6 +15,9 @@
 
 using namespace std;
 
+/// <summary>
+/// Purely a collection of indices and vertices
+/// </summary>
 class Mesh {
 	Vertex* pVertices = nullptr;
 	int vertexCount = 0;

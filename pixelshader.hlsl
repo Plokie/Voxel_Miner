@@ -9,6 +9,7 @@ struct PS_INPUT
     //float3 col : COLOR;
     float2 texCoord : TEXCOORD;
     float3 normal : NORMAL;
+    float2 texOffset : TEXOFFSET;
 };
 
 Texture2D tex : TEXTURE : register(t0);
@@ -16,7 +17,7 @@ SamplerState samplerState : SAMPLER : register(s0);
 
 float4 main(PS_INPUT input) : SV_TARGET
 {
-    float4 pixCol = tex.Sample(samplerState, input.texCoord);
+    float4 pixCol = tex.Sample(samplerState, input.texCoord + input.texOffset);
     
     //todo: make cbuffer input
     float3 tempLightDir = normalize(-float3(-1.0f, -1.0f, 0.0f));

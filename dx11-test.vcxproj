@@ -145,6 +145,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game\Blocks.cpp" />
+    <ClCompile Include="Game\Chunk.cpp" />
     <ClCompile Include="Game\CameraController.cpp" />
     <ClCompile Include="Game\ExampleObject3D.cpp" />
     <ClCompile Include="Game\GameStart.cpp" />
@@ -163,6 +165,9 @@
     <ClCompile Include="Graphics\Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Game\Blocks.h" />
+    <ClInclude Include="Game\ChunkData.h" />
+    <ClInclude Include="Game\Chunk.h" />
     <ClInclude Include="Game\CameraController.h" />
     <ClInclude Include="Game\ExampleObject3D.h" />
     <ClInclude Include="Game\GameStart.h" />

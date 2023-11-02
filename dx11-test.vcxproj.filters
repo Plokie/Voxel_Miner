@@ -25,14 +25,23 @@
     <Filter Include="Source Files\Engine">
       <UniqueIdentifier>{f70a8a1c-c482-477e-b154-60536f699ca9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game">
-      <UniqueIdentifier>{1cd4ea32-fda9-46b4-8bb5-f6ca62beaf4a}</UniqueIdentifier>
+    <Filter Include="Header Files\Game">
+      <UniqueIdentifier>{6fd0caf6-477e-47fe-849b-582db97db00e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\Header Files">
-      <UniqueIdentifier>{a9964b2c-c898-472e-86b5-4e025f903eef}</UniqueIdentifier>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{18bfdbba-8176-4af4-bd96-833cca8a09d9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\Source Files">
-      <UniqueIdentifier>{4f14635a-9784-4341-9ad7-41e87361b9eb}</UniqueIdentifier>
+    <Filter Include="Header Files\Game\World">
+      <UniqueIdentifier>{b9d32d27-6938-4fb4-bfc0-28128368e222}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\World">
+      <UniqueIdentifier>{078c4b1f-d55b-45a8-982f-2d8dadfc272e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\Definitions">
+      <UniqueIdentifier>{bbd9ad07-37f9-47e8-b10b-0db00c16d63c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Definitions">
+      <UniqueIdentifier>{76fed6dd-8eda-41cc-bd0a-3ec2441cd7dd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -76,13 +85,19 @@
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Game\GameStart.cpp">
-      <Filter>Game\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\ExampleObject3D.cpp">
-      <Filter>Game\Source Files</Filter>
+      <Filter>Source Files\Game</Filter>
     </ClCompile>
     <ClCompile Include="Game\CameraController.cpp">
-      <Filter>Game\Source Files</Filter>
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\ExampleObject3D.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Chunk.cpp">
+      <Filter>Source Files\Game\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Blocks.cpp">
+      <Filter>Source Files\Game\World</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -134,14 +149,23 @@
     <ClInclude Include="Graphics\ExampleMeshes.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Game\GameStart.h">
-      <Filter>Game\Header Files</Filter>
+    <ClInclude Include="Game\CameraController.h">
+      <Filter>Header Files\Game</Filter>
     </ClInclude>
     <ClInclude Include="Game\ExampleObject3D.h">
-      <Filter>Game\Header Files</Filter>
+      <Filter>Header Files\Game</Filter>
     </ClInclude>
-    <ClInclude Include="Game\CameraController.h">
-      <Filter>Game\Header Files</Filter>
+    <ClInclude Include="Game\GameStart.h">
+      <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Chunk.h">
+      <Filter>Header Files\Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\ChunkData.h">
+      <Filter>Header Files\Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Blocks.h">
+      <Filter>Header Files\Game\World</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
