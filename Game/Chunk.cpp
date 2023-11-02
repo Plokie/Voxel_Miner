@@ -204,16 +204,18 @@ void Chunk::Start()
 	for(int y = 0; y < CHUNKSIZE_Y; y++) {
 		for(int z = 0; z < CHUNKSIZE_Z; z++) {
 			for(int x = 0; x < CHUNKSIZE_X; x++) {
-				if(y == x)
-					blockData[x][y][z] = BlockID::GRASS;
-				else if(y < x) 
-					blockData[x][y][z] = BlockID::DIRT;
-				else
+				//if(y == x)
+				//	blockData[x][y][z] = BlockID::GRASS;
+				//else if(y < x) 
+				//	blockData[x][y][z] = BlockID::DIRT;
+				//else
 					blockData[x][y][z] = BlockID::AIR;
 			}
 		}
 	}
 
+	//blockData[0][0][0] = BlockID::AIR;
+	blockData[0][0][0] = BlockID::GRASS;
 
 	//ZeroMemory(&blockData, CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z);
 	//memset(&blockData, 1, CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z);

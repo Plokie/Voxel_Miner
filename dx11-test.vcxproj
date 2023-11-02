@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game\ChunkManager.cpp" />
     <ClCompile Include="Game\Blocks.cpp" />
     <ClCompile Include="Game\Chunk.cpp" />
     <ClCompile Include="Game\CameraController.cpp" />
@@ -165,6 +166,7 @@
     <ClCompile Include="Graphics\Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Game\ChunkManager.h" />
     <ClInclude Include="Game\Blocks.h" />
     <ClInclude Include="Game\ChunkData.h" />
     <ClInclude Include="Game\Chunk.h" />

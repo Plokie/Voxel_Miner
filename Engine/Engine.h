@@ -34,6 +34,14 @@ public:
 	Graphics* GetGraphics() { return gfx; }
 	WinManager* GetWinManager() { return &winMgr; }
 
+	/*template <typename T>
+	T* CreateObject3D(string name) {
+		sceneObjects[name] = new T();
+		((Object3D*)sceneObjects[name])->Start();
+
+		return sceneObjects[name];
+	}*/
+
 	Object3D* CreateObject3D(Object3D* obj, string name);
 	Object3D* CreateObject3D(Object3D* obj, string name, string meshName);
 	Object3D* CreateObject3D(Object3D* obj, string name, string meshName, string texName);

@@ -116,118 +116,117 @@ public:
 		return XMVectorSet(x, y, z, 0.0f);
 	}
 };
-//
-//struct Vector3Int {
-//public:
-//	int x = 0, y = 0, z = 0;
-//
-//	Vector3Int() : x(0), y(0), z(0) {}
-//	Vector3Int(int X, int Y, int Z) : x(X), y(Y), z(Z) {}
-//
-//	Vector3Int(const XMVECTOR& xmv) {
-//		x = XMVectorGetX(xmv);
-//		y = XMVectorGetY(xmv);
-//		z = XMVectorGetZ(xmv);
-//	}
-//
-//	static const Vector3Int Zero() {
-//		return Vector3Int(0, 0, 0);
-//	}
-//
-//	Vector3Int operator+(Vector3Int& a) {
-//		return Vector3Int(x + a.x, y + a.y, z + a.z);
-//	}
-//	Vector3Int& operator+=(const Vector3Int& a) {
-//		this->x += a.x;
-//		this->y += a.y;
-//		this->z += a.z;
-//		return *this;
-//	}
-//
-//	Vector3Int operator-(Vector3Int& a) {
-//		return Vector3Int(x - a.x, y - a.y, z - a.z);
-//	}
-//	Vector3Int& operator-=(const Vector3Int& a) {
-//		this->x -= a.x;
-//		this->y -= a.y;
-//		this->z -= a.z;
-//		return *this;
-//	}
-//
-//	Vector3Int operator/(const float& a) {
-//		return Vector3Int(x / a, y / a, z / a);
-//	}
-//	Vector3Int& operator/=(const float& a) {
-//		this->x /= a;
-//		this->y /= a;
-//		this->z /= a;
-//		return *this;
-//	}
-//
-//
-//
-//	Vector3Int operator*(const float& a) {
-//		return Vector3Int(x * a, y * a, z * a);
-//	}
-//	Vector3Int& operator*=(const float& a) {
-//		this->x *= a;
-//		this->y *= a;
-//		this->z *= a;
-//		return *this;
-//	}
-//
-//	/// <summary>
-//	/// This isn't a bitwise XOR, it scales the vector by another
-//	/// </summary>
-//	/// <param name="a"></param>
-//	/// <returns></returns>
-//	Vector3Int operator^(const Vector3Int& a) { //Scale vector
-//		return Vector3Int(x * a.x, y * a.y, z * a.z);
-//	}
-//	// This isn't a bitwise XOR, it scales the vector by another
-//	Vector3Int& operator^=(const Vector3Int& a) { //Scale vector
-//		this->x *= a.x;
-//		this->y *= a.y;
-//		this->z *= a.z;
-//		return *this;
-//	}
-//
-//	float operator[](int index) {
-//		switch(index) {
-//		case 0: return x;
-//		case 1: return y;
-//		case 2: return z;
-//		default:throw "Index out of range";
-//		}
-//
-//	}
-//
-//	float sqrMagnitude() const {
-//		return (x * x) + (y * y) + (z * z);
-//	}
-//
-//	float magnitude() const {
-//		return sqrtf(sqrMagnitude());
-//	}
-//
-//	float sqrDistTo(Vector3& otherPos) {
-//		return ((otherPos.x - x) * (otherPos.x - x)) +
-//			((otherPos.y - y) * (otherPos.y - y)) +
-//			((otherPos.z - z) * (otherPos.z - z));
-//	}
-//
-//	Vector3 normalized() const {
-//		return Vector3(x, y, z) / magnitude();
-//	}
-//
-//	/*const XMVECTOR& xmVec() {
-//		return XMVectorSet(x, y, z, 0.0f);
-//	}*/
-//
-//	operator XMVECTOR() const {
-//		return XMVectorSet(x, y, z, 0.0f);
-//	}
-////};
+
+struct Vector3Int {
+public:
+	int x = 0, y = 0, z = 0;
+
+	Vector3Int() : x(0), y(0), z(0) {}
+	Vector3Int(int X, int Y, int Z) : x(X), y(Y), z(Z) {}
+
+	Vector3Int(const XMVECTOR& xmv) {
+		x = static_cast<int>(XMVectorGetX(xmv));
+		y = static_cast<int>(XMVectorGetY(xmv));
+		z = static_cast<int>(XMVectorGetZ(xmv));
+	}
+
+	static const Vector3Int Zero() {
+		return Vector3Int(0, 0, 0);
+	}
+
+	Vector3Int operator+(Vector3Int& a) {
+		return Vector3Int(x + a.x, y + a.y, z + a.z);
+	}
+	Vector3Int& operator+=(const Vector3Int& a) {
+		this->x += a.x;
+		this->y += a.y;
+		this->z += a.z;
+		return *this;
+	}
+
+	Vector3Int operator-(Vector3Int& a) {
+		return Vector3Int(x - a.x, y - a.y, z - a.z);
+	}
+	Vector3Int& operator-=(const Vector3Int& a) {
+		this->x -= a.x;
+		this->y -= a.y;
+		this->z -= a.z;
+		return *this;
+	}
+
+	Vector3Int operator/(const int& a) {
+		return Vector3Int(x / a, y / a, z / a);
+	}
+	Vector3Int& operator/=(const int& a) {
+		this->x /= a;
+		this->y /= a;
+		this->z /= a;
+		return *this;
+	}
+
+
+
+	Vector3Int operator*(const int& a) {
+		return Vector3Int(x * a, y * a, z * a);
+	}
+	Vector3Int& operator*=(const int& a) {
+		this->x *= a;
+		this->y *= a;
+		this->z *= a;
+		return *this;
+	}
+
+	/// <summary>
+	/// This isn't a bitwise XOR, it scales the vector by another
+	/// </summary>
+	/// <param name="a"></param>
+	/// <returns></returns>
+	Vector3Int operator^(const Vector3Int& a) { //Scale vector
+		return Vector3Int(x * a.x, y * a.y, z * a.z);
+	}
+	// This isn't a bitwise XOR, it scales the vector by another
+	Vector3Int& operator^=(const Vector3Int& a) { //Scale vector
+		this->x *= a.x;
+		this->y *= a.y;
+		this->z *= a.z;
+		return *this;
+	}
+
+	int operator[](int index) {
+		switch(index) {
+		case 0: return x;
+		case 1: return y;
+		case 2: return z;
+		default:throw "Index out of range";
+		}
+	}
+
+	//float sqrMagnitude() const {
+	//	return (x * x) + (y * y) + (z * z);
+	//}
+
+	//float magnitude() const {
+	//	return sqrtf(sqrMagnitude());
+	//}
+
+	//float sqrDistTo(Vector3& otherPos) {
+	//	return ((otherPos.x - x) * (otherPos.x - x)) +
+	//		((otherPos.y - y) * (otherPos.y - y)) +
+	//		((otherPos.z - z) * (otherPos.z - z));
+	//}
+
+	//Vector3 normalized() const {
+	//	return Vector3(x, y, z) / magnitude();
+	//}
+
+	/*const XMVECTOR& xmVec() {
+		return XMVectorSet(x, y, z, 0.0f);
+	}*/
+
+	operator XMVECTOR() const {
+		return XMVectorSet(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), 0.0f);
+	}
+};
 
 struct Vector2 {
 public:

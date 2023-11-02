@@ -24,29 +24,29 @@ using namespace std;
 
 class Graphics {
 private:
-	ID3D11Device* device;						// 
-	ID3D11DeviceContext* deviceCtx;				// Resource allocation
-	IDXGISwapChain* swapChain;					// Used to swap frames while rendering. Buffered rendering
-	ID3D11RenderTargetView* renderTargetView;	// Render target window
+	ID3D11Device* device = nullptr;						// 
+	ID3D11DeviceContext* deviceCtx = nullptr;				// Resource allocation
+	IDXGISwapChain* swapChain = nullptr;					// Used to swap frames while rendering. Buffered rendering
+	ID3D11RenderTargetView* renderTargetView = nullptr;	// Render target window
 
 	//todo: Make into resource collection of shaders and textures
 	VertexShader defaultVertexShader;
 	PixelShader defaultPixelShader;
-	ID3D11ShaderResourceView* errTex;
+	ID3D11ShaderResourceView* errTex = nullptr;
 	D3D11_INPUT_ELEMENT_DESC layout[LAYOUTSIZE];
 
-	ID3D11DepthStencilView* depthStencilView;
-	ID3D11Texture2D* depthBuffer;
+	ID3D11DepthStencilView* depthStencilView = nullptr;
+	ID3D11Texture2D* depthBuffer = nullptr;
 
-	ID3D11DepthStencilState* depthStencilState;
-	ID3D11DepthStencilState* alphaDepthStencilState;
+	ID3D11DepthStencilState* depthStencilState = nullptr;
+	ID3D11DepthStencilState* alphaDepthStencilState = nullptr;
 
-	ID3D11RasterizerState* rasterizerState;
+	ID3D11RasterizerState* rasterizerState = nullptr;
 
-	IDXGIAdapter* targetAdapter;
+	IDXGIAdapter* targetAdapter = nullptr;
 
-	ID3D11SamplerState* samplerStateLinear;
-	ID3D11SamplerState* samplerStatePoint;
+	ID3D11SamplerState* samplerStateLinear = nullptr;
+	ID3D11SamplerState* samplerStatePoint = nullptr;
 	
 
 	ID3D11BlendState* blendState;
@@ -106,8 +106,11 @@ public:
 
 		if(rasterizerState) rasterizerState->Release();
 
-		if(samplerStateLinear) samplerStateLinear->Release();
-		if(samplerStatePoint) samplerStatePoint->Release();
+		// Errors?????????????????
+		//if(samplerStateLinear) samplerStateLinear->Release();
+
+		//if(samplerStatePoint) samplerStatePoint->Release();
+
 		if(errTex) errTex->Release();
 
 		if (blendState) blendState->Release();
