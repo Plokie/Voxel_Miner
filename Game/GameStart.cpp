@@ -32,9 +32,13 @@ void GameStart(Engine* engine) {
 	//engine->CreateObject3D(new ExampleObject3D(0.f, 5.f, 0.f), "test4", "cube", "head");
 	//engine->CreateObject3D(new Object3D(), "floor", "floorMesh", "grass");
 
-	engine->CreateObject3D(new Chunk(), "TestChunk");
+	engine->CreateObject3D(new Chunk(), "TestChunk1");
+	engine->CreateObject3D(new Chunk(), "TestChunk2");
 	
 	engine->sceneObjects["test2"]->transform.position = Vector3(-8.f, 0.f, 0.f);
+
+	engine->sceneObjects["TestChunk2"]->transform.position = Vector3(16.f, 0.f, 0.f);
+
 	//engine->sceneObjects["test3"]->transform.position = Vector3(8.f, 5.f, 0.f);
 	//engine->sceneObjects["test4"]->transform.position = Vector3(0.f, 8.f, 0.f);
 

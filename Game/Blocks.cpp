@@ -17,7 +17,7 @@ const map<BlockID, Block> BlockDef::def = {
 		3, 0
 	)},
 	{BlockID::DIRT,		Block("Dirt", true, 
-		0, 0
+		3, 0
 	)},
 	{BlockID::STONE,	Block("Stone", true, 
 		0, 0
