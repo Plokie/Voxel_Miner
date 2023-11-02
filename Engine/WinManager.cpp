@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include <windowsx.h>
 #include <cassert>
 
 #include "WinManager.h"
@@ -22,7 +23,11 @@ LRESULT CALLBACK DefaultMsgHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 	case WM_ACTIVATE:
 		//if(LOWORD(wParam) == WA_INACTIVE)
 		return 0;
+	case WM_MOUSEMOVE:
+		//int xPos = GET_X_LPARAM(lParam);
+		//int yPos = GET_Y_LPARAM(lParam);
 
+		return 0;
 		// WM_SIZE is sent when the user resizes the window.  
 	case WM_SIZE:
 		winMgr->width = LOWORD(lParam);

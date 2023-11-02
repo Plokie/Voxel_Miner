@@ -7,7 +7,7 @@ void ChunkManager::CreateChunk(int x, int y, int z)
 		return;
 	}
 
-	Chunk* newChunk = (Chunk*)this->pEngine->CreateObject3D(new Chunk(), "chunk" + to_string(x) + "," + to_string(y) + "," + to_string(z));
+	Chunk* newChunk = (Chunk*)this->pEngine->CreateObject3D(new Chunk(Vector3Int(x, y, z)), "chunk" + to_string(x) + "," + to_string(y) + "," + to_string(z));
 	//Chunk* newChunk = this->pEngine->CreateObject3D<Chunk>("chunk" + to_string(x) + "," + to_string(y) + "," + to_string(z));
 
 	newChunk->transform.position = Vector3(static_cast<float>(CHUNKSIZE_X * x), static_cast<float>(CHUNKSIZE_Y * y), static_cast<float>(CHUNKSIZE_Z * z));

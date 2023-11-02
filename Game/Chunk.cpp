@@ -201,21 +201,34 @@ void Chunk::BuildMesh()
 void Chunk::Start()
 {
 	//debug init chunk
-	for(int y = 0; y < CHUNKSIZE_Y; y++) {
-		for(int z = 0; z < CHUNKSIZE_Z; z++) {
-			for(int x = 0; x < CHUNKSIZE_X; x++) {
+	int worldX = 0, worldY = 0, worldZ = 0;
+
+	for(int z = 0; z < CHUNKSIZE_Z; z++) {
+		worldZ = z + (chunkIndexPosition.z * CHUNKSIZE_Z);
+		for(int x = 0; x < CHUNKSIZE_X; x++) {
+			worldX = x + (chunkIndexPosition.x * CHUNKSIZE_X);
+			float heightSample = WorldGen::SampleWorldHeight(worldX, worldZ);
+			for(int y = 0; y < CHUNKSIZE_Y; y++) {
+				worldY = y + (chunkIndexPosition.y * CHUNKSIZE_Y);
+				
+				if (worldY < heightSample) {
+					blockData[x][y][z] = BlockID::GRASS;
+				}
+				else {
+					blockData[x][y][z] = BlockID::AIR;
+				}
 				//if(y == x)
 				//	blockData[x][y][z] = BlockID::GRASS;
 				//else if(y < x) 
 				//	blockData[x][y][z] = BlockID::DIRT;
 				//else
-					blockData[x][y][z] = BlockID::AIR;
+					//blockData[x][y][z] = BlockID::AIR;
 			}
 		}
 	}
 
 	//blockData[0][0][0] = BlockID::AIR;
-	blockData[0][0][0] = BlockID::GRASS;
+	//blockData[0][0][0] = BlockID::GRASS;
 
 	//ZeroMemory(&blockData, CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z);
 	//memset(&blockData, 1, CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z);

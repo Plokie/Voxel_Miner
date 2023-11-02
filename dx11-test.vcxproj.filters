@@ -99,6 +99,12 @@
     <ClCompile Include="Game\Blocks.cpp">
       <Filter>Source Files\Game\World</Filter>
     </ClCompile>
+    <ClCompile Include="Game\ChunkManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\WorldGen.cpp">
+      <Filter>Source Files\Game\World</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMsg.h">
@@ -165,6 +171,15 @@
       <Filter>Header Files\Game\World</Filter>
     </ClInclude>
     <ClInclude Include="Game\Blocks.h">
+      <Filter>Header Files\Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\ChunkManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\FastNoiseLite.h">
+      <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\WorldGen.h">
       <Filter>Header Files\Game\World</Filter>
     </ClInclude>
   </ItemGroup>

@@ -7,7 +7,7 @@
 #include "../Engine/Engine.h"
 #include "Chunk.h"
 
-#define CHUNKLOAD_AREA 2
+#define CHUNKLOAD_AREA 4
 
 using namespace std;
 

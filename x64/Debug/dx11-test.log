@@ -1,3 +1,13 @@
-﻿  ChunkManager.cpp
+﻿  Engine.cpp
+  Input.cpp
+  WinManager.cpp
+  CameraController.cpp
+  Chunk.cpp
+  ChunkManager.cpp
+  ExampleObject3D.cpp
+  GameStart.cpp
+  Graphics.cpp
+  main.cpp
+  Generating Code...
 C:\Users\c2015437\source\repos\dx11-voxel\Game\ChunkManager.cpp(20): warning C4172: returning address of local variable or temporary
   dx11-test.vcxproj -> C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\dx11-test.exe

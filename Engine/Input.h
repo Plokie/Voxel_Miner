@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <Xinput.h>
+#include <Mouse.h>
 #include <string>
 
 #pragma comment(lib,"XInput.lib")
@@ -196,6 +197,7 @@ public:
 		if (GetCursorPos(&mPos)) {
 			if (ScreenToClient(_Instance->hWnd, &mPos)) {
 				_Instance->mousePos = XMFLOAT2((float)mPos.x, (float)mPos.y);
+
 				_Instance->lastMouseGetAge = _Instance->inputAge;
 			}
 		}
@@ -204,6 +206,7 @@ public:
 	static XMFLOAT2 MouseDelta() {
 		GetMouseInformation();
 		return XMFLOAT2(_Instance->mousePos.x - _Instance->prevMousePos.x, _Instance->mousePos.y - _Instance->prevMousePos.y);
+		//return XMFLOAT2(_Instance->mousePos.x - (_Instance->newMouseClip.right / 2), _Instance->mousePos.y - (_Instance->newMouseClip.bottom / 2));
 	}
 
 	static XMFLOAT2 MousePosition() {
@@ -216,12 +219,12 @@ public:
 		//ShowCursor(isLocked);
 		GetClipCursor(&_Instance->oldMouseClip);
 		if (isLocked) {
-			while (ShowCursor(false) >= 0);
+			//while (ShowCursor(false) >= 0);
 			GetWindowRect(_Instance->hWnd, &_Instance->newMouseClip);
 			ClipCursor(&_Instance->newMouseClip);
 		}
 		else {
-			while (ShowCursor(true) <= 0);
+			//while (ShowCursor(true) <= 0);
 			ClipCursor(NULL);
 		}
 	}
@@ -266,11 +269,12 @@ public:
 
 		_Instance->prevMousePos = _Instance->mousePos;
 
-		_Instance->inputAge++;
-
 		if (_Instance->isMouseLocked) {
 			SetCursorPos(_Instance->newMouseClip.right / 2, _Instance->newMouseClip.bottom / 2);
 		}
+
+		_Instance->inputAge++;
+
 
 		UpdatePads();
 	}

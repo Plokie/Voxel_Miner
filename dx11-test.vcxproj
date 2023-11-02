@@ -164,8 +164,10 @@
     <ClCompile Include="Graphics\Resources.cpp" />
     <ClCompile Include="Graphics\Model.cpp" />
     <ClCompile Include="Graphics\Mesh.cpp" />
+    <ClCompile Include="Game\WorldGen.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Game\FastNoiseLite.h" />
     <ClInclude Include="Game\ChunkManager.h" />
     <ClInclude Include="Game\Blocks.h" />
     <ClInclude Include="Game\ChunkData.h" />
@@ -189,6 +191,7 @@
     <ClInclude Include="Engine\Object3D.h" />
     <ClInclude Include="Graphics\Resources.h" />
     <ClInclude Include="Graphics\Mesh.h" />
+    <ClInclude Include="Game\WorldGen.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="demopixelshader.hlsl">
