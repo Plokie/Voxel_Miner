@@ -86,10 +86,10 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			x, y, z,
-			0,-1,-1,
-			0,0,-1,
-			0,0,0,
-			0,-1,0,
+			1,0,0,
+			1,1,0,
+			1,1,1,
+			1,0,1,
 
 			1,0,0
 		);
@@ -98,22 +98,22 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			x, y, z,
-			-1, -1, 0,
-			-1, 0, 0,
-			-1, 0, -1,
-			-1, -1, -1,
+			0, 0, 1,
+			0, 1, 1,
+			0, 1, 0,
+			0, 0, 0,
 
-			-1,0,0
+			-1, 0, 0
 		);
 	}
 	if(!py) {
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			x, y, z,
-			-1,	0,	-1,
-			-1,	0,	0,
-			0,	0,	0,
-			0,	0,	-1,
+			0,	1,	0,
+			0,	1,	1,
+			1,	1,	1,
+			1,	1,	0,
 
 			0, 1, 0
 		);
@@ -122,10 +122,10 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			x, y, z,
-			-1, -1, 0,
-			-1, -1, -1,
-			0,  -1, -1,
-			0, -1, 0,
+			0, 0, 1,
+			0, 0, 0,
+			1,  0, 0,
+			1, 0, 1,
 
 			0, -1, 0
 		);
@@ -134,10 +134,10 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			x, y, z,
-			0, -1, 0,
-			0, 0, 0,
-			-1, 0, 0,
-			-1, -1, 0,
+			1, 0, 1,
+			1, 1, 1,
+			0, 1, 1,
+			0, 0, 1,
 
 			0, 0, 1
 		);
@@ -147,10 +147,10 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 
 		PushFace(vertices, blockID,
 			x, y, z,
-			-1, -1, -1,
-			-1, 0, -1,
-			0, 0, -1,
-			0, -1, -1,
+			0, 0, 0,
+			0, 1, 0,
+			1, 1, 0,
+			1, 0, 0,
 
 			0, 0, -1
 		);
@@ -214,4 +214,5 @@ void Chunk::Start()
 
 void Chunk::Update(float dTime)
 {
+	transform.rotation.y += 5.f * dTime;
 }

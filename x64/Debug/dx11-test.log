@@ -1,11 +1,2 @@
-﻿  Engine.cpp
-  WinManager.cpp
-  CameraController.cpp
-  Chunk.cpp
-  ExampleObject3D.cpp
-  GameStart.cpp
-  Graphics.cpp
-  Model.cpp
-  main.cpp
-  Generating Code...
+﻿  Chunk.cpp
   dx11-test.vcxproj -> C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe
