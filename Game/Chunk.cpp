@@ -214,5 +214,5 @@ void Chunk::Start()
 
 void Chunk::Update(float dTime)
 {
-	transform.rotation.y += 5.f * dTime;
+	//transform.rotation.y += 5.f * dTime;
 }
