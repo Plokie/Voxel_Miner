@@ -78,6 +78,9 @@ public:
 	bool IsTransparent() {
 		return alpha < 1.f;
 	}
+	void SetTransparent(bool _IsTransparent) {
+		this->alpha = _IsTransparent ? 0.99f : 1.0f;
+	}
 
 	static Model* Create(ID3D11Device* device) {
 		Model* newModel = new Model();

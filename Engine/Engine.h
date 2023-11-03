@@ -17,6 +17,7 @@ using namespace std;
 class Engine {
 private:
 	SRWLOCK gDestroyObjectsMutex;
+	//SRWLOCK gCreateObjectsMutex;
 
 	Graphics* gfx;
 	WinManager winMgr;
@@ -59,6 +60,7 @@ public:
 	bool DestroyObject3DImmediate(Object3D* obj);
 
 	SRWLOCK* GetDestroyObjectsMutex();
+	//SRWLOCK* GetCreateObjectsMutex();
 	//void OnResizeWindow(int width, int height);
 
 	/// <summary>

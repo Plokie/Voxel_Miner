@@ -9,6 +9,7 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 	_Instance = this;
 
 	InitializeSRWLock(&gDestroyObjectsMutex);
+	//InitializeSRWLock(&gCreateObjectsMutex);
 
 	if(!winMgr.Init(hInstance)) {
 		exit(991);
@@ -44,6 +45,7 @@ void Engine::DestroyQueuedObjects() {
 
 void Engine::Update(float dTime) {
 	for (pair<string, Object3D*> pair : sceneObjects) {
+		if(pair.second == nullptr) continue;
 		pair.second->Update(dTime);
 	}
 
@@ -61,31 +63,31 @@ void Engine::Update(float dTime) {
 
 Object3D* Engine::CreateObject3D(Object3D* obj, string name) {
 	sceneObjects[name] = obj;
-	sceneObjects[name]->Start();
+	
+	obj->Start();
 
-	return sceneObjects[name];
+	return obj;
 }
 
 Object3D* Engine::CreateObject3D(Object3D* obj, string name, string meshName)
 {
 	//sceneObjects[name] = new Object3D(gfx->GetDevice());
 	sceneObjects[name] = obj;
-	sceneObjects[name]->AddModel(gfx->GetDevice());
-	sceneObjects[name]->models[0]->SetMesh(meshName);
-	sceneObjects[name]->Start();
+	obj->AddModel(gfx->GetDevice());
+	obj->models[0]->SetMesh(meshName);
+	obj->Start();
 
-	return sceneObjects[name];
+	return obj;
 }
 
-Object3D* Engine::CreateObject3D(Object3D* obj, string name, string meshName, string texName)
-{
+Object3D* Engine::CreateObject3D(Object3D* obj, string name, string meshName, string texName) {
 	sceneObjects[name] = obj;
-	sceneObjects[name]->AddModel(gfx->GetDevice());
-	sceneObjects[name]->models[0]->SetMesh(meshName);
-	sceneObjects[name]->models[0]->SetTexture(0, texName);
-	sceneObjects[name]->Start();
+	obj->AddModel(gfx->GetDevice());
+	obj->models[0]->SetMesh(meshName);
+	obj->models[0]->SetTexture(0, texName);
+	obj->Start();
 
-	return sceneObjects[name];
+	return obj;
 }
 
 bool Engine::DestroyObject3D(string name)
@@ -136,6 +138,10 @@ SRWLOCK* Engine::GetDestroyObjectsMutex()
 {
 	return &this->gDestroyObjectsMutex;
 }
+//SRWLOCK* Engine::GetCreateObjectsMutex()
+//{
+//	return &this->gCreateObjectsMutex;
+//}
 
 bool Engine::Service() {
 	return winMgr.StartWhile();

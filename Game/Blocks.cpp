@@ -1,5 +1,6 @@
 #include "Blocks.h"
 
+#include <assert.h>
 
 //todo: database?
 // json parser perhaps
@@ -22,8 +23,14 @@ const map<BlockID, Block> BlockDef::def = {
 	{BlockID::STONE,	Block("Stone", true, 
 		5, 0
 	)},
-	{BlockID::SAND,	Block("Sand", true,
+	{BlockID::SAND,		Block("Sand", true,
 		4, 0
+	)},
+	{BlockID::CLAY,		Block("Clay", true,
+		4, 3
+	)},
+	{BlockID::WATER,	Block("Water", false,
+		4, 1
 	)},
 };
 
@@ -59,5 +66,6 @@ const Block& BlockDef::GetDef(BlockID id)
 	if(def.count(id)) {
 		return BlockDef::def.at(id);
 	}
+	//assert(false);
 	return BlockDef::def.at(BlockID::ERR);
 }

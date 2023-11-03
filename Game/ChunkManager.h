@@ -10,7 +10,9 @@
 #include "Chunk.h"
 #include "WorldGen.h"
 
-#define CHUNKLOAD_AREA 3
+#define CHUNKLOAD_AREA_X 3
+#define CHUNKLOAD_AREA_Y 3
+#define CHUNKLOAD_AREA_Z 3
 
 using namespace std;
 

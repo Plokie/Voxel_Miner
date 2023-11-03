@@ -37,8 +37,7 @@ Vector3Int ToChunkPosition(int x, int y, int z) {
 	);
 }
 
-int FloorMod(const int& a, const int& b)
-{
+int FloorMod(const int& a, const int& b) {
 	return (a % b + b) % b;
 }
 
@@ -74,30 +73,35 @@ void ChunkManager::Init(Transform* cameraTransform)
 void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,int>, Chunk*>* pChunkMap)
 {
 	Engine* engine = Engine::Get();
-	SRWLOCK* pMutex = engine->GetDestroyObjectsMutex();
+	SRWLOCK* pDestroyMutex = engine->GetDestroyObjectsMutex();
+	//SRWLOCK* pCreateMutex = engine->GetCreateObjectsMutex();
 
 	while(_isRunning) {
 		Vector3Int camIndex = WorldToIndexPosition(camTransform->position);
 
-		for(int y = 1 - CHUNKLOAD_AREA; y < CHUNKLOAD_AREA + 1; y++) {
-			for(int x = 1 - CHUNKLOAD_AREA; x < CHUNKLOAD_AREA + 1; x++) {
-				for(int z = 1 - CHUNKLOAD_AREA; z < CHUNKLOAD_AREA + 1; z++) {
+		for(int y = 1 - CHUNKLOAD_AREA_Y; y < CHUNKLOAD_AREA_Y + 1; y++) {
+			for(int x = 1 - CHUNKLOAD_AREA_X; x < CHUNKLOAD_AREA_X + 1; x++) {
+				for(int z = 1 - CHUNKLOAD_AREA_Z; z < CHUNKLOAD_AREA_Z + 1; z++) {
+					//AcquireSRWLockExclusive(pDestroyMutex);
 					CreateChunk(camIndex.x + x, camIndex.y + y, camIndex.z + z);
+					//ReleaseSRWLockExclusive(pDestroyMutex);
+
+
 					if(!_isRunning) return;
 				}
 			}
 		}
 
-		AcquireSRWLockExclusive(pMutex);
+		AcquireSRWLockExclusive(pDestroyMutex);
 		for(auto it = pChunkMap->cbegin(); it != pChunkMap->cend();) {
 			const pair<tuple<int, int, int>, Chunk*>& pair = *it;
 
 			Vector3Int indexPos = Vector3Int(get<0>(pair.first), get<1>(pair.first), get<2>(pair.first));
 
 			if(
-				abs(indexPos.x - camIndex.x) > CHUNKLOAD_AREA ||
-				abs(indexPos.y - camIndex.y) > CHUNKLOAD_AREA ||
-				abs(indexPos.z - camIndex.z) > CHUNKLOAD_AREA
+				abs(indexPos.x - camIndex.x) > CHUNKLOAD_AREA_X ||
+				abs(indexPos.y - camIndex.y) > CHUNKLOAD_AREA_Y ||
+				abs(indexPos.z - camIndex.z) > CHUNKLOAD_AREA_Z
 				) { // Erase chunk from map (it is out of range)
 
 				engine->DestroyObject3D(pair.second); // Delete chunk in-engine (adds to queue)
@@ -108,7 +112,7 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 				++it;
 			}
 		}
-		ReleaseSRWLockExclusive(pMutex);
+		ReleaseSRWLockExclusive(pDestroyMutex);
 	}
 }
 

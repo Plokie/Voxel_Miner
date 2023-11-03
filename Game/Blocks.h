@@ -15,7 +15,10 @@ enum BlockID {
 	GRASS,
 	DIRT,
 	STONE,
-	SAND
+	SAND,
+	CLAY,
+
+	WATER
 };
 
 class Block {

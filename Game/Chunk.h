@@ -14,7 +14,8 @@ class ChunkManager;
 
 class Chunk : public Object3D {
 private:
-	bool IsBlockSolid(const int x, const int y, const int z);
+	void PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, bool isTransparent = false);
+	bool RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z);
 	void MakeVoxel(const BlockID blockID, const int x, const int y, const int z, vector<Vertex>& vertices, vector<DWORD>& indices);
 	ChunkManager* chunkManager = nullptr;
 public:

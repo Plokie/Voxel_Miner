@@ -2,15 +2,27 @@
 
 #include "ChunkManager.h"
 
-bool Chunk::IsBlockSolid(const int x, const int y, const int z) {
+
+
+bool Chunk::RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z) {
+	const bool isCurrentBlockSolid = BlockDef::GetDef(currentBlock).IsSolid();
 	if(x < 0 || x>CHUNKSIZE_X-1 || y < 0 || y>CHUNKSIZE_Y-1 || z < 0 || z>CHUNKSIZE_Z-1) // sample from another chunk
 	{
 		Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
-		return BlockDef::GetDef(chunkManager->GetBlockAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z)).IsSolid();
+		BlockID neighborBlock = chunkManager->GetBlockAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z);
+
+		const bool isNeighborSolid(BlockDef::GetDef(neighborBlock).IsSolid());
+
+		return (isCurrentBlockSolid && !isNeighborSolid) || (!isCurrentBlockSolid && neighborBlock == AIR);
+		//return isNeighborSolid==isCurrentBlockSolid || neighborBlock != AIR;
 	}
 	else {
 		//todo: block def containing if block is solid and return that
-		return BlockDef::GetDef((BlockID)blockData[x][y][z]).IsSolid();
+		BlockID neighborBlock = (BlockID)blockData[x][y][z];
+		const bool isNeighborSolid(BlockDef::GetDef(neighborBlock).IsSolid());
+
+
+		return (isCurrentBlockSolid && !isNeighborSolid) || (!isCurrentBlockSolid && neighborBlock == AIR);
 	}
 
 }
@@ -66,20 +78,20 @@ void PushFace(vector<Vertex>& vertices,
 
 void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int z, vector<Vertex>& vertices, vector<DWORD>& indices) {
 	// positive x and negative x IsBlockSolid condition
-	bool px = IsBlockSolid(x+1, y, z);
-	bool nx = IsBlockSolid(x-1, y, z);
+	bool px = RenderBlockFaceAgainst(blockID, x+1, y, z);
+	bool nx = RenderBlockFaceAgainst(blockID, x-1, y, z);
 
-	bool py = IsBlockSolid(x, y+1, z);
-	bool ny = IsBlockSolid(x, y-1, z);
+	bool py = RenderBlockFaceAgainst(blockID, x, y+1, z);
+	bool ny = RenderBlockFaceAgainst(blockID, x, y-1, z);
 
-	bool pz = IsBlockSolid(x, y, z+1);
-	bool nz = IsBlockSolid(x, y, z-1);
+	bool pz = RenderBlockFaceAgainst(blockID, x, y, z+1);
+	bool nz = RenderBlockFaceAgainst(blockID, x, y, z-1);
 
 	// If all blocks surrounding this block are solid, we dont want to build a mesh
 	// and can exit immediately
 	//if(px && nx && py && ny && pz && nz) return; 
 
-	if(!px) {
+	if(px) {
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			x, y, z,
@@ -91,7 +103,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 			1,0,0
 		);
 	}
-	if(!nx) {
+	if(nx) {
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			x, y, z,
@@ -103,7 +115,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 			-1, 0, 0
 		);
 	}
-	if(!py) {
+	if(py) {
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			x, y, z,
@@ -115,7 +127,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 			0, 1, 0
 		);
 	}
-	if(!ny) {
+	if(ny) {
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			x, y, z,
@@ -127,7 +139,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 			0, -1, 0
 		);
 	}
-	if(!pz) {
+	if(pz) {
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			x, y, z,
@@ -139,7 +151,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 			0, 0, 1
 		);
 	}
-	if(!nz) {
+	if(nz) {
 		PushIndices(vertices.size(), indices);
 
 		PushFace(vertices, blockID,
@@ -154,33 +166,16 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 	}
 }
 
-void Chunk::BuildMesh()
+void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, bool isTransparent)
 {
-	vector<Vertex> vertices = {};
-	vector<DWORD> indices = {};
+	size_t vertSize = vertices.size();
+	size_t indSize = indices.size();
+	size_t modelCount = models.size();
 
-	//todo: optimised chunk building (not looping through every single block, most of them are invisible)
-	for(int y = 0; y < CHUNKSIZE_Y; y++) {
-		for(int z = 0; z < CHUNKSIZE_Z; z++) {
-			for(int x = 0; x < CHUNKSIZE_X; x++) {
-				if(blockData[x][y][z] == BlockID::AIR) continue;
-
-				MakeVoxel((BlockID)blockData[x][y][z], x, y, z, vertices, indices);
-
-
-			}
-		}
-	}
-
-	size_t size = vertices.size();
-
-	if(vertices.size() > 0 && indices.size() > 0) {
-		/*if(models.size() <= 0) models.push_back(->Init(Graphics::Get()->GetDevice()); {
-			Model* newModel
-		}*/
-		if(models.size() <= 0) models.push_back(Model::Create(Graphics::Get()->GetDevice()));
-		//models[0]->SetMesh();
-		models[0]->SetTexture(0, "atlas");
+	if(vertSize > 0 && indSize > 0) {
+		models.push_back(Model::Create(Graphics::Get()->GetDevice()));
+		models[modelCount]->SetTexture(0, "atlas");
+		models[modelCount]->SetTransparent(isTransparent);
 
 		Mesh* newMesh = new Mesh();
 		newMesh->Init(Graphics::Get()->GetDevice());
@@ -190,17 +185,50 @@ void Chunk::BuildMesh()
 		// and blew my mind
 		newMesh->LoadVertices(&vertices[0], static_cast<int>(vertices.size()));
 		newMesh->LoadIndices(&indices[0], static_cast<int>(indices.size()));
-		
-		models[0]->SetMesh(newMesh);
+
+		models[modelCount]->SetMesh(newMesh);
+	}
+}
+
+void Chunk::BuildMesh()
+{
+	vector<Vertex> solidVertices = {};
+	vector<DWORD> solidIndices = {};
+
+	//proud of them
+	vector<Vertex> transVertices = {};
+	vector<DWORD> transIndices = {};
+
+	//todo: optimised chunk building (not looping through every single block, most of them are invisible)
+	for(int y = 0; y < CHUNKSIZE_Y; y++) {
+		for(int z = 0; z < CHUNKSIZE_Z; z++) {
+			for(int x = 0; x < CHUNKSIZE_X; x++) {
+				BlockID blockid = (BlockID)blockData[x][y][z];
+				if(blockid == BlockID::AIR) continue;
+
+				if(BlockDef::GetDef((BlockID)blockData[x][y][z]).IsSolid()) {
+					MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
+				}
+				else {
+					MakeVoxel(blockid, x, y, z, transVertices, transIndices);
+				}
+			}
+		}
 	}
 
+	PushChunkMesh(solidVertices, solidIndices);
+	PushChunkMesh(transVertices, transIndices, true);
 }
 
 void Chunk::Start()
 {
+	if(this == nullptr) return;
 	//debug init chunk
 	int worldX = 0, worldY = 0, worldZ = 0;
+	//SRWLOCK* pMutex = Engine::Get()->GetDestroyObjectsMutex();
+	Engine::Get()->sceneObjects;
 
+	//AcquireSRWLockExclusive(pMutex);
 	for(int z = 0; z < CHUNKSIZE_Z; z++) {
 		worldZ = z + (chunkIndexPosition.z * CHUNKSIZE_Z);
 		for(int x = 0; x < CHUNKSIZE_X; x++) {
@@ -209,30 +237,20 @@ void Chunk::Start()
 			for(int y = 0; y < CHUNKSIZE_Y; y++) {
 				worldY = y + (chunkIndexPosition.y * CHUNKSIZE_Y);
 				
-				blockData[x][y][z] = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, heightSample);
+				// some kind of thread thing is going wrong here
+				// i think chunks are being deleted while theyre still being made
+				blockData[x][y][z] = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, static_cast<int>(heightSample));
 
-				/*if (worldY < heightSample) {
-					blockData[x][y][z] = BlockID::GRASS;
-				}
-				else {
-					blockData[x][y][z] = BlockID::AIR;
-				}*/
-				//if(y == x)
-				//	blockData[x][y][z] = BlockID::GRASS;
-				//else if(y < x) 
-				//	blockData[x][y][z] = BlockID::DIRT;
-				//else
-					//blockData[x][y][z] = BlockID::AIR;
 			}
 		}
 	}
-
+	//ReleaseSRWLockExclusive(pMutex);
 	//blockData[0][0][0] = BlockID::AIR;
 	//blockData[0][0][0] = BlockID::GRASS;
 
 	//ZeroMemory(&blockData, CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z);
 	//memset(&blockData, 1, CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z);
-
+	//if(!isChunkAllAir)
 	BuildMesh();
 }
 
