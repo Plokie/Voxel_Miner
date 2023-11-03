@@ -1,10 +1,12 @@
 #include "Chunk.h"
 
+#include "ChunkManager.h"
 
 bool Chunk::IsBlockSolid(const int x, const int y, const int z) {
-	if(x < 0 || x>15 || y < 0 || y>15 || z < 0 || z>15) // sample from another chunk
+	if(x < 0 || x>CHUNKSIZE_X-1 || y < 0 || y>CHUNKSIZE_Y-1 || z < 0 || z>CHUNKSIZE_Z-1) // sample from another chunk
 	{
-		return false;
+		Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
+		return BlockDef::GetDef(chunkManager->GetBlockAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z)).IsSolid();
 	}
 	else {
 		//todo: block def containing if block is solid and return that
@@ -23,9 +25,6 @@ void PushIndices(size_t size, vector<DWORD>& indices) {
 	indices.push_back(int_size + 3);
 }
 
-#define ATLAS_SIZE 128
-#define ATLAS_TILE_SIZE 16
-
 Vector2 ConvertUVIdToAtlasUV(int uvIdX, int uvIdY) {
 	return Vector2(
 		(static_cast<float>(uvIdX) * ATLAS_TILE_SIZE) / static_cast<float>(ATLAS_SIZE),
@@ -43,9 +42,7 @@ void PushFace(vector<Vertex>& vertices,
 	float nx, float ny, float nz
 ) {
 	const Block& blockDef = BlockDef::GetDef(id);
-	//const Vector2 topUV = ConvertUVIdToAtlasUV(blockDef.GetTopUVidx(), blockDef.GetTopUVidy());
-	//const Vector2 sideUV = ConvertUVIdToAtlasUV(blockDef.GetSideUVidx(), blockDef.GetSideUVidy());
-	//const Vector2 bottUV = ConvertUVIdToAtlasUV(blockDef.GetBottUVidx(), blockDef.GetBottUVidy());
+
 	Vector2 uv;
 	if(ny > 0.5f) {
 		uv = ConvertUVIdToAtlasUV(blockDef.GetTopUVidx(), blockDef.GetTopUVidy());
@@ -188,6 +185,7 @@ void Chunk::BuildMesh()
 		Mesh* newMesh = new Mesh();
 		newMesh->Init(Graphics::Get()->GetDevice());
 
+		newMesh->_isProceduralMesh = true;
 		// it was at this moment that i discovered that vectors are NOT the same as linked lists
 		// and blew my mind
 		newMesh->LoadVertices(&vertices[0], static_cast<int>(vertices.size()));
@@ -211,12 +209,14 @@ void Chunk::Start()
 			for(int y = 0; y < CHUNKSIZE_Y; y++) {
 				worldY = y + (chunkIndexPosition.y * CHUNKSIZE_Y);
 				
-				if (worldY < heightSample) {
+				blockData[x][y][z] = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, heightSample);
+
+				/*if (worldY < heightSample) {
 					blockData[x][y][z] = BlockID::GRASS;
 				}
 				else {
 					blockData[x][y][z] = BlockID::AIR;
-				}
+				}*/
 				//if(y == x)
 				//	blockData[x][y][z] = BlockID::GRASS;
 				//else if(y < x) 
@@ -239,4 +239,9 @@ void Chunk::Start()
 void Chunk::Update(float dTime)
 {
 	//transform.rotation.y += 5.f * dTime;
+}
+
+void Chunk::Release() {
+	//delete[CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z] blockData;
+	//delete blockData;
 }

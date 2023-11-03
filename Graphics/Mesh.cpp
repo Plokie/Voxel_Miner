@@ -39,37 +39,37 @@ void Mesh::LoadVertices(Vertex vert[], int vertCount) {
 	//if(pVertices != nullptr) {
 	//	delete[vertexCount] pVertices;
 	//}
-	pVertices = vert;
+	//pVertices = vert;
 	vertexCount = vertCount;
 
 	if(vertexBuffer) vertexBuffer->Release();
 	delete vertexBuffer;
-	CreateBuffer(pDevice, D3D11_USAGE_DEFAULT, sizeof(Vertex) * vertexCount, D3D11_BIND_VERTEX_BUFFER, 0, &vertexBuffer, pVertices);
+	CreateBuffer(pDevice, D3D11_USAGE_DEFAULT, sizeof(Vertex) * vertexCount, D3D11_BIND_VERTEX_BUFFER, 0, &vertexBuffer, vert);
 }
 void Mesh::LoadIndices(DWORD ind[], int indCount) {
 	//if(pIndices != nullptr) {
 	//	delete[indexCount] pIndices;
 	//}
-	pIndices = ind;
+	//pIndices = ind;
 	indexCount = indCount;
 
 	if(indexBuffer) indexBuffer->Release();
 	delete indexBuffer;
-	CreateBuffer(pDevice, D3D11_USAGE_DEFAULT, sizeof(int) * indexCount, D3D11_BIND_INDEX_BUFFER, 0, &indexBuffer, pIndices);
+	CreateBuffer(pDevice, D3D11_USAGE_DEFAULT, sizeof(int) * indexCount, D3D11_BIND_INDEX_BUFFER, 0, &indexBuffer, ind);
 }
 
 //void Mesh::LoadFromFile(wstring path) {
 //	
 //}
 
-void Mesh::LoadBuffers() {
-	if(vertexBuffer) vertexBuffer->Release();
-	if(indexBuffer) indexBuffer->Release();
-	delete vertexBuffer;
-	delete indexBuffer;
-	CreateBuffer(pDevice, D3D11_USAGE_DEFAULT, sizeof(Vertex) * vertexCount, D3D11_BIND_VERTEX_BUFFER, 0, &vertexBuffer, pVertices);
-	CreateBuffer(pDevice, D3D11_USAGE_DEFAULT, sizeof(int) * indexCount, D3D11_BIND_INDEX_BUFFER, 0, &indexBuffer, pIndices);
-}
+//void Mesh::LoadBuffers() {
+//	if(vertexBuffer) vertexBuffer->Release();
+//	if(indexBuffer) indexBuffer->Release();
+//	delete vertexBuffer;
+//	delete indexBuffer;
+//	CreateBuffer(pDevice, D3D11_USAGE_DEFAULT, sizeof(Vertex) * vertexCount, D3D11_BIND_VERTEX_BUFFER, 0, &vertexBuffer, pVertices);
+//	CreateBuffer(pDevice, D3D11_USAGE_DEFAULT, sizeof(int) * indexCount, D3D11_BIND_INDEX_BUFFER, 0, &indexBuffer, pIndices);
+//}
 
 ID3D11Buffer* Mesh::GetVertexBuffer() const {
 	return vertexBuffer;

@@ -20,7 +20,10 @@ const map<BlockID, Block> BlockDef::def = {
 		3, 0
 	)},
 	{BlockID::STONE,	Block("Stone", true, 
-		0, 0
+		5, 0
+	)},
+	{BlockID::SAND,	Block("Sand", true,
+		4, 0
 	)},
 };
 

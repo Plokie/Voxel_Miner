@@ -5,13 +5,17 @@
 
 using namespace std;
 
+#define ATLAS_SIZE 256
+#define ATLAS_TILE_SIZE 16
+
 enum BlockID {
 	ERR,
 	AIR,
 
 	GRASS,
 	DIRT,
-	STONE
+	STONE,
+	SAND
 };
 
 class Block {

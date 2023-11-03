@@ -16,10 +16,14 @@ using namespace std;
 
 class Engine {
 private:
+	SRWLOCK gDestroyObjectsMutex;
+
 	Graphics* gfx;
 	WinManager winMgr;
 	//World world;
 	static Engine* _Instance;
+	vector<string> destroyObjectQueue = {};
+
 public:
 	map<string, Object3D*> sceneObjects = {};
 	
@@ -28,6 +32,8 @@ public:
 
 	void Render(float dTime);
 	void Update(float dTime);
+
+	void DestroyQueuedObjects();
 
 	static Engine* Get() { return _Instance; }
 
@@ -45,6 +51,14 @@ public:
 	Object3D* CreateObject3D(Object3D* obj, string name);
 	Object3D* CreateObject3D(Object3D* obj, string name, string meshName);
 	Object3D* CreateObject3D(Object3D* obj, string name, string meshName, string texName);
+
+	bool DestroyObject3D(string name);
+	bool DestroyObject3D(Object3D* obj);
+
+	bool DestroyObject3DImmediate(string name);
+	bool DestroyObject3DImmediate(Object3D* obj);
+
+	SRWLOCK* GetDestroyObjectsMutex();
 	//void OnResizeWindow(int width, int height);
 
 	/// <summary>

@@ -125,6 +125,9 @@ public:
 		SetMesh(Resources::GetMesh(name));
 	}
 
+	// ONLY CALL IF THE MESH IS CREATED AT RUNTIME!
+	void ReleaseMesh();
+
 	Model() {
 
 	}
@@ -133,5 +136,9 @@ public:
 		/*if(vertexBuffer) vertexBuffer->Release();
 		if(indexBuffer) indexBuffer->Release();*/
 		if(constantBuffer) constantBuffer->Release();
+
+		if(mesh->_isProceduralMesh) {
+			ReleaseMesh();
+		}
 	}
 };

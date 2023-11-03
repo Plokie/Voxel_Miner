@@ -9,6 +9,8 @@ Model* Model::Init(ID3D11Device* device) {
 }
 
 void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worldMx) {
+	if(mesh == nullptr) return;
+	
 	CB_VS_vertexshader mxData;
 	CB_VS_pixelshader alphaData;
 
@@ -55,4 +57,13 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worl
 	pTex->GetDesc(&tempDesc);
 
 	deviceCtx->DrawIndexed((UINT)mesh->GetIndexCount(), 0, 0);
+}
+
+void Model::ReleaseMesh()
+{
+	if(this->mesh != nullptr) {
+		delete this->mesh;
+
+		this->mesh = nullptr;
+	}
 }

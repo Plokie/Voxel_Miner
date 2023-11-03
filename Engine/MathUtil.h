@@ -1,5 +1,6 @@
 #pragma once
 
+#include <tuple>
 #include <DirectXMath.h>
 
 using namespace DirectX;
@@ -222,6 +223,10 @@ public:
 	/*const XMVECTOR& xmVec() {
 		return XMVectorSet(x, y, z, 0.0f);
 	}*/
+
+	operator tuple<int, int, int>() const {
+		return tuple<int, int, int>(x, y, z);
+	}
 
 	operator XMVECTOR() const {
 		return XMVectorSet(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), 0.0f);

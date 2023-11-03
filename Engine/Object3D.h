@@ -26,6 +26,7 @@ public:
 	virtual ~Object3D() {
 		//if(mesh) mesh->~Mesh();
 		for (Model* model : models) {
+
 			model->~Model();
 		}
 	};

@@ -19,10 +19,10 @@ using namespace std;
 /// Purely a collection of indices and vertices
 /// </summary>
 class Mesh {
-	Vertex* pVertices = nullptr;
+	//Vertex* pVertices = nullptr;
 	int vertexCount = 0;
 
-	DWORD* pIndices = nullptr;
+	//DWORD* pIndices = nullptr;
 
 
 	ID3D11Device* pDevice = nullptr;
@@ -31,6 +31,8 @@ class Mesh {
 	ID3D11Buffer* indexBuffer = nullptr;
 public:
 	ID3D11Buffer* vertexBuffer = nullptr; // public because i think IASetVertexBuffers needs a direct reference (not thru a func)
+
+	bool _isProceduralMesh = false;
 
 	Mesh* Init(ID3D11Device* device);
 
@@ -41,7 +43,7 @@ public:
 
 	//void LoadFromFile(wstring path);
 
-	void LoadBuffers();
+	//void LoadBuffers();
 
 	ID3D11Buffer* GetVertexBuffer() const;
 	ID3D11Buffer* GetIndexBuffer() const;

@@ -4,16 +4,19 @@
 #include "Blocks.h"
 #include "WorldGen.h"
 
-#define CHUNKSIZE_X 16
-#define CHUNKSIZE_Y 16
-#define CHUNKSIZE_Z 16
+#define CHUNKSIZE_X 32
+#define CHUNKSIZE_Y 32
+#define CHUNKSIZE_Z 32
 
 using namespace std;
+
+class ChunkManager;
 
 class Chunk : public Object3D {
 private:
 	bool IsBlockSolid(const int x, const int y, const int z);
 	void MakeVoxel(const BlockID blockID, const int x, const int y, const int z, vector<Vertex>& vertices, vector<DWORD>& indices);
+	ChunkManager* chunkManager = nullptr;
 public:
 	Vector3Int chunkIndexPosition = Vector3Int();
 
@@ -24,13 +27,15 @@ public:
 	void Start() override;
 	void Update(float dTime) override;
 
-	Chunk(Vector3Int ChunkIndexPos): chunkIndexPosition(ChunkIndexPos){}
+	Chunk(Vector3Int ChunkIndexPos, ChunkManager* chnkMgr): chunkIndexPosition(ChunkIndexPos), chunkManager(chnkMgr){}
 
-	~Chunk() {
-		//delete[CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z] blockData;
+	void Release();
 
-		/*for(Model* model : models) {
-			model->~Model();
-		}*/
-	}
+	//~Chunk() {
+	//	//delete[CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z] blockData;
+
+	//	/*for(Model* model : models) {
+	//		model->~Model();
+	//	}*/
+	//}
 };

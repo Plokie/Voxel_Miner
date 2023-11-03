@@ -1,10 +1,14 @@
 #include "Engine.h"
 
+#include <assert.h>
+
 Engine* Engine::_Instance;
 
 void Engine::Init(_In_ HINSTANCE hInstance) {
 	if (_Instance != nullptr) delete _Instance;
 	_Instance = this;
+
+	InitializeSRWLock(&gDestroyObjectsMutex);
 
 	if(!winMgr.Init(hInstance)) {
 		exit(991);
@@ -24,7 +28,18 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 
 void Engine::Render(float dTime) {
 	gfx->Render(sceneObjects);
+}
 
+void Engine::DestroyQueuedObjects() {
+	// Safe to delete objects here, presumably no more operations
+
+	AcquireSRWLockExclusive(&gDestroyObjectsMutex);
+	for(const string& name : destroyObjectQueue) {
+		DestroyObject3DImmediate(name);
+	}
+	ReleaseSRWLockExclusive(&gDestroyObjectsMutex);
+
+	destroyObjectQueue.clear();
 }
 
 void Engine::Update(float dTime) {
@@ -34,6 +49,8 @@ void Engine::Update(float dTime) {
 
 	// Keep at end
 	Input::EndUpdate();
+
+	
 }
 
 //void Engine::OnResizeWindow(int width, int height)
@@ -43,8 +60,6 @@ void Engine::Update(float dTime) {
 //}
 
 Object3D* Engine::CreateObject3D(Object3D* obj, string name) {
-	//sceneObjects[name] = new Object3D(gfx->GetDevice());
-	//sceneObjects[name] = obj->models.push_back()
 	sceneObjects[name] = obj;
 	sceneObjects[name]->Start();
 
@@ -71,6 +86,55 @@ Object3D* Engine::CreateObject3D(Object3D* obj, string name, string meshName, st
 	sceneObjects[name]->Start();
 
 	return sceneObjects[name];
+}
+
+bool Engine::DestroyObject3D(string name)
+{
+	destroyObjectQueue.push_back(name);
+	return true;
+}
+
+bool Engine::DestroyObject3D(Object3D* obj)
+{
+	for(pair<string, Object3D*> pair : sceneObjects) {
+		if(pair.second == obj) {
+			DestroyObject3D(pair.first);
+			return true;
+		}
+	}
+	//MessageBox(0, L"Could not find obj", 0, 0);
+	assert(false);
+	return false;
+}
+
+
+
+bool Engine::DestroyObject3DImmediate(string name)
+{
+	if(sceneObjects.count(name)) {
+		delete sceneObjects[name];
+
+		sceneObjects.erase(name);
+		return true;
+	}
+	assert(false);
+	return false;
+}
+
+bool Engine::DestroyObject3DImmediate(Object3D* obj)
+{
+	for(pair<string, Object3D*> pair : sceneObjects) {
+		if(pair.second == obj) {
+			DestroyObject3DImmediate(pair.first);
+			return true;
+		}
+	}
+	return false;
+}
+
+SRWLOCK* Engine::GetDestroyObjectsMutex()
+{
+	return &this->gDestroyObjectsMutex;
 }
 
 bool Engine::Service() {

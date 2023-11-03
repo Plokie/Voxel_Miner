@@ -9,7 +9,7 @@ void CameraController::Update(float dTime)
 {
 	Engine* engine = Engine::Get();
 
-	float camSpeed = 5.f * dTime;
+	float camSpeed = 15.f * dTime;
 
 	//float horizontal = Input::GetInputAxis("Horizontal");
 	//float vertical = Input::GetInputAxis("Vertical");
@@ -30,7 +30,7 @@ void CameraController::Update(float dTime)
 	}
 
 	XMFLOAT2 mouseDelta = Input::MouseDelta();
-	float lookSpeed = 5.f * dTime;
+	float lookSpeed = 0.4f * dTime;
 
 	//gfx.camera.AdjustRotation(mouseDelta.y * lookSpeed, mouseDelta.x * lookSpeed, 0.0f);
 	if (Input::IsMouseLocked())

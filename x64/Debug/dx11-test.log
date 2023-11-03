@@ -1,13 +1,7 @@
-﻿  Engine.cpp
-  Input.cpp
-  WinManager.cpp
-  CameraController.cpp
-  Chunk.cpp
+﻿  Chunk.cpp
+C:\Users\Plokie\source\repos\dx11-proj\Game\Chunk.cpp(212,80): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
   ChunkManager.cpp
-  ExampleObject3D.cpp
   GameStart.cpp
-  Graphics.cpp
-  main.cpp
   Generating Code...
-C:\Users\c2015437\source\repos\dx11-voxel\Game\ChunkManager.cpp(20): warning C4172: returning address of local variable or temporary
-  dx11-test.vcxproj -> C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\dx11-test.exe
+C:\Users\Plokie\source\repos\dx11-proj\Game\ChunkManager.cpp(22): warning C4172: returning address of local variable or temporary
+  dx11-test.vcxproj -> C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe
