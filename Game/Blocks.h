@@ -15,6 +15,7 @@ enum BlockID {
 	GRASS,
 	DIRT,
 	STONE,
+	BLACKSTONE,
 	SAND,
 	CLAY,
 

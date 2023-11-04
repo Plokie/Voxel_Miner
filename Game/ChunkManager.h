@@ -10,9 +10,9 @@
 #include "Chunk.h"
 #include "WorldGen.h"
 
-#define CHUNKLOAD_AREA_X 3
+#define CHUNKLOAD_AREA_X 5
 #define CHUNKLOAD_AREA_Y 3
-#define CHUNKLOAD_AREA_Z 3
+#define CHUNKLOAD_AREA_Z 5
 
 using namespace std;
 
@@ -33,6 +33,7 @@ public:
 	static const Vector3Int& WorldToIndexPosition(Vector3 worldPosition);
 
 	BlockID GetBlockAtWorldPos(int x, int y, int z);
+	BlockID GetBlockAtWorldPos(Vector3Int v);
 
 	static ChunkManager* Create(Transform* cameraTransform);
 	void Init(Transform* cameraTransform);

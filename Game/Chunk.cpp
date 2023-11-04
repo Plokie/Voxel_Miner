@@ -166,7 +166,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 	}
 }
 
-void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, bool isTransparent)
+void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESHFLAG meshFlag)
 {
 	size_t vertSize = vertices.size();
 	size_t indSize = indices.size();
@@ -175,7 +175,10 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, bool
 	if(vertSize > 0 && indSize > 0) {
 		models.push_back(Model::Create(Graphics::Get()->GetDevice()));
 		models[modelCount]->SetTexture(0, "atlas");
-		models[modelCount]->SetTransparent(isTransparent);
+		models[modelCount]->SetTransparent(meshFlag > 0);
+		if(meshFlag == WATER) {
+			models[modelCount]->SetVertexShader(0, "watervertexshader");
+		}
 
 		Mesh* newMesh = new Mesh();
 		newMesh->Init(Graphics::Get()->GetDevice());
@@ -199,6 +202,9 @@ void Chunk::BuildMesh()
 	vector<Vertex> transVertices = {};
 	vector<DWORD> transIndices = {};
 
+	vector<Vertex> waterVertices = {};
+	vector<DWORD> waterIndices = {};
+
 	//todo: optimised chunk building (not looping through every single block, most of them are invisible)
 	for(int y = 0; y < CHUNKSIZE_Y; y++) {
 		for(int z = 0; z < CHUNKSIZE_Z; z++) {
@@ -206,10 +212,14 @@ void Chunk::BuildMesh()
 				BlockID blockid = (BlockID)blockData[x][y][z];
 				if(blockid == BlockID::AIR) continue;
 
-				if(BlockDef::GetDef((BlockID)blockData[x][y][z]).IsSolid()) {
+				if(BlockDef::GetDef(blockid).IsSolid()) {
 					MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
 				}
-				else {
+				else if(blockid == BlockID::WATER)
+				{
+					MakeVoxel(blockid, x, y, z, waterVertices, waterIndices);
+				}
+				else{
 					MakeVoxel(blockid, x, y, z, transVertices, transIndices);
 				}
 			}
@@ -217,7 +227,8 @@ void Chunk::BuildMesh()
 	}
 
 	PushChunkMesh(solidVertices, solidIndices);
-	PushChunkMesh(transVertices, transIndices, true);
+	PushChunkMesh(transVertices, transIndices, TRANS);
+	PushChunkMesh(waterVertices, waterIndices, WATER);
 }
 
 void Chunk::Load()

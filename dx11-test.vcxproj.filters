@@ -111,6 +111,9 @@
     <ClCompile Include="Game\TitleScreen.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
+    <ClCompile Include="Game\VoxelRaycast.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMsg.h">
@@ -194,6 +197,9 @@
     <ClInclude Include="Game\TitleScreen.h">
       <Filter>Header Files\Game</Filter>
     </ClInclude>
+    <ClInclude Include="Game\VoxelRaycast.h">
+      <Filter>Header Files\Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="vertexshader.hlsl">
@@ -203,6 +209,9 @@
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="demopixelshader.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="watervertexshader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>

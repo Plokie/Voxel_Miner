@@ -167,6 +167,7 @@
     <ClCompile Include="Game\WorldGen.cpp" />
     <ClCompile Include="Engine\Scene.cpp" />
     <ClCompile Include="Game\TitleScreen.cpp" />
+    <ClCompile Include="Game\VoxelRaycast.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\FastNoiseLite.h" />
@@ -196,6 +197,7 @@
     <ClInclude Include="Game\WorldGen.h" />
     <ClInclude Include="Engine\Scene.h" />
     <ClInclude Include="Game\TitleScreen.h" />
+    <ClInclude Include="Game\VoxelRaycast.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="demopixelshader.hlsl">
@@ -223,6 +225,12 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="watervertexshader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

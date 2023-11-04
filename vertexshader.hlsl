@@ -2,6 +2,7 @@ cbuffer c_buffer : register(b0)
 {
     float4x4 mx;
     float4x4 modelMx;
+    float time;
 };
 
 struct VS_INPUT

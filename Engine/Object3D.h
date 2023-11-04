@@ -5,6 +5,8 @@
 
 class Object3D {
 public:
+	SRWLOCK gAccessMutex = {};
+
 	bool hasRanStartFunction = false;
 
 	Transform transform = Transform();

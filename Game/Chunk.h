@@ -4,21 +4,29 @@
 #include "Blocks.h"
 #include "WorldGen.h"
 
-#define CHUNKSIZE_X 32
-#define CHUNKSIZE_Y 32
-#define CHUNKSIZE_Z 32
+#define CHUNKSIZE_X 16
+#define CHUNKSIZE_Y 16
+#define CHUNKSIZE_Z 16
 
 using namespace std;
 
 class ChunkManager;
 
 class Chunk : public Object3D {
+public:
+	enum MESHFLAG {
+		SOLID,
+		TRANS,
+		WATER
+	};
 private:
-	void PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, bool isTransparent = false);
+	void PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESHFLAG isTransparent = SOLID);
 	bool RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z);
 	void MakeVoxel(const BlockID blockID, const int x, const int y, const int z, vector<Vertex>& vertices, vector<DWORD>& indices);
 	ChunkManager* chunkManager = nullptr;
 public:
+	
+
 	Vector3Int chunkIndexPosition = Vector3Int();
 
 	USHORT blockData[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};

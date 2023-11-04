@@ -1,13 +1,20 @@
 #include "CameraController.h"
 
+#include "VoxelRaycast.h"
 
 void CameraController::Start()
 {
+	Engine* engine = Engine::Get();
+
+	engine->GetCurrentScene()->CreateObject3D(new Object3D(), "a_debug_pos", "cube", "block-select");
+	engine->GetCurrentScene()->GetObject3D("a_debug_pos")->models[0]->SetTransparent(true);
+	engine->GetCurrentScene()->GetObject3D("a_debug_pos")->transform.scale = Vector3(0.51f, 0.51f, 0.51f);
 }
 
 void CameraController::Update(float dTime)
 {
 	Engine* engine = Engine::Get();
+	Camera* camera = &engine->GetGraphics()->camera;
 
 	float camSpeed = 15.f * dTime;
 
@@ -16,7 +23,11 @@ void CameraController::Update(float dTime)
 
 	Vector2 input = Input::GetInputVector();
 
-	transform.TranslateLocal(camSpeed * input.x, 0, camSpeed * input.y);
+	Vector3 moveAxis = transform.basis(camSpeed * input.x, 0, camSpeed * input.y);
+	moveAxis.y = 0.0;
+	//moveAxis = moveAxis.normalized();
+
+	transform.position += moveAxis;
 
 	if (Input::IsKeyHeld(VK_SPACE)) {
 		transform.position += Vector3(0, camSpeed, 0);
@@ -38,9 +49,17 @@ void CameraController::Update(float dTime)
 
 	if (Input::IsKeyPressed(VK_ESCAPE)) {
 		Input::SetMouseLocked(!Input::IsMouseLocked());
-		transform.rotation = Vector3::Zero();
 	}
 
-	engine->GetGraphics()->camera.transform = transform;
+	camera->transform = transform;
+
+	VoxelRay ray(camera->transform.position, camera->transform.forward());
+
+	Vector3Int lookHitPoint;
+	if(VoxelRay::Cast(&ray, (ChunkManager*)engine->GetCurrentScene()->GetObject3D("ChunkManager"), 10.f, &lookHitPoint)) {
+		engine->GetCurrentScene()->GetObject3D("a_debug_pos")->transform.position = Vector3((float)lookHitPoint.x, (float)lookHitPoint.y, (float)lookHitPoint.z) + Vector3(0.5f,0.5f,0.5f);
+	}
+
+	
 }
 

@@ -23,6 +23,9 @@ const map<BlockID, Block> BlockDef::def = {
 	{BlockID::STONE,	Block("Stone", true, 
 		5, 0
 	)},
+	{BlockID::BLACKSTONE,Block("Blackstone", true,
+		5, 1
+	)},
 	{BlockID::SAND,		Block("Sand", true,
 		4, 0
 	)},

@@ -83,6 +83,8 @@ void Engine::SetScene(string name)
 }
 
 void Engine::Update(float dTime) {
+	totalElapsedTime += dTime;
+
 	for (pair<string, Object3D*> pair : *currentScene->GetSceneObjects3D()) {
 		if(pair.second == nullptr) continue;
 
@@ -100,42 +102,10 @@ void Engine::Update(float dTime) {
 	
 }
 
-//void Engine::OnResizeWindow(int width, int height)
-//{
-//	gfx.SetResolution(width, height);
-//	//gfx.InitResolution(winMgr.window);
-//}
-//
-//Object3D* Engine::CreateObject3D(Object3D* obj, string name) {
-//	//sceneObjects[name] = obj;
-//
-//	currentScene->CreateObject3D(obj, name);
-//	
-//	//obj->Start();
-//
-//	return obj;
-//}
-//
-//Object3D* Engine::CreateObject3D(Object3D* obj, string name, string meshName)
-//{
-//	//sceneObjects[name] = new Object3D(gfx->GetDevice());
-//	currentScene->CreateObject3D(obj, name, meshName);
-//	//obj->AddModel(gfx->GetDevice());
-//	//obj->models[0]->SetMesh(meshName);
-//	//obj->Start();
-//
-//	return obj;
-//}
-//
-//Object3D* Engine::CreateObject3D(Object3D* obj, string name, string meshName, string texName) {
-//	currentScene->CreateObject3D(obj, name, meshName, texName);
-//	//obj->AddModel(gfx->GetDevice());
-//	//obj->models[0]->SetMesh(meshName);
-//	//obj->models[0]->SetTexture(0, texName);
-//	//obj->Start();
-//
-//	return obj;
-//}
+const float& Engine::GetTotalElapsedTime()
+{
+	return this->totalElapsedTime;
+}
 
 bool Engine::DestroyObject3D(string name)
 {
@@ -153,7 +123,7 @@ bool Engine::DestroyObject3D(Object3D* obj)
 		}
 	}
 	//MessageBox(0, L"Could not find obj", 0, 0);
-	assert(false);
+	//assert(false);
 	return false;
 }
 
@@ -163,13 +133,16 @@ bool Engine::DestroyObject3DImmediate(string name)
 {
 	//todo: move procedure to scene class
 	if(currentScene->GetSceneObjects3D()->count(name)) {
-		delete currentScene->GetSceneObjects3D()->at(name);
+		Object3D* objectToDelete = currentScene->GetSceneObjects3D()->at(name);
+		AcquireSRWLockShared(&objectToDelete->gAccessMutex);
+		delete objectToDelete;
 		currentScene->GetSceneObjects3D()->at(name) = nullptr;
-
+		//ReleaseSRWLockShared(&objectToDelete->gAccessMutex);
 		currentScene->GetSceneObjects3D()->erase(name);
+
 		return true;
 	}
-	assert(false);
+	//assert(false);
 	return false;
 }
 

@@ -106,7 +106,9 @@ public:
 	}
 
 	Vector3 normalized() const {
-		return Vector3(x,y,z) / magnitude();
+		float mag = magnitude();
+		if(mag == 0) return Vector3(0,0,0);
+		return Vector3(x,y,z) / mag;
 	}
 
 	/*const XMVECTOR& xmVec() {

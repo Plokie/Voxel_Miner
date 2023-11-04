@@ -1,5 +1,7 @@
 #include "Model.h"
 
+#include "../Engine/Engine.h"
+
 Model* Model::Init(ID3D11Device* device) {
 	pDevice = device;
 
@@ -22,6 +24,8 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worl
 	//Convert to row-major for HLSL
 	mxData.mx = DirectX::XMMatrixTranspose(mxData.mx);
 	mxData.modelMx = XMMatrixTranspose(mxData.modelMx);
+
+	mxData.time = Engine::Get()->GetTotalElapsedTime();
 
 	D3D11_MAPPED_SUBRESOURCE map;
 	HRESULT hr = deviceCtx->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);

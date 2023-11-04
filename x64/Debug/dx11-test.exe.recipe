@@ -15,6 +15,9 @@
     <ContentFile>
       <FullPath>C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\vertexshader.cso</FullPath>
     </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\watervertexshader.cso</FullPath>
+    </ContentFile>
   </ContentFiles>
   <SatelliteDlls />
   <NonRecipeFileRefs />

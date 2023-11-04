@@ -20,6 +20,7 @@ using namespace DirectX;
 struct CB_VS_vertexshader {
 	DirectX::XMMATRIX mx;
 	XMMATRIX modelMx;
+	float time;
 };
 
 struct CB_VS_pixelshader {
@@ -126,6 +127,9 @@ public:
 	}
 	void SetMesh(string name) {
 		SetMesh(Resources::GetMesh(name));
+	}
+	Mesh* GetMesh() {
+		return this->mesh;
 	}
 
 	// ONLY CALL IF THE MESH IS CREATED AT RUNTIME!

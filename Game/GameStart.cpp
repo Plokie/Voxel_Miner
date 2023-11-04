@@ -17,11 +17,15 @@ void GameStart(Engine* engine) {
 	Resources::LoadTexture(L"Data\\Textures\\err.dds", "err");
 	Resources::LoadTexture(L"Data\\Textures\\img.dds", "head");
 	Resources::LoadTexture(L"Data\\Textures\\pfp.dds", "pfp");
+	Resources::LoadTexture(L"Data\\Textures\\block-select.dds", "block-select");
 	Resources::LoadTexture(L"Data\\Textures\\grass2.dds", "grass");
 	Resources::LoadTexture(L"Data\\Textures\\atlas.dds", "atlas");
+
 	Resources::LoadPixelShader(L"pixelshader.cso", "pixelshader");
+
 	Resources::LoadPixelShader(L"demopixelshader.cso", "demopshader");
 	Resources::LoadVertexShader(L"vertexshader.cso", "vertexshader");
+	Resources::LoadVertexShader(L"watervertexshader.cso", "watervertexshader");
 
 	Resources::LoadMesh("cube");
 	Resources::LoadMesh(exampleFloorVertices, ARRAYSIZE(exampleFloorVertices), exampleCubeIndices, ARRAYSIZE(exampleCubeIndices), "floorMesh");

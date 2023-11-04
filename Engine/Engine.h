@@ -28,6 +28,8 @@ private:
 
 	map<string, Scene*> scenes = {};
 	Scene* currentScene = nullptr;
+
+	float totalElapsedTime = 0.0f;
 public:
 	
 	// Initialise Engine
@@ -35,6 +37,8 @@ public:
 
 	void Render(float dTime);
 	void Update(float dTime);
+
+	const float& GetTotalElapsedTime();
 
 	void DestroyQueuedObjects();
 
