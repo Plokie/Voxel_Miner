@@ -466,7 +466,7 @@ bool Graphics::OnResize(HWND hwnd, int width, int height) {
 	return true;
 }
 
-void Graphics::Render(map<string, Object3D*>& sceneObjects) {
+void Graphics::Render(Scene* scene) {
 	//float bgCol[] = {1.0, 0.6, 1.0, 1.0};
 	const float bgCol[] = { 145.f / 255.f, 217.f / 255.f, 1.0f, 1.0f };
 	deviceCtx->ClearRenderTargetView(renderTargetView, bgCol);
@@ -496,7 +496,7 @@ void Graphics::Render(map<string, Object3D*>& sceneObjects) {
 	vector<Object3D*> objects = {};
 
 	//todo: precompute sceneObjects values vector whenever an object is appended or removed
-	for(map<string, Object3D*>::iterator it = sceneObjects.begin(); it != sceneObjects.end(); ++it) {
+	for(map<string, Object3D*>::iterator it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); ++it) {
 		objects.push_back(it->second);
 	}
 

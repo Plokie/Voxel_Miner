@@ -23,7 +23,7 @@ private:
 
 	map<tuple<int, int, int>, Chunk*> chunkMap = {};
 
-	void CreateChunk(int x, int y, int z);
+	Chunk* CreateChunk(int x, int y, int z);
 
 	vector<thread> _chunkLoaderThreads = {};
 

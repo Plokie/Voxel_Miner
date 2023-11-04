@@ -25,6 +25,8 @@ public:
 
 	void BuildMesh();
 
+	void Load();
+
 	void Start() override;
 	void Update(float dTime) override;
 

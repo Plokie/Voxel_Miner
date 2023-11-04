@@ -11,6 +11,7 @@
 #include "Object3D.h"
 #include "..\Graphics\Resources.h"
 #include "..\Graphics\ExampleMeshes.h"
+#include "Scene.h"
 
 using namespace std;
 
@@ -25,8 +26,9 @@ private:
 	static Engine* _Instance;
 	vector<string> destroyObjectQueue = {};
 
+	map<string, Scene*> scenes = {};
+	Scene* currentScene = nullptr;
 public:
-	map<string, Object3D*> sceneObjects = {};
 	
 	// Initialise Engine
 	void Init(_In_ HINSTANCE hInstance);
@@ -36,10 +38,18 @@ public:
 
 	void DestroyQueuedObjects();
 
+	Scene* GetCurrentScene();
+
+
 	static Engine* Get() { return _Instance; }
 
 	Graphics* GetGraphics() { return gfx; }
 	WinManager* GetWinManager() { return &winMgr; }
+
+	Scene* AddScene(string name);
+	Scene* AddScene(Scene* scene, string name);
+	Scene* GetScene(string name);
+	void SetScene(string name);
 
 	/*template <typename T>
 	T* CreateObject3D(string name) {
@@ -49,9 +59,10 @@ public:
 		return sceneObjects[name];
 	}*/
 
-	Object3D* CreateObject3D(Object3D* obj, string name);
-	Object3D* CreateObject3D(Object3D* obj, string name, string meshName);
-	Object3D* CreateObject3D(Object3D* obj, string name, string meshName, string texName);
+
+	//Object3D* CreateObject3D(Object3D* obj, string name);
+	//Object3D* CreateObject3D(Object3D* obj, string name, string meshName);
+	//Object3D* CreateObject3D(Object3D* obj, string name, string meshName, string texName);
 
 	bool DestroyObject3D(string name);
 	bool DestroyObject3D(Object3D* obj);
@@ -60,8 +71,6 @@ public:
 	bool DestroyObject3DImmediate(Object3D* obj);
 
 	SRWLOCK* GetDestroyObjectsMutex();
-	//SRWLOCK* GetCreateObjectsMutex();
-	//void OnResizeWindow(int width, int height);
 
 	/// <summary>
 	/// Call at start of main while loop loop

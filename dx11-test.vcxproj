@@ -165,6 +165,8 @@
     <ClCompile Include="Graphics\Model.cpp" />
     <ClCompile Include="Graphics\Mesh.cpp" />
     <ClCompile Include="Game\WorldGen.cpp" />
+    <ClCompile Include="Engine\Scene.cpp" />
+    <ClCompile Include="Game\TitleScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\FastNoiseLite.h" />
@@ -192,6 +194,8 @@
     <ClInclude Include="Graphics\Resources.h" />
     <ClInclude Include="Graphics\Mesh.h" />
     <ClInclude Include="Game\WorldGen.h" />
+    <ClInclude Include="Engine\Scene.h" />
+    <ClInclude Include="Game\TitleScreen.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="demopixelshader.hlsl">

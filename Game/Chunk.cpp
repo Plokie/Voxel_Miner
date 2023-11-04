@@ -220,13 +220,13 @@ void Chunk::BuildMesh()
 	PushChunkMesh(transVertices, transIndices, true);
 }
 
-void Chunk::Start()
+void Chunk::Load()
 {
 	if(this == nullptr) return;
 	//debug init chunk
 	int worldX = 0, worldY = 0, worldZ = 0;
 	//SRWLOCK* pMutex = Engine::Get()->GetDestroyObjectsMutex();
-	Engine::Get()->sceneObjects;
+	//Engine::Get()->sceneObjects;
 
 	//AcquireSRWLockExclusive(pMutex);
 	for(int z = 0; z < CHUNKSIZE_Z; z++) {
@@ -238,7 +238,6 @@ void Chunk::Start()
 				worldY = y + (chunkIndexPosition.y * CHUNKSIZE_Y);
 				
 				// some kind of thread thing is going wrong here
-				// i think chunks are being deleted while theyre still being made
 				blockData[x][y][z] = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, static_cast<int>(heightSample));
 
 			}
@@ -252,6 +251,10 @@ void Chunk::Start()
 	//memset(&blockData, 1, CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z);
 	//if(!isChunkAllAir)
 	BuildMesh();
+}
+
+void Chunk::Start() {
+
 }
 
 void Chunk::Update(float dTime)

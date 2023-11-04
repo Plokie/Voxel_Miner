@@ -105,6 +105,12 @@
     <ClCompile Include="Game\WorldGen.cpp">
       <Filter>Source Files\Game\World</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Scene.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TitleScreen.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DebugMsg.h">
@@ -181,6 +187,12 @@
     </ClInclude>
     <ClInclude Include="Game\WorldGen.h">
       <Filter>Header Files\Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Scene.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TitleScreen.h">
+      <Filter>Header Files\Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

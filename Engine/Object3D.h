@@ -5,7 +5,9 @@
 
 class Object3D {
 public:
-	Transform transform;
+	bool hasRanStartFunction = false;
+
+	Transform transform = Transform();
 	//Mesh* mesh = nullptr;
 
 	//ID3D11Device* deviceRef = nullptr;

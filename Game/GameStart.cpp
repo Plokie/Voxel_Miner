@@ -8,6 +8,7 @@
 #include "ExampleObject3D.h"
 #include "CameraController.h"
 #include "ChunkManager.h"
+#include "TitleScreen.h"
 // ---------------------------------------
 
 
@@ -25,13 +26,24 @@ void GameStart(Engine* engine) {
 	Resources::LoadMesh("cube");
 	Resources::LoadMesh(exampleFloorVertices, ARRAYSIZE(exampleFloorVertices), exampleCubeIndices, ARRAYSIZE(exampleCubeIndices), "floorMesh");
 
-	engine->CreateObject3D(new CameraController(), "CameraController");
-	engine->CreateObject3D(new ExampleObject3D(-2.f, 0.f, 0.f), "test2", "cube", "head");
+	Scene* titleScene = new Scene(Graphics::Get());
 
+	titleScene->CreateObject3D(new TitleScreen(), "titlescreen");
+	titleScene->CreateObject3D(new ExampleObject3D(-2.f, 0.f, 0.f), "test", "cube", "head");
+	titleScene->GetObject3D("test")->transform.position = Vector3(0.f, 0.f, 5.f);
+
+	Scene* gameScene = new Scene(Graphics::Get());
+
+	gameScene->CreateObject3D(new CameraController(), "CameraController");
+	gameScene->CreateObject3D(ChunkManager::Create(&Graphics::Get()->camera.transform), "ChunkManager");
 	
-	engine->CreateObject3D(ChunkManager::Create(&Graphics::Get()->camera.transform), "ChunkManager");
+	engine->AddScene(titleScene, "title");
+	engine->AddScene(gameScene, "game");
 	
-	engine->sceneObjects["test2"]->transform.position = Vector3(-8.f, 0.f, 0.f);
+	//engine->SetScene("game");
+
+	//engine.s
+	//engine->GetScene("game")->GetObject3D("test2")->transform.position = Vector3(-8.f, 0.f, 0.f);
 }
 
 // Ideally don't want to use this, but it's here as an option

@@ -14,6 +14,7 @@
 #include "Vertex.h"
 #include "Model.h"
 #include "Camera.h"
+#include "../Engine/Scene.h"
 #include "../Engine/Object3D.h"
 //#include "../Engine/World.h"
 
@@ -84,7 +85,7 @@ public:
 
 	bool OnResize(HWND hwnd, int width, int height);
 
-	void Render(map<string, Object3D*>& sceneObjects);
+	void Render(Scene* scene);
 
 	void SortObjects(vector<Object3D*>& objects, int startIndex, int endIndex);
 

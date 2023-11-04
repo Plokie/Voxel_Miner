@@ -49,12 +49,12 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worl
 	if (tex != nullptr)
 		deviceCtx->PSSetShaderResources(0, 1, &tex);
 	
-	ID3D11Resource* pRes = nullptr;
-	D3D11_TEXTURE2D_DESC tempDesc{};
-	tex->GetResource(&pRes);
-	ID3D11Texture2D* pTex = (ID3D11Texture2D*)pRes;
+	//ID3D11Resource* pRes = nullptr;
+	//D3D11_TEXTURE2D_DESC tempDesc{};
+	//tex->GetResource(&pRes);
+	//ID3D11Texture2D* pTex = (ID3D11Texture2D*)pRes;
 
-	pTex->GetDesc(&tempDesc);
+	//pTex->GetDesc(&tempDesc);
 
 	deviceCtx->DrawIndexed((UINT)mesh->GetIndexCount(), 0, 0);
 }
