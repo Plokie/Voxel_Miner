@@ -18,3 +18,6 @@ C:\Users\c2015437\source\repos\dx11-voxel\Graphics\Resources.cpp;C:\Users\c20154
 C:\Users\c2015437\source\repos\dx11-voxel\Graphics\Model.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\Model.obj
 C:\Users\c2015437\source\repos\dx11-voxel\Graphics\Mesh.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\Mesh.obj
 C:\Users\c2015437\source\repos\dx11-voxel\Game\WorldGen.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\WorldGen.obj
+C:\Users\c2015437\source\repos\dx11-voxel\Engine\Scene.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\Scene.obj
+C:\Users\c2015437\source\repos\dx11-voxel\Game\TitleScreen.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\TitleScreen.obj
+C:\Users\c2015437\source\repos\dx11-voxel\Game\VoxelRaycast.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\VoxelRaycast.obj

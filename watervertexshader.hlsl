@@ -61,12 +61,10 @@ float fbm(float2 x)
     float v = 0.0;
     float a = 0.5;
     float2 shift = float2(100,100);
-	// Rotate to reduce axial bias
-    //float2x2 rot = float2x2(cos(0.5), sin(0.5), -sin(0.5), cos(0.50));
+
     for (int i = 0; i < NUM_NOISE_OCTAVES; ++i)
     {
         v += a * noise(x);
-        //x = rot * x * 2.0 + shift;
         x = x * 2.0 + shift;
         a *= 0.5;
     }
@@ -74,7 +72,7 @@ float fbm(float2 x)
 }
 
 
-static const float WaterFrequency = 0.1f;
+static const float WaterFrequency = 1.0f;
 static const float WaterSpeed = 0.3f;
 static const float WaterAmplitude = 0.125f;
 

@@ -2,21 +2,21 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe</FullPath>
+      <FullPath>C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\dx11-test.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles>
     <ContentFile>
-      <FullPath>C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\demopixelshader.cso</FullPath>
+      <FullPath>C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\demopixelshader.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\pixelshader.cso</FullPath>
+      <FullPath>C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\pixelshader.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\vertexshader.cso</FullPath>
+      <FullPath>C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\vertexshader.cso</FullPath>
     </ContentFile>
     <ContentFile>
-      <FullPath>C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\watervertexshader.cso</FullPath>
+      <FullPath>C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\watervertexshader.cso</FullPath>
     </ContentFile>
   </ContentFiles>
   <SatelliteDlls />

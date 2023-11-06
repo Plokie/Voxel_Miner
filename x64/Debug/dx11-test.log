@@ -1,12 +1,2 @@
-﻿  ChunkManager.cpp
-C:\Users\Plokie\source\repos\dx11-proj\Game\ChunkManager.cpp(50,21): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Game\ChunkManager.cpp(50,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Game\ChunkManager.cpp(51,21): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Game\ChunkManager.cpp(51,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Game\ChunkManager.cpp(52,21): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Game\ChunkManager.cpp(52,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Game\ChunkManager.cpp(52,6): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Game\ChunkManager.cpp(51,6): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Game\ChunkManager.cpp(50,6): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\Plokie\source\repos\dx11-proj\Game\ChunkManager.cpp(32): warning C4172: returning address of local variable or temporary
-  dx11-test.vcxproj -> C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe
+﻿  compilation object save succeeded; see C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\watervertexshader.cso
+  dx11-test.vcxproj -> C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\dx11-test.exe
