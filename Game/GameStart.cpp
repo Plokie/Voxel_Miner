@@ -6,7 +6,7 @@
 // Include all Object3D and child type references
 // ---------------------------------------
 #include "ExampleObject3D.h"
-#include "CameraController.h"
+#include "PlayerController.h"
 #include "ChunkManager.h"
 #include "TitleScreen.h"
 
