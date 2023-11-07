@@ -229,6 +229,16 @@ void Chunk::BuildMesh()
 	PushChunkMesh(solidVertices, solidIndices);
 	PushChunkMesh(transVertices, transIndices, TRANS);
 	PushChunkMesh(waterVertices, waterIndices, WATER);
+
+#ifdef _DEBUG
+	{
+		size_t modelCount = models.size();
+		models.push_back(Model::Create(Graphics::Get()->GetDevice()));
+		models[modelCount]->SetTexture(0, "chunkborder");
+		models[modelCount]->SetMesh("chunkborder");
+		models[modelCount]->SetTransparent(true);
+	}
+#endif
 }
 
 void Chunk::Load()

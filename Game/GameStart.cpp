@@ -18,6 +18,7 @@ void GameStart(Engine* engine) {
 	Resources::LoadTexture(L"Data\\Textures\\img.dds", "head");
 	Resources::LoadTexture(L"Data\\Textures\\pfp.dds", "pfp");
 	Resources::LoadTexture(L"Data\\Textures\\block-select.dds", "block-select");
+	Resources::LoadTexture(L"Data\\Textures\\chunkborder.dds", "chunkborder");
 	Resources::LoadTexture(L"Data\\Textures\\grass2.dds", "grass");
 	Resources::LoadTexture(L"Data\\Textures\\atlas.dds", "atlas");
 
@@ -29,6 +30,7 @@ void GameStart(Engine* engine) {
 
 	Resources::LoadMesh("cube");
 	Resources::LoadMesh(exampleFloorVertices, ARRAYSIZE(exampleFloorVertices), exampleCubeIndices, ARRAYSIZE(exampleCubeIndices), "floorMesh");
+	Resources::LoadMesh(chunkBorderVertices, ARRAYSIZE(chunkBorderVertices), exampleCubeIndices, ARRAYSIZE(exampleCubeIndices), "chunkborder");
 
 	Scene* titleScene = new Scene(Graphics::Get());
 

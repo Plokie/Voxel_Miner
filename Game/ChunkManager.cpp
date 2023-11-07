@@ -84,8 +84,9 @@ Vector3Int ToChunkPosition(int x, int y, int z) {
 
 BlockID ChunkManager::GetBlockAtWorldPos(int x, int y, int z)
 {
-	return WorldGen::GetBlockAt(x, y, z);
-	// broke at 40 4 -96
+	//return WorldGen::GetBlockAt(x, y, z);
+	
+	//// broke at 40 4 -96
 	//Vector3Int chunkIndex = tuple<int, int, int>(x / CHUNKSIZE_X, y / CHUNKSIZE_Y, z / CHUNKSIZE_Z);
 	Vector3Int chunkIndex = ToChunkPosition(x, y, z);
 	if(chunkMap.count(chunkIndex)) {

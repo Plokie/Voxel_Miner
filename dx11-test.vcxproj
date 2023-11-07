@@ -168,6 +168,7 @@
     <ClCompile Include="Engine\Scene.cpp" />
     <ClCompile Include="Game\TitleScreen.cpp" />
     <ClCompile Include="Game\VoxelRaycast.cpp" />
+    <ClCompile Include="Engine\Object2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\FastNoiseLite.h" />
@@ -198,6 +199,7 @@
     <ClInclude Include="Engine\Scene.h" />
     <ClInclude Include="Game\TitleScreen.h" />
     <ClInclude Include="Game\VoxelRaycast.h" />
+    <ClInclude Include="Engine\Object2D.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="demopixelshader.hlsl">
