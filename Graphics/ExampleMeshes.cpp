@@ -1,5 +1,7 @@
 #include "ExampleMeshes.h"
 
+#include "../Game/ChunkManager.h"
+
 Vertex exampleCubeVertices[] = {
 		Vertex(-1.0f, -1.0f, -1.0f,	0.0f, 0.0f, -1.0f,	0.0f, 1.0f), //bottom-left		0  -Z
 		Vertex(-1.0f,  1.0f, -1.0f,	0.0f, 0.0f, -1.0f,	0.0f, 0.0f), //top-left			1
@@ -33,35 +35,35 @@ Vertex exampleCubeVertices[] = {
 };
 
 Vertex chunkBorderVertices[] = {
-		Vertex(0.0f,  0.0f, 0.0f,	0.0f, 0.0f, -1.0f,	0.0f, 1.0f), //bottom-left		0  -Z
-		Vertex(0.0f,  16.0f, 0.0f,	0.0f, 0.0f, -1.0f,	0.0f, 0.0f), //top-left			1
-		Vertex(16.0f,  16.0f, 0.0f,	0.0f, 0.0f, -1.0f,	1.0f, 0.0f), //top-right		2
-		Vertex(16.0f,  0.0f, 0.0f,	0.0f, 0.0f, -1.0f,	1.0f, 1.0f), //bottom-right		3
+		Vertex(0.0f,				0.0f,				0.0f,				0.0f, 0.0f, -1.0f,	0.0f, 1.0f), //bottom-left		0  -Z
+		Vertex(0.0f,				(float)CHUNKSIZE_Y, 0.0f,				0.0f, 0.0f, -1.0f,	0.0f, 0.0f), //top-left			1
+		Vertex((float)CHUNKSIZE_X,  (float)CHUNKSIZE_Y, 0.0f,				0.0f, 0.0f, -1.0f,	1.0f, 0.0f), //top-right		2
+		Vertex((float)CHUNKSIZE_X,  0.0f,				0.0f,				0.0f, 0.0f, -1.0f,	1.0f, 1.0f), //bottom-right		3
 
-		Vertex(16.0f,  0.0f, 16.0f,	0.0f, 0.0f, 1.0f,	0.0f, 1.0f), //bottom-left		4  +Z
-		Vertex(16.0f,  16.0f, 16.0f,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f), //top-left			5
-		Vertex(0.0f,  16.0f, 16.0f,	0.0f, 0.0f, 1.0f,	1.0f, 0.0f), //top-right			6
-		Vertex(0.0f,  0.0f, 16.0f,	0.0f, 0.0f, 1.0f,	1.0f, 1.0f), //bottom-right		7
+		Vertex((float)CHUNKSIZE_X,  0.0f,				(float)CHUNKSIZE_Z,	0.0f, 0.0f, 1.0f,	0.0f, 1.0f), //bottom-left		4  +Z
+		Vertex((float)CHUNKSIZE_X,  (float)CHUNKSIZE_Y, (float)CHUNKSIZE_Z,	0.0f, 0.0f, 1.0f,	0.0f, 0.0f), //top-left			5
+		Vertex(0.0f,				(float)CHUNKSIZE_Y, (float)CHUNKSIZE_Z,	0.0f, 0.0f, 1.0f,	1.0f, 0.0f), //top-right			6
+		Vertex(0.0f,				0.0f,				(float)CHUNKSIZE_Z,	0.0f, 0.0f, 1.0f,	1.0f, 1.0f), //bottom-right		7
 
-		Vertex(16.0f,  0.0f, 0.0f,	1.0f, 0.0f, 0.0f,	0.0f, 1.0f), //bottom-left		8  +X
-		Vertex(16.0f,  16.0f, 0.0f,	1.0f, 0.0f, 0.0f,	0.0f, 0.0f), //top-left			9
-		Vertex(16.0f,  16.0f, 16.0f,	1.0f, 0.0f, 0.0f,	1.0f, 0.0f), //top-right		10
-		Vertex(16.0f,  0.0f, 16.0f,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f), //bottom-right		11
+		Vertex((float)CHUNKSIZE_X,  0.0f,				0.0f,				1.0f, 0.0f, 0.0f,	0.0f, 1.0f), //bottom-left		8  +X
+		Vertex((float)CHUNKSIZE_X,  (float)CHUNKSIZE_Y, 0.0f,				1.0f, 0.0f, 0.0f,	0.0f, 0.0f), //top-left			9
+		Vertex((float)CHUNKSIZE_X,  (float)CHUNKSIZE_Y, (float)CHUNKSIZE_Z,	1.0f, 0.0f, 0.0f,	1.0f, 0.0f), //top-right		10
+		Vertex((float)CHUNKSIZE_X,  0.0f,				(float)CHUNKSIZE_Z,	1.0f, 0.0f, 0.0f,	1.0f, 1.0f), //bottom-right		11
 
-		Vertex(0.0f,  0.0f, 16.0f,	-1.0f, 0.0f, 0.0f,	0.0f, 1.0f), //bottom-left		12  -X
-		Vertex(0.0f,  16.0f, 16.0f,	-1.0f, 0.0f, 0.0f,	0.0f, 0.0f), //top-left			13
-		Vertex(0.0f,  16.0f, 0.0f,	-1.0f, 0.0f, 0.0f,	1.0f, 0.0f), //top-right		14
-		Vertex(0.0f,  0.0f, 0.0f,	-1.0f, 0.0f, 0.0f,	1.0f, 1.0f), //bottom-right		15
+		Vertex(0.0f,				0.0f,				(float)CHUNKSIZE_Z,	-1.0f, 0.0f, 0.0f,	0.0f, 1.0f), //bottom-left		12  -X
+		Vertex(0.0f,				(float)CHUNKSIZE_Y, (float)CHUNKSIZE_Z,	-1.0f, 0.0f, 0.0f,	0.0f, 0.0f), //top-left			13
+		Vertex(0.0f,				(float)CHUNKSIZE_Y,	0.0f,				-1.0f, 0.0f, 0.0f,	1.0f, 0.0f), //top-right		14
+		Vertex(0.0f,				0.0f,				0.0f,				-1.0f, 0.0f, 0.0f,	1.0f, 1.0f), //bottom-right		15
 
-		Vertex(0.0f,  16.0f, 0.0f,	0.0f, 1.0f, 0.0f,	0.0f, 1.0f), //					16 +Y
-		Vertex(0.0f,  16.0f, 16.0f,	0.0f, 1.0f, 0.0f,	0.0f, 0.0f), //					17
-		Vertex(16.0f,  16.0f, 16.0f,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f), //					18
-		Vertex(16.0f,  16.0f, 0.0f,	0.0f, 1.0f, 0.0f,	1.0f, 1.0f), //					19
+		Vertex(0.0f,				(float)CHUNKSIZE_Y, 0.0f,				0.0f, 1.0f, 0.0f,	0.0f, 1.0f), //					16 +Y
+		Vertex(0.0f,				(float)CHUNKSIZE_Y, (float)CHUNKSIZE_Z,	0.0f, 1.0f, 0.0f,	0.0f, 0.0f), //					17
+		Vertex((float)CHUNKSIZE_X,  (float)CHUNKSIZE_Y, (float)CHUNKSIZE_Z,	0.0f, 1.0f, 0.0f,	1.0f, 0.0f), //					18
+		Vertex((float)CHUNKSIZE_X,  (float)CHUNKSIZE_Y, 0.0f,				0.0f, 1.0f, 0.0f,	1.0f, 1.0f), //					19
 
-		Vertex(0.0f,  0.0f, 16.0f,	0.0f, -1.0f, 0.0f,	0.0f, 1.0f), //					20 -Y
-		Vertex(0.0f,  0.0f, 0.0f,   0.0f, -1.0f, 0.0f,	0.0f, 0.0f), //					21
-		Vertex(16.0f,  0.0f, 0.0f,   0.0f, -1.0f, 0.0f,	1.0f, 0.0f), //					22
-		Vertex(16.0f,  0.0f, 16.0f,	0.0f, -1.0f, 0.0f,	1.0f, 1.0f), //					23
+		Vertex(0.0f,				0.0f,				(float)CHUNKSIZE_Z,	0.0f, -1.0f, 0.0f,	0.0f, 1.0f), //					20 -Y
+		Vertex(0.0f,				0.0f,				0.0f,				0.0f, -1.0f, 0.0f,	0.0f, 0.0f), //					21
+		Vertex((float)CHUNKSIZE_X,  0.0f,				0.0f,				0.0f, -1.0f, 0.0f,	1.0f, 0.0f), //					22
+		Vertex((float)CHUNKSIZE_X,  0.0f,				(float)CHUNKSIZE_Z,	0.0f, -1.0f, 0.0f,	1.0f, 1.0f), //					23
 };
 
 

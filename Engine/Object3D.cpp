@@ -14,6 +14,7 @@ Model* Object3D::AddModel(ID3D11Device* device) {
 }
 
 bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<pair<Model*, XMMATRIX>>* transparentModels) {
+	AcquireSRWLockExclusive(&this->gAccessMutex);
 	bool didDraw = false;
 
 	for(Model* model : models) {
@@ -27,6 +28,9 @@ bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<pai
 			transparentModels->push_back(pair<Model*, XMMATRIX>(model, transform.mx()));
 		}
 	}
+
+	ReleaseSRWLockExclusive(&this->gAccessMutex);
+
 	return didDraw;
 }
 

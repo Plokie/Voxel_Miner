@@ -311,4 +311,12 @@ public:
 	const XMVECTOR& xmVec() {
 		return XMVectorSet(x, y, 0.0f, 0.0f);
 	}
+
+	operator XMVECTOR() const {
+		return XMVectorSet(x, y, 0.0f, 0.0f);
+	}
+
+	operator XMFLOAT2() const {
+		return XMFLOAT2(x, y);
+	}
 };

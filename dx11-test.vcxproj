@@ -156,6 +156,7 @@
     <ClCompile Include="Graphics\ExampleMeshes.cpp" />
     <ClCompile Include="Graphics\Graphics.cpp" />
     <ClCompile Include="Engine\Input.cpp" />
+    <ClCompile Include="Engine\Label.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Graphics\Shaders.cpp" />
     <ClCompile Include="Engine\WinManager.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="Game\TitleScreen.h" />
     <ClInclude Include="Game\VoxelRaycast.h" />
     <ClInclude Include="Engine\Object2D.h" />
+    <ClInclude Include="Engine\Label.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="demopixelshader.hlsl">

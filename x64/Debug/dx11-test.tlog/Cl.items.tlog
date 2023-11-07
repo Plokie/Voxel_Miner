@@ -9,6 +9,7 @@ C:\Users\c2015437\source\repos\dx11-voxel\Engine\Engine.cpp;C:\Users\c2015437\so
 C:\Users\c2015437\source\repos\dx11-voxel\Graphics\ExampleMeshes.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\ExampleMeshes.obj
 C:\Users\c2015437\source\repos\dx11-voxel\Graphics\Graphics.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\Graphics.obj
 C:\Users\c2015437\source\repos\dx11-voxel\Engine\Input.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\Input.obj
+C:\Users\c2015437\source\repos\dx11-voxel\Engine\Label.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\Label.obj
 C:\Users\c2015437\source\repos\dx11-voxel\main.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\main.obj
 C:\Users\c2015437\source\repos\dx11-voxel\Graphics\Shaders.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\Shaders.obj
 C:\Users\c2015437\source\repos\dx11-voxel\Engine\WinManager.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\WinManager.obj
@@ -21,3 +22,4 @@ C:\Users\c2015437\source\repos\dx11-voxel\Game\WorldGen.cpp;C:\Users\c2015437\so
 C:\Users\c2015437\source\repos\dx11-voxel\Engine\Scene.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\Scene.obj
 C:\Users\c2015437\source\repos\dx11-voxel\Game\TitleScreen.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\TitleScreen.obj
 C:\Users\c2015437\source\repos\dx11-voxel\Game\VoxelRaycast.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\VoxelRaycast.obj
+C:\Users\c2015437\source\repos\dx11-voxel\Engine\Object2D.cpp;C:\Users\c2015437\source\repos\dx11-voxel\x64\Debug\Object2D.obj

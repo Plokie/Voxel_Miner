@@ -299,6 +299,15 @@ bool Graphics::SetupBlendState() {
 	return true;
 }
 
+bool Graphics::SetupSpriteBatch() {
+	
+	this->spriteBatch = new SpriteBatch(this->deviceCtx);
+
+	//this->testSpriteFont = new SpriteFont(this->device, L"Data\\Fonts\\algerian.spritefont");
+	
+	return true;
+}
+
 bool Graphics::InitResolution(HWND hwnd) {
 	SetupSwapChain(hwnd);
 
@@ -327,6 +336,8 @@ bool Graphics::InitDX(HWND hwnd) {
 	SetupSamplerStatePoint();
 
 	SetupBlendState();
+
+	SetupSpriteBatch();
 	
 	return true;
 }
@@ -379,27 +390,6 @@ bool Graphics::InitShaders() {
 	return true;
 }
 
-bool Graphics::CreateBuffer(UINT stride, UINT bindFlags, ID3D11Buffer** targetBuffer, void* arr, UINT exitCode = 1337) {
-	//BUFFER
-	D3D11_BUFFER_DESC desc;
-	ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC)); // Clear out any garbage
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.ByteWidth = stride;
-	desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
-
-	D3D11_SUBRESOURCE_DATA data;
-	ZeroMemory(&data, sizeof(D3D11_SUBRESOURCE_DATA));
-	data.pSysMem = arr;
-
-	HRESULT hr = device->CreateBuffer(&desc, &data, targetBuffer);
-	if(FAILED(hr)) {
-		exit(exitCode);
-		return false;
-	}// Failed to create buffer
-	return true;
-}
 
 bool Graphics::InitScene() {
 	//mesh->Init(device);
@@ -524,6 +514,18 @@ void Graphics::Render(Scene* scene) {
 
 	//
 
+
+	this->spriteBatch->Begin();
+
+	//this->testSpriteFont->DrawString(spriteBatch, L"Hello, world!", XMFLOAT2(0, 0));
+
+	//todo: z/depth sort
+	for (map<string, Object2D*>::iterator it = scene->GetSceneObjects2D()->begin(); it != scene->GetSceneObjects2D()->end(); ++it) {
+		it->second->Draw(this->spriteBatch);
+	}
+
+
+	this->spriteBatch->End();
 
 	swapChain->Present(0, NULL);
 }

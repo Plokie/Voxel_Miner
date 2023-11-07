@@ -39,14 +39,34 @@ Object3D* Scene::CreateObject3D(Object3D* object3D, const string& name, const st
 	return object3D;
 }
 
+Object2D* Scene::CreateObject2D(Object2D* object2D, const string& name)
+{
+	sceneObjects2D[name] = object2D;
+	
+	object2D->Init(gfx->GetDevice());
+	object2D->InitSelf(); //overriden fun to init child-specific features
+
+	return object2D;
+}
+
 Object3D* Scene::GetObject3D(string name)
 {
 	return sceneObjects3D[name];
 }
 
+Object2D* Scene::GetObject2D(string name)
+{
+	return sceneObjects2D[name];
+}
+
 map<string, Object3D*>* Scene::GetSceneObjects3D()
 {
 	return &sceneObjects3D;
+}
+
+map<string, Object2D*>* Scene::GetSceneObjects2D()
+{
+	return &sceneObjects2D;
 }
 
 Scene::~Scene()

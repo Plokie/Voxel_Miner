@@ -133,6 +133,7 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 			for(int x = 1 - CHUNKLOAD_AREA_X; x < CHUNKLOAD_AREA_X + 1; x++) {
 				for(int z = 1 - CHUNKLOAD_AREA_Z; z < CHUNKLOAD_AREA_Z + 1; z++) {
 					//AcquireSRWLockExclusive(pDestroyMutex);
+					
 					CreateChunk(camIndex.x + x, camIndex.y + y, camIndex.z + z);
 					//ReleaseSRWLockExclusive(pDestroyMutex);
 

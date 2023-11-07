@@ -9,6 +9,8 @@
 #include "CameraController.h"
 #include "ChunkManager.h"
 #include "TitleScreen.h"
+
+#include "../Engine/Label.h"
 // ---------------------------------------
 
 
@@ -37,6 +39,8 @@ void GameStart(Engine* engine) {
 	titleScene->CreateObject3D(new TitleScreen(), "titlescreen");
 	titleScene->CreateObject3D(new ExampleObject3D(-2.f, 0.f, 0.f), "test", "cube", "head");
 	titleScene->GetObject3D("test")->transform.position = Vector3(0.f, 0.f, 5.f);
+
+	titleScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "Test 2!", XMFLOAT4(0,0,0,1.0f)), "start-label");
 
 	Scene* gameScene = new Scene(Graphics::Get());
 

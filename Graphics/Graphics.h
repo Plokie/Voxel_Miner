@@ -6,6 +6,8 @@
 #include <d3d11.h>
 #include <WICTextureLoader.h>
 #include <DDSTextureLoader.h>
+#include <SpriteBatch.h>
+#include <SpriteFont.h>
 #pragma comment(lib,"d3d11.lib")
 #pragma comment(lib,"DirectXTK.lib")
 #pragma comment(lib,"DXGI.lib")
@@ -49,8 +51,9 @@ private:
 	ID3D11SamplerState* samplerStateLinear = nullptr;
 	ID3D11SamplerState* samplerStatePoint = nullptr;
 	
+	SpriteBatch* spriteBatch = nullptr;
 
-	ID3D11BlendState* blendState;
+	ID3D11BlendState* blendState = nullptr;
 
 	bool ChooseAdapter();
 	bool SetupSwapChain(HWND hwnd);
@@ -62,6 +65,8 @@ private:
 	bool SetupSamplerStateLinear();
 	bool SetupSamplerStatePoint();
 	bool SetupBlendState();
+	bool SetupSpriteBatch();
+
 	bool InitResolution(HWND hwnd);
 
 	void ResizeSwapchain();
@@ -79,7 +84,7 @@ public:
 		return _Instance;
 	}
 
-	bool CreateBuffer(UINT stride, UINT bindFlags, ID3D11Buffer** targetBuffer, void* arr, UINT exitCode);
+	//bool CreateBuffer(UINT stride, UINT bindFlags, ID3D11Buffer** targetBuffer, void* arr, UINT exitCode);
 
 	bool Init(HWND hwnd, int width, int height);
 
@@ -113,6 +118,10 @@ public:
 		//if(samplerStatePoint) samplerStatePoint->Release();
 
 		if(errTex) errTex->Release();
+
+		//if (spriteBatch) delete spriteBatch;
+
+		//if (testSpriteFont) delete testSpriteFont;
 
 		if (blendState) blendState->Release();
 	}
