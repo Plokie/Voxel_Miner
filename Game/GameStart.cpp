@@ -33,6 +33,7 @@ void GameStart(Engine* engine) {
 	Resources::LoadMesh("cube");
 	Resources::LoadMesh(exampleFloorVertices, ARRAYSIZE(exampleFloorVertices), exampleCubeIndices, ARRAYSIZE(exampleCubeIndices), "floorMesh");
 	Resources::LoadMesh(chunkBorderVertices, ARRAYSIZE(chunkBorderVertices), exampleCubeIndices, ARRAYSIZE(exampleCubeIndices), "chunkborder");
+	Resources::LoadMesh(exampleInverseCubeVertices, ARRAYSIZE(exampleInverseCubeVertices), exampleInverseCubeIndices, ARRAYSIZE(exampleInverseCubeIndices), "inverse-cube");
 
 	Scene* titleScene = new Scene(Graphics::Get());
 
@@ -40,12 +41,24 @@ void GameStart(Engine* engine) {
 	titleScene->CreateObject3D(new ExampleObject3D(-2.f, 0.f, 0.f), "test", "cube", "head");
 	titleScene->GetObject3D("test")->transform.position = Vector3(0.f, 0.f, 5.f);
 
-	titleScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "Test 2!", XMFLOAT4(0,0,0,1.0f)), "start-label");
+	titleScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "Press SPACE to start!", XMFLOAT4(0,0,0,1.0f)), "start-label");
+	titleScene->GetObject2D("start-label")->SetPosition(Vector2(100.f, 100.f));
 
 	Scene* gameScene = new Scene(Graphics::Get());
 
 	gameScene->CreateObject3D(new CameraController(), "CameraController");
 	gameScene->CreateObject3D(ChunkManager::Create(&Graphics::Get()->camera.transform), "ChunkManager");
+
+	gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "0", XMFLOAT4(0, 0, 0, 1.0f)), "fps-counter");
+
+	gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "0 0 0", XMFLOAT4(0, 0, 0, 1.0f)), "worldpos");
+	gameScene->GetObject2D("worldpos")->SetPosition(Vector2(0.f, 24.f));
+
+	//gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "0 0 0", XMFLOAT4(0, 0, 0, 1.0f)), "chunkpos");
+	//gameScene->GetObject2D("chunkpos")->position = Vector2(0.f, 48.f);
+
+	//gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "0 0 0", XMFLOAT4(0, 0, 0, 1.0f)), "indexpos");
+	//gameScene->GetObject2D("indexpos")->position = Vector2(0.f, 72.f);
 	
 	engine->AddScene(titleScene, "title");
 	engine->AddScene(gameScene, "game");

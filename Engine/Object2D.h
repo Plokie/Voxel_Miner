@@ -9,10 +9,10 @@ protected:
 	// the pivot in pixels
 	Vector2 pivot = { 0.0f, 0.0f };
 	Vector2 dimensions;
+	Vector2 rawPosition;
 private:
 
 public:
-	Vector2 position;
 	float rotation;
 
 	Vector2 anchor = { 0.f ,0.f };
@@ -20,6 +20,9 @@ public:
 	const Vector2& GetPivot();
 	void SetPivot(const float& x, const float& y);
 	void SetPivot(const Vector2& newPivot);
+
+	void SetPosition(const Vector2& position);
+	void SetPosition(const float& x, const float& y);
 
 	void Init(ID3D11Device* pDevice);
 

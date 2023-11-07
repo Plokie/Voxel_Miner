@@ -28,6 +28,13 @@ public:
 	Object3D* GetObject3D(string name);
 	Object2D* GetObject2D(string name);
 
+	template <typename T>
+	T* GetObject2D(string name) {
+		if(sceneObjects2D.count(name))
+			return static_cast<T*>(sceneObjects2D[name]);
+		else return nullptr;
+	}
+
 	map<string, Object3D*>* GetSceneObjects3D();
 	map<string, Object2D*>* GetSceneObjects2D();
 

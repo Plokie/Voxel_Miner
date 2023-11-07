@@ -51,12 +51,16 @@ Object2D* Scene::CreateObject2D(Object2D* object2D, const string& name)
 
 Object3D* Scene::GetObject3D(string name)
 {
-	return sceneObjects3D[name];
+	if(sceneObjects3D.count(name))
+		return sceneObjects3D[name];
+	else return nullptr;
 }
 
 Object2D* Scene::GetObject2D(string name)
 {
-	return sceneObjects2D[name];
+	if(sceneObjects2D.count(name))
+		return sceneObjects2D[name];
+	else return nullptr;
 }
 
 map<string, Object3D*>* Scene::GetSceneObjects3D()

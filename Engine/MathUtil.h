@@ -1,10 +1,18 @@
 #pragma once
 
+#include <string>
 #include <tuple>
 #include <DirectXMath.h>
 
 using namespace DirectX;
 using namespace std;
+
+inline int FloorAbs(float v) {
+	return ((v < 0) ? -1 : 1) * static_cast<int>(floor(abs(v)));
+}
+inline int FloorMod(const int& a, const int& b) {
+	return (a % b + b) % b;
+}
 
 struct Vector3 {
 public:
@@ -17,6 +25,10 @@ public:
 		x = XMVectorGetX(xmv);
 		y = XMVectorGetY(xmv);
 		z = XMVectorGetZ(xmv);
+	}
+
+	string ToString() {
+		return to_string(x) + ", " + to_string(y) + ", " + to_string(z);
 	}
 
 	static const Vector3 Zero() {
@@ -81,7 +93,7 @@ public:
 		return *this;
 	}
 
-	float operator[](int index) {
+	float& operator[](int index) {
 		switch (index) {
 		case 0: return x;
 		case 1: return y;
@@ -135,6 +147,18 @@ public:
 
 	static const Vector3Int Zero() {
 		return Vector3Int(0, 0, 0);
+	}
+
+	string ToString() {
+		return to_string(x) + ", " + to_string(y) + ", " + to_string(z);
+	}
+
+	static Vector3Int RoundToInt(const Vector3& v) {
+		return Vector3Int(static_cast<int>(roundf(v.x)), static_cast<int>(roundf(v.y)), static_cast<int>(roundf(v.z)));
+	}
+
+	static Vector3Int FloorToInt(const Vector3& v) {
+		return Vector3Int(static_cast<int>(floorf(v.x)), static_cast<int>(floorf(v.y)), static_cast<int>(floorf(v.z)));
 	}
 
 	Vector3Int operator+(Vector3Int& a) {
@@ -305,7 +329,9 @@ public:
 	}
 
 	Vector2 normalized() const {
-		return Vector2(x, y) / magnitude();
+		float mag = magnitude();
+		if(mag == 0) return Vector2(0.f, 0.f);
+		return Vector2(x, y) / mag;
 	}
 
 	const XMVECTOR& xmVec() {

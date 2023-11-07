@@ -16,6 +16,16 @@ void Object2D::SetPivot(const Vector2& newPivot)
     SetPivot(newPivot.x, newPivot.y);
 }
 
+void Object2D::SetPosition(const Vector2& position)
+{
+    this->rawPosition = position;
+}
+
+void Object2D::SetPosition(const float& x, const float& y)
+{
+    this->rawPosition = Vector2(x,y);
+}
+
 void Object2D::Init(ID3D11Device* pDevice) {
     this->pDevice = pDevice;
 }

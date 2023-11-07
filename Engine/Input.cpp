@@ -73,7 +73,7 @@ void Input::HandleRawInput(HRAWINPUT input) {
 		if(flags & RI_MOUSE_BUTTON_5_UP)  // 512 =			1000000000 = 10
 			_Instance->mKeyBuffer[MOUSE_5] = false;
 
-		_Instance->mouseDelta = XMFLOAT2(static_cast<float>(raw->data.mouse.lLastX), static_cast<float>(raw->data.mouse.lLastY));
+		_Instance->mouseDelta = XMFLOAT2(_Instance->mouseDelta.x + static_cast<float>(raw->data.mouse.lLastX), _Instance->mouseDelta.y + static_cast<float>(raw->data.mouse.lLastY));
 	}
 }
 

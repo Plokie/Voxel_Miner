@@ -231,6 +231,7 @@ void Chunk::BuildMesh()
 	PushChunkMesh(waterVertices, waterIndices, WATER);
 
 #ifdef _DEBUG
+#if 0
 	{
 		size_t modelCount = models.size();
 		models.push_back(Model::Create(Graphics::Get()->GetDevice()));
@@ -238,6 +239,7 @@ void Chunk::BuildMesh()
 		models[modelCount]->SetMesh("chunkborder");
 		models[modelCount]->SetTransparent(true);
 	}
+#endif
 #endif
 }
 

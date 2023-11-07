@@ -72,9 +72,9 @@ float fbm(float2 x)
 }
 
 
-static const float WaterFrequency = 1.0f;
+static const float WaterFrequency = 2.0f;
 static const float WaterSpeed = 0.3f;
-static const float WaterAmplitude = 0.125f;
+static const float WaterAmplitude = 0.1875f;
 
 
 VS_OUTPUT main(VS_INPUT input)

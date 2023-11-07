@@ -24,10 +24,11 @@ public:
 		scale = Vector3(1.0f, 1.0f, 1.0f);
 	}
 
-	const XMMATRIX& mxView(); // For camera
-	const XMMATRIX& mx();
+	XMMATRIX mxView(); // For camera
+	XMMATRIX mx();
 
-	Vector3 basis(float x, float y, float z);
+	Vector3 basis(const float& x, const float& y, const float& z);
+	Vector3 basis(const Vector3& v);
 	Vector3 forward();
 	Vector3 back();
 	Vector3 left();

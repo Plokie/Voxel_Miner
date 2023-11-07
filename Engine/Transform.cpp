@@ -1,6 +1,6 @@
 #include "Transform.h"
 
-const XMMATRIX& Transform::mxView() {
+XMMATRIX Transform::mxView() {
 	XMMATRIX mx = XMMatrixIdentity();
 
 	mx *= XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
@@ -13,7 +13,7 @@ const XMMATRIX& Transform::mxView() {
 	return XMMatrixLookAtLH(position, fwdTarget, upDir);
 }
 
-const XMMATRIX& Transform::mx() {
+XMMATRIX Transform::mx() {
 	XMMATRIX mx = XMMatrixIdentity();
 
 	mx *= XMMatrixScaling(scale.x, scale.y, scale.z);
@@ -23,8 +23,12 @@ const XMMATRIX& Transform::mx() {
 	return mx;
 }
 
-Vector3 Transform::basis(float x, float y, float z) {
+Vector3 Transform::basis(const float& x, const float& y, const float& z) {
 	return Vector3(XMVector3TransformCoord(XMVectorSet(x, y, z, 0.f), XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z)));
+}
+
+Vector3 Transform::basis(const Vector3& v) {
+	return basis(v.x, v.y, v.z);
 }
 
 Vector3 Transform::forward() {

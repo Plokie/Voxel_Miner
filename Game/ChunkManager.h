@@ -9,6 +9,7 @@
 #include "../Engine/Engine.h"
 #include "Chunk.h"
 #include "WorldGen.h"
+#include "../Engine/MathUtil.h"
 
 #define CHUNKLOAD_AREA_X 5
 #define CHUNKLOAD_AREA_Y 3
@@ -30,8 +31,10 @@ private:
 	atomic<bool> _isRunning{true};
 
 public:
-	static const Vector3Int& WorldToIndexPosition(Vector3 worldPosition);
-
+	// long name because really shouldnt use this in most cases, but it /does/ have its use
+	static Vector3Int ChunkFloorPosForPositionCalculation(Vector3 worldPosition);
+	static Vector3Int ToChunkIndexPosition(const int& x, const int& y, const int& z);
+	
 	BlockID GetBlockAtWorldPos(int x, int y, int z);
 	BlockID GetBlockAtWorldPos(Vector3Int v);
 

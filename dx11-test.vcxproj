@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game\Physics\AABB.cpp" />
     <ClCompile Include="Game\ChunkManager.cpp" />
     <ClCompile Include="Game\Blocks.cpp" />
     <ClCompile Include="Game\Chunk.cpp" />
@@ -172,6 +173,7 @@
     <ClCompile Include="Engine\Object2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Game\Physics\AABB.h" />
     <ClInclude Include="Game\FastNoiseLite.h" />
     <ClInclude Include="Game\ChunkManager.h" />
     <ClInclude Include="Game\Blocks.h" />

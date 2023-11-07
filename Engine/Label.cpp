@@ -47,5 +47,5 @@ void Label::Update(const float& dTime)
 
 void Label::Draw(SpriteBatch* spriteBatch)
 {
-	this->spriteFont->DrawString(spriteBatch, this->text.c_str(), XMFLOAT2(this->position.x, this->position.y), XMVectorSet(color.x,color.y,color.z,color.w));
+	this->spriteFont->DrawString(spriteBatch, this->text.c_str(), XMFLOAT2(this->rawPosition.x, this->rawPosition.y), XMVectorSet(color.x,color.y,color.z,color.w));
 }
