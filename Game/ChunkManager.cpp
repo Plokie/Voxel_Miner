@@ -7,22 +7,30 @@ Chunk* ChunkManager::CreateChunk(int x, int y, int z)
 		return nullptr;
 	}
 
-	Chunk* newChunk = (Chunk*)this->pEngine->GetCurrentScene()->CreateObject3D(
-		new Chunk(Vector3Int(x, y, z), this), // chunk instance w/ initialised values (position and reference to ChunkManager)
-		"_c" + to_string(x) + "_" + to_string(y) + "_" + to_string(z) // Object3D name (using index as string)
-	);
+	Chunk* newChunk = new Chunk(Vector3Int(x, y, z), this);
+
+	//Chunk* newChunk = (Chunk*)this->pEngine->GetCurrentScene()->CreateObject3D(
+	//	new Chunk(Vector3Int(x, y, z), this), // chunk instance w/ initialised values (position and reference to ChunkManager)
+	//	"_c" + to_string(x) + "_" + to_string(y) + "_" + to_string(z) // Object3D name (using index as string)
+	//);
 	
 	// something is happening between line 9 and inside Load() (when setting block data) which is corrupting the chunk
 	// was it deleted on the previous frame?
 
-	AcquireSRWLockExclusive(&newChunk->gAccessMutex);
+	//AcquireSRWLockExclusive(&newChunk->gAccessMutex);
 
 	newChunk->transform.position = Vector3(static_cast<float>(CHUNKSIZE_X * x), static_cast<float>(CHUNKSIZE_Y * y), static_cast<float>(CHUNKSIZE_Z * z));
 	newChunk->Load();
 
 	this->chunkMap[tuple<int, int, int>(x, y, z)] = newChunk;
 
-	ReleaseSRWLockExclusive(&newChunk->gAccessMutex);
+	//ReleaseSRWLockExclusive(&newChunk->gAccessMutex);
+
+
+	this->pEngine->GetCurrentScene()->CreateObject3D(
+		newChunk,
+		"_c" + to_string(x) + "_" + to_string(y) + "_" + to_string(z)
+	);
 
 	return newChunk;
 }

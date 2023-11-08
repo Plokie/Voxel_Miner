@@ -15,4 +15,5 @@ public:
 	static float SampleWorldHeight(int x, int z);
 	static BlockID GetBlockAt(int x, int y, int z);
 	static BlockID GetBlockGivenHeight(int x, int y, int z, int heightSample);
+	static bool IsBlockCave(int x, int y, int z);
 };

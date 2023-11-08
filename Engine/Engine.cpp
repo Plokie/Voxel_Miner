@@ -93,7 +93,9 @@ void Engine::Update(float dTime) {
 			pair.second->hasRanStartFunction = true;
 		}
 
+		//AcquireSRWLockExclusive(&pair.second->gAccessMutex);
 		pair.second->Update(dTime);
+		//ReleaseSRWLockExclusive(&pair.second->gAccessMutex);
 	}
 
 	// Keep at end

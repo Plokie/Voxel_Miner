@@ -21,7 +21,7 @@ void GameStart(Engine* engine) {
 	Resources::LoadTexture(L"Data\\Textures\\pfp.dds", "pfp");
 	Resources::LoadTexture(L"Data\\Textures\\block-select.dds", "block-select");
 	Resources::LoadTexture(L"Data\\Textures\\chunkborder.dds", "chunkborder");
-	Resources::LoadTexture(L"Data\\Textures\\grass2.dds", "grass");
+	//Resources::LoadTexture(L"Data\\Textures\\grass2.dds", "grass");
 	Resources::LoadTexture(L"Data\\Textures\\atlas.dds", "atlas");
 
 	Resources::LoadPixelShader(L"pixelshader.cso", "pixelshader");

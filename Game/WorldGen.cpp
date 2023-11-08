@@ -35,10 +35,13 @@ float WorldGen::SampleWorldHeight(int x, int z)
 	return rawNoiseSample * 30.f;
 }
 
-BlockID WorldGen::GetBlockAt(int x, int y, int z)
-{
+BlockID WorldGen::GetBlockAt(int x, int y, int z) {
 	float heightSample = SampleWorldHeight(x, z);
 	return GetBlockGivenHeight(x, y, z, static_cast<int>(heightSample));
+}
+
+bool WorldGen::IsBlockCave(int x, int y, int z) {
+	return _Instance->noiseSampler_Caves1.GetNoise((float)x, (float)y, (float)z) > 0.25f;
 }
 
 BlockID WorldGen::GetBlockGivenHeight(int x, int y, int z, int heightSample)
@@ -58,7 +61,7 @@ BlockID WorldGen::GetBlockGivenHeight(int x, int y, int z, int heightSample)
 	if(y == heightSample) {
 		if(y < SEA_LEVEL) return SAND;
 		else {
-			bool isInCave = _Instance->noiseSampler_Caves1.GetNoise((float)x, (float)y, (float)z) > 0.25f;
+			bool isInCave = IsBlockCave(x, y, z);
 			if(isInCave)return AIR;
 			return GRASS;
 		}
@@ -67,7 +70,7 @@ BlockID WorldGen::GetBlockGivenHeight(int x, int y, int z, int heightSample)
 	if(y == heightSample - 1) { // Just below the surface
 		if(y < SEA_LEVEL) return SAND;
 		else {
-			bool isInCave = _Instance->noiseSampler_Caves1.GetNoise((float)x, (float)y, (float)z) > 0.25f;
+			bool isInCave = IsBlockCave(x, y, z);
 			if(isInCave) return AIR;
 			return DIRT;
 		}
@@ -76,13 +79,13 @@ BlockID WorldGen::GetBlockGivenHeight(int x, int y, int z, int heightSample)
 	if(y == heightSample - 2) { // Bottom of crust
 		if(y < SEA_LEVEL) return CLAY;
 		else {
-			bool isInCave = _Instance->noiseSampler_Caves1.GetNoise((float)x, (float)y, (float)z) > 0.25f;
+			bool isInCave = IsBlockCave(x, y, z);
 			if(isInCave) return AIR;
 			return DIRT;
 		}
 	}
 
-	bool isInCave = _Instance->noiseSampler_Caves1.GetNoise((float)x, (float)y, (float)z) > 0.25f;
+	bool isInCave = IsBlockCave(x,y,z);
 	if(isInCave) return AIR;
 	return STONE;
 }

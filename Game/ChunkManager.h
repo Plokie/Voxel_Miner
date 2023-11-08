@@ -28,7 +28,12 @@ private:
 
 	vector<thread> _chunkLoaderThreads = {};
 
+
 	atomic<bool> _isRunning{true};
+
+	// To use less Mutexes and better performance, could just delete the queue from the chunkMap
+	//SRWLOCK _rebuildQueueMutex; // Permission to push / pop from rebuild queue
+	//atomic<vector<Chunk*>> _rebuildQueue{ {} }; // List of chunks that are awaiting re-build on the chunk builder thread
 
 	void TryRegen(Vector3Int chunkCoords);
 

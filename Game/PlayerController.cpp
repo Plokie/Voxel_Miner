@@ -14,6 +14,10 @@ void CameraController::Start()
 	engine->GetCurrentScene()->GetObject3D("a_debug_pos")->models[0]->SetTransparent(true);
 	engine->GetCurrentScene()->GetObject3D("a_debug_pos")->transform.scale = Vector3(0.51f, 0.51f, 0.51f);
 
+	engine->GetCurrentScene()->CreateObject3D(new Object3D(), "a_debug_look", "cube", "err");
+	engine->GetCurrentScene()->GetObject3D("a_debug_look")->models[0]->SetTransparent(true);
+	engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.scale = Vector3(0.001f, 0.001f, 0.001f);
+
 	//engine->GetCurrentScene()->CreateObject3D(new Object3D(), "cam_bounds", "inverse-cube", "block-select");
 	//engine->GetCurrentScene()->GetObject3D("cam_bounds")->models[0]->SetTransparent(true);
 	//engine->GetCurrentScene()->GetObject3D("cam_bounds")->transform.scale = Vector3(playerHalfExtents);
@@ -56,6 +60,10 @@ void CameraController::Update(float dTime)
 		//transform.position -= Vector3(0, camSpeed, 0);
 		movementSpeed = 5.612f;
 	}
+	if(Input::IsKeyHeld(VK_CONTROL)) {
+		movementSpeed = 1.0f;
+	}
+
 	Vector2 input = Input::GetInputVector().normalized();
 	Vector3 moveAxis = transform.basis(input.x, 0, input.y);
 	moveAxis.y = 0.0;
@@ -142,6 +150,8 @@ void CameraController::Update(float dTime)
 
 	VoxelRay ray(transform.position, transform.forward());
 
+	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.position = ray.origin + (ray.direction * 1.f);
+
 	Vector3Int lookHitPoint = Vector3Int(0,0,0);
 	Vector3Int lookHitNormal;
 	BlockID lookHitBlock;
@@ -192,6 +202,10 @@ void CameraController::Update(float dTime)
 	//engine->GetCurrentScene()->GetObject2D<Label>("indexpos")->SetText(Vector3Int(FloorMod(camBlockPos.x, CHUNKSIZE_X), FloorMod(camBlockPos.y, CHUNKSIZE_Y), FloorMod(camBlockPos.z, CHUNKSIZE_Z)).ToString());
 
 
+	// TODO: REMOVE
+	// TEMP CROSSHAIR
+	engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.position = transform.position + (transform.forward() * 0.1f);
+	engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.rotation = transform.rotation;
 
 	// KEEP AT END
 	camera->transform = transform;
