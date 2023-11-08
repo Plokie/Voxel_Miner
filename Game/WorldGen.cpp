@@ -1,12 +1,18 @@
 #include "WorldGen.h"
 
+#include <time.h>
+
 WorldGen* WorldGen::_Instance = new WorldGen();
 
 WorldGen::WorldGen()
 {
 	this->_Instance = this;
 
-	noiseSampler_Height1 = FastNoiseLite(69);
+	//srand(time(NULL));
+	//int seed = rand();
+	int seed = 69;
+
+	noiseSampler_Height1 = FastNoiseLite(seed);
 	noiseSampler_Height1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	noiseSampler_Height1.SetFrequency(0.02f);
 	noiseSampler_Height1.SetFractalType(FastNoiseLite::FractalType_FBm);
@@ -15,7 +21,7 @@ WorldGen::WorldGen()
 	noiseSampler_Height1.SetFractalLacunarity(2.03f);
 	noiseSampler_Height1.SetFractalGain(0.6f);
 
-	noiseSampler_Caves1 = FastNoiseLite(69);
+	noiseSampler_Caves1 = FastNoiseLite(seed);
 	noiseSampler_Caves1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	noiseSampler_Caves1.SetFrequency(0.035f);
 	noiseSampler_Caves1.SetFractalType(FastNoiseLite::FractalType_FBm);

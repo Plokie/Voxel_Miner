@@ -11,9 +11,9 @@
 #include "WorldGen.h"
 #include "../Engine/MathUtil.h"
 
-#define CHUNKLOAD_AREA_X 8
+#define CHUNKLOAD_AREA_X 5
 #define CHUNKLOAD_AREA_Y 3
-#define CHUNKLOAD_AREA_Z 8
+#define CHUNKLOAD_AREA_Z 5
 
 using namespace std;
 

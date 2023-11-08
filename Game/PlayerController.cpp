@@ -117,6 +117,7 @@ void CameraController::Update(float dTime)
 	for(const AABB& blockAABB : blocks) {
 		if(aabb.Intersects(blockAABB)) {
 			transform.position += AABB::penetration_vector(AABB::minkowski_difference(blockAABB, aabb));
+			aabb.SetPosition(transform.position - Vector3(0, 0.62f, 0));
 		}
 	}
 

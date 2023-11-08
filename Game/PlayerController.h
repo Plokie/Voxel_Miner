@@ -14,7 +14,7 @@ class CameraController : public Object3D {
 	const float jumpVelocity = static_cast<float>(sqrt(2.0f * abs(gravity) * jumpHeight));
 	const Vector3 playerHalfExtents = Vector3(0.3f, 0.9f, 0.3f);
 
-#define COLLISION_CHECK_INSET 0.03f
+#define COLLISION_CHECK_INSET 0.05f
 
 
 	bool freeCam = false;
