@@ -11,5 +11,5 @@ public:
 
 	VoxelRay(Vector3 Origin, Vector3 Direction) : origin(Origin), direction(Direction) {}
 
-	static bool Cast(VoxelRay* ray, ChunkManager* chunkManager, float max_dist, Vector3Int* outPosition = nullptr, BlockID* outBlock = nullptr);
+	static bool Cast(VoxelRay* ray, ChunkManager* chunkManager, float max_dist, Vector3Int* outPosition = nullptr, BlockID* outBlock = nullptr, Vector3Int* outNormal = nullptr);
 };

@@ -195,6 +195,13 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 
 void Chunk::BuildMesh()
 {
+	for(Model* model : models) {
+		model->ReleaseMesh();
+		
+		//delete model;
+	}
+	models.clear();
+
 	vector<Vertex> solidVertices = {};
 	vector<DWORD> solidIndices = {};
 

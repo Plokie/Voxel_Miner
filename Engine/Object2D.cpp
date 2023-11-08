@@ -3,7 +3,7 @@
 const Vector2& Object2D::GetPivot()
 {
     // TODO: insert return statement here
-    return { 0,0 };
+    return this->pivot;
 }
 
 void Object2D::SetPivot(const float& x, const float& y)

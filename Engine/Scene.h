@@ -29,6 +29,13 @@ public:
 	Object2D* GetObject2D(string name);
 
 	template <typename T>
+	T* GetObject3D(string name) {
+		if(sceneObjects3D.count(name))
+			return static_cast<T*>(sceneObjects3D[name]);
+		else return nullptr;
+	}
+
+	template <typename T>
 	T* GetObject2D(string name) {
 		if(sceneObjects2D.count(name))
 			return static_cast<T*>(sceneObjects2D[name]);

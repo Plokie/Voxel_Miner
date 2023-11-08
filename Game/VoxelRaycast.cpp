@@ -13,7 +13,7 @@
 //	return v;
 //}
 
-bool VoxelRay::Cast(VoxelRay* ray, ChunkManager* chunkManager, float max_dist, Vector3Int* outPosition, BlockID* outBlock)
+bool VoxelRay::Cast(VoxelRay* ray, ChunkManager* chunkManager, float max_dist, Vector3Int* outPosition, BlockID* outBlock, Vector3Int* outNormal)
 {
 	//Vector3Int currentVoxel = Vector3Int((int)floor(ray->origin.x), (int)floor(ray->origin.y), (int)floor(ray->origin.z));
 	//Vector3Int step = Vector3Int(sign(ray->direction), sign(ray->direction), sign(ray->direction));
@@ -31,12 +31,14 @@ bool VoxelRay::Cast(VoxelRay* ray, ChunkManager* chunkManager, float max_dist, V
 
 	Vector3 tMax = Vector3(step.x / ray->direction.x, step.y / ray->direction.y, step.z / ray->direction.z);
 	const Vector3 tDelta = Vector3(abs(1.0f / ray->direction.x), abs(1.0f / ray->direction.y), abs(1.0f / ray->direction.z));
+	Vector3Int normal = Vector3Int(0, 0, 0);
 
 	while(distance_traversed_sqr < max_dist_sqr) {
 		BlockID currentBlock = chunkManager->GetBlockAtWorldPos(pos);
 		if(currentBlock != AIR) {
 			if(outPosition!=nullptr) *outPosition = pos;
 			if(outBlock != nullptr) *outBlock = currentBlock;
+			if(outNormal != nullptr) *outNormal = normal;
 			return true;
 		}
 
@@ -44,19 +46,23 @@ bool VoxelRay::Cast(VoxelRay* ray, ChunkManager* chunkManager, float max_dist, V
 			if(tMax.x < tMax.z) {
 				pos.x += step.x;
 				tMax.x += tDelta.x;
+				normal = Vector3Int(-step.x, 0, 0);
 			}
 			else {
 				pos.z += step.z;
 				tMax.z += tDelta.z;
+				normal = Vector3Int(0, 0, -step.z);
 			}
 		}
 		else if(tMax.y < tMax.z) {
 			pos.y += step.y;
 			tMax.y += tDelta.y;
+			normal = Vector3Int(0, -step.y, 0);
 		}
 		else {
 			pos.z += step.z;
 			tMax.z += tDelta.z;
+			normal = Vector3Int(0, 0, -step.z);
 		}
 
 		distance_traversed_sqr = ((pos.x - ray->origin.x) * (pos.x - ray->origin.x)) + ((pos.y - ray->origin.y) * (pos.y - ray->origin.y)) + ((pos.z - ray->origin.z) * (pos.z - ray->origin.z));

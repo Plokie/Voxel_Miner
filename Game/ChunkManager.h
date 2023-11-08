@@ -11,9 +11,9 @@
 #include "WorldGen.h"
 #include "../Engine/MathUtil.h"
 
-#define CHUNKLOAD_AREA_X 5
+#define CHUNKLOAD_AREA_X 8
 #define CHUNKLOAD_AREA_Y 3
-#define CHUNKLOAD_AREA_Z 5
+#define CHUNKLOAD_AREA_Z 8
 
 using namespace std;
 
@@ -30,6 +30,8 @@ private:
 
 	atomic<bool> _isRunning{true};
 
+	void TryRegen(Vector3Int chunkCoords);
+
 public:
 	// long name because really shouldnt use this in most cases, but it /does/ have its use
 	static Vector3Int ChunkFloorPosForPositionCalculation(Vector3 worldPosition);
@@ -37,6 +39,9 @@ public:
 	
 	BlockID GetBlockAtWorldPos(int x, int y, int z);
 	BlockID GetBlockAtWorldPos(Vector3Int v);
+
+	void SetBlockAtWorldPos(const int& x, const int& y, const int& z, const BlockID& id);
+	void SetBlockAtWorldPos(const Vector3Int& pos, const BlockID& id);
 
 	static ChunkManager* Create(Transform* cameraTransform);
 	void Init(Transform* cameraTransform);

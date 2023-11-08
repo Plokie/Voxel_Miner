@@ -8,51 +8,71 @@ void CameraController::Start()
 {
 	Engine* engine = Engine::Get();
 
+	transform.position = Vector3(0, 5, 0);
+
 	engine->GetCurrentScene()->CreateObject3D(new Object3D(), "a_debug_pos", "cube", "block-select");
 	engine->GetCurrentScene()->GetObject3D("a_debug_pos")->models[0]->SetTransparent(true);
 	engine->GetCurrentScene()->GetObject3D("a_debug_pos")->transform.scale = Vector3(0.51f, 0.51f, 0.51f);
 
-	Vector3 playerHalfExtents = Vector3(0.3f, 1.f, 0.3f);
+	//engine->GetCurrentScene()->CreateObject3D(new Object3D(), "cam_bounds", "inverse-cube", "block-select");
+	//engine->GetCurrentScene()->GetObject3D("cam_bounds")->models[0]->SetTransparent(true);
+	//engine->GetCurrentScene()->GetObject3D("cam_bounds")->transform.scale = Vector3(playerHalfExtents);
 
-	engine->GetCurrentScene()->CreateObject3D(new Object3D(), "cam_bounds", "inverse-cube", "block-select");
-	engine->GetCurrentScene()->GetObject3D("cam_bounds")->models[0]->SetTransparent(true);
-	engine->GetCurrentScene()->GetObject3D("cam_bounds")->transform.scale = Vector3(playerHalfExtents);
+	aabb = AABB(transform.position, playerHalfExtents);
 
-	aabb = AABB(transform.position, playerHalfExtents * 1.5f); //hmm, i dont know why i have to multilpy 1.5 todo: look into this
 }
+
+#define AABB_RANGE Vector3Int(2,4,2)
+
+vector<AABB> CameraController::GetNearbyAABBs(ChunkManager* chunkManager) {
+	vector<AABB> ret;
+
+	for(int z = 1-AABB_RANGE.z; z < AABB_RANGE.z+1; z++) {
+		for(int y = 1-AABB_RANGE.y; y < AABB_RANGE.y+1; y++) {
+			for(int x = 1-AABB_RANGE.x; x < AABB_RANGE.x+1; x++) {
+				Vector3 offset = Vector3(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
+				Vector3Int playerBlockPos = Vector3Int::FloorToInt(transform.position);
+				Vector3Int blockPos = playerBlockPos + offset;
+				BlockID block = chunkManager->GetBlockAtWorldPos(blockPos);
+				if(BlockDef::GetDef(block).IsSolid()) {
+					ret.push_back(AABB(Vector3(static_cast<float>(blockPos.x), static_cast<float>(blockPos.y), static_cast<float>(blockPos.z)) + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f)));
+				}
+			}
+		}
+	}
+
+	return ret;
+}
+
 
 void CameraController::Update(float dTime)
 {
 	Engine* engine = Engine::Get();
 	Camera* camera = &engine->GetGraphics()->camera;
+	ChunkManager* chunkManager = engine->GetCurrentScene()->GetObject3D<ChunkManager>("ChunkManager");
 
-	float camSpeed = 2.f * dTime;
-
-	//float horizontal = Input::GetInputAxis("Horizontal");
-	//float vertical = Input::GetInputAxis("Vertical");
-
+	float movementSpeed = 4.317f;
+	if (Input::IsKeyHeld(VK_SHIFT)) {
+		//transform.position -= Vector3(0, camSpeed, 0);
+		movementSpeed = 5.612f;
+	}
 	Vector2 input = Input::GetInputVector().normalized();
-
 	Vector3 moveAxis = transform.basis(input.x, 0, input.y);
 	moveAxis.y = 0.0;
 	moveAxis = moveAxis.normalized();
-	moveAxis *= camSpeed;
+	moveAxis *= movementSpeed * dTime;
 
 	transform.position += moveAxis;
-
-	if (Input::IsKeyHeld(VK_SPACE)) {
-		transform.position += Vector3(0, camSpeed, 0);
-	}
-	if (Input::IsKeyHeld(VK_SHIFT)) {
-		transform.position -= Vector3(0, camSpeed, 0);
-	}
+	//velocity.x = moveAxis.x;
+	//velocity.z = moveAxis.z;
+	
 
 	if (Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_A)) {
-		transform.position += Vector3(0, camSpeed, 0);
+		transform.position += Vector3(0, movementSpeed, 0);
 	}
 
 	XMFLOAT2 mouseDelta = Input::MouseDelta();
-	float lookSpeed = 0.0025f; // The polling rate of the mouse is already tied to the framerate, do no dt
+	float lookSpeed = 0.0025f; // The polling of the mouse is already tied to the framerate, so no dt
 	
 
 	if (Input::IsMouseLocked())
@@ -62,31 +82,115 @@ void CameraController::Update(float dTime)
 		Input::SetMouseLocked(!Input::IsMouseLocked());
 	}
 
+	// GRAVITY PHYSICS
+	vector<AABB> blocks = GetNearbyAABBs(chunkManager);
+	
 
-	VoxelRay ray(transform.position, transform.forward());
-
-	Vector3Int lookHitPoint;
-	if(VoxelRay::Cast(&ray, (ChunkManager*)engine->GetCurrentScene()->GetObject3D("ChunkManager"), 10.f, &lookHitPoint)) {
-		engine->GetCurrentScene()->GetObject3D("a_debug_pos")->transform.position = Vector3((float)lookHitPoint.x, (float)lookHitPoint.y, (float)lookHitPoint.z) + Vector3(0.5f,0.5f,0.5f);
+	bool isGrounded = false; 
+	for(const AABB& blockAABB : blocks) {
+		for(const Vector3& v : groundCheckPoints) {
+			if(blockAABB.IsPointWithin(transform.position - v)) {
+				isGrounded = true;
+				break;
+			}
+		}
 	}
+
+	if(!isGrounded) {
+		velocity.y += gravity * dTime;
+		velocity.y = max(velocity.y, terminalVelocity);
+	}
+	else {
+		velocity.y = -1.0f * dTime; //Small nudge to ground level, nothing noticable
+		if(Input::IsKeyHeld(VK_SPACE)) velocity.y = jumpVelocity;
+	}
+
+	transform.position += velocity * dTime;
+
+	
+
+
+	// AABB COLLISION CHECK
 
 	aabb.SetPosition(transform.position - Vector3(0, 0.62f, 0));
 
-	//todo: move to appropriate location elsewhere, just here for the sake of testing
-	AABB groundAABB = AABB(Vector3(0, -1.f, 0), Vector3(30.f, 0.5f, 30.f));
-	if(aabb.Intersects(groundAABB)) {
-		transform.position += AABB::penetration_vector(AABB::minkowski_difference(groundAABB, aabb));
+	for(const AABB& blockAABB : blocks) {
+		if(aabb.Intersects(blockAABB)) {
+			transform.position += AABB::penetration_vector(AABB::minkowski_difference(blockAABB, aabb));
+		}
 	}
 
+	Vector3Int playerBottomPos = Vector3Int::FloorToInt(transform.position - Vector3(0, playerHalfExtents.y, 0));
+	Vector3Int playerTopPos = Vector3Int::FloorToInt(transform.position);
 
-	engine->GetCurrentScene()->GetObject3D("cam_bounds")->transform.position = transform.position - Vector3(0, 0.62f, 0);
+
+	// TEMP TODO:REMOVE AND PUT SOMEWHERE RELEVANT
+	if(Input::IsKeyPressed('1')) this->TEMPcurrentBlockID = GRASS;
+	if(Input::IsKeyPressed('2')) this->TEMPcurrentBlockID = DIRT;
+	if(Input::IsKeyPressed('3')) this->TEMPcurrentBlockID = STONE;
+	if(Input::IsKeyPressed('4')) this->TEMPcurrentBlockID = BLACKSTONE;
+	if(Input::IsKeyPressed('5')) this->TEMPcurrentBlockID = SAND;
+	if(Input::IsKeyPressed('6')) this->TEMPcurrentBlockID = CLAY;
+	if(Input::IsKeyPressed('7')) this->TEMPcurrentBlockID = WATER;
+	
+
+
+
+
+	// PLAYER RAYCAST
+
+	VoxelRay ray(transform.position, transform.forward());
+
+	Vector3Int lookHitPoint = Vector3Int(0,0,0);
+	Vector3Int lookHitNormal;
+	BlockID lookHitBlock;
+	if(VoxelRay::Cast(&ray, chunkManager, 10.f, &lookHitPoint, &lookHitBlock, &lookHitNormal )) {
+		engine->GetCurrentScene()->GetObject3D("a_debug_pos")->models[0]->alpha = 0.99f;
+		engine->GetCurrentScene()->GetObject3D("a_debug_pos")->transform.position = Vector3((float)lookHitPoint.x, (float)lookHitPoint.y, (float)lookHitPoint.z) + Vector3(0.5f, 0.5f, 0.5f);
+	
+	
+		// INPUT MODIFY
+
+		if(Input::IsMouseKeyPressed(MOUSE_L)) {
+			chunkManager->SetBlockAtWorldPos(lookHitPoint, AIR);
+		}
+
+		if(Input::IsMouseKeyPressed(MOUSE_R)) {
+			AABB targetBlockAABB = AABB(lookHitPoint + lookHitNormal + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
+			if(!targetBlockAABB.Intersects(aabb)) {
+				chunkManager->SetBlockAtWorldPos(lookHitPoint + lookHitNormal, TEMPcurrentBlockID);
+			}
+		}
+	}
+	else {
+		engine->GetCurrentScene()->GetObject3D("a_debug_pos")->models[0]->alpha = 0.0f;
+	}
+
+	
+
+
+
+
+	// DEBUG INFO
+
+	//engine->GetCurrentScene()->GetObject3D("cam_bounds")->transform.position = transform.position - Vector3(0, 0.62f, 0);
 
 	engine->GetCurrentScene()->GetObject2D<Label>("fps-counter")->SetText(to_string(static_cast<int>(roundf(1.f/dTime))));
 
 	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
-	engine->GetCurrentScene()->GetObject2D<Label>("worldpos")->SetText(camBlockPos.ToString());
+	engine->GetCurrentScene()->GetObject2D<Label>("worldpos")->SetText(
+		transform.position.ToString() + "\n" + 
+		//velocity.ToString() + "\n" + 
+		to_string(isGrounded) + "\n" + "\n" +
+		playerTopPos.ToString() + "\n" +
+		playerBottomPos.ToString() + "\n" +
+		lookHitPoint.ToString() + "\n"
+
+	);
 	//engine->GetCurrentScene()->GetObject2D<Label>("chunkpos")->SetText(ChunkManager::ToChunkIndexPosition(camBlockPos.x, camBlockPos.y, camBlockPos.z).ToString());
 	//engine->GetCurrentScene()->GetObject2D<Label>("indexpos")->SetText(Vector3Int(FloorMod(camBlockPos.x, CHUNKSIZE_X), FloorMod(camBlockPos.y, CHUNKSIZE_Y), FloorMod(camBlockPos.z, CHUNKSIZE_Z)).ToString());
+
+
 
 	// KEEP AT END
 	camera->transform = transform;

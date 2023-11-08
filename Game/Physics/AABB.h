@@ -1,6 +1,9 @@
 #pragma once
 
+#include <vector>
 #include "../../Engine/MathUtil.h"
+
+using namespace std;
 
 struct AABB {
 private:
@@ -21,12 +24,6 @@ private:
 		target->max = target->center + target->halfSize;
 	}
 public:
-
-	//void SetMin(const Vector3& v);
-	//void SetMax(const Vector3& v);
-
-	//const Vector3& GetMin();
-	//const Vector3& GetMax();
 
 	AABB() {
 		RecalculateMinMax();
@@ -72,7 +69,15 @@ public:
 			max.z >= 0;
 	}
 
-	bool IsPointWithin(const Vector3& p) {
+	bool Intersects(const vector<AABB>& vec) {
+		for(const AABB& aabb : vec) {
+			if(this->Intersects(aabb)) return true;
+		}
+		return false;
+	}
+
+
+	bool IsPointWithin(const Vector3& p) const {
 		Vector3 min, max;
 		GetMinMax(&min, &max);
 
@@ -85,7 +90,7 @@ public:
 			p.z <= max.z;
 	}
 
-	static const AABB& minkowski_difference(const AABB& a, const AABB& b) {
+	static AABB minkowski_difference(const AABB& a, const AABB& b) {
 		AABB result = AABB();
 		result.center = a.center - b.center;
 		result.halfSize = a.halfSize + b.halfSize;

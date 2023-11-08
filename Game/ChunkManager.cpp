@@ -69,6 +69,52 @@ BlockID ChunkManager::GetBlockAtWorldPos(int x, int y, int z)
 
 }
 
+void ChunkManager::TryRegen(Vector3Int chunkCoords) {
+	if(chunkMap.count(chunkCoords)) {
+		chunkMap[chunkCoords]->BuildMesh();
+	}
+}
+
+
+void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, const BlockID& id) {
+	Vector3Int chunkIndex = ToChunkIndexPosition(x, y, z);
+	if(chunkMap.count(chunkIndex)) {
+		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
+
+		chunkMap[chunkIndex]->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z] = (USHORT)id;
+
+		//todo: make a queue of functions to re-build that is read by the chunk loader thread
+		chunkMap[chunkIndex]->BuildMesh();
+
+
+		//todo GENERALIZE!!!!!!!!!!!
+		if(localVoxelPos.x == 0) { // Regen -x neighbour
+			TryRegen(chunkIndex + Vector3(-1, 0, 0));
+		}
+		else if(localVoxelPos.x == CHUNKSIZE_X - 1) { // Regen +x neighbour
+			TryRegen(chunkIndex + Vector3(1, 0, 0));
+		}
+
+		if(localVoxelPos.y == 0) {  // -y border
+			TryRegen(chunkIndex + Vector3(0, -1, 0));
+		}
+		else if(localVoxelPos.y == CHUNKSIZE_Y - 1) { // +y border
+			TryRegen(chunkIndex + Vector3(0, 1, 0));
+		}
+
+		if(localVoxelPos.z == 0) {	// -z border
+			TryRegen(chunkIndex + Vector3(0, 0, -1));
+		}
+		else if(localVoxelPos.z == CHUNKSIZE_Z - 1) { // +z border
+			TryRegen(chunkIndex + Vector3(0, 0, 1));
+		}
+	}
+}
+
+void ChunkManager::SetBlockAtWorldPos(const Vector3Int& pos, const BlockID& id) {
+	SetBlockAtWorldPos(pos.x, pos.y, pos.z, id);
+}
+
 BlockID ChunkManager::GetBlockAtWorldPos(Vector3Int v) {
 	return GetBlockAtWorldPos(v.x, v.y, v.z);
 }

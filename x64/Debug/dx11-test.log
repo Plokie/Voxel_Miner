@@ -1,3 +1,2 @@
-﻿  CameraController.cpp
-C:\Users\Plokie\source\repos\dx11-proj\Game\Physics\AABB.h(95): warning C4172: returning address of local variable or temporary: result
+﻿  PlayerController.cpp
   dx11-test.vcxproj -> C:\Users\Plokie\source\repos\dx11-proj\x64\Debug\dx11-test.exe

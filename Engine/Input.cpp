@@ -91,7 +91,7 @@ void Input::GetMouseInformation() {
 	}
 }
 
-const XMFLOAT2& Input::ScreenCenter() {
+XMFLOAT2 Input::ScreenCenter() {
 	return XMFLOAT2((_Instance->newMouseClip.right / 2.f) + _Instance->newMouseClip.left, (_Instance->newMouseClip.bottom / 2.f) + _Instance->newMouseClip.top);
 }
 

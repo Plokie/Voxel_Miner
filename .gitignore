@@ -1,2 +1,4 @@
 .vs/
 .vs/dx11-test/v17/Browse.VC.db
+x64/Debug/
+x64/Release/

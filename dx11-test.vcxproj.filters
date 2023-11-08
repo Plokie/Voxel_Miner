@@ -87,7 +87,7 @@
     <ClCompile Include="Game\GameStart.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
-    <ClCompile Include="Game\CameraController.cpp">
+    <ClCompile Include="Game\PlayerController.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
     <ClCompile Include="Game\ExampleObject3D.cpp">
@@ -173,7 +173,7 @@
     <ClInclude Include="Graphics\ExampleMeshes.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Game\CameraController.h">
+    <ClInclude Include="Game\PlayerController.h">
       <Filter>Header Files\Game</Filter>
     </ClInclude>
     <ClInclude Include="Game\ExampleObject3D.h">

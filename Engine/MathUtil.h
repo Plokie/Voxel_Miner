@@ -123,9 +123,18 @@ public:
 		return Vector3(x,y,z) / mag;
 	}
 
+	bool operator!=(const Vector3& a) {
+		return x != a.x || y != a.y || z != a.z;
+	}
+
 	/*const XMVECTOR& xmVec() {
 		return XMVectorSet(x, y, z, 0.0f);
 	}*/
+
+	//static Vector3 FromInt(const Vector3Int& v) {
+	//	return Vector3(static_cast<float>(v.x), static_cast<float>(v.y), static_cast<float>(v.z));
+	//}
+
 
 	operator XMVECTOR() const {
 		return XMVectorSet(x, y, z, 0.0f);
@@ -191,7 +200,9 @@ public:
 		return *this;
 	}
 
-
+	bool operator!=(const Vector3Int& a) {
+		return x != a.x || y != a.y || z != a.z;
+	}
 
 	Vector3Int operator*(const int& a) {
 		return Vector3Int(x * a, y * a, z * a);
@@ -252,6 +263,10 @@ public:
 
 	operator tuple<int, int, int>() const {
 		return tuple<int, int, int>(x, y, z);
+	}
+
+	operator Vector3() const {
+		return Vector3(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
 	}
 
 	operator XMVECTOR() const {

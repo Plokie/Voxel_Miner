@@ -112,7 +112,7 @@ public:
 
 	static void GetMouseInformation();
 
-	static const XMFLOAT2& ScreenCenter();
+	static XMFLOAT2 ScreenCenter();
 
 	static XMFLOAT2 MouseDelta();
 
