@@ -1,5 +1,7 @@
 #include "ChunkManager.h"
 
+#include "ChunkDatabase.h"
+
 Chunk* ChunkManager::CreateChunk(int x, int y, int z)
 {
 	// if chunk already exists, return
@@ -184,6 +186,7 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 
 void ChunkManager::Start()
 {
+	ChunkDatabase::Init();
 	if (this->pEngine == nullptr || this->pCameraTransform == nullptr ) {
 		exit(204); 
 	}
@@ -202,6 +205,9 @@ ChunkManager::~ChunkManager()
 	for(thread& thread : _chunkLoaderThreads) {
 		thread.join();
 	}
+
+	ChunkDatabase::Get()->SaveWorldData("World");
+
 	//for(const pair<tuple<int, int, int>, Chunk*>& pair : this->chunkMap) {
 	//	delete pair.second;
 	//}

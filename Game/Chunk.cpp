@@ -1,7 +1,7 @@
 #include "Chunk.h"
 
 #include "ChunkManager.h"
-
+#include "ChunkDatabase.h"
 
 
 bool Chunk::RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z) {
@@ -273,6 +273,10 @@ void Chunk::Load()
 			}
 		}
 	}
+
+	ChunkDatabase::Get()->SaveChunkData("World", this->chunkIndexPosition, &(blockData[0][0][0]));
+
+
 	//ReleaseSRWLockExclusive(pMutex);
 	//blockData[0][0][0] = BlockID::AIR;
 	//blockData[0][0][0] = BlockID::GRASS;

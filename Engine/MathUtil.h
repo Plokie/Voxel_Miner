@@ -158,7 +158,7 @@ public:
 		return Vector3Int(0, 0, 0);
 	}
 
-	string ToString() {
+	string ToString() const{
 		return to_string(x) + ", " + to_string(y) + ", " + to_string(z);
 	}
 

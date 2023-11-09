@@ -6,6 +6,12 @@
 #include "Blocks.h"
 #include "ChunkManager.h"
 #include "Chunk.h"
+#include <iostream>
+#include <map>
+#include <fstream>
+#include "../Engine/json.hpp"
+
+using namespace std;
 
 //fwd dec
 class Chunk;
@@ -20,11 +26,24 @@ private:
 
 	//todo: create event that is called when a chunk is unloaded
 
+	map<tuple<int, int, int>, bool> chunkHash;
+
+	void SaveChunkIntoFile(const string& worldName, const Vector3Int& chunkIndex, USHORT* chunkDataArray);
+	void LoadChunkFromFile(const string& worldName, const Vector3Int& chunkIndex, USHORT* chunkDataArray);
+
+	void TryLoadChunkHash(const string& worldName);
+
+	bool hasLoadedChunkHash = false;
+
 	static ChunkDatabase* _Instance;
 public:
 	ChunkDatabase();
 
-	ChunkDatabase* Get();
+	static ChunkDatabase* Get();
+
+	static void Init();
+
+	void SaveWorldData(const string& worldName);
 
 	/// <summary>
 	/// Checks if a chunk is indexed within a world
@@ -39,14 +58,14 @@ public:
 	/// </summary>
 	/// <param name="worldName">Name of world to read from</param>
 	/// <param name="chunkIndex">Position index of chunk</param>
-	/// <param name="chunkData">Array to load chunk data into</param>
-	void LoadChunkDataInto(const string& worldName, const Vector3Int& chunkIndex, USHORT chunkData[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z]);
+	/// <param name="chunkDataArray">Array to load chunk data into</param>
+	void LoadChunkDataInto(const string& worldName, const Vector3Int& chunkIndex, USHORT* chunkDataArray);
 
 	/// <summary>
 	/// Saves chunk data into database
 	/// </summary>
 	/// <param name="worldName"></param>
 	/// <param name="chunkIndex"></param>
-	/// <param name="chunkData"></param>
-	void SaveChunkData(const string& worldName, const Vector3Int& chunkIndex, USHORT chunkData[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z]);
+	/// <param name="chunkDataArray"></param>
+	void SaveChunkData(const string& worldName, const Vector3Int& chunkIndex, USHORT* chunkDataArray);
 };
