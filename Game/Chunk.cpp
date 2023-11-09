@@ -258,23 +258,30 @@ void Chunk::Load()
 	//SRWLOCK* pMutex = Engine::Get()->GetDestroyObjectsMutex();
 	//Engine::Get()->sceneObjects;
 
-	//AcquireSRWLockExclusive(pMutex);
-	for(int z = 0; z < CHUNKSIZE_Z; z++) {
-		worldZ = z + (chunkIndexPosition.z * CHUNKSIZE_Z);
-		for(int x = 0; x < CHUNKSIZE_X; x++) {
-			worldX = x + (chunkIndexPosition.x * CHUNKSIZE_X);
-			float heightSample = WorldGen::SampleWorldHeight(worldX, worldZ);
-			for(int y = 0; y < CHUNKSIZE_Y; y++) {
-				worldY = y + (chunkIndexPosition.y * CHUNKSIZE_Y);
-				
-				// some kind of thread thing is going wrong here
-				blockData[x][y][z] = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, static_cast<int>(heightSample));
 
+	//if (ChunkDatabase::Get()->DoesDataExistForChunk("World", chunkIndexPosition)) {
+
+	//}
+	//else 
+	{
+		for(int z = 0; z < CHUNKSIZE_Z; z++) {
+			worldZ = z + (chunkIndexPosition.z * CHUNKSIZE_Z);
+			for(int x = 0; x < CHUNKSIZE_X; x++) {
+				worldX = x + (chunkIndexPosition.x * CHUNKSIZE_X);
+				float heightSample = WorldGen::SampleWorldHeight(worldX, worldZ);
+				for(int y = 0; y < CHUNKSIZE_Y; y++) {
+					worldY = y + (chunkIndexPosition.y * CHUNKSIZE_Y);
+				
+					// some kind of thread thing is going wrong here
+					blockData[x][y][z] = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, static_cast<int>(heightSample));
+
+				}
 			}
 		}
 	}
 
-	ChunkDatabase::Get()->SaveChunkData("World", this->chunkIndexPosition, &(blockData[0][0][0]));
+
+	/*ChunkDatabase::Get()->SaveChunkData("World", this->chunkIndexPosition, &(blockData[0][0][0]));*/
 
 
 	//ReleaseSRWLockExclusive(pMutex);

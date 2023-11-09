@@ -118,6 +118,8 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 		else if(localVoxelPos.z == CHUNKSIZE_Z - 1) { // +z border
 			TryRegen(chunkIndex + Vector3(0, 0, 1));
 		}
+
+		ChunkDatabase::Get()->SaveChunkData("World", chunkIndex, &chunkMap[chunkIndex]->blockData[0][0][0]);
 	}
 }
 

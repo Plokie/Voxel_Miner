@@ -3,6 +3,7 @@
 #include "VoxelRaycast.h"
 #include "../Engine/Label.h"
 #include "ChunkManager.h"
+#include "ChunkDatabase.h"
 
 void CameraController::Start()
 {
@@ -141,6 +142,9 @@ void CameraController::Update(float dTime)
 	if(Input::IsKeyPressed('5')) this->TEMPcurrentBlockID = SAND;
 	if(Input::IsKeyPressed('6')) this->TEMPcurrentBlockID = CLAY;
 	if(Input::IsKeyPressed('7')) this->TEMPcurrentBlockID = WATER;
+	if(Input::IsKeyPressed('8')) this->TEMPcurrentBlockID = OAK_LOG;
+	if(Input::IsKeyPressed('9')) this->TEMPcurrentBlockID = OAK_PLANKS;
+	if(Input::IsKeyPressed('0')) this->TEMPcurrentBlockID = OAK_LEAVES;
 	
 
 

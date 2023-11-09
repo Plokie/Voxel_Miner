@@ -53,7 +53,10 @@ void ChunkDatabase::TryLoadChunkHash(const string& worldName)
 
 		if (f.good()) {
 			ofstream file(worldDatPath); // Creates the file if it doesn't already exist
-			//nlohmann::json worldNameJson = nlohmann::json::parse(file.rdbuf());
+			nlohmann::json worldNameJson = nlohmann::json::parse(file.rdbuf());
+			///////
+
+
 			file.close();
 		}
 		else {
@@ -106,6 +109,7 @@ void ChunkDatabase::LoadChunkDataInto(const string& worldName, const Vector3Int&
 
 void ChunkDatabase::SaveChunkData(const string& worldName, const Vector3Int& chunkIndex, USHORT* chunkDataArray)
 {
+	chunkHash[chunkIndex] = true;
 	TryLoadChunkHash(worldName);
 
 	SaveChunkIntoFile(worldName, chunkIndex, chunkDataArray);

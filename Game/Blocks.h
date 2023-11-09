@@ -19,7 +19,11 @@ enum BlockID {
 	SAND,
 	CLAY,
 
-	WATER
+	WATER,
+
+	OAK_LOG,
+	OAK_LEAVES,
+	OAK_PLANKS
 };
 
 class Block {

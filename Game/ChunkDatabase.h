@@ -16,6 +16,11 @@ using namespace std;
 //fwd dec
 class Chunk;
 
+class WorldData {
+	string name;
+	vector<Vector3Int> hash;
+};
+
 class ChunkDatabase {
 private:
 

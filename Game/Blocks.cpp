@@ -35,6 +35,18 @@ const map<BlockID, Block> BlockDef::def = {
 	{BlockID::WATER,	Block("Water", false,
 		4, 1
 	)},
+
+	{BlockID::OAK_LOG,	Block("Oak Log", true,
+		1, 1,
+		0, 1,
+		1, 1
+	)},
+	{BlockID::OAK_LEAVES,	Block("Oak Leaves", false,
+		2, 1
+	)},
+	{BlockID::OAK_PLANKS,	Block("Oak Planks", true,
+		3, 1
+	)},
 };
 
 const string Block::GetName() const {
