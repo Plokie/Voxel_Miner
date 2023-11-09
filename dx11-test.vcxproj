@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Game\ChunkDatabase.cpp" />
     <ClCompile Include="Game\Physics\AABB.cpp" />
     <ClCompile Include="Game\ChunkManager.cpp" />
     <ClCompile Include="Game\Blocks.cpp" />
@@ -177,7 +178,7 @@
     <ClInclude Include="Game\FastNoiseLite.h" />
     <ClInclude Include="Game\ChunkManager.h" />
     <ClInclude Include="Game\Blocks.h" />
-    <ClInclude Include="Game\ChunkData.h" />
+    <ClInclude Include="Game\ChunkDatabase.h" />
     <ClInclude Include="Game\Chunk.h" />
     <ClInclude Include="Game\PlayerController.h" />
     <ClInclude Include="Game\ExampleObject3D.h" />
