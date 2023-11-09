@@ -2,6 +2,7 @@
 
 #include "../Engine/Engine.h"
 #include <string>
+#include <sstream>
 
 #include "Blocks.h"
 #include "ChunkManager.h"

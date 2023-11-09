@@ -53,7 +53,12 @@ void ChunkDatabase::TryLoadChunkHash(const string& worldName)
 
 		if (f.good()) {
 			ofstream file(worldDatPath); // Creates the file if it doesn't already exist
-			nlohmann::json worldNameJson = nlohmann::json::parse(file.rdbuf());
+			stringstream stringBuff;
+			stringBuff << file.rdbuf();
+
+			string test = stringBuff.str();
+
+			//nlohmann::json worldNameJson = nlohmann::json::parse(test);
 			///////
 
 
