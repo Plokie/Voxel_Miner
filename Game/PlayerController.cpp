@@ -56,36 +56,38 @@ void CameraController::Update(float dTime)
 	Camera* camera = &engine->GetGraphics()->camera;
 	ChunkManager* chunkManager = engine->GetCurrentScene()->GetObject3D<ChunkManager>("ChunkManager");
 
-	float movementSpeed = 4.317f;
-	if (Input::IsKeyHeld(VK_SHIFT)) {
-		//transform.position -= Vector3(0, camSpeed, 0);
-		movementSpeed = 5.612f;
-	}
-	if(Input::IsKeyHeld(VK_CONTROL)) {
-		movementSpeed = 1.0f;
-	}
+	if(Input::IsMouseLocked()) {
+		float movementSpeed = 4.317f;
+		if (Input::IsKeyHeld(VK_SHIFT)) {
+			//transform.position -= Vector3(0, camSpeed, 0);
+			movementSpeed = 5.612f;
+		}
+		if(Input::IsKeyHeld(VK_CONTROL)) {
+			movementSpeed = 1.0f;
+		}
 
-	Vector2 input = Input::GetInputVector().normalized();
-	Vector3 moveAxis = transform.basis(input.x, 0, input.y);
-	moveAxis.y = 0.0;
-	moveAxis = moveAxis.normalized();
-	moveAxis *= movementSpeed * dTime;
+		Vector2 input = Input::GetInputVector().normalized();
+		Vector3 moveAxis = transform.basis(input.x, 0, input.y);
+		moveAxis.y = 0.0;
+		moveAxis = moveAxis.normalized();
+		moveAxis *= movementSpeed * dTime;
 
-	transform.position += moveAxis;
-	//velocity.x = moveAxis.x;
-	//velocity.z = moveAxis.z;
+		transform.position += moveAxis;
+		//velocity.x = moveAxis.x;
+		//velocity.z = moveAxis.z;
 	
 
-	if (Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_A)) {
-		transform.position += Vector3(0, movementSpeed, 0);
-	}
+		if (Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_A)) {
+			transform.position += Vector3(0, movementSpeed, 0);
+		}
 
-	XMFLOAT2 mouseDelta = Input::MouseDelta();
-	float lookSpeed = 0.0025f; // The polling of the mouse is already tied to the framerate, so no dt
+		XMFLOAT2 mouseDelta = Input::MouseDelta();
+		float lookSpeed = 0.0025f; // The polling of the mouse is already tied to the framerate, so no dt
 	
 
-	if (Input::IsMouseLocked())
+
 		transform.rotation += Vector3(mouseDelta.y * lookSpeed, mouseDelta.x * lookSpeed, 0.f);
+	}
 
 	if (Input::IsKeyPressed(VK_ESCAPE)) {
 		Input::SetMouseLocked(!Input::IsMouseLocked());
@@ -165,15 +167,16 @@ void CameraController::Update(float dTime)
 	
 	
 		// INPUT MODIFY
+		if(Input::IsMouseLocked()) {
+			if(Input::IsMouseKeyPressed(MOUSE_L)) {
+				chunkManager->SetBlockAtWorldPos(lookHitPoint, AIR);
+			}
 
-		if(Input::IsMouseKeyPressed(MOUSE_L)) {
-			chunkManager->SetBlockAtWorldPos(lookHitPoint, AIR);
-		}
-
-		if(Input::IsMouseKeyPressed(MOUSE_R)) {
-			AABB targetBlockAABB = AABB(lookHitPoint + lookHitNormal + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
-			if(!targetBlockAABB.Intersects(aabb)) {
-				chunkManager->SetBlockAtWorldPos(lookHitPoint + lookHitNormal, TEMPcurrentBlockID);
+			if(Input::IsMouseKeyPressed(MOUSE_R)) {
+				AABB targetBlockAABB = AABB(lookHitPoint + lookHitNormal + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
+				if(!targetBlockAABB.Intersects(aabb)) {
+					chunkManager->SetBlockAtWorldPos(lookHitPoint + lookHitNormal, TEMPcurrentBlockID);
+				}
 			}
 		}
 	}

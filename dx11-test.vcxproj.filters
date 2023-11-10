@@ -99,9 +99,6 @@
     <ClCompile Include="Game\Blocks.cpp">
       <Filter>Source Files\Game\World</Filter>
     </ClCompile>
-    <ClCompile Include="Game\ChunkManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Game\WorldGen.cpp">
       <Filter>Source Files\Game\World</Filter>
     </ClCompile>
@@ -121,6 +118,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game\Physics\AABB.cpp">
+      <Filter>Source Files\Game\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\ChunkDatabase.cpp">
+      <Filter>Source Files\Game\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\ChunkManager.cpp">
       <Filter>Source Files\Game\World</Filter>
     </ClCompile>
   </ItemGroup>
@@ -185,14 +188,8 @@
     <ClInclude Include="Game\Chunk.h">
       <Filter>Header Files\Game\World</Filter>
     </ClInclude>
-    <ClInclude Include="Game\ChunkData.h">
-      <Filter>Header Files\Game\World</Filter>
-    </ClInclude>
     <ClInclude Include="Game\Blocks.h">
       <Filter>Header Files\Game\World</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\ChunkManager.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\FastNoiseLite.h">
       <Filter>Header Files\Game</Filter>
@@ -216,6 +213,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\Physics\AABB.h">
+      <Filter>Header Files\Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\json.hpp">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\ChunkManager.h">
+      <Filter>Header Files\Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\ChunkDatabase.h">
       <Filter>Header Files\Game\World</Filter>
     </ClInclude>
   </ItemGroup>

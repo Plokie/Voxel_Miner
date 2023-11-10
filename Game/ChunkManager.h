@@ -35,9 +35,9 @@ private:
 	//SRWLOCK _rebuildQueueMutex; // Permission to push / pop from rebuild queue
 	//atomic<vector<Chunk*>> _rebuildQueue{ {} }; // List of chunks that are awaiting re-build on the chunk builder thread
 
-	void TryRegen(Vector3Int chunkCoords);
 
 public:
+	void TryRegen(Vector3Int chunkCoords);
 	// long name because really shouldnt use this in most cases, but it /does/ have its use
 	static Vector3Int ChunkFloorPosForPositionCalculation(Vector3 worldPosition);
 	static Vector3Int ToChunkIndexPosition(const int& x, const int& y, const int& z);

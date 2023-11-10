@@ -22,9 +22,18 @@ Chunk* ChunkManager::CreateChunk(int x, int y, int z)
 	//AcquireSRWLockExclusive(&newChunk->gAccessMutex);
 
 	newChunk->transform.position = Vector3(static_cast<float>(CHUNKSIZE_X * x), static_cast<float>(CHUNKSIZE_Y * y), static_cast<float>(CHUNKSIZE_Z * z));
-	newChunk->Load();
+	bool didChunkExistAlready = newChunk->Load();
 
 	this->chunkMap[tuple<int, int, int>(x, y, z)] = newChunk;
+
+	if(didChunkExistAlready) {
+		TryRegen(Vector3Int(x+1, y, z));
+		TryRegen(Vector3Int(x-1, y, z));
+		TryRegen(Vector3Int(x, y+1, z));
+		TryRegen(Vector3Int(x, y-1, z));
+		TryRegen(Vector3Int(x, y, z+1));
+		TryRegen(Vector3Int(x, y, z-1));
+	}
 
 	//ReleaseSRWLockExclusive(&newChunk->gAccessMutex);
 
@@ -93,11 +102,9 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 
 		chunkMap[chunkIndex]->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z] = (USHORT)id;
 
-		//todo: make a queue of functions to re-build that is read by the chunk loader thread
 		chunkMap[chunkIndex]->BuildMesh();
 
 
-		//todo GENERALIZE!!!!!!!!!!!
 		if(localVoxelPos.x == 0) { // Regen -x neighbour
 			TryRegen(chunkIndex + Vector3(-1, 0, 0));
 		}

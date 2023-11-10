@@ -250,17 +250,16 @@ void Chunk::BuildMesh()
 #endif
 }
 
-void Chunk::Load()
+bool Chunk::Load()
 {
-	if(this == nullptr) return;
-	//debug init chunk
-	int worldX = 0, worldY = 0, worldZ = 0;
-	//SRWLOCK* pMutex = Engine::Get()->GetDestroyObjectsMutex();
-	//Engine::Get()->sceneObjects;
+	if(this == nullptr) return false;
 
+	int worldX = 0, worldY = 0, worldZ = 0;
+	bool returnVal = false;
 
 	if (ChunkDatabase::Get()->DoesDataExistForChunk(chunkIndexPosition)) {
 		ChunkDatabase::Get()->LoadChunkDataInto(chunkIndexPosition, this);
+		returnVal = true;
 	}
 	else 
 	{
@@ -279,19 +278,8 @@ void Chunk::Load()
 			}
 		}
 	}
-
-
-	/*ChunkDatabase::Get()->SaveChunkData("World", this->chunkIndexPosition, &(blockData[0][0][0]));*/
-
-
-	//ReleaseSRWLockExclusive(pMutex);
-	//blockData[0][0][0] = BlockID::AIR;
-	//blockData[0][0][0] = BlockID::GRASS;
-
-	//ZeroMemory(&blockData, CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z);
-	//memset(&blockData, 1, CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z);
-	//if(!isChunkAllAir)
 	BuildMesh();
+	return returnVal;
 }
 
 void Chunk::Start() {

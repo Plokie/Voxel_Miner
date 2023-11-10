@@ -33,7 +33,11 @@ public:
 
 	void BuildMesh();
 
-	void Load();
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <returns>If the chunk had pre-existing data loaded into it</returns>
+	bool Load();
 
 	void Start() override;
 	void Update(float dTime) override;
