@@ -46,7 +46,7 @@ Vector2 ConvertUVIdToAtlasUV(int uvIdX, int uvIdY) {
 
 void PushFace(vector<Vertex>& vertices,
 	BlockID id,
-	int x, int y, int z,
+	float x,  float y,  float z,
 	float ax, float ay, float az,
 	float bx, float by, float bz,
 	float cx, float cy, float cz,
@@ -94,7 +94,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 	if(px) {
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
-			x, y, z,
+			(float)x, (float)y, (float)z,
 			1,0,0,
 			1,1,0,
 			1,1,1,
@@ -106,7 +106,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 	if(nx) {
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
-			x, y, z,
+			(float)x, (float)y, (float)z,
 			0, 0, 1,
 			0, 1, 1,
 			0, 1, 0,
@@ -118,7 +118,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 	if(py) {
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
-			x, y, z,
+			(float)x, (float)y, (float)z,
 			0,	1,	0,
 			0,	1,	1,
 			1,	1,	1,
@@ -130,7 +130,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 	if(ny) {
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
-			x, y, z,
+			(float)x, (float)y, (float)z,
 			0, 0, 1,
 			0, 0, 0,
 			1,  0, 0,
@@ -142,7 +142,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 	if(pz) {
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
-			x, y, z,
+			(float)x, (float)y, (float)z,
 			1, 0, 1,
 			1, 1, 1,
 			0, 1, 1,
@@ -175,10 +175,24 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 	if(vertSize > 0 && indSize > 0) {
 		models.push_back(Model::Create(Graphics::Get()->GetDevice()));
 		models[modelCount]->SetTexture(0, "atlas");
-		models[modelCount]->SetTransparent(meshFlag > 0);
-		if(meshFlag == WATER) {
+		
+
+		switch(meshFlag) {
+		case TRANS:
+			models[modelCount]->SetTransparent(true);
+			break;
+		case WATER:
+			models[modelCount]->SetTransparent(true);
 			models[modelCount]->SetVertexShader(0, "watervertexshader");
+			break;
+		case SHELL:
+			models[modelCount]->SetTransparent(true);
+			models[modelCount]->SetVertexShader(0, "vertexshader");
+			models[modelCount]->SetPixelShader(0, "pixelshellgrass");
+			break;
+		default: break;
 		}
+		
 
 		Mesh* newMesh = new Mesh();
 		newMesh->Init(Graphics::Get()->GetDevice());
@@ -212,6 +226,13 @@ void Chunk::BuildMesh()
 	vector<Vertex> waterVertices = {};
 	vector<DWORD> waterIndices = {};
 
+	const int shellCount = 8;
+	const float shellPixelHeight = 2.f;
+	const float shellSeperation = ((1.f / 16.f) * shellPixelHeight) / static_cast<float>(shellCount);
+
+	vector<Vertex> grassShellVertices = {};
+	vector<DWORD> grassShellIndices = {};
+
 	//todo: optimised chunk building (not looping through every single block, most of them are invisible)
 	for(int y = 0; y < CHUNKSIZE_Y; y++) {
 		for(int z = 0; z < CHUNKSIZE_Z; z++) {
@@ -221,6 +242,21 @@ void Chunk::BuildMesh()
 
 				if(BlockDef::GetDef(blockid).IsSolid()) {
 					MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
+
+					if(blockid == GRASS && RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
+						for(int i = 1; i < shellCount+1; i++) {
+							PushIndices(grassShellVertices.size(), grassShellIndices);
+							PushFace(grassShellVertices, blockid,
+								(float)x, y + ((float)shellSeperation * i), (float)z,
+								0, 1, 0,
+								0, 1, 1,
+								1, 1, 1,
+								1, 1, 0,
+
+								0, 1, 0
+							);
+						}
+					}
 				}
 				else if(blockid == BlockID::WATER)
 				{
@@ -234,6 +270,7 @@ void Chunk::BuildMesh()
 	}
 
 	PushChunkMesh(solidVertices, solidIndices);
+	PushChunkMesh(grassShellVertices, grassShellIndices, SHELL);
 	PushChunkMesh(transVertices, transIndices, TRANS);
 	PushChunkMesh(waterVertices, waterIndices, WATER);
 
@@ -268,11 +305,14 @@ bool Chunk::Load()
 			for(int x = 0; x < CHUNKSIZE_X; x++) {
 				worldX = x + (chunkIndexPosition.x * CHUNKSIZE_X);
 				float heightSample = WorldGen::SampleWorldHeight(worldX, worldZ);
+				float tempSample = WorldGen::SampleTemperature(worldX, worldZ);
+				float moistSample = WorldGen::SampleMoisture(worldX, worldZ);
+
 				for(int y = 0; y < CHUNKSIZE_Y; y++) {
 					worldY = y + (chunkIndexPosition.y * CHUNKSIZE_Y);
 				
 					// some kind of thread thing is going wrong here
-					blockData[x][y][z] = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, static_cast<int>(heightSample));
+					blockData[x][y][z] = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, static_cast<int>(heightSample), tempSample, moistSample);
 
 				}
 			}

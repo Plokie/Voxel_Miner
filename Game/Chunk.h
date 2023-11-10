@@ -17,7 +17,8 @@ public:
 	enum MESHFLAG {
 		SOLID,
 		TRANS,
-		WATER
+		WATER,
+		SHELL
 	};
 private:
 	void PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESHFLAG isTransparent = SOLID);

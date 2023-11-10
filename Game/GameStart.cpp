@@ -25,8 +25,9 @@ void GameStart(Engine* engine) {
 	Resources::LoadTexture(L"Data\\Textures\\atlas.dds", "atlas");
 
 	Resources::LoadPixelShader(L"pixelshader.cso", "pixelshader");
-
+	Resources::LoadPixelShader(L"pixelshellgrass.cso", "pixelshellgrass");
 	Resources::LoadPixelShader(L"demopixelshader.cso", "demopshader");
+
 	Resources::LoadVertexShader(L"vertexshader.cso", "vertexshader");
 	Resources::LoadVertexShader(L"watervertexshader.cso", "watervertexshader");
 

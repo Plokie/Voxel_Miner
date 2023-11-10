@@ -108,6 +108,7 @@ void ChunkDatabase::TryLoadChunkHash()
 }
 
 void ChunkDatabase::SaveWorldData() {
+	if(this == nullptr) return;
 	const string& worldDatPath = "Worlds/" + worldName + "/world.dat";
 	ofstream file(worldDatPath);
 	
@@ -130,6 +131,7 @@ void ChunkDatabase::SaveWorldData() {
 
 void ChunkDatabase::SaveChunks()
 {
+	if(this == nullptr)return;
 	AcquireSRWLockExclusive(&chunkHashMutex);
 	for(const pair<tuple<int, int, int>, Chunk*>& pair : chunkHash) {
 		if(pair.second != nullptr) {

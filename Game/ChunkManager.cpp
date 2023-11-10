@@ -159,7 +159,7 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 	while(_isRunning) {
 		Vector3Int camIndex = ChunkFloorPosForPositionCalculation(camTransform->position);
 
-		for(int y = 1 - CHUNKLOAD_AREA_Y; y < CHUNKLOAD_AREA_Y + 1; y++) {
+		for(int y = 1 - CHUNKLOAD_AREA_NY; y < CHUNKLOAD_AREA_PY + 1; y++) {
 			for(int x = 1 - CHUNKLOAD_AREA_X; x < CHUNKLOAD_AREA_X + 1; x++) {
 				for(int z = 1 - CHUNKLOAD_AREA_Z; z < CHUNKLOAD_AREA_Z + 1; z++) {
 					CreateChunk(camIndex.x + x, camIndex.y + y, camIndex.z + z);
@@ -177,7 +177,8 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 
 			if(
 				abs(indexPos.x - camIndex.x) > CHUNKLOAD_AREA_X ||
-				abs(indexPos.y - camIndex.y) > CHUNKLOAD_AREA_Y ||
+				indexPos.y - camIndex.y > CHUNKLOAD_AREA_PY ||
+				camIndex.y - indexPos.y  > CHUNKLOAD_AREA_NY ||
 				abs(indexPos.z - camIndex.z) > CHUNKLOAD_AREA_Z
 				) { // Erase chunk from map (it is out of range)
 

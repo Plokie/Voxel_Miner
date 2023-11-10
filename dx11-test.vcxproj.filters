@@ -238,6 +238,9 @@
     <FxCompile Include="watervertexshader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="pixelshellgrass.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

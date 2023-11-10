@@ -216,6 +216,7 @@ bool Graphics::SetupRasterizer() {
 	ZeroMemory(&rasterizerDesc, sizeof(D3D11_RASTERIZER_DESC));
 
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	//rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
 	//rasterizerDesc.CullMode = D3D11_CULL_NONE;
 	rasterizerDesc.CullMode = D3D11_CULL_BACK;
 	HRESULT hr = device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);

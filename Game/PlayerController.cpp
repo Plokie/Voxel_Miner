@@ -11,13 +11,13 @@ void CameraController::Start()
 
 	transform.position = Vector3(0, 5, 0);
 
-	engine->GetCurrentScene()->CreateObject3D(new Object3D(), "a_debug_pos", "cube", "block-select");
-	engine->GetCurrentScene()->GetObject3D("a_debug_pos")->models[0]->SetTransparent(true);
-	engine->GetCurrentScene()->GetObject3D("a_debug_pos")->transform.scale = Vector3(0.51f, 0.51f, 0.51f);
+	engine->GetCurrentScene()->CreateObject3D(new Object3D(), "block_select", "cube", "block-select");
+	engine->GetCurrentScene()->GetObject3D("block_select")->models[0]->SetTransparent(true);
+	engine->GetCurrentScene()->GetObject3D("block_select")->transform.scale = Vector3(0.51f, 0.51f, 0.51f);
 
-	engine->GetCurrentScene()->CreateObject3D(new Object3D(), "a_debug_look", "cube", "err");
-	engine->GetCurrentScene()->GetObject3D("a_debug_look")->models[0]->SetTransparent(true);
-	engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.scale = Vector3(0.001f, 0.001f, 0.001f);
+	//engine->GetCurrentScene()->CreateObject3D(new Object3D(), "a_debug_look", "cube", "err");
+	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->models[0]->SetTransparent(true);
+	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.scale = Vector3(0.001f, 0.001f, 0.001f);
 
 	//engine->GetCurrentScene()->CreateObject3D(new Object3D(), "cam_bounds", "inverse-cube", "block-select");
 	//engine->GetCurrentScene()->GetObject3D("cam_bounds")->models[0]->SetTransparent(true);
@@ -55,15 +55,22 @@ void CameraController::Update(float dTime)
 	Engine* engine = Engine::Get();
 	Camera* camera = &engine->GetGraphics()->camera;
 	ChunkManager* chunkManager = engine->GetCurrentScene()->GetObject3D<ChunkManager>("ChunkManager");
+	float movementSpeed = 4.317f;
+
+	if(Input::IsKeyPressed('P')) {
+		freeCam = !freeCam;
+	}
 
 	if(Input::IsMouseLocked()) {
-		float movementSpeed = 4.317f;
 		if (Input::IsKeyHeld(VK_SHIFT)) {
 			//transform.position -= Vector3(0, camSpeed, 0);
 			movementSpeed = 5.612f;
 		}
 		if(Input::IsKeyHeld(VK_CONTROL)) {
 			movementSpeed = 1.0f;
+		}
+		if(freeCam) {
+			movementSpeed = 10.0f;
 		}
 
 		Vector2 input = Input::GetInputVector().normalized();
@@ -72,7 +79,6 @@ void CameraController::Update(float dTime)
 		moveAxis = moveAxis.normalized();
 		moveAxis *= movementSpeed * dTime;
 
-		transform.position += moveAxis;
 		//velocity.x = moveAxis.x;
 		//velocity.z = moveAxis.z;
 	
@@ -86,6 +92,7 @@ void CameraController::Update(float dTime)
 	
 
 
+		transform.position += moveAxis;
 		transform.rotation += Vector3(mouseDelta.y * lookSpeed, mouseDelta.x * lookSpeed, 0.f);
 	}
 
@@ -93,42 +100,53 @@ void CameraController::Update(float dTime)
 		Input::SetMouseLocked(!Input::IsMouseLocked());
 	}
 
-	// GRAVITY PHYSICS
-	vector<AABB> blocks = GetNearbyAABBs(chunkManager);
+
+	if(!freeCam) {
+		// GRAVITY PHYSICS
+		vector<AABB> blocks = GetNearbyAABBs(chunkManager);
 	
 
-	bool isGrounded = false; 
-	for(const AABB& blockAABB : blocks) {
-		for(const Vector3& v : groundCheckPoints) {
-			if(blockAABB.IsPointWithin(transform.position - v)) {
-				isGrounded = true;
-				break;
+		bool isGrounded = false; 
+		for(const AABB& blockAABB : blocks) {
+			for(const Vector3& v : groundCheckPoints) {
+				if(blockAABB.IsPointWithin(transform.position - v)) {
+					isGrounded = true;
+					break;
+				}
+			}
+		}
+
+		if(!isGrounded) {
+			velocity.y += gravity * dTime;
+			velocity.y = max(velocity.y, terminalVelocity);
+		}
+		else {
+			velocity.y = -3.0f * dTime; //Small nudge to ground level, nothing noticable
+			if(Input::IsKeyHeld(VK_SPACE)) velocity.y = jumpVelocity;
+		}
+
+		transform.position += velocity * dTime;
+
+	
+
+
+		// AABB COLLISION CHECK
+
+		aabb.SetPosition(transform.position - Vector3(0, 0.62f, 0));
+
+		for(const AABB& blockAABB : blocks) {
+			if(aabb.Intersects(blockAABB)) {
+				transform.position += AABB::penetration_vector(AABB::minkowski_difference(blockAABB, aabb));
+				aabb.SetPosition(transform.position - Vector3(0, 0.62f, 0));
 			}
 		}
 	}
-
-	if(!isGrounded) {
-		velocity.y += gravity * dTime;
-		velocity.y = max(velocity.y, terminalVelocity);
-	}
 	else {
-		velocity.y = -1.0f * dTime; //Small nudge to ground level, nothing noticable
-		if(Input::IsKeyHeld(VK_SPACE)) velocity.y = jumpVelocity;
-	}
-
-	transform.position += velocity * dTime;
-
-	
-
-
-	// AABB COLLISION CHECK
-
-	aabb.SetPosition(transform.position - Vector3(0, 0.62f, 0));
-
-	for(const AABB& blockAABB : blocks) {
-		if(aabb.Intersects(blockAABB)) {
-			transform.position += AABB::penetration_vector(AABB::minkowski_difference(blockAABB, aabb));
-			aabb.SetPosition(transform.position - Vector3(0, 0.62f, 0));
+		if(Input::IsKeyHeld(VK_SPACE)) {
+			transform.position.y += movementSpeed * dTime;
+		}
+		if(Input::IsKeyHeld(VK_SHIFT)) {
+			transform.position.y -= movementSpeed * dTime;
 		}
 	}
 
@@ -162,8 +180,8 @@ void CameraController::Update(float dTime)
 	Vector3Int lookHitNormal;
 	BlockID lookHitBlock;
 	if(VoxelRay::Cast(&ray, chunkManager, 10.f, &lookHitPoint, &lookHitBlock, &lookHitNormal )) {
-		engine->GetCurrentScene()->GetObject3D("a_debug_pos")->models[0]->alpha = 0.99f;
-		engine->GetCurrentScene()->GetObject3D("a_debug_pos")->transform.position = Vector3((float)lookHitPoint.x, (float)lookHitPoint.y, (float)lookHitPoint.z) + Vector3(0.5f, 0.5f, 0.5f);
+		engine->GetCurrentScene()->GetObject3D("block_select")->models[0]->alpha = 0.99f;
+		engine->GetCurrentScene()->GetObject3D("block_select")->transform.position = Vector3((float)lookHitPoint.x, (float)lookHitPoint.y, (float)lookHitPoint.z) + Vector3(0.5f, 0.5f, 0.5f);
 	
 	
 		// INPUT MODIFY
@@ -181,7 +199,7 @@ void CameraController::Update(float dTime)
 		}
 	}
 	else {
-		engine->GetCurrentScene()->GetObject3D("a_debug_pos")->models[0]->alpha = 0.0f;
+		engine->GetCurrentScene()->GetObject3D("block_select")->models[0]->alpha = 0.0f;
 	}
 
 	
@@ -195,26 +213,26 @@ void CameraController::Update(float dTime)
 
 	engine->GetCurrentScene()->GetObject2D<Label>("fps-counter")->SetText(to_string(static_cast<int>(roundf(1.f/dTime))));
 
-	string debugChunkData = "";
-	////AcquireSRWLockExclusive()
-	if(ChunkDatabase::Get()!=nullptr)
-	for(const pair<tuple<int,int,int>,Chunk*>& pair : ChunkDatabase::Get()->chunkHash) {
-		debugChunkData += ":"+Vector3Int(pair.first).ToString() + "\n";
-	}
+	//string debugChunkData = "";
+	//////AcquireSRWLockExclusive()
+	//if(ChunkDatabase::Get()!=nullptr)
+	//for(const pair<tuple<int,int,int>,Chunk*>& pair : ChunkDatabase::Get()->chunkHash) {
+	//	debugChunkData += ":"+Vector3Int(pair.first).ToString() + "\n";
+	//}
 
 	//AcquireSRWLockExclusive(&ChunkDatabase::Get()->chunkHashMutex);
 	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
 	engine->GetCurrentScene()->GetObject2D<Label>("worldpos")->SetText(
-		transform.position.ToString() + "\n" + 
+		camBlockPos.ToString() + "\n"
 		//velocity.ToString() + "\n" + 
-		to_string(isGrounded) + "\n" + "\n" +
-		playerTopPos.ToString() + "\n" +
-		playerBottomPos.ToString() + "\n" +
-		lookHitPoint.ToString() + "\n" 
-		+ debugChunkData
+		//to_string(isGrounded) + "\n" + "\n" +
+		//playerTopPos.ToString() + "\n" +
+		//playerBottomPos.ToString() + "\n" +
+		//lookHitPoint.ToString() + "\n" 
+		//+ debugChunkData
 		//+ to_string(ChunkDatabase::Get()->chunkHash.size())
-
 	);
+	//);
 	//ReleaseSRWLockExclusive(&ChunkDatabase::Get()->chunkHashMutex);
 	//engine->GetCurrentScene()->GetObject2D<Label>("chunkpos")->SetText(ChunkManager::ToChunkIndexPosition(camBlockPos.x, camBlockPos.y, camBlockPos.z).ToString());
 	//engine->GetCurrentScene()->GetObject2D<Label>("indexpos")->SetText(Vector3Int(FloorMod(camBlockPos.x, CHUNKSIZE_X), FloorMod(camBlockPos.y, CHUNKSIZE_Y), FloorMod(camBlockPos.z, CHUNKSIZE_Z)).ToString());
@@ -222,8 +240,8 @@ void CameraController::Update(float dTime)
 
 	// TODO: REMOVE
 	// TEMP CROSSHAIR
-	engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.position = transform.position + (transform.forward() * 0.1f);
-	engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.rotation = transform.rotation;
+	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.position = transform.position + (transform.forward() * 0.1f);
+	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.rotation = transform.rotation;
 
 	// KEEP AT END
 	camera->transform = transform;
