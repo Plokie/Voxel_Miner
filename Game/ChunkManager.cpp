@@ -119,7 +119,7 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 			TryRegen(chunkIndex + Vector3(0, 0, 1));
 		}
 
-		ChunkDatabase::Get()->SaveChunkData("World", chunkIndex, &chunkMap[chunkIndex]->blockData[0][0][0]);
+		ChunkDatabase::Get()->SaveChunkData(chunkIndex, chunkMap[chunkIndex]);
 	}
 }
 
@@ -174,6 +174,7 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 				abs(indexPos.z - camIndex.z) > CHUNKLOAD_AREA_Z
 				) { // Erase chunk from map (it is out of range)
 
+				ChunkDatabase::Get()->UnloadChunk(indexPos);
 				engine->DestroyObject3D(pair.second); // Delete chunk in-engine (adds to queue)
 
 				pChunkMap->erase(it++);
@@ -208,7 +209,8 @@ ChunkManager::~ChunkManager()
 		thread.join();
 	}
 
-	ChunkDatabase::Get()->SaveWorldData("World");
+	ChunkDatabase::Get()->SaveChunks();
+	ChunkDatabase::Get()->SaveWorldData();
 
 	//for(const pair<tuple<int, int, int>, Chunk*>& pair : this->chunkMap) {
 	//	delete pair.second;

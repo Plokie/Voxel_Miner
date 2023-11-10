@@ -259,8 +259,8 @@ void Chunk::Load()
 	//Engine::Get()->sceneObjects;
 
 
-	if (ChunkDatabase::Get()->DoesDataExistForChunk("World", chunkIndexPosition)) {
-
+	if (ChunkDatabase::Get()->DoesDataExistForChunk(chunkIndexPosition)) {
+		ChunkDatabase::Get()->LoadChunkDataInto(chunkIndexPosition, this);
 	}
 	else 
 	{

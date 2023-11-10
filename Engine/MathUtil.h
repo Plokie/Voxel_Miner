@@ -154,6 +154,12 @@ public:
 		z = static_cast<int>(XMVectorGetZ(xmv));
 	}
 
+	Vector3Int(const tuple<int, int, int>& tuple) {
+		x = get<0>(tuple);
+		y = get<1>(tuple);
+		z = get<2>(tuple);
+	}
+
 	static const Vector3Int Zero() {
 		return Vector3Int(0, 0, 0);
 	}

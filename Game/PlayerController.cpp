@@ -192,6 +192,14 @@ void CameraController::Update(float dTime)
 
 	engine->GetCurrentScene()->GetObject2D<Label>("fps-counter")->SetText(to_string(static_cast<int>(roundf(1.f/dTime))));
 
+	string debugChunkData = "";
+	////AcquireSRWLockExclusive()
+	if(ChunkDatabase::Get()!=nullptr)
+	for(const pair<tuple<int,int,int>,Chunk*>& pair : ChunkDatabase::Get()->chunkHash) {
+		debugChunkData += ":"+Vector3Int(pair.first).ToString() + "\n";
+	}
+
+	//AcquireSRWLockExclusive(&ChunkDatabase::Get()->chunkHashMutex);
 	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
 	engine->GetCurrentScene()->GetObject2D<Label>("worldpos")->SetText(
 		transform.position.ToString() + "\n" + 
@@ -199,9 +207,12 @@ void CameraController::Update(float dTime)
 		to_string(isGrounded) + "\n" + "\n" +
 		playerTopPos.ToString() + "\n" +
 		playerBottomPos.ToString() + "\n" +
-		lookHitPoint.ToString() + "\n"
+		lookHitPoint.ToString() + "\n" 
+		+ debugChunkData
+		//+ to_string(ChunkDatabase::Get()->chunkHash.size())
 
 	);
+	//ReleaseSRWLockExclusive(&ChunkDatabase::Get()->chunkHashMutex);
 	//engine->GetCurrentScene()->GetObject2D<Label>("chunkpos")->SetText(ChunkManager::ToChunkIndexPosition(camBlockPos.x, camBlockPos.y, camBlockPos.z).ToString());
 	//engine->GetCurrentScene()->GetObject2D<Label>("indexpos")->SetText(Vector3Int(FloorMod(camBlockPos.x, CHUNKSIZE_X), FloorMod(camBlockPos.y, CHUNKSIZE_Y), FloorMod(camBlockPos.z, CHUNKSIZE_Z)).ToString());
 

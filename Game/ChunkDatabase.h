@@ -24,32 +24,39 @@ class WorldData {
 
 class ChunkDatabase {
 private:
-
 	//Data of currently-loaded chunks (reduce number of disk read/writes for active chunks)
 	// Data is to be saved into files when a chunk is unloaded from this
 	// This is to be written into when a chunk with data on file is loaded
-	vector<void*> runtimeChunkData = {}; //todo: replace void* with serializable ChunkData* struct/class
+	//vector<USHORT*> runtimeChunkData = {}; //todo: replace void* with serializable ChunkData* struct/class
 
 	//todo: create event that is called when a chunk is unloaded
 
-	map<tuple<int, int, int>, bool> chunkHash;
 
-	void SaveChunkIntoFile(const string& worldName, const Vector3Int& chunkIndex, USHORT* chunkDataArray);
-	void LoadChunkFromFile(const string& worldName, const Vector3Int& chunkIndex, USHORT* chunkDataArray);
+	string worldName = "World";
 
-	void TryLoadChunkHash(const string& worldName);
+	void SaveChunkIntoFile(const Vector3Int& chunkIndex, USHORT chunkDataArray[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z]);
+	void LoadChunkFromFile(const Vector3Int& chunkIndex, USHORT chunkDataArray[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z]);
+
+	void TryLoadChunkHash();
 
 	bool hasLoadedChunkHash = false;
 
 	static ChunkDatabase* _Instance;
 public:
+	SRWLOCK chunkHashMutex = {};
+	map<tuple<int, int, int>, Chunk*> chunkHash = {}; // todo: move back to private
+
 	ChunkDatabase();
 
 	static ChunkDatabase* Get();
 
 	static void Init();
 
-	void SaveWorldData(const string& worldName);
+	void SaveWorldData();
+
+	void SaveChunks();
+
+	void UnloadChunk(const Vector3Int& chunkIndex);
 
 	/// <summary>
 	/// Checks if a chunk is indexed within a world
@@ -57,7 +64,7 @@ public:
 	/// <param name="worldName">Name of world</param>
 	/// <param name="chunkIndex">Position index of chunk</param>
 	/// <returns></returns>
-	bool DoesDataExistForChunk(const string& worldName, const Vector3Int& chunkIndex);
+	bool DoesDataExistForChunk(const Vector3Int& chunkIndex);
 
 	/// <summary>
 	/// Loads data from database into a Chunk's data array
@@ -65,7 +72,7 @@ public:
 	/// <param name="worldName">Name of world to read from</param>
 	/// <param name="chunkIndex">Position index of chunk</param>
 	/// <param name="chunkDataArray">Array to load chunk data into</param>
-	void LoadChunkDataInto(const string& worldName, const Vector3Int& chunkIndex, USHORT* chunkDataArray);
+	void LoadChunkDataInto(const Vector3Int& chunkIndex, Chunk* chunk);
 
 	/// <summary>
 	/// Saves chunk data into database
@@ -73,5 +80,5 @@ public:
 	/// <param name="worldName"></param>
 	/// <param name="chunkIndex"></param>
 	/// <param name="chunkDataArray"></param>
-	void SaveChunkData(const string& worldName, const Vector3Int& chunkIndex, USHORT* chunkDataArray);
+	void SaveChunkData(const Vector3Int& chunkIndex, Chunk* chunk);
 };
