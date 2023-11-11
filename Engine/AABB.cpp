@@ -25,4 +25,9 @@
 //const Vector3& AABB::GetMax()
 //{
 //	return this->max;
+////}
+//
+//const Vector3& AABB::GetHalfSize()
+//{
+//    return this->halfSize;
 //}

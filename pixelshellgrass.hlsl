@@ -34,14 +34,16 @@ float4 main(PS_INPUT input) : SV_TARGET
     float height = frac(input.worldPos.y);
     // relative height 0.0f = base, 1.0f = top
     float relHeight = (height / ((tile_size / atlas_size) * shell_pix_height));
-    relHeight = ((relHeight - 1.0f) / 0.8f) + 1.0f;
+    float adjHeight = ((relHeight - 1.0f) / 0.8f) + 1.0f;
     
     float2 pixelIndex = floor(normalUV * 16.0f);
-    float r = saturate(rand(pixelIndex + floor(input.worldPos.xz)) - relHeight);
+    float r = saturate(rand(pixelIndex + floor(input.worldPos.xz)) - adjHeight);
     if (r > 0.0f) {
         r = 1.0f;
     }
+    else
+        discard;
     
     //return float4(relHeight, relHeight, relHeight, 1.0f);
-    return float4(pixCol.rgb, r);
+    return float4(pixCol.rgb * ((saturate(relHeight) * 0.5f) + 1.0f), r);
 }

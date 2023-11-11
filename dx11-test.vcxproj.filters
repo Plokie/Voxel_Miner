@@ -114,10 +114,7 @@
     <ClCompile Include="Engine\Object2D.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Label.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Game\Physics\AABB.cpp">
+    <ClCompile Include="Engine\AABB.cpp">
       <Filter>Source Files\Game\World</Filter>
     </ClCompile>
     <ClCompile Include="Game\ChunkDatabase.cpp">
@@ -125,6 +122,12 @@
     </ClCompile>
     <ClCompile Include="Game\ChunkManager.cpp">
       <Filter>Source Files\Game\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\Frustum.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Label.cpp">
+      <Filter>Source Files\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -209,12 +212,6 @@
     <ClInclude Include="Engine\Object2D.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Label.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Game\Physics\AABB.h">
-      <Filter>Header Files\Game\World</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\json.hpp">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
@@ -223,6 +220,18 @@
     </ClInclude>
     <ClInclude Include="Game\ChunkDatabase.h">
       <Filter>Header Files\Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\AABB.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Plane.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Frustum.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Label.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -239,6 +248,9 @@
       <Filter>Resource Files</Filter>
     </FxCompile>
     <FxCompile Include="pixelshellgrass.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
+    <FxCompile Include="Graphics\vertexshellgrass.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>

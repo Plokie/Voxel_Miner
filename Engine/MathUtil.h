@@ -127,6 +127,18 @@ public:
 		return x != a.x || y != a.y || z != a.z;
 	}
 
+	static float dot(const Vector3& lhs, const Vector3& rhs) {
+		return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z);
+	};
+
+	static Vector3 cross(const Vector3& lhs, const Vector3& rhs) {
+		return Vector3(
+			lhs.y * rhs.z - lhs.z * rhs.y,
+			lhs.z * rhs.x - rhs.x * lhs.z,
+			lhs.x * rhs.y - lhs.y * rhs.x
+		);
+	}
+
 	/*const XMVECTOR& xmVec() {
 		return XMVectorSet(x, y, z, 0.0f);
 	}*/
@@ -137,6 +149,10 @@ public:
 
 
 	operator XMVECTOR() const {
+		return XMVectorSet(x, y, z, 0.0f);
+	}
+
+	XMVECTOR AsXmVector() const {
 		return XMVectorSet(x, y, z, 0.0f);
 	}
 };

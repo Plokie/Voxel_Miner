@@ -27,14 +27,14 @@ public:
 	XMMATRIX mxView(); // For camera
 	XMMATRIX mx();
 
-	Vector3 basis(const float& x, const float& y, const float& z);
-	Vector3 basis(const Vector3& v);
-	Vector3 forward();
-	Vector3 back();
-	Vector3 left();
-	Vector3 right();
-	Vector3 up();
-	Vector3 down();
+	Vector3 basis(const float& x, const float& y, const float& z) const;
+	Vector3 basis(const Vector3& v) const;
+	Vector3 forward() const;
+	Vector3 back() const;
+	Vector3 left() const;
+	Vector3 right() const;
+	Vector3 up() const;
+	Vector3 down() const;
 
 	void TranslateLocal(float x, float y, float z);
 

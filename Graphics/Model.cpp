@@ -59,6 +59,7 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worl
 	//ID3D11Texture2D* pTex = (ID3D11Texture2D*)pRes;
 
 	//pTex->GetDesc(&tempDesc);
+	if(mesh == nullptr) return;
 
 	deviceCtx->DrawIndexed((UINT)mesh->GetIndexCount(), 0, 0);
 }

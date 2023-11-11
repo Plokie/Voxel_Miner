@@ -1,14 +1,15 @@
 #pragma once
 
 #include <vector>
-#include "../../Engine/MathUtil.h"
+#include "MathUtil.h"
+#include "../Graphics/Plane.h"
 
 using namespace std;
 
 struct AABB {
 private:
-	Vector3 center = { 0.f, 1.f, 0.f };
-	Vector3 halfSize = { 0.5f, 1.f, 0.5f };
+	Vector3 center = { 0.f, 0.f, 0.f };
+	Vector3 halfSize = { 0.0f, 0.0f, 0.0f };
 	
 	// READ ONLY, written to automatically
 	Vector3 min = { 0.f, 0.f, 0.f }; 
@@ -44,13 +45,27 @@ public:
 		return this->center;
 	}
 
+	const Vector3& GetHalfSize() {
+		return this->halfSize;
+	}
+
 
 	void GetMinMax(Vector3* min, Vector3* max) const {
 		*min = this->min;
 		*max = this->max;
 	}
 
+	bool IsOnOrForwardPlane(const Plane& plane) const {
+		float r = halfSize.x * abs(plane.normal.x) + halfSize.y * abs(plane.normal.y) + halfSize.z * abs(plane.normal.z);
+		float s = Vector3::dot(plane.normal, center) - plane.distance;
+		return -r <= s;
+	}
 
+	bool IntersectsPlane(const Plane& plane) const {
+		float r = halfSize.x * abs(plane.normal.x) + halfSize.y * abs(plane.normal.y) + halfSize.z * abs(plane.normal.z);
+		float s = Vector3::dot(plane.normal, center);
+		return abs(s) <= r;
+	}
 
 	bool Intersects(const AABB& b) {
 		Vector3 min, max;

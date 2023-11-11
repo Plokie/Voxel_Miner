@@ -146,7 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Game\ChunkDatabase.cpp" />
-    <ClCompile Include="Game\Physics\AABB.cpp" />
+    <ClCompile Include="Engine\AABB.cpp" />
     <ClCompile Include="Game\ChunkManager.cpp" />
     <ClCompile Include="Game\Blocks.cpp" />
     <ClCompile Include="Game\Chunk.cpp" />
@@ -156,6 +156,7 @@
     <ClCompile Include="Graphics\Camera.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Graphics\ExampleMeshes.cpp" />
+    <ClCompile Include="Graphics\Frustum.cpp" />
     <ClCompile Include="Graphics\Graphics.cpp" />
     <ClCompile Include="Engine\Input.cpp" />
     <ClCompile Include="Engine\Label.cpp" />
@@ -175,7 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\json.hpp" />
-    <ClInclude Include="Game\Physics\AABB.h" />
+    <ClInclude Include="Engine\AABB.h" />
     <ClInclude Include="Game\FastNoiseLite.h" />
     <ClInclude Include="Game\ChunkManager.h" />
     <ClInclude Include="Game\Blocks.h" />
@@ -188,7 +189,9 @@
     <ClInclude Include="DebugMsg.h" />
     <ClInclude Include="Engine\Engine.h" />
     <ClInclude Include="Graphics\ExampleMeshes.h" />
+    <ClInclude Include="Graphics\Frustum.h" />
     <ClInclude Include="Graphics\Graphics.h" />
+    <ClInclude Include="Graphics\Plane.h" />
     <ClInclude Include="Graphics\Shaders.h" />
     <ClInclude Include="Engine\Timer.h" />
     <ClInclude Include="Graphics\Vertex.h" />
@@ -213,6 +216,16 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Graphics\vertexshellgrass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="pixelshader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>

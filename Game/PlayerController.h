@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Engine/Engine.h"
-#include "Physics/AABB.h"
+#include "../Engine/AABB.h"
 #include "Blocks.h"
 
 class ChunkManager;
@@ -22,10 +22,10 @@ class CameraController : public Object3D {
 	BlockID TEMPcurrentBlockID = GRASS;
 
 	const Vector3 groundCheckPoints[4] = {
-		Vector3( (playerHalfExtents.x - COLLISION_CHECK_INSET), 1.63f,  (playerHalfExtents.z - COLLISION_CHECK_INSET)),
-		Vector3(-(playerHalfExtents.x - COLLISION_CHECK_INSET), 1.63f,  (playerHalfExtents.z - COLLISION_CHECK_INSET)),
-		Vector3( (playerHalfExtents.x - COLLISION_CHECK_INSET), 1.63f, -(playerHalfExtents.z - COLLISION_CHECK_INSET)),
-		Vector3(-(playerHalfExtents.x - COLLISION_CHECK_INSET), 1.63f, -(playerHalfExtents.z - COLLISION_CHECK_INSET)),
+		Vector3( (playerHalfExtents.x - COLLISION_CHECK_INSET), 1.621f,  (playerHalfExtents.z - COLLISION_CHECK_INSET)),
+		Vector3(-(playerHalfExtents.x - COLLISION_CHECK_INSET), 1.621f,  (playerHalfExtents.z - COLLISION_CHECK_INSET)),
+		Vector3( (playerHalfExtents.x - COLLISION_CHECK_INSET), 1.621f, -(playerHalfExtents.z - COLLISION_CHECK_INSET)),
+		Vector3(-(playerHalfExtents.x - COLLISION_CHECK_INSET), 1.621f, -(playerHalfExtents.z - COLLISION_CHECK_INSET)),
 	};
 
 	Vector3 velocity;

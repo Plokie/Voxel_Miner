@@ -30,6 +30,7 @@ void GameStart(Engine* engine) {
 
 	Resources::LoadVertexShader(L"vertexshader.cso", "vertexshader");
 	Resources::LoadVertexShader(L"watervertexshader.cso", "watervertexshader");
+	Resources::LoadVertexShader(L"vertexshellgrass.cso", "vertexshellgrass");
 
 	Resources::LoadMesh("cube");
 	Resources::LoadMesh(exampleFloorVertices, ARRAYSIZE(exampleFloorVertices), exampleCubeIndices, ARRAYSIZE(exampleCubeIndices), "floorMesh");

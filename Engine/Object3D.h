@@ -2,17 +2,19 @@
 
 #include "Transform.h"
 #include "..\Graphics\Model.h"
+#include "AABB.h"
 
 class Object3D {
 public:
 	SRWLOCK gAccessMutex = {};
 
+	// The general AABB box describing the max area of the object
+	// Used for frustum culling
+	AABB cullBox = {Vector3(0.f,0.f,0.f), Vector3(0.f,0.f,0.f)};
+
 	bool hasRanStartFunction = false;
 
 	Transform transform = Transform();
-	//Mesh* mesh = nullptr;
-
-	//ID3D11Device* deviceRef = nullptr;
 
 	vector<Model*> models = {};
 

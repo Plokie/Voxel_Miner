@@ -18,6 +18,7 @@
 #include "Camera.h"
 #include "../Engine/Scene.h"
 #include "../Engine/Object3D.h"
+#include "../Engine/AABB.h"
 //#include "../Engine/World.h"
 
 using namespace DirectX;

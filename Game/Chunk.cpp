@@ -187,7 +187,7 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 			break;
 		case SHELL:
 			models[modelCount]->SetTransparent(true);
-			models[modelCount]->SetVertexShader(0, "vertexshader");
+			models[modelCount]->SetVertexShader(0, "vertexshellgrass");
 			models[modelCount]->SetPixelShader(0, "pixelshellgrass");
 			break;
 		default: break;
@@ -226,12 +226,19 @@ void Chunk::BuildMesh()
 	vector<Vertex> waterVertices = {};
 	vector<DWORD> waterIndices = {};
 
-	const int shellCount = 8;
+	const int shellCount = 7;
 	const float shellPixelHeight = 2.f;
 	const float shellSeperation = ((1.f / 16.f) * shellPixelHeight) / static_cast<float>(shellCount);
 
-	vector<Vertex> grassShellVertices = {};
-	vector<DWORD> grassShellIndices = {};
+	vector<vector<Vertex>> grassShellsVertices = {};
+	vector<vector<DWORD>> grassShellsIndices = {};
+
+	for(int i = 0; i < shellCount; i++) {
+		grassShellsVertices.push_back({});
+		grassShellsIndices.push_back({});
+	}
+	//vector<Vertex> grassShellVertices = {};
+	//vector<DWORD> grassShellIndices = {};
 
 	//todo: optimised chunk building (not looping through every single block, most of them are invisible)
 	for(int y = 0; y < CHUNKSIZE_Y; y++) {
@@ -245,8 +252,8 @@ void Chunk::BuildMesh()
 
 					if(blockid == GRASS && RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
 						for(int i = 1; i < shellCount+1; i++) {
-							PushIndices(grassShellVertices.size(), grassShellIndices);
-							PushFace(grassShellVertices, blockid,
+							PushIndices(grassShellsVertices[i-1].size(), grassShellsIndices[i-1]);
+							PushFace(grassShellsVertices[i-1], blockid,
 								(float)x, y + ((float)shellSeperation * i), (float)z,
 								0, 1, 0,
 								0, 1, 1,
@@ -270,7 +277,12 @@ void Chunk::BuildMesh()
 	}
 
 	PushChunkMesh(solidVertices, solidIndices);
-	PushChunkMesh(grassShellVertices, grassShellIndices, SHELL);
+
+	for(int i = 0; i < shellCount; i++) {
+		PushChunkMesh(grassShellsVertices[i], grassShellsIndices[i], SHELL);
+	}
+
+	//PushChunkMesh(grassShellVertices, grassShellIndices, SHELL);
 	PushChunkMesh(transVertices, transIndices, TRANS);
 	PushChunkMesh(waterVertices, waterIndices, WATER);
 
@@ -293,6 +305,8 @@ bool Chunk::Load()
 
 	int worldX = 0, worldY = 0, worldZ = 0;
 	bool returnVal = false;
+
+	this->cullBox = AABB(transform.position + Vector3(8.f, 8.f, 8.f), Vector3(8.f, 8.f, 8.f));
 
 	if (ChunkDatabase::Get()->DoesDataExistForChunk(chunkIndexPosition)) {
 		ChunkDatabase::Get()->LoadChunkDataInto(chunkIndexPosition, this);
@@ -323,7 +337,7 @@ bool Chunk::Load()
 }
 
 void Chunk::Start() {
-
+	this->cullBox = AABB(transform.position + Vector3(8.f, 8.f, 8.f), Vector3(8.f, 8.f, 8.f));
 }
 
 void Chunk::Update(float dTime)

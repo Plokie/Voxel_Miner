@@ -483,12 +483,22 @@ void Graphics::Render(Scene* scene) {
 
 	// DRAW SCENE
 
+	camera.UpdateViewFrustum();
+
 	vector<pair<Model*,XMMATRIX>> transparentModels = {}; // Transparent meshes to be drawn AFTER the opaque geometry
 	vector<Object3D*> objects = {};
 
+	//camera.viewFrustum = Frustum::CreateFrustumFromCamera(camera, )
+
 	//todo: precompute sceneObjects values vector whenever an object is appended or removed
 	for(map<string, Object3D*>::iterator it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); ++it) {
-		objects.push_back(it->second);
+		// if object has an AABB, and is visible by the camera
+		//AcquireSRWLockExclusive(&it->second->gAccessMutex);
+		if(it->second->cullBox.GetHalfSize().magnitude()==0.0f || camera.IsAABBInFrustum(it->second->cullBox))
+			objects.push_back(it->second);
+		//AcquireSRWLockExclusive(&it->second->gAccessMutex);
+
+		// aka: dont queue objects hidden to the camera to be drawn
 	}
 
 	SortObjects(objects, 0, (int)(objects.size() - 1));
