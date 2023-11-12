@@ -15,8 +15,13 @@ Lighting::Lighting(ChunkManager* chunkManager)
 void Lighting::QueueLight(const LightNode& light)
 {
 	//AcquireSRWLockExclusive(&lightQueueMutex);
-	lightBfsQueue.emplace(light);
+	lightBfsQueue.push(light);
 	//ReleaseSRWLockExclusive(&lightQueueMutex);
+}
+
+void Lighting::QueueRemoveLight(const RemoveLightNode& remLight)
+{
+	removeLightBfsQueue.push(remLight);
 }
 
 void Lighting::StartThread()
@@ -30,16 +35,37 @@ void noop() {
 
 void Lighting::TryFloodLightTo(const Vector3Int& localPos, const int& currentLevel, Chunk* chunk)
 {
+	BlockID block = chunk->GetBlockIncludingNeighbours(localPos.x, localPos.y, localPos.z);
+	int light = chunk->GetBlockLightIncludingNeighbours(localPos.x, localPos.y, localPos.z);
+
 	if(
-		!BlockDef::GetDef(chunkManager->GetBlockAtWorldPos(localPos)).IsSolid() &&
-		chunk->GetBlockLightIncludingNeighbours(localPos.x, localPos.y, localPos.z) + 2 <= currentLevel
+		!BlockDef::GetDef(block).IsSolid() &&
+		light + 2 <= currentLevel
+		//chunk->GetBlockLight(localPos.x, localPos.y, localPos.z) + 2 <= currentLevel
 		)
 	{
-		//chunk->GetBlockLightIncludingNeighbours(worldPos, currentLevel - 1);
-		//if(localPos.x < 0 || localPos.z < 0 || localPos.y < 0) {
-		//	noop();
-		//}
+
 		chunk->SetBlockLightIncludingNeighbours(localPos.x, localPos.y, localPos.z, currentLevel - 1);
+		//chunk->SetBlockLight(localPos.x, localPos.y, localPos.z, currentLevel - 1);
+		//lightBfsQueue.emplace(localPos, chunk);
+	}
+}
+
+void Lighting::TryRemoveLight(const Vector3Int& index, const int& currentLevel, Chunk* chunk)
+{
+	int neighbourLevel = chunk->GetBlockLightIncludingNeighbours(index.x, index.y, index.z);
+
+	if(neighbourLevel != 0 && neighbourLevel < currentLevel) {
+		chunk->SetBlockLightIncludingNeighbours(index.x, index.y, index.z, 0);
+		lightBfsQueue.pop(); // Remove the block we just added from the light queue
+
+		// error because outside of chunk borders, chunk is pointing to the incorrect chunk i think
+		removeLightBfsQueue.emplace(index, chunk, neighbourLevel);
+	}
+	else if(neighbourLevel >= currentLevel) { // if neighbour light is brigther than current light, then re-spread the light back over this block
+
+		// error because outside of chunk borders, chunk is pointing to the incorrect chunk i think
+		lightBfsQueue.emplace(index, chunk);
 	}
 }
 
@@ -50,16 +76,11 @@ void Lighting::LightingThread()
 		while(!lightBfsQueue.empty()) {
 			LightNode& node = lightBfsQueue.front();
 
-			Vector3Int index = node.indexPos;
-
-			// issue when local index.y == 1, 2 and maybe 3
-			if(index.y == 1)
-				noop();
-
+			Vector3Int index = node.localIndexPos;
 			Chunk* chunk = node.chunk;
-			int lightLevel = chunk->GetBlockLight(index.x, index.y, index.z);
-
 			lightBfsQueue.pop();
+
+			int lightLevel = chunk->GetBlockLight(index.x, index.y, index.z);
 
 			if(chunkIndexRebuildQueue.find(chunk) == chunkIndexRebuildQueue.end())
 				chunkIndexRebuildQueue[chunk] = true;
@@ -71,13 +92,34 @@ void Lighting::LightingThread()
 			TryFloodLightTo(index + Vector3Int(0, 1, 0), lightLevel, chunk);
 			TryFloodLightTo(index + Vector3Int(0, 0, -1), lightLevel, chunk);
 			TryFloodLightTo(index + Vector3Int(0, 0, 1), lightLevel, chunk);
-
-
 		}
 		//ReleaseSRWLockExclusive(&lightQueueMutex);
 
+		while(!removeLightBfsQueue.empty()) {
+			RemoveLightNode& node = removeLightBfsQueue.front();
+
+			Vector3Int index = node.localIndexPos;
+			Chunk* chunk = node.chunk;
+			int lightLevel = node.val;
+			removeLightBfsQueue.pop();
+
+			if(chunkIndexRebuildQueue.find(chunk) == chunkIndexRebuildQueue.end())
+				chunkIndexRebuildQueue[chunk] = true;
+
+			TryRemoveLight(index + Vector3Int(1, 0, 0), lightLevel, chunk);
+			TryRemoveLight(index + Vector3Int(-1, 0, 0), lightLevel, chunk);
+			TryRemoveLight(index + Vector3Int(0, 1, 0), lightLevel, chunk);
+			TryRemoveLight(index + Vector3Int(0, -1, 0), lightLevel, chunk);
+			TryRemoveLight(index + Vector3Int(0, 0, 1), lightLevel, chunk);
+			TryRemoveLight(index + Vector3Int(0, 0, -1), lightLevel, chunk);
+		}
+
+
+
 		for(const pair<Chunk*, bool>& pair : chunkIndexRebuildQueue) {
+			AcquireSRWLockExclusive(&pair.first->gAccessMutex);
 			pair.first->BuildMesh();
+			ReleaseSRWLockExclusive(&pair.first->gAccessMutex);
 		}
 		chunkIndexRebuildQueue.clear();
 	}

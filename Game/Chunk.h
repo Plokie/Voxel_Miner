@@ -51,6 +51,8 @@ public:
 	int GetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z);
 	void SetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z, const int& val);
 
+	BlockID GetBlockIncludingNeighbours(const int& x, const int& y, const int& z);
+
 	void SetBlockLight(const int& x, const int& y, const int& z, const int& val);
 	void SetSkyLight(const int& x, const int& y, const int& z, const int& val);
 

@@ -114,10 +114,23 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 	if(chunkMap.count(chunkIndex)) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
-		chunkMap[chunkIndex]->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z] = (USHORT)id;
+		Chunk* chunk = chunkMap[chunkIndex];
+
+		BlockID oldBlock = (BlockID)chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z];
+
+		chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z] = (USHORT)id;
 
 		//TODO: READ LIGHT DATA FROM BLOCK DATA, THIS IS JUST A TEST
-		if(id == LAMP) chunkMap[chunkIndex]->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 15);
+		if(id == LAMP) {
+			chunkMap[chunkIndex]->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 15);
+			//lighting->QueueLight({ localVoxelPos, chunkMap[chunkIndex] });
+		}
+
+		if(oldBlock == LAMP && id == AIR) {
+			lighting->QueueRemoveLight({ localVoxelPos, chunk, 15 });
+			chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 0);
+			lighting->PopLightQueue();
+		}
 
 		chunkMap[chunkIndex]->BuildMesh();
 
@@ -172,7 +185,7 @@ int ChunkManager::GetBlockLightAtWorldPos(const int& x, const int& y, const int&
 
 int ChunkManager::GetBlockLightAtWorldPos(const Vector3Int& p) const
 {
-	return GetBlockAtWorldPos(p.x,p.y,p.z);
+	return GetBlockLightAtWorldPos(p.x,p.y,p.z);
 }
 
 void ChunkManager::SetBlockLightAtWorldPos(const int& x, const int& y, const int& z, const int& val) const {

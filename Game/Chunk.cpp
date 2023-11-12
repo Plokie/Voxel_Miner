@@ -7,23 +7,28 @@
 
 bool Chunk::RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z) {
 	const bool isCurrentBlockSolid = BlockDef::GetDef(currentBlock).IsSolid();
-	if(x < 0 || x>CHUNKSIZE_X-1 || y < 0 || y>CHUNKSIZE_Y-1 || z < 0 || z>CHUNKSIZE_Z-1) // sample from another chunk
-	{
-		Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
-		BlockID neighborBlock = chunkManager->GetBlockAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z);
+	BlockID neighborBlock = GetBlockIncludingNeighbours(x, y, z);
+	bool isNeighborSolid = BlockDef::GetDef(neighborBlock).IsSolid();
+	return (isCurrentBlockSolid && !isNeighborSolid) || (!isCurrentBlockSolid && neighborBlock == AIR);
 
-		const bool isNeighborSolid(BlockDef::GetDef(neighborBlock).IsSolid());
+	//const bool isCurrentBlockSolid = BlockDef::GetDef(currentBlock).IsSolid();
+	//if(x < 0 || x>CHUNKSIZE_X-1 || y < 0 || y>CHUNKSIZE_Y-1 || z < 0 || z>CHUNKSIZE_Z-1) // sample from another chunk
+	//{
+	//	Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
+	//	BlockID neighborBlock = chunkManager->GetBlockAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z);
 
-		return (isCurrentBlockSolid && !isNeighborSolid) || (!isCurrentBlockSolid && neighborBlock == AIR);
-		//return isNeighborSolid==isCurrentBlockSolid || neighborBlock != AIR;
-	}
-	else {
-		BlockID neighborBlock = (BlockID)blockData[x][y][z];
-		const bool isNeighborSolid(BlockDef::GetDef(neighborBlock).IsSolid());
+	//	const bool isNeighborSolid(BlockDef::GetDef(neighborBlock).IsSolid());
+
+	//	return (isCurrentBlockSolid && !isNeighborSolid) || (!isCurrentBlockSolid && neighborBlock == AIR);
+	//	//return isNeighborSolid==isCurrentBlockSolid || neighborBlock != AIR;
+	//}
+	//else {
+	//	BlockID neighborBlock = (BlockID)blockData[x][y][z];
+	//	const bool isNeighborSolid(BlockDef::GetDef(neighborBlock).IsSolid());
 
 
-		return (isCurrentBlockSolid && !isNeighborSolid) || (!isCurrentBlockSolid && neighborBlock == AIR);
-	}
+	//	return (isCurrentBlockSolid && !isNeighborSolid) || (!isCurrentBlockSolid && neighborBlock == AIR);
+	//}
 }
 
 int Chunk::GetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z)
@@ -50,6 +55,18 @@ void Chunk::SetBlockLightIncludingNeighbours(const int& x, const int& y, const i
 	}
 }
 
+BlockID Chunk::GetBlockIncludingNeighbours(const int& x, const int& y, const int& z)
+{
+	if(x < 0 || x>CHUNKSIZE_X - 1 || y < 0 || y>CHUNKSIZE_Y - 1 || z < 0 || z>CHUNKSIZE_Z - 1) // sample from another chunk
+	{
+		Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
+		return chunkManager->GetBlockAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z);
+	}
+	else {
+		return (BlockID)blockData[x][y][z];
+	}
+}
+
 
 void PushIndices(size_t size, vector<DWORD>& indices) {
 	int int_size = static_cast<int>(size);
@@ -70,7 +87,7 @@ Vector2 ConvertUVIdToAtlasUV(int uvIdX, int uvIdY) {
 
 void PushFace(vector<Vertex>& vertices,
 	BlockID id,
-	float x,  float y,  float z,
+	int x,  int y,  int z,
 	float ax, float ay, float az,
 	float bx, float by, float bz,
 	float cx, float cy, float cz,
@@ -122,7 +139,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		int light = GetBlockLightIncludingNeighbours(x+1, y, z);
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
-			(float)x, (float)y, (float)z,
+			x, y, z,
 			1,0,0,
 			1,1,0,
 			1,1,1,
@@ -136,7 +153,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		int light = GetBlockLightIncludingNeighbours(x - 1, y, z);
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
-			(float)x, (float)y, (float)z,
+			x, y, z,
 			0, 0, 1,
 			0, 1, 1,
 			0, 1, 0,
@@ -150,7 +167,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		int light = GetBlockLightIncludingNeighbours(x, y+1, z);
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
-			(float)x, (float)y, (float)z,
+			x, y, z,
 			0,	1,	0,
 			0,	1,	1,
 			1,	1,	1,
@@ -164,7 +181,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		int light = GetBlockLightIncludingNeighbours(x, y - 1, z);
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
-			(float)x, (float)y, (float)z,
+			x, y, z,
 			0, 0, 1,
 			0, 0, 0,
 			1,  0, 0,
@@ -178,7 +195,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		int light = GetBlockLightIncludingNeighbours(x, y, z+1);
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
-			(float)x, (float)y, (float)z,
+			x, y, z,
 			1, 0, 1,
 			1, 1, 1,
 			0, 1, 1,
@@ -406,7 +423,8 @@ void Chunk::SetBlockLight(const int& x, const int& y, const int& z, const int& v
 {
 	this->lightLevel[x][y][z] = (this->lightLevel[x][y][z] & 0xF0) | val;
 
-	chunkManager->GetLighting()->QueueLight(LightNode(x, y, z, this));
+	//if(outChunk != nullptr) *outChunk = this;
+	 chunkManager->GetLighting()->QueueLight(LightNode(x, y, z, this));
 	//lightBfsQueue.emplace(x, y, z, this);
 }
 

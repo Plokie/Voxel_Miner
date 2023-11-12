@@ -144,6 +144,7 @@ public:
 		if(indexBuffer) indexBuffer->Release();*/
 		if(constantBuffer) constantBuffer->Release();
 
+		if(mesh !=nullptr)
 		if(mesh->_isProceduralMesh) {
 			ReleaseMesh();
 		}

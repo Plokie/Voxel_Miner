@@ -45,6 +45,20 @@ public:
 		return this->lighting;
 	}
 
+	Chunk* GetChunk(tuple<int,int,int> index) {
+		if(chunkMap.find(index) != chunkMap.end()) {
+			return chunkMap[index];
+		}
+		return nullptr;
+	}
+	Chunk* GetChunk(Vector3Int index) {
+		if(chunkMap.find(index) != chunkMap.end()) {
+			return chunkMap[index];
+		}
+		return nullptr;
+	}
+
+
 	void TryRegen(Vector3Int chunkCoords);
 	// long name because really shouldnt use this in most cases, but it /does/ have its use
 	static Vector3Int ChunkFloorPosForPositionCalculation(Vector3 worldPosition);
