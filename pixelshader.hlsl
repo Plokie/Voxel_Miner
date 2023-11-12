@@ -20,7 +20,8 @@ float4 main(PS_INPUT input) : SV_TARGET
     float4 pixCol = tex.Sample(samplerState, input.texCoord + input.texOffset);
     
     //todo: make cbuffer input
-    float3 tempLightDir = normalize(-float3(-1.0f, -1.0f, 0.0f));
+    //float3 tempLightDir = normalize(-float3(-1.0f, -1.0f, 0.0f));
+    float3 tempLightDir = normalize(-float3(0.0f, -1.0f, 0.0f));
     
     float lightDot = dot(input.normal, tempLightDir);
     lightDot = (lightDot + 1.0f) / 2.0f;
@@ -33,5 +34,6 @@ float4 main(PS_INPUT input) : SV_TARGET
     //col += float4(ambientLight, 0.0f);
     col = saturate(col);
 
+    //saturate(1.0f-input.pos.z) * 50.0f
     return float4(col.rgb, pixCol.a * alpha);
 }

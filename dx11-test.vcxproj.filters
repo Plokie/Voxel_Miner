@@ -129,11 +129,14 @@
     <ClCompile Include="Engine\Label.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Lighting.cpp">
+      <Filter>Source Files\Game\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\ChunkLightData.cpp">
+      <Filter>Source Files\Game\World</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DebugMsg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Graphics\Graphics.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
@@ -232,6 +235,15 @@
     </ClInclude>
     <ClInclude Include="Engine\Label.h">
       <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugMsg.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Lighting.h">
+      <Filter>Header Files\Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\ChunkLightData.h">
+      <Filter>Header Files\Game\World</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

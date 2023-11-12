@@ -10,6 +10,7 @@
 #include "Chunk.h"
 #include "WorldGen.h"
 #include "../Engine/MathUtil.h"
+#include "Lighting.h"
 
 #define CHUNKLOAD_AREA_X 5
 #define CHUNKLOAD_AREA_NY 3
@@ -32,22 +33,35 @@ private:
 
 	atomic<bool> _isRunning{true};
 
+	Lighting* lighting = nullptr;
+
 	// To use less Mutexes and better performance, could just delete the queue from the chunkMap
 	//SRWLOCK _rebuildQueueMutex; // Permission to push / pop from rebuild queue
 	//atomic<vector<Chunk*>> _rebuildQueue{ {} }; // List of chunks that are awaiting re-build on the chunk builder thread
 
 
 public:
+	Lighting* GetLighting() const {
+		return this->lighting;
+	}
+
 	void TryRegen(Vector3Int chunkCoords);
 	// long name because really shouldnt use this in most cases, but it /does/ have its use
 	static Vector3Int ChunkFloorPosForPositionCalculation(Vector3 worldPosition);
 	static Vector3Int ToChunkIndexPosition(const int& x, const int& y, const int& z);
-	
-	BlockID GetBlockAtWorldPos(int x, int y, int z);
-	BlockID GetBlockAtWorldPos(Vector3Int v);
 
+	// Used because faster when operating with
+	static tuple<int,int,int> ToChunkIndexPositionTuple(const int& x, const int& y, const int& z);
+
+	BlockID GetBlockAtWorldPos(const int& x, const int& y, const int& z) const;
+	BlockID GetBlockAtWorldPos(const Vector3Int& v) const;
 	void SetBlockAtWorldPos(const int& x, const int& y, const int& z, const BlockID& id);
 	void SetBlockAtWorldPos(const Vector3Int& pos, const BlockID& id);
+
+	int GetBlockLightAtWorldPos(const int& x, const int& y, const int& z) const;
+	int GetBlockLightAtWorldPos(const Vector3Int& p) const;
+	void SetBlockLightAtWorldPos(const int& x, const int& y, const int& z, const int& val) const;
+	void SetBlockLightAtWorldPos(const Vector3Int& p, const int& val) const;
 
 	static ChunkManager* Create(Transform* cameraTransform);
 	void Init(Transform* cameraTransform);

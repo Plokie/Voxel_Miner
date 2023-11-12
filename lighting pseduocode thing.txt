@@ -1,0 +1,41 @@
+map<Vector3Int, ChunkLighting*>
+
+
+
+func BuildChunkLighting(Vector3Int chunkIndex, ChunkLighting* above = nullptr):
+	
+end
+
+func MainLightingThread():
+	while true:
+		camIndex = ChunkIndex(cam.pos)
+
+		// Propagate sky
+		for x = 1-CHUNKLOAD_AREA_X; x<CHUNKLOAD_AREA_X+1; x++:
+			for z = 1-CHUNKLOAD_AREA_Z; x<CHUNKLOAD_AREA_Z+1; z++:
+				for y = 1-CHUNKLOAD_AREA_Y; x<CHUNKLOAD_AREA_Y+1; y++:
+					if chunkExists(x,y,z): // Essentially gets the highest chunk at x,z
+						while y > 1-CHUNKLOAD_AREA_Y:
+							
+			
+							y--
+						endwhile
+						break // Go to next x,z
+					endif
+				endfor
+			endfor
+			if thread ended: return
+		endfor
+
+		// Propagate source blocks
+
+		// Flood
+
+
+	endwhile
+end
+
+
+
+// 1. Propagate sunlight from top to bottom WITHOUT flood filling
+// 2. 

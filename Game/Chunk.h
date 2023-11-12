@@ -1,5 +1,6 @@
 #pragma once
 
+#include <queue>
 #include "../Engine/Engine.h"
 #include "Blocks.h"
 #include "WorldGen.h"
@@ -11,6 +12,7 @@
 using namespace std;
 
 class ChunkManager;
+class ChunkLightData;
 
 class Chunk : public Object3D {
 public:
@@ -25,8 +27,9 @@ private:
 	bool RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z);
 	void MakeVoxel(const BlockID blockID, const int x, const int y, const int z, vector<Vertex>& vertices, vector<DWORD>& indices);
 	ChunkManager* chunkManager = nullptr;
+	Object3D* player = nullptr;
+	UINT8 lightLevel[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};
 public:
-	
 
 	Vector3Int chunkIndexPosition = Vector3Int();
 
@@ -42,6 +45,12 @@ public:
 
 	void Start() override;
 	void Update(float dTime) override;
+
+	int GetBlockLight(const int& x, const int& y, const int& z);
+	int GetSkyLight(const int& x, const int& y, const int& z);
+
+	void SetBlockLight(const int& x, const int& y, const int& z, const int& val);
+	void SetSkyLight(const int& x, const int& y, const int& z, const int& val);
 
 	Chunk(Vector3Int ChunkIndexPos, ChunkManager* chnkMgr): chunkIndexPosition(ChunkIndexPos), chunkManager(chnkMgr){}
 

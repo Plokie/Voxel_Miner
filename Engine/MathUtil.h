@@ -111,10 +111,14 @@ public:
 		return sqrtf(sqrMagnitude());
 	}
 
-	float sqrDistTo(Vector3& otherPos) {
+	float sqrDistTo(const Vector3& otherPos) const {
 		return ((otherPos.x - x) * (otherPos.x - x)) +
 			((otherPos.y - y) * (otherPos.y - y)) +
 			((otherPos.z - z) * (otherPos.z - z));
+	}
+
+	static float Distance(const Vector3& lhs, const Vector3& rhs) {
+		return static_cast<float>(sqrt(lhs.sqrDistTo(rhs)));
 	}
 
 	Vector3 normalized() const {

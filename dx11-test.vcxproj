@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClCompile Include="Game\ChunkDatabase.cpp" />
     <ClCompile Include="Engine\AABB.cpp" />
+    <ClCompile Include="Game\ChunkLightData.cpp" />
     <ClCompile Include="Game\ChunkManager.cpp" />
     <ClCompile Include="Game\Blocks.cpp" />
     <ClCompile Include="Game\Chunk.cpp" />
@@ -160,6 +161,7 @@
     <ClCompile Include="Graphics\Graphics.cpp" />
     <ClCompile Include="Engine\Input.cpp" />
     <ClCompile Include="Engine\Label.cpp" />
+    <ClCompile Include="Game\Lighting.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Graphics\Shaders.cpp" />
     <ClCompile Include="Engine\WinManager.cpp" />
@@ -177,6 +179,7 @@
   <ItemGroup>
     <ClInclude Include="Engine\json.hpp" />
     <ClInclude Include="Engine\AABB.h" />
+    <ClInclude Include="Game\ChunkLightData.h" />
     <ClInclude Include="Game\FastNoiseLite.h" />
     <ClInclude Include="Game\ChunkManager.h" />
     <ClInclude Include="Game\Blocks.h" />
@@ -209,6 +212,7 @@
     <ClInclude Include="Game\VoxelRaycast.h" />
     <ClInclude Include="Engine\Object2D.h" />
     <ClInclude Include="Engine\Label.h" />
+    <ClInclude Include="Game\Lighting.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="demopixelshader.hlsl">

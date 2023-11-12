@@ -67,15 +67,15 @@ float WorldGen::SampleMoisture(const int& x, const int& z) {
 	return NormalizeNoise(_Instance->noiseSampler_Moisture.GetNoise((float)x, (float)z));
 }
 
-BlockID WorldGen::GetBlockAt(int x, int y, int z) {
+BlockID WorldGen::GetBlockAt(const int& x, const int& y, const int& z) {
 	float heightSample = SampleWorldHeight(x, z);
 	float temperatureSample = SampleTemperature(x, z);
 	float moistureSample = SampleMoisture(x, z);
 	return GetBlockGivenHeight(x, y, z, static_cast<int>(heightSample), temperatureSample, moistureSample);
 }
 
-bool WorldGen::IsBlockCave(int x, int y, int z) {
-	return _Instance->noiseSampler_Caves1.GetNoise((float)x, (float)y, (float)z) > 0.25f;
+bool WorldGen::IsBlockCave(const int& x, const int& y, const int& z) {
+	return _Instance->noiseSampler_Caves1.GetNoise(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)) > 0.25f;
 }
 
 
@@ -85,23 +85,28 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 	const int SEA_LEVEL = 0;
 	const int SKY_LEVEL = 200;
 
+	//const bool decisions[7] = {
+	//	y > heightSample, //		above ground
+	//	y == heightSample, //		is surface
+	//	y == heightSample - 1, //	just below surface
+	//	y == heightSample - 2, //	bottom of surface layer
+
+	//	y < SEA_LEVEL, //			4	below sea level
+	//	y > SKY_LEVEL, //			2	above sky level
+
+	//	IsBlockCave(x, y, z), //	1	in cave
+	//};
+
 	//todo: this doesnt feel right, there HAS HAS HAS to be a better way to do this
 	// I know the bunch of if statements look weird, but if we follow it like the computer does, its actually faster than precomputing the individual conditions
 
 	// maybe tree structure?
-	
+
 	if(y > heightSample) {
 		if(y < SEA_LEVEL) return WATER;
 		if(y > SKY_LEVEL) {
 			int skyTop = static_cast<int>((NormalizeNoise(_Instance->noiseSampler_Sky_Top.GetNoise((float)x, (float)z)) * 30.0f) + SKY_LEVEL);
 			int skyUnder = static_cast<int>((NormalizeNoise(_Instance->noiseSampler_Sky_Under.GetNoise((float)x, (float)z) - 0.5f) * 70.0f) + SKY_LEVEL);
-
-	/*		if(y == static_cast<int>(skyTop)) {
-				return GRASS;
-			}
-			if(y == static_cast<int>(skyUnder)) {
-				return STONE;
-			}*/
 
 			if(y <= skyTop && y > skyUnder) {
 				if(y == skyTop) return GRASS;
@@ -114,34 +119,30 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 		return AIR;
 	}
 
+
 	if(y == heightSample) {
 		if(y < SEA_LEVEL) return SAND;
-		else {
-			bool isInCave = IsBlockCave(x, y, z);
-			if(isInCave)return AIR;
-			return GRASS;
-		}
+		bool isInCave = IsBlockCave(x, y, z);
+		if(isInCave) return AIR;
+		return GRASS;
 	}
 
 	if(y == heightSample - 1) { // Just below the surface
 		if(y < SEA_LEVEL) return SAND;
-		else {
-			bool isInCave = IsBlockCave(x, y, z);
-			if(isInCave) return AIR;
-			return DIRT;
-		}
+		bool isInCave = IsBlockCave(x, y, z);
+		if(isInCave) return AIR;
+		return DIRT;
+		
 	}
 
 	if(y == heightSample - 2) { // Bottom of crust
 		if(y < SEA_LEVEL) return CLAY;
-		else {
-			bool isInCave = IsBlockCave(x, y, z);
-			if(isInCave) return AIR;
-			return DIRT;
-		}
+		bool isInCave = IsBlockCave(x, y, z);
+		if(isInCave) return AIR;
+		return DIRT;
 	}
 
-	bool isInCave = IsBlockCave(x,y,z);
+	bool isInCave = IsBlockCave(x, y, z);
 	if(isInCave) return AIR;
 	return STONE;
 }

@@ -1,5 +1,7 @@
 #include "Graphics.h"
 #include "../Engine/Input.h"
+#include "../DebugMsg.h"
+
 
 using namespace std;
 //using namespace DirectX;
@@ -494,7 +496,7 @@ void Graphics::Render(Scene* scene) {
 	for(map<string, Object3D*>::iterator it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); ++it) {
 		// if object has an AABB, and is visible by the camera
 		//AcquireSRWLockExclusive(&it->second->gAccessMutex);
-		if(it->second->cullBox.GetHalfSize().magnitude()==0.0f || camera.IsAABBInFrustum(it->second->cullBox))
+		if((it->second->cullBox.GetHalfSize().magnitude() == 0.0f || camera.IsAABBInFrustum(it->second->cullBox)) && it->second->doRender )
 			objects.push_back(it->second);
 		//AcquireSRWLockExclusive(&it->second->gAccessMutex);
 
@@ -504,7 +506,7 @@ void Graphics::Render(Scene* scene) {
 	SortObjects(objects, 0, (int)(objects.size() - 1));
 
 	for(vector<Object3D*>::iterator it = objects.begin(); it != objects.end(); ++it) {
-		if ((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), & transparentModels)) {
+		if ((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentModels)) {
 			//If it drew something, return back to default error textures+shaders afterwards (so we can see missing tex objects)
 			deviceCtx->PSSetShaderResources(0, 1, &errTex);
 			deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);

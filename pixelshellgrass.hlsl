@@ -28,12 +28,13 @@ static const float shell_pix_height = 2.0f;
 
 float4 main(PS_INPUT input) : SV_TARGET
 {
+    float pixelSize = (tile_size / atlas_size);
     float4 pixCol = tex.Sample(samplerState, input.texCoord + input.texOffset);
-    float2 normalUV = input.texCoord / (tile_size / atlas_size);
+    float2 normalUV = input.texCoord / pixelSize;
     
     float height = frac(input.worldPos.y);
     // relative height 0.0f = base, 1.0f = top
-    float relHeight = (height / ((tile_size / atlas_size) * shell_pix_height));
+    float relHeight = (height / (pixelSize * (shell_pix_height + pixelSize)));
     float adjHeight = ((relHeight - 1.0f) / 0.8f) + 1.0f;
     
     float2 pixelIndex = floor(normalUV * 16.0f);

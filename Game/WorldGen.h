@@ -20,7 +20,7 @@ public:
 	static float SampleWorldHeight(const int& x, const int& z);
 	static float SampleTemperature(const int& x, const int& z);
 	static float SampleMoisture(const int& x, const int& z);
-	static BlockID GetBlockAt(int x, int y, int z);
+	static BlockID GetBlockAt(const int& x, const int& y, const int& z);
 	static BlockID GetBlockGivenHeight(const int& x, const int& y, const int& z, const int& heightSample, const float& tempSample, const float& moistSample);
-	static bool IsBlockCave(int x, int y, int z);
+	static bool IsBlockCave(const int& x, const int& y, const int& z);
 };

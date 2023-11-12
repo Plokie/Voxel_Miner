@@ -1,7 +1,7 @@
 #include "PlayerController.h"
 
 #include "VoxelRaycast.h"
-#include "../Engine/Label.h"
+
 #include "ChunkManager.h"
 #include "ChunkDatabase.h"
 
@@ -12,8 +12,12 @@ void CameraController::Start()
 	transform.position = Vector3(0, 5, 0);
 
 	engine->GetCurrentScene()->CreateObject3D(new Object3D(), "block_select", "cube", "block-select");
-	engine->GetCurrentScene()->GetObject3D("block_select")->models[0]->SetTransparent(true);
-	engine->GetCurrentScene()->GetObject3D("block_select")->transform.scale = Vector3(0.51f, 0.51f, 0.51f);
+	this->blockSelectRef = engine->GetCurrentScene()->GetObject3D("block_select");
+	blockSelectRef->models[0]->SetTransparent(true);
+	blockSelectRef->transform.scale = Vector3(0.51f, 0.51f, 0.51f);
+
+	this->fpsCounter = engine->GetCurrentScene()->GetObject2D<Label>("fps-counter");
+	this->worldPosLabel = engine->GetCurrentScene()->GetObject2D<Label>("worldpos");
 
 	//engine->GetCurrentScene()->CreateObject3D(new Object3D(), "a_debug_look", "cube", "err");
 	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->models[0]->SetTransparent(true);
@@ -180,8 +184,8 @@ void CameraController::Update(float dTime)
 	Vector3Int lookHitNormal;
 	BlockID lookHitBlock;
 	if(VoxelRay::Cast(&ray, chunkManager, 10.f, &lookHitPoint, &lookHitBlock, &lookHitNormal )) {
-		engine->GetCurrentScene()->GetObject3D("block_select")->models[0]->alpha = 0.99f;
-		engine->GetCurrentScene()->GetObject3D("block_select")->transform.position = Vector3((float)lookHitPoint.x, (float)lookHitPoint.y, (float)lookHitPoint.z) + Vector3(0.5f, 0.5f, 0.5f);
+		blockSelectRef->models[0]->alpha = 0.99f; // fails sometimes
+		blockSelectRef->transform.position = Vector3((float)lookHitPoint.x, (float)lookHitPoint.y, (float)lookHitPoint.z) + Vector3(0.5f, 0.5f, 0.5f);
 	
 	
 		// INPUT MODIFY
@@ -199,7 +203,7 @@ void CameraController::Update(float dTime)
 		}
 	}
 	else {
-		engine->GetCurrentScene()->GetObject3D("block_select")->models[0]->alpha = 0.0f;
+		blockSelectRef->models[0]->alpha = 0.0f;
 	}
 
 	
@@ -211,7 +215,7 @@ void CameraController::Update(float dTime)
 
 	//engine->GetCurrentScene()->GetObject3D("cam_bounds")->transform.position = transform.position - Vector3(0, 0.62f, 0);
 
-	engine->GetCurrentScene()->GetObject2D<Label>("fps-counter")->SetText(to_string(static_cast<int>(roundf(1.f/dTime))));
+	fpsCounter->SetText(to_string(static_cast<int>(roundf(1.f/dTime))));
 
 	//string debugChunkData = "";
 	//////AcquireSRWLockExclusive()
@@ -222,7 +226,7 @@ void CameraController::Update(float dTime)
 
 	//AcquireSRWLockExclusive(&ChunkDatabase::Get()->chunkHashMutex);
 	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
-	engine->GetCurrentScene()->GetObject2D<Label>("worldpos")->SetText(
+	worldPosLabel->SetText(
 		camBlockPos.ToString() + "\n"
 		//velocity.ToString() + "\n" + 
 		//to_string(isGrounded) + "\n" + "\n" +

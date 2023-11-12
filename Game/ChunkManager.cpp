@@ -10,7 +10,8 @@ Chunk* ChunkManager::CreateChunk(int x, int y, int z)
 	}
 
 	Chunk* newChunk = new Chunk(Vector3Int(x, y, z), this);
-
+		
+	InitializeSRWLock(&newChunk->gAccessMutex);
 	//Chunk* newChunk = (Chunk*)this->pEngine->GetCurrentScene()->CreateObject3D(
 	//	new Chunk(Vector3Int(x, y, z), this), // chunk instance w/ initialised values (position and reference to ChunkManager)
 	//	"_c" + to_string(x) + "_" + to_string(y) + "_" + to_string(z) // Object3D name (using index as string)
@@ -19,15 +20,16 @@ Chunk* ChunkManager::CreateChunk(int x, int y, int z)
 	// something is happening between line 9 and inside Load() (when setting block data) which is corrupting the chunk
 	// was it deleted on the previous frame?
 
-	//AcquireSRWLockExclusive(&newChunk->gAccessMutex);
+	AcquireSRWLockExclusive(&newChunk->gAccessMutex);
 
 	newChunk->transform.position = Vector3(static_cast<float>(CHUNKSIZE_X * x), static_cast<float>(CHUNKSIZE_Y * y), static_cast<float>(CHUNKSIZE_Z * z));
 	bool didChunkExistAlready = newChunk->Load();
+	ReleaseSRWLockExclusive(&newChunk->gAccessMutex);
 
 	this->chunkMap[tuple<int, int, int>(x, y, z)] = newChunk;
 
-	if(didChunkExistAlready) {
-		TryRegen(Vector3Int(x+1, y, z));
+	if(didChunkExistAlready) { // If chunk had data that existed in the databse
+		TryRegen(Vector3Int(x+1, y, z)); // regenerate neighbouring chunks that might have old neighbour data
 		TryRegen(Vector3Int(x-1, y, z));
 		TryRegen(Vector3Int(x, y+1, z));
 		TryRegen(Vector3Int(x, y-1, z));
@@ -35,7 +37,7 @@ Chunk* ChunkManager::CreateChunk(int x, int y, int z)
 		TryRegen(Vector3Int(x, y, z-1));
 	}
 
-	//ReleaseSRWLockExclusive(&newChunk->gAccessMutex);
+	
 
 
 	this->pEngine->GetCurrentScene()->CreateObject3D(
@@ -64,28 +66,40 @@ Vector3Int ChunkManager::ToChunkIndexPosition(const int& x, const int& y, const 
 	);
 }
 
-
-
-BlockID ChunkManager::GetBlockAtWorldPos(int x, int y, int z)
+tuple<int, int, int> ChunkManager::ToChunkIndexPositionTuple(const int& x, const int& y, const int& z)
 {
-	//return WorldGen::GetBlockAt(x, y, z);
-	
-	//// broke at 40 4 -96
-	//Vector3Int chunkIndex = tuple<int, int, int>(x / CHUNKSIZE_X, y / CHUNKSIZE_Y, z / CHUNKSIZE_Z);
-	Vector3Int chunkIndex = ToChunkIndexPosition(x, y, z);
-	if(chunkMap.count(chunkIndex)) {
+	return tuple<int, int, int>(
+		(x - ((CHUNKSIZE_X - 1) * static_cast<int>(x < 0))) / CHUNKSIZE_X,
+		(y - ((CHUNKSIZE_Y - 1) * static_cast<int>(y < 0))) / CHUNKSIZE_Y,
+		(z - ((CHUNKSIZE_Z - 1) * static_cast<int>(z < 0))) / CHUNKSIZE_Z
+	);
+}
+
+BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& z) const
+{
+	tuple<int,int,int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
+
+	// If chunk is loaded
+	if(chunkMap.find(chunkIndex) != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 		
-		BlockID debugBlockID = (BlockID)chunkMap[chunkIndex]->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z];
-		return debugBlockID;
+		Chunk* chunk = chunkMap.at(chunkIndex);
+		AcquireSRWLockExclusive(&chunk->gAccessMutex);
+		BlockID blockID = static_cast<BlockID>(chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z]);
+		ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+		return blockID;
 	}
-	else {
+	else { // If chunk isn't loaded, sample from world gen instead (next best thing)
 
-		//todo: read from chunk cache of height samples?
+		//todo: read from chunk cache of height,temp,moist samples?
 		return WorldGen::GetBlockAt(x, y, z);
 
 	}
 
+}
+
+BlockID ChunkManager::GetBlockAtWorldPos(const Vector3Int& v) const {
+	return GetBlockAtWorldPos(v.x, v.y, v.z);
 }
 
 void ChunkManager::TryRegen(Vector3Int chunkCoords) {
@@ -134,8 +148,45 @@ void ChunkManager::SetBlockAtWorldPos(const Vector3Int& pos, const BlockID& id) 
 	SetBlockAtWorldPos(pos.x, pos.y, pos.z, id);
 }
 
-BlockID ChunkManager::GetBlockAtWorldPos(Vector3Int v) {
-	return GetBlockAtWorldPos(v.x, v.y, v.z);
+
+
+int ChunkManager::GetBlockLightAtWorldPos(const int& x, const int& y, const int& z) const
+{
+	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
+
+	// If chunk is loaded
+	if(chunkMap.find(chunkIndex) != chunkMap.end()) {
+		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
+
+		Chunk* chunk = chunkMap.at(chunkIndex);
+		AcquireSRWLockExclusive(&chunk->gAccessMutex);
+		int light = chunk->GetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z);
+		ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+		return light;
+	}
+	return 0;
+}
+
+int ChunkManager::GetBlockLightAtWorldPos(const Vector3Int& p) const
+{
+	return GetBlockAtWorldPos(p.x,p.y,p.z);
+}
+
+void ChunkManager::SetBlockLightAtWorldPos(const int& x, const int& y, const int& z, const int& val) const {
+	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
+	if(chunkMap.find(chunkIndex) != chunkMap.end()) {
+		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
+
+		Chunk* chunk = chunkMap.at(chunkIndex);
+		AcquireSRWLockExclusive(&chunk->gAccessMutex);
+		chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, val);
+		ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+	}
+}
+
+void ChunkManager::SetBlockLightAtWorldPos(const Vector3Int& p, const int& val) const
+{
+	SetBlockLightAtWorldPos(p.x, p.y, p.z, val);
 }
 
 ChunkManager* ChunkManager::Create(Transform* cameraTransform) {
@@ -203,6 +254,8 @@ void ChunkManager::Start()
 	}
 
 	_chunkLoaderThreads.emplace_back([&]() { LoaderThreadFunc(pCameraTransform, &chunkMap); });
+	lighting = new Lighting(this);
+	lighting->StartThread();
 }
 
 void ChunkManager::Update(float dt)
@@ -216,6 +269,8 @@ ChunkManager::~ChunkManager()
 	for(thread& thread : _chunkLoaderThreads) {
 		thread.join();
 	}
+
+	if(lighting) delete lighting;
 
 	ChunkDatabase::Get()->SaveChunks();
 	ChunkDatabase::Get()->SaveWorldData();

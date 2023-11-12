@@ -2,6 +2,7 @@
 
 #include "ChunkManager.h"
 #include "ChunkDatabase.h"
+#include "VoxelRaycast.h"
 
 
 bool Chunk::RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z) {
@@ -226,7 +227,7 @@ void Chunk::BuildMesh()
 	vector<Vertex> waterVertices = {};
 	vector<DWORD> waterIndices = {};
 
-	const int shellCount = 7;
+	const int shellCount = 5;
 	const float shellPixelHeight = 2.f;
 	const float shellSeperation = ((1.f / 16.f) * shellPixelHeight) / static_cast<float>(shellCount);
 
@@ -338,14 +339,67 @@ bool Chunk::Load()
 
 void Chunk::Start() {
 	this->cullBox = AABB(transform.position + Vector3(8.f, 8.f, 8.f), Vector3(8.f, 8.f, 8.f));
+	this->player = Engine::Get()->GetCurrentScene()->GetObject3D("CameraController");
 }
 
 void Chunk::Update(float dTime)
 {
 	//transform.rotation.y += 5.f * dTime;
+	
+
+	/*VoxelRay cornerRays[8] = {
+		{player->transform.position, player->transform.position - transform.position},
+		{player->transform.position, player->transform.position - (transform.position + Vector3(CHUNKSIZE_X, 0, 0))  },
+		{player->transform.position, player->transform.position - (transform.position + Vector3(0, CHUNKSIZE_Y, 0))  },
+		{player->transform.position, player->transform.position - (transform.position + Vector3(CHUNKSIZE_X, CHUNKSIZE_Y, 0))  },
+		{player->transform.position, player->transform.position - (transform.position + Vector3(0, 0, CHUNKSIZE_Z))  },
+		{player->transform.position, player->transform.position - (transform.position + Vector3(CHUNKSIZE_X, 0, CHUNKSIZE_Z))  },
+		{player->transform.position, player->transform.position - (transform.position + Vector3(0, CHUNKSIZE_Y, CHUNKSIZE_Z))  },
+		{player->transform.position, player->transform.position - (transform.position + Vector3(CHUNKSIZE_X, CHUNKSIZE_Y, CHUNKSIZE_Z))  },
+	};*/
+
+	//Vector3 distVec = (transform.position + Vector3(CHUNKSIZE_X / 2.f, CHUNKSIZE_Y / 2.f, CHUNKSIZE_Z / 2.f)) - player->transform.position;
+	//VoxelRay testRay = { player->transform.position, distVec.normalized() };
+
+	//doRender = !VoxelRay::Cast(&testRay, chunkManager, distVec.magnitude());
+
+	//doRender = false;
+	//if(models.size() > 0) {
+	//	models[0]->alpha = 0.0f;
+	//	for(const VoxelRay& ray : cornerRays) {
+	//		if(!VoxelRay::Cast(&ray, chunkManager, Vector3::Distance(ray.origin, ray.direction))) {
+	//			//doRender = true;
+	//			models[0]->alpha = 0.5f;
+	//			break;
+	//		}
+	//	}
+	//}
 }
 
 void Chunk::Release() {
 	//delete[CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z] blockData;
 	//delete blockData;
+}
+
+int Chunk::GetBlockLight(const int& x, const int& y, const int& z)
+{
+	return this->lightLevel[x][y][z] & 0x0F;
+}
+
+int Chunk::GetSkyLight(const int& x, const int& y, const int& z)
+{
+	return (this->lightLevel[x][y][z] & 0xF0) >> 4;
+}
+
+void Chunk::SetBlockLight(const int& x, const int& y, const int& z, const int& val)
+{
+	this->lightLevel[x][y][z] = (this->lightLevel[x][y][z] & 0xF0) | val;
+
+	chunkManager->GetLighting()->QueueLight(LightNode(x, y, z, this));
+	//lightBfsQueue.emplace(x, y, z, this);
+}
+
+void Chunk::SetSkyLight(const int& x, const int& y, const int& z, const int& val)
+{
+	this->lightLevel[x][y][z] = (this->lightLevel[x][y][z] & 0xF) | (val << 4);
 }

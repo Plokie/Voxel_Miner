@@ -8,6 +8,8 @@ class Object3D {
 public:
 	SRWLOCK gAccessMutex = {};
 
+	bool doRender = true;
+
 	// The general AABB box describing the max area of the object
 	// Used for frustum culling
 	AABB cullBox = {Vector3(0.f,0.f,0.f), Vector3(0.f,0.f,0.f)};
