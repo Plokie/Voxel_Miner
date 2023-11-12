@@ -38,6 +38,7 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worl
 	deviceCtx->Unmap(alphaBuffer, 0);
 	deviceCtx->PSSetConstantBuffers(0, 1, &alphaBuffer);
 
+	if(mesh == nullptr) return;
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;

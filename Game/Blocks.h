@@ -25,7 +25,7 @@ enum BlockID {
 	OAK_LEAVES,
 	OAK_PLANKS,
 
-
+	LAMP
 };
 
 class Block {

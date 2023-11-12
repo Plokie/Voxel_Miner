@@ -168,7 +168,7 @@ void CameraController::Update(float dTime)
 	if(Input::IsKeyPressed('7')) this->TEMPcurrentBlockID = WATER;
 	if(Input::IsKeyPressed('8')) this->TEMPcurrentBlockID = OAK_LOG;
 	if(Input::IsKeyPressed('9')) this->TEMPcurrentBlockID = OAK_PLANKS;
-	if(Input::IsKeyPressed('0')) this->TEMPcurrentBlockID = OAK_LEAVES;
+	if(Input::IsKeyPressed('0')) this->TEMPcurrentBlockID = LAMP;
 	
 
 
@@ -226,8 +226,12 @@ void CameraController::Update(float dTime)
 
 	//AcquireSRWLockExclusive(&ChunkDatabase::Get()->chunkHashMutex);
 	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
+	Vector3Int chunkIndex = ChunkManager::ToChunkIndexPosition(camBlockPos.x, camBlockPos.y, camBlockPos.z);
 	worldPosLabel->SetText(
 		camBlockPos.ToString() + "\n"
+		+ chunkIndex.ToString() + "\n"
+		+ Vector3Int(FloorMod(camBlockPos.x, CHUNKSIZE_X), FloorMod(camBlockPos.y, CHUNKSIZE_Y), FloorMod(camBlockPos.z, CHUNKSIZE_Z)).ToString() + "\n"
+		+ to_string(chunkManager->GetBlockLightAtWorldPos(camBlockPos)) + "\n"
 		//velocity.ToString() + "\n" + 
 		//to_string(isGrounded) + "\n" + "\n" +
 		//playerTopPos.ToString() + "\n" +

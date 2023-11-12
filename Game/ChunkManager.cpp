@@ -116,6 +116,9 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 
 		chunkMap[chunkIndex]->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z] = (USHORT)id;
 
+		//TODO: READ LIGHT DATA FROM BLOCK DATA, THIS IS JUST A TEST
+		if(id == LAMP) chunkMap[chunkIndex]->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 15);
+
 		chunkMap[chunkIndex]->BuildMesh();
 
 

@@ -47,6 +47,10 @@ const map<BlockID, Block> BlockDef::def = {
 	{BlockID::OAK_PLANKS,	Block("Oak Planks", true,
 		3, 1
 	)},
+
+	{BlockID::LAMP,	Block("Lamp", false,
+		3, 1
+	)},
 };
 
 const string Block::GetName() const {

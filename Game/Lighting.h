@@ -4,6 +4,7 @@
 #include <thread>
 #include <atomic>
 #include <vector>
+#include <map>
 #include <queue>
 #include "../Engine/MathUtil.h"
 
@@ -33,7 +34,9 @@ class Lighting {
 	SRWLOCK lightQueueMutex;
 	queue<LightNode> lightBfsQueue = {};
 
-	void TryFloodLightTo(const Vector3Int& worldPos, const int& currentLevel);
+	map<Chunk*, bool> chunkIndexRebuildQueue = {};
+
+	void TryFloodLightTo(const Vector3Int& worldPos, const int& currentLevel, Chunk* chunk);
 public:
 	Lighting(ChunkManager* chunkManager);
 

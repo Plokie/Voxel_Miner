@@ -55,6 +55,7 @@ void GameStart(Engine* engine) {
 
 	gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "0 0 0", XMFLOAT4(0, 0, 0, 1.0f)), "worldpos");
 	gameScene->GetObject2D("worldpos")->SetPosition(Vector2(0.f, 24.f));
+	gameScene->GetObject2D<Label>("worldpos")->SetColour(1.0f, 1.0f, 1.0f, 1.0f);
 
 	//gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "0 0 0", XMFLOAT4(0, 0, 0, 1.0f)), "chunkpos");
 	//gameScene->GetObject2D("chunkpos")->position = Vector2(0.f, 48.f);

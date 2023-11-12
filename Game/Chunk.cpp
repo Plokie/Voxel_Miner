@@ -18,15 +18,38 @@ bool Chunk::RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int 
 		//return isNeighborSolid==isCurrentBlockSolid || neighborBlock != AIR;
 	}
 	else {
-		//todo: block def containing if block is solid and return that
 		BlockID neighborBlock = (BlockID)blockData[x][y][z];
 		const bool isNeighborSolid(BlockDef::GetDef(neighborBlock).IsSolid());
 
 
 		return (isCurrentBlockSolid && !isNeighborSolid) || (!isCurrentBlockSolid && neighborBlock == AIR);
 	}
-
 }
+
+int Chunk::GetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z)
+{
+	if(x < 0 || x>CHUNKSIZE_X - 1 || y < 0 || y>CHUNKSIZE_Y - 1 || z < 0 || z>CHUNKSIZE_Z - 1) // sample from another chunk
+	{
+		Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
+		return chunkManager->GetBlockLightAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z);
+	}
+	else {
+		return GetBlockLight(x, y, z);
+	}
+}
+
+void Chunk::SetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z, const int& val)
+{
+	if(x < 0 || x>CHUNKSIZE_X - 1 || y < 0 || y>CHUNKSIZE_Y - 1 || z < 0 || z>CHUNKSIZE_Z - 1)
+	{
+		Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
+		chunkManager->SetBlockLightAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z, val);
+	}
+	else {
+		return SetBlockLight(x, y, z, val);
+	}
+}
+
 
 void PushIndices(size_t size, vector<DWORD>& indices) {
 	int int_size = static_cast<int>(size);
@@ -52,7 +75,8 @@ void PushFace(vector<Vertex>& vertices,
 	float bx, float by, float bz,
 	float cx, float cy, float cz,
 	float dx, float dy, float dz,
-	float nx, float ny, float nz
+	float nx, float ny, float nz,
+	int lightLevel
 ) {
 	const Block& blockDef = BlockDef::GetDef(id);
 
@@ -67,13 +91,15 @@ void PushFace(vector<Vertex>& vertices,
 		uv = ConvertUVIdToAtlasUV(blockDef.GetSideUVidx(), blockDef.GetSideUVidy());
 	}
 	
+	Vector3 normal = Vector3(nx, ny, nz).normalized();
+	normal *= (static_cast<float>(lightLevel) / 15.0f) + 0.1f;
 
 	const float uvTileSize = static_cast<float>(ATLAS_TILE_SIZE) / static_cast<float>(ATLAS_SIZE);
 
-	vertices.push_back(Vertex((float)x + ax, (float)y + ay, (float)z + az, nx, ny, nz, 0.f, uvTileSize, uv.x, uv.y));
-	vertices.push_back(Vertex((float)x + bx, (float)y + by, (float)z + bz, nx, ny, nz, 0.f, 0.f, uv.x, uv.y));
-	vertices.push_back(Vertex((float)x + cx, (float)y + cy, (float)z + cz, nx, ny, nz, uvTileSize, 0.f, uv.x, uv.y));
-	vertices.push_back(Vertex((float)x + dx, (float)y + dy, (float)z + dz, nx, ny, nz, uvTileSize, uvTileSize, uv.x, uv.y));
+	vertices.push_back(Vertex((float)x + ax, (float)y + ay, (float)z + az, normal.x, normal.y, normal.z, 0.f, uvTileSize, uv.x, uv.y));
+	vertices.push_back(Vertex((float)x + bx, (float)y + by, (float)z + bz, normal.x, normal.y, normal.z, 0.f, 0.f, uv.x, uv.y));
+	vertices.push_back(Vertex((float)x + cx, (float)y + cy, (float)z + cz, normal.x, normal.y, normal.z, uvTileSize, 0.f, uv.x, uv.y));
+	vertices.push_back(Vertex((float)x + dx, (float)y + dy, (float)z + dz, normal.x, normal.y, normal.z, uvTileSize, uvTileSize, uv.x, uv.y));
 }
 
 
@@ -93,6 +119,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 	//if(px && nx && py && ny && pz && nz) return; 
 
 	if(px) {
+		int light = GetBlockLightIncludingNeighbours(x+1, y, z);
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			(float)x, (float)y, (float)z,
@@ -101,10 +128,12 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 			1,1,1,
 			1,0,1,
 
-			1,0,0
+			1,0,0,
+			light
 		);
 	}
 	if(nx) {
+		int light = GetBlockLightIncludingNeighbours(x - 1, y, z);
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			(float)x, (float)y, (float)z,
@@ -113,10 +142,12 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 			0, 1, 0,
 			0, 0, 0,
 
-			-1, 0, 0
+			-1, 0, 0,
+			light
 		);
 	}
 	if(py) {
+		int light = GetBlockLightIncludingNeighbours(x, y+1, z);
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			(float)x, (float)y, (float)z,
@@ -125,10 +156,12 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 			1,	1,	1,
 			1,	1,	0,
 
-			0, 1, 0
+			0, 1, 0,
+			light
 		);
 	}
 	if(ny) {
+		int light = GetBlockLightIncludingNeighbours(x, y - 1, z);
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			(float)x, (float)y, (float)z,
@@ -137,10 +170,12 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 			1,  0, 0,
 			1, 0, 1,
 
-			0, -1, 0
+			0, -1, 0,
+			light
 		);
 	}
 	if(pz) {
+		int light = GetBlockLightIncludingNeighbours(x, y, z+1);
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			(float)x, (float)y, (float)z,
@@ -149,10 +184,12 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 			0, 1, 1,
 			0, 0, 1,
 
-			0, 0, 1
+			0, 0, 1,
+			light
 		);
 	}
 	if(nz) {
+		int light = GetBlockLightIncludingNeighbours(x, y, z - 1);
 		PushIndices(vertices.size(), indices);
 
 		PushFace(vertices, blockID,
@@ -162,7 +199,8 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 			1, 1, 0,
 			1, 0, 0,
 
-			0, 0, -1
+			0, 0, -1,
+			light
 		);
 	}
 }
@@ -252,18 +290,19 @@ void Chunk::BuildMesh()
 					MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
 
 					if(blockid == GRASS && RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
-						for(int i = 1; i < shellCount+1; i++) {
-							PushIndices(grassShellsVertices[i-1].size(), grassShellsIndices[i-1]);
-							PushFace(grassShellsVertices[i-1], blockid,
-								(float)x, y + ((float)shellSeperation * i), (float)z,
-								0, 1, 0,
-								0, 1, 1,
-								1, 1, 1,
-								1, 1, 0,
+						//chunkManager->GetBlockLightAtWorldPos()
+						//for(int i = 1; i < shellCount+1; i++) {
+						//	PushIndices(grassShellsVertices[i-1].size(), grassShellsIndices[i-1]);
+						//	PushFace(grassShellsVertices[i-1], blockid,
+						//		(float)x, y + ((float)shellSeperation * i), (float)z,
+						//		0, 1, 0,
+						//		0, 1, 1,
+						//		1, 1, 1,
+						//		1, 1, 0,
 
-								0, 1, 0
-							);
-						}
+						//		0, 1, 0
+						//	);
+						//}
 					}
 				}
 				else if(blockid == BlockID::WATER)
@@ -279,9 +318,9 @@ void Chunk::BuildMesh()
 
 	PushChunkMesh(solidVertices, solidIndices);
 
-	for(int i = 0; i < shellCount; i++) {
-		PushChunkMesh(grassShellsVertices[i], grassShellsIndices[i], SHELL);
-	}
+	//for(int i = 0; i < shellCount; i++) {
+	//	PushChunkMesh(grassShellsVertices[i], grassShellsIndices[i], SHELL);
+	//}
 
 	//PushChunkMesh(grassShellVertices, grassShellIndices, SHELL);
 	PushChunkMesh(transVertices, transIndices, TRANS);
@@ -306,7 +345,8 @@ bool Chunk::Load()
 
 	int worldX = 0, worldY = 0, worldZ = 0;
 	bool returnVal = false;
-
+	
+	memset(this->lightLevel, 0, sizeof(this->lightLevel));
 	this->cullBox = AABB(transform.position + Vector3(8.f, 8.f, 8.f), Vector3(8.f, 8.f, 8.f));
 
 	if (ChunkDatabase::Get()->DoesDataExistForChunk(chunkIndexPosition)) {
@@ -344,36 +384,6 @@ void Chunk::Start() {
 
 void Chunk::Update(float dTime)
 {
-	//transform.rotation.y += 5.f * dTime;
-	
-
-	/*VoxelRay cornerRays[8] = {
-		{player->transform.position, player->transform.position - transform.position},
-		{player->transform.position, player->transform.position - (transform.position + Vector3(CHUNKSIZE_X, 0, 0))  },
-		{player->transform.position, player->transform.position - (transform.position + Vector3(0, CHUNKSIZE_Y, 0))  },
-		{player->transform.position, player->transform.position - (transform.position + Vector3(CHUNKSIZE_X, CHUNKSIZE_Y, 0))  },
-		{player->transform.position, player->transform.position - (transform.position + Vector3(0, 0, CHUNKSIZE_Z))  },
-		{player->transform.position, player->transform.position - (transform.position + Vector3(CHUNKSIZE_X, 0, CHUNKSIZE_Z))  },
-		{player->transform.position, player->transform.position - (transform.position + Vector3(0, CHUNKSIZE_Y, CHUNKSIZE_Z))  },
-		{player->transform.position, player->transform.position - (transform.position + Vector3(CHUNKSIZE_X, CHUNKSIZE_Y, CHUNKSIZE_Z))  },
-	};*/
-
-	//Vector3 distVec = (transform.position + Vector3(CHUNKSIZE_X / 2.f, CHUNKSIZE_Y / 2.f, CHUNKSIZE_Z / 2.f)) - player->transform.position;
-	//VoxelRay testRay = { player->transform.position, distVec.normalized() };
-
-	//doRender = !VoxelRay::Cast(&testRay, chunkManager, distVec.magnitude());
-
-	//doRender = false;
-	//if(models.size() > 0) {
-	//	models[0]->alpha = 0.0f;
-	//	for(const VoxelRay& ray : cornerRays) {
-	//		if(!VoxelRay::Cast(&ray, chunkManager, Vector3::Distance(ray.origin, ray.direction))) {
-	//			//doRender = true;
-	//			models[0]->alpha = 0.5f;
-	//			break;
-	//		}
-	//	}
-	//}
 }
 
 void Chunk::Release() {
@@ -390,6 +400,7 @@ int Chunk::GetSkyLight(const int& x, const int& y, const int& z)
 {
 	return (this->lightLevel[x][y][z] & 0xF0) >> 4;
 }
+
 
 void Chunk::SetBlockLight(const int& x, const int& y, const int& z, const int& val)
 {
