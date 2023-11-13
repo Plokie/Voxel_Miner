@@ -497,6 +497,7 @@ void Graphics::Render(Scene* scene) {
 	for(map<string, Object3D*>::iterator it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); ++it) {
 		// if object has an AABB, and is visible by the camera
 		//AcquireSRWLockExclusive(&it->second->gAccessMutex);
+		if(it->second != nullptr)
 		if((it->second->cullBox.GetHalfSize().magnitude() == 0.0f || camera.IsAABBInFrustum(it->second->cullBox)) && it->second->doRender )
 			objects.push_back(it->second);
 		//AcquireSRWLockExclusive(&it->second->gAccessMutex);

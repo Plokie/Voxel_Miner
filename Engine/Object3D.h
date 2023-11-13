@@ -35,7 +35,9 @@ public:
 		//if(mesh) mesh->~Mesh();
 		for (Model* model : models) {
 
-			model->~Model();
+			//model->~Model();
+			delete model;
+			model = nullptr;
 		}
 	};
 };

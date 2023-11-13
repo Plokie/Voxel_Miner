@@ -230,25 +230,26 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 
 	if(vertSize > 0 && indSize > 0) {
 		models.push_back(Model::Create(Graphics::Get()->GetDevice()));
-		models[modelCount]->SetTexture(0, "atlas");
-		
+		Model* newModel = models[modelCount];
+		newModel->SetTexture(0, "atlas");
 
-		switch(meshFlag) {
+
+		switch (meshFlag) {
 		case TRANS:
-			models[modelCount]->SetTransparent(true);
+			newModel->SetTransparent(true);
 			break;
 		case WATER:
-			models[modelCount]->SetTransparent(true);
-			models[modelCount]->SetVertexShader(0, "watervertexshader");
+			newModel->SetTransparent(true);
+			newModel->SetVertexShader(0, "watervertexshader");
 			break;
 		case SHELL:
-			models[modelCount]->SetTransparent(true);
-			models[modelCount]->SetVertexShader(0, "vertexshellgrass");
-			models[modelCount]->SetPixelShader(0, "pixelshellgrass");
+			newModel->SetTransparent(true);
+			newModel->SetVertexShader(0, "vertexshellgrass");
+			newModel->SetPixelShader(0, "pixelshellgrass");
 			break;
 		default: break;
 		}
-		
+
 
 		Mesh* newMesh = new Mesh();
 		newMesh->Init(Graphics::Get()->GetDevice());
@@ -259,15 +260,15 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 		newMesh->LoadVertices(&vertices[0], static_cast<int>(vertices.size()));
 		newMesh->LoadIndices(&indices[0], static_cast<int>(indices.size()));
 
-		models[modelCount]->SetMesh(newMesh);
+		newModel->SetMesh(newMesh);
 	}
 }
 
 void Chunk::BuildMesh()
 {
-	for(Model* model : models) {
+	for(Model*& model : models) {
 		model->ReleaseMesh();
-		
+		model = nullptr;
 		//delete model;
 	}
 	models.clear();

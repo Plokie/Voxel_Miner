@@ -33,10 +33,10 @@ void noop() {
 
 }
 
-void Lighting::TryFloodLightTo(const Vector3Int& localPos, const int& currentLevel, Chunk* chunk)
+void Lighting::TryFloodLightTo(const Vector3Int& neighbourPos, const int& currentLevel, Chunk* chunk)
 {
-	BlockID block = chunk->GetBlockIncludingNeighbours(localPos.x, localPos.y, localPos.z);
-	int light = chunk->GetBlockLightIncludingNeighbours(localPos.x, localPos.y, localPos.z);
+	BlockID block = chunk->GetBlockIncludingNeighbours(neighbourPos.x, neighbourPos.y, neighbourPos.z);
+	int light = chunk->GetBlockLightIncludingNeighbours(neighbourPos.x, neighbourPos.y, neighbourPos.z);
 
 	if(
 		!BlockDef::GetDef(block).IsSolid() &&
@@ -45,18 +45,18 @@ void Lighting::TryFloodLightTo(const Vector3Int& localPos, const int& currentLev
 		)
 	{
 
-		chunk->SetBlockLightIncludingNeighbours(localPos.x, localPos.y, localPos.z, currentLevel - 1);
+		chunk->SetBlockLightIncludingNeighbours(neighbourPos.x, neighbourPos.y, neighbourPos.z, currentLevel - 1);
 		//chunk->SetBlockLight(localPos.x, localPos.y, localPos.z, currentLevel - 1);
 		//lightBfsQueue.emplace(localPos, chunk);
 	}
 }
 
-void Lighting::TryRemoveLight(const Vector3Int& index, const int& currentLevel, Chunk* chunk)
+void Lighting::TryRemoveLight(const Vector3Int& neighbourIndex, const int& currentLevel, Chunk* chunk)
 {
-	int neighbourLevel = chunk->GetBlockLightIncludingNeighbours(index.x, index.y, index.z);
+	int neighbourLevel = chunk->GetBlockLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z);
 
 	if(neighbourLevel != 0 && neighbourLevel < currentLevel) {
-		 chunk->SetBlockLightIncludingNeighbours(index.x, index.y, index.z, 0);
+		 chunk->SetBlockLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, 0);
 
 		 Vector3Int realIndex = lightBfsQueue.front().localIndexPos;
 		 Chunk* realChunk = lightBfsQueue.front().chunk;
@@ -67,7 +67,9 @@ void Lighting::TryRemoveLight(const Vector3Int& index, const int& currentLevel, 
 		 removeLightBfsQueue.emplace(realIndex, realChunk, neighbourLevel);
 	}
 	else if(neighbourLevel >= currentLevel) { // if neighbour light is brigther than current light, then re-spread the light back over this block
-		 //chunk->SetBlockLightIncludingNeighbours(index.x, index.y, index.z, neighbourLevel); // Does nothing, but pushes information to the queue
+		chunk->SetBlockLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, neighbourLevel); // Tells it to re-flood the light
+
+
 		//Vector3Int realIndex = lightBfsQueue.front().localIndexPos;
 		//Chunk* realChunk = lightBfsQueue.front().chunk;
 		//lightBfsQueue.pop(); // Remove the block we just added from the light queue
@@ -81,13 +83,14 @@ void Lighting::TryRemoveLight(const Vector3Int& index, const int& currentLevel, 
 void Lighting::LightingThread()
 {
 	while(_isRunning) {
+		
 		//AcquireSRWLockExclusive(&lightQueueMutex);
 		while(!lightBfsQueue.empty()) {
 			LightNode& node = lightBfsQueue.front();
 
 			Vector3Int index = node.localIndexPos;
 			Chunk* chunk = node.chunk;
-			lightBfsQueue.pop();
+			lightBfsQueue.pop(); //dequeue before empty???????????????? what???????????? WHAT???? but AAGGGGGGGG
 
 			int lightLevel = chunk->GetBlockLight(index.x, index.y, index.z);
 
@@ -104,7 +107,7 @@ void Lighting::LightingThread()
 		}
 		//ReleaseSRWLockExclusive(&lightQueueMutex);
 
-		while(!removeLightBfsQueue.empty()) {
+		while (!removeLightBfsQueue.empty()) {
 			RemoveLightNode& node = removeLightBfsQueue.front();
 
 			Vector3Int index = node.localIndexPos;
@@ -112,7 +115,7 @@ void Lighting::LightingThread()
 			int lightLevel = node.val;
 			removeLightBfsQueue.pop();
 
-			if(chunkIndexRebuildQueue.find(chunk) == chunkIndexRebuildQueue.end())
+			if (chunkIndexRebuildQueue.find(chunk) == chunkIndexRebuildQueue.end())
 				chunkIndexRebuildQueue[chunk] = true;
 
 			TryRemoveLight(index + Vector3Int(1, 0, 0), lightLevel, chunk);
@@ -122,6 +125,7 @@ void Lighting::LightingThread()
 			TryRemoveLight(index + Vector3Int(0, 0, 1), lightLevel, chunk);
 			TryRemoveLight(index + Vector3Int(0, 0, -1), lightLevel, chunk);
 		}
+
 
 
 

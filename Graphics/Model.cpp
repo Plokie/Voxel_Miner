@@ -68,8 +68,8 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worl
 void Model::ReleaseMesh()
 {
 	if(this->mesh != nullptr) {
-		this->mesh->~Mesh();
-		//delete this->mesh;
+		//this->mesh->~Mesh();
+		delete this->mesh;
 
 		this->mesh = nullptr;
 	}

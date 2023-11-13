@@ -60,11 +60,13 @@ public:
 
 	void Release();
 
-	//~Chunk() {
-	//	//delete[CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z] blockData;
+	~Chunk() {
 
-	//	/*for(Model* model : models) {
-	//		model->~Model();
-	//	}*/
-	//}
+		for(Model*& model : models) {
+			//model->~Model();
+			delete model;
+			model = nullptr;
+		}
+		models.clear();
+	}
 };

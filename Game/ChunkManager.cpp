@@ -26,7 +26,9 @@ Chunk* ChunkManager::CreateChunk(int x, int y, int z)
 	bool didChunkExistAlready = newChunk->Load();
 	ReleaseSRWLockExclusive(&newChunk->gAccessMutex);
 
+	AcquireSRWLockExclusive(&this->gAccessMutex);
 	this->chunkMap[tuple<int, int, int>(x, y, z)] = newChunk;
+	ReleaseSRWLockExclusive(&this->gAccessMutex);
 
 	if(didChunkExistAlready) { // If chunk had data that existed in the databse
 		TryRegen(Vector3Int(x+1, y, z)); // regenerate neighbouring chunks that might have old neighbour data
@@ -251,10 +253,17 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 				abs(indexPos.z - camIndex.z) > CHUNKLOAD_AREA_Z
 				) { // Erase chunk from map (it is out of range)
 
+				AcquireSRWLockExclusive(&pair.second->gAccessMutex);
+
 				ChunkDatabase::Get()->UnloadChunk(indexPos);
 				engine->DestroyObject3D(pair.second); // Delete chunk in-engine (adds to queue)
 
+				ReleaseSRWLockExclusive(&pair.second->gAccessMutex);
+
+
+				AcquireSRWLockExclusive(&gAccessMutex);
 				pChunkMap->erase(it++);
+				ReleaseSRWLockExclusive(&gAccessMutex);
 			}
 			else { // Increment iterator 
 				++it;
@@ -270,7 +279,7 @@ void ChunkManager::Start()
 	if (this->pEngine == nullptr || this->pCameraTransform == nullptr ) {
 		exit(204); 
 	}
-
+	InitializeSRWLock(&this->gAccessMutex);
 	_chunkLoaderThreads.emplace_back([&]() { LoaderThreadFunc(pCameraTransform, &chunkMap); });
 	lighting = new Lighting(this);
 	lighting->StartThread();

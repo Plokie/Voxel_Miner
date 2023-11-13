@@ -84,6 +84,7 @@ const int Mesh::GetIndexCount() const {
 }
 
 Mesh::~Mesh() {
+	if (this == nullptr) return;
 	//if(pVertices != nullptr) {
 	//	delete[vertexCount] pVertices;
 	//}
