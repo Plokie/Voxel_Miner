@@ -56,16 +56,25 @@ void Lighting::TryRemoveLight(const Vector3Int& index, const int& currentLevel, 
 	int neighbourLevel = chunk->GetBlockLightIncludingNeighbours(index.x, index.y, index.z);
 
 	if(neighbourLevel != 0 && neighbourLevel < currentLevel) {
-		chunk->SetBlockLightIncludingNeighbours(index.x, index.y, index.z, 0);
-		lightBfsQueue.pop(); // Remove the block we just added from the light queue
+		 chunk->SetBlockLightIncludingNeighbours(index.x, index.y, index.z, 0);
+
+		 Vector3Int realIndex = lightBfsQueue.front().localIndexPos;
+		 Chunk* realChunk = lightBfsQueue.front().chunk;
+		 lightBfsQueue.pop(); // Remove the block we just added from the light queue
+		//Also yoink the index and chunk information, and its correct for the neighbours
 
 		// error because outside of chunk borders, chunk is pointing to the incorrect chunk i think
-		removeLightBfsQueue.emplace(index, chunk, neighbourLevel);
+		 removeLightBfsQueue.emplace(realIndex, realChunk, neighbourLevel);
 	}
 	else if(neighbourLevel >= currentLevel) { // if neighbour light is brigther than current light, then re-spread the light back over this block
+		 chunk->SetBlockLightIncludingNeighbours(index.x, index.y, index.z, neighbourLevel); // Does nothing, but pushes information to the queue
+		//Vector3Int realIndex = lightBfsQueue.front().localIndexPos;
+		//Chunk* realChunk = lightBfsQueue.front().chunk;
+		//lightBfsQueue.pop(); // Remove the block we just added from the light queue
+		//Also yoink the index and chunk information, and its correct for the neighbours
 
 		// error because outside of chunk borders, chunk is pointing to the incorrect chunk i think
-		lightBfsQueue.emplace(index, chunk);
+		//lightBfsQueue.emplace(realIndex, realChunk);
 	}
 }
 

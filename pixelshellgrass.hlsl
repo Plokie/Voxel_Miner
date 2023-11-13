@@ -46,5 +46,5 @@ float4 main(PS_INPUT input) : SV_TARGET
         discard;
     
     //return float4(relHeight, relHeight, relHeight, 1.0f);
-    return float4(pixCol.rgb * ((saturate(relHeight) * 0.5f) + 1.0f), r);
+    return float4(pixCol.rgb * length(input.normal) * ((saturate(relHeight) * 0.5f) + 1.0f), r);
 }

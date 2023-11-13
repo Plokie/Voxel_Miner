@@ -87,7 +87,7 @@ Vector2 ConvertUVIdToAtlasUV(int uvIdX, int uvIdY) {
 
 void PushFace(vector<Vertex>& vertices,
 	BlockID id,
-	int x,  int y,  int z,
+	float x,  float y,  float z,
 	float ax, float ay, float az,
 	float bx, float by, float bz,
 	float cx, float cy, float cz,
@@ -139,13 +139,13 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		int light = GetBlockLightIncludingNeighbours(x+1, y, z);
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
-			x, y, z,
-			1,0,0,
-			1,1,0,
-			1,1,1,
-			1,0,1,
+			(float)x, (float)y, (float)z,
+			1, 0, 0,
+			1, 1, 0,
+			1, 1, 1,
+			1, 0, 1,
 
-			1,0,0,
+			1, 0, 0,
 			light
 		);
 	}
@@ -153,7 +153,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		int light = GetBlockLightIncludingNeighbours(x - 1, y, z);
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
-			x, y, z,
+			(float)x, (float)y, (float)z,
 			0, 0, 1,
 			0, 1, 1,
 			0, 1, 0,
@@ -164,10 +164,10 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		);
 	}
 	if(py) {
-		int light = GetBlockLightIncludingNeighbours(x, y+1, z);
+		int light = GetBlockLightIncludingNeighbours(x, y + 1, z);
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
-			x, y, z,
+			(float)x, (float)y, (float)z,
 			0,	1,	0,
 			0,	1,	1,
 			1,	1,	1,
@@ -181,7 +181,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		int light = GetBlockLightIncludingNeighbours(x, y - 1, z);
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
-			x, y, z,
+			(float)x, (float)y, (float)z,
 			0, 0, 1,
 			0, 0, 0,
 			1,  0, 0,
@@ -195,7 +195,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		int light = GetBlockLightIncludingNeighbours(x, y, z+1);
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
-			x, y, z,
+			(float)x, (float)y, (float)z,
 			1, 0, 1,
 			1, 1, 1,
 			0, 1, 1,
@@ -210,7 +210,7 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		PushIndices(vertices.size(), indices);
 
 		PushFace(vertices, blockID,
-			x, y, z,
+			(float)x, (float)y, (float)z,
 			0, 0, 0,
 			0, 1, 0,
 			1, 1, 0,
@@ -293,8 +293,6 @@ void Chunk::BuildMesh()
 		grassShellsVertices.push_back({});
 		grassShellsIndices.push_back({});
 	}
-	//vector<Vertex> grassShellVertices = {};
-	//vector<DWORD> grassShellIndices = {};
 
 	//todo: optimised chunk building (not looping through every single block, most of them are invisible)
 	for(int y = 0; y < CHUNKSIZE_Y; y++) {
@@ -307,19 +305,22 @@ void Chunk::BuildMesh()
 					MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
 
 					if(blockid == GRASS && RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
-						//chunkManager->GetBlockLightAtWorldPos()
-						//for(int i = 1; i < shellCount+1; i++) {
-						//	PushIndices(grassShellsVertices[i-1].size(), grassShellsIndices[i-1]);
-						//	PushFace(grassShellsVertices[i-1], blockid,
-						//		(float)x, y + ((float)shellSeperation * i), (float)z,
-						//		0, 1, 0,
-						//		0, 1, 1,
-						//		1, 1, 1,
-						//		1, 1, 0,
+						//int light = chunkManager->GetBlockLightAtWorldPos(x, y + 1, z);
+						int light = GetBlockLightIncludingNeighbours(x, y + 1, z);
 
-						//		0, 1, 0
-						//	);
-						//}
+						for(int i = 1; i < shellCount+1; i++) {
+							int index = i - 1; // get compiler to shut up about "sub expression overflow" false positive
+							PushIndices(grassShellsVertices[index].size(), grassShellsIndices[index]);
+							PushFace(grassShellsVertices[index], blockid,
+								(float)x, (float)y + ((float)shellSeperation * i), (float)z,
+								0, 1, 0,
+								0, 1, 1,
+								1, 1, 1,
+								1, 1, 0,
+								0, 1, 0,
+								light
+							);
+						}
 					}
 				}
 				else if(blockid == BlockID::WATER)
@@ -335,9 +336,9 @@ void Chunk::BuildMesh()
 
 	PushChunkMesh(solidVertices, solidIndices);
 
-	//for(int i = 0; i < shellCount; i++) {
-	//	PushChunkMesh(grassShellsVertices[i], grassShellsIndices[i], SHELL);
-	//}
+	for(int i = 0; i < shellCount; i++) {
+		PushChunkMesh(grassShellsVertices[i], grassShellsIndices[i], SHELL);
+	}
 
 	//PushChunkMesh(grassShellVertices, grassShellIndices, SHELL);
 	PushChunkMesh(transVertices, transIndices, TRANS);
