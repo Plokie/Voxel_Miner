@@ -12,7 +12,7 @@
 /// <param name="outBlock">: Out: Block at Voxel Index</param>
 /// <param name="outNormal">: Out: Face normal</param>
 /// <returns></returns>
-bool VoxelRay::Cast(const VoxelRay* ray, const ChunkManager* chunkManager, float max_dist, Vector3Int* outPosition, BlockID* outBlock, Vector3Int* outNormal) {
+bool VoxelRay::Cast(const VoxelRay* ray, ChunkManager* chunkManager, float max_dist, Vector3Int* outPosition, BlockID* outBlock, Vector3Int* outNormal) {
 	const Vector3 _pos1 = ray->origin;
 	const Vector3 _pos2 = ray->origin + (ray->direction * max_dist);
 

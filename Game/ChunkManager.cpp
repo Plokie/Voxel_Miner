@@ -75,7 +75,7 @@ tuple<int, int, int> ChunkManager::ToChunkIndexPositionTuple(const int& x, const
 	);
 }
 
-BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& z) const
+BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& z)
 {
 	tuple<int,int,int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 
@@ -83,10 +83,12 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 	if(chunkMap.find(chunkIndex) != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 		
+		//AcquireSRWLockExclusive(&this->gAccessMutex);
 		Chunk* chunk = chunkMap.at(chunkIndex);
 		AcquireSRWLockExclusive(&chunk->gAccessMutex);
 		BlockID blockID = static_cast<BlockID>(chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z]);
 		ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+		//ReleaseSRWLockExclusive(&this->gAccessMutex);
 		return blockID;
 	}
 	else { // If chunk isn't loaded, sample from world gen instead (next best thing)
@@ -98,7 +100,7 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 
 }
 
-BlockID ChunkManager::GetBlockAtWorldPos(const Vector3Int& v) const {
+BlockID ChunkManager::GetBlockAtWorldPos(const Vector3Int& v) {
 	return GetBlockAtWorldPos(v.x, v.y, v.z);
 }
 
