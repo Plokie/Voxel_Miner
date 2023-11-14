@@ -35,6 +35,7 @@ void Engine::DestroyQueuedObjects() {
 	// Safe to delete objects here, presumably no more operations
 
 	AcquireSRWLockExclusive(&gDestroyObjectsMutex);
+	//int maxDestroy = 20;
 	for(const string& name : destroyObjectQueue) {
 		DestroyObject3DImmediate(name);
 	}

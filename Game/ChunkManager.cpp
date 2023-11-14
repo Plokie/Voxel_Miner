@@ -273,16 +273,15 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 		}
 		ReleaseSRWLockExclusive(pDestroyMutex);
 
-		this_thread::sleep_for(chrono::milliseconds(10)); // Give time for main thread to do its stuff
-
-		AcquireSRWLockExclusive(pDestroyMutex);
+		//AcquireSRWLockExclusive(pDestroyMutex);
 		while (!rebuildQueue.empty()) {
 			Chunk* chunk = rebuildQueue.front();
 			rebuildQueue.pop();
-
+			AcquireSRWLockExclusive(&chunk->gAccessMutex);
 			chunk->BuildMesh();
+			ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 		}
-		ReleaseSRWLockExclusive(pDestroyMutex);
+		//ReleaseSRWLockExclusive(pDestroyMutex);
 	}
 }
 

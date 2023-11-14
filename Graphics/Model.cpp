@@ -11,7 +11,7 @@ Model* Model::Init(ID3D11Device* device) {
 }
 
 void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worldMx) {
-	if(mesh == nullptr) return;
+	//if(mesh == nullptr) return;
 	
 	CB_VS_vertexshader mxData;
 	CB_VS_pixelshader alphaData;
@@ -38,12 +38,13 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worl
 	deviceCtx->Unmap(alphaBuffer, 0);
 	deviceCtx->PSSetConstantBuffers(0, 1, &alphaBuffer);
 
-	if(mesh == nullptr) return;
+	// shouldnt need these, it means something else is going wrong
+	//if(mesh == nullptr) return;
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	deviceCtx->IASetVertexBuffers(0, 1, &mesh->vertexBuffer, &stride, &offset);
-	deviceCtx->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+ 	deviceCtx->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
 	if (pixelShader != nullptr)
 		deviceCtx->PSSetShader(pixelShader->GetShader(), NULL, 0);
@@ -60,7 +61,7 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worl
 	//ID3D11Texture2D* pTex = (ID3D11Texture2D*)pRes;
 
 	//pTex->GetDesc(&tempDesc);
-	if(mesh == nullptr) return;
+	//if(mesh == nullptr) return;
 
 	deviceCtx->DrawIndexed((UINT)mesh->GetIndexCount(), 0, 0);
 }

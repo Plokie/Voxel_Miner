@@ -68,11 +68,11 @@ void Lighting::TryRemoveLight(const Vector3Int& neighbourIndex, const int& curre
 	}
 	else if(neighbourLevel >= currentLevel) { // if neighbour light is brigther than current light, then re-spread the light back over this block
 		chunk->SetBlockLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, neighbourLevel); // Tells it to re-flood the light // NOT WORKING >:(
-
+		//lightBfsQueue.pop(); // Remove the block we just added from the light queue
+		//removeLightBfsQueue.emplace(Vector3Int(0, 0, 0), nullptr, 0);
 
 		//Vector3Int realIndex = lightBfsQueue.front().localIndexPos;
 		//Chunk* realChunk = lightBfsQueue.front().chunk;
-		//lightBfsQueue.pop(); // Remove the block we just added from the light queue
 		//Also yoink the index and chunk information, and its correct for the neighbours
 
 		// error because outside of chunk borders, chunk is pointing to the incorrect chunk i think
@@ -115,6 +115,8 @@ void Lighting::LightingThread()
 			int lightLevel = node.val;
 			removeLightBfsQueue.pop();
 
+			//if (node.chunk == nullptr) continue;
+
 			if (chunkIndexRebuildQueue.find(chunk) == chunkIndexRebuildQueue.end())
 				chunkIndexRebuildQueue[chunk] = true;
 
@@ -124,6 +126,8 @@ void Lighting::LightingThread()
 			TryRemoveLight(index + Vector3Int(0, -1, 0), lightLevel, chunk);
 			TryRemoveLight(index + Vector3Int(0, 0, 1), lightLevel, chunk);
 			TryRemoveLight(index + Vector3Int(0, 0, -1), lightLevel, chunk);
+
+			__nop();
 		}
 
 

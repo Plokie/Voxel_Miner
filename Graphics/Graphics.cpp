@@ -495,8 +495,8 @@ void Graphics::Render(Scene* scene) {
 
 	//todo: precompute sceneObjects values vector whenever an object is appended or removed
 	for(map<string, Object3D*>::iterator it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); ++it) {
-		// if object has an AABB, and is visible by the camera
 		//AcquireSRWLockExclusive(&it->second->gAccessMutex);
+		// if object has an AABB, and is visible by the camera
 		if(it->second != nullptr)
 		if((it->second->cullBox.GetHalfSize().magnitude() == 0.0f || camera.IsAABBInFrustum(it->second->cullBox)) && it->second->doRender )
 			objects.push_back(it->second);
@@ -508,12 +508,14 @@ void Graphics::Render(Scene* scene) {
 	SortObjects(objects, 0, (int)(objects.size() - 1));
 
 	for(vector<Object3D*>::iterator it = objects.begin(); it != objects.end(); ++it) {
+		AcquireSRWLockExclusive(&(*it)->gAccessMutex);
 		if ((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentModels)) {
 			//If it drew something, return back to default error textures+shaders afterwards (so we can see missing tex objects)
 			deviceCtx->PSSetShaderResources(0, 1, &errTex);
 			deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
 			deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
 		}
+		ReleaseSRWLockExclusive(&(*it)->gAccessMutex);
 	}
 
 	// Set depth stencil to alpha geometry mode
@@ -521,6 +523,8 @@ void Graphics::Render(Scene* scene) {
 
 	//Draw alpha geometry
 	for(vector<pair<Model*, XMMATRIX>>::iterator it = transparentModels.begin(); it!=transparentModels.end(); ++it) {
+		//AcquireSRWLockExclusive(it->first)
+		if (it->first->GetMesh() == nullptr) continue;
 		it->first->Draw(deviceCtx, it->second, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
 		deviceCtx->PSSetShaderResources(0, 1, &errTex);
 		deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
