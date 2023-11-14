@@ -67,7 +67,7 @@ void Lighting::TryRemoveLight(const Vector3Int& neighbourIndex, const int& curre
 		 removeLightBfsQueue.emplace(realIndex, realChunk, neighbourLevel);
 	}
 	else if(neighbourLevel >= currentLevel) { // if neighbour light is brigther than current light, then re-spread the light back over this block
-		chunk->SetBlockLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, neighbourLevel); // Tells it to re-flood the light
+		chunk->SetBlockLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, neighbourLevel); // Tells it to re-flood the light // NOT WORKING >:(
 
 
 		//Vector3Int realIndex = lightBfsQueue.front().localIndexPos;
@@ -129,11 +129,12 @@ void Lighting::LightingThread()
 
 
 
+		//AcquireSRWLockExclusive(&chunkManager->destroy);
 		for(const pair<Chunk*, bool>& pair : chunkIndexRebuildQueue) {
-			AcquireSRWLockExclusive(&pair.first->gAccessMutex);
-			pair.first->BuildMesh();
-			ReleaseSRWLockExclusive(&pair.first->gAccessMutex);
+			//pair.first->BuildMesh();
+			chunkManager->rebuildQueue.push(pair.first);
 		}
+		//ReleaseSRWLockExclusive(&pair.first->gAccessMutex);
 		chunkIndexRebuildQueue.clear();
 	}
 }

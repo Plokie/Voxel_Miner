@@ -108,7 +108,8 @@ BlockID ChunkManager::GetBlockAtWorldPos(const Vector3Int& v) {
 
 void ChunkManager::TryRegen(Vector3Int chunkCoords) {
 	if(chunkMap.count(chunkCoords)) {
-		chunkMap[chunkCoords]->BuildMesh();
+		//chunkMap[chunkCoords]->BuildMesh();
+		rebuildQueue.push(chunkMap[chunkCoords]);
 	}
 }
 
@@ -118,7 +119,7 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 	if(chunkMap.count(chunkIndex)) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
-		Chunk* chunk = chunkMap[chunkIndex];
+		Chunk*& chunk = chunkMap[chunkIndex];
 
 		BlockID oldBlock = (BlockID)chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z];
 
@@ -136,7 +137,8 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 			lighting->PopLightQueue();
 		}
 
-		chunkMap[chunkIndex]->BuildMesh();
+		//chunkMap[chunkIndex]->BuildMesh();
+		rebuildQueue.push(chunk);
 
 
 		if(localVoxelPos.x == 0) { // Regen -x neighbour
@@ -268,6 +270,17 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 			else { // Increment iterator 
 				++it;
 			}
+		}
+		ReleaseSRWLockExclusive(pDestroyMutex);
+
+		this_thread::sleep_for(chrono::milliseconds(10)); // Give time for main thread to do its stuff
+
+		AcquireSRWLockExclusive(pDestroyMutex);
+		while (!rebuildQueue.empty()) {
+			Chunk* chunk = rebuildQueue.front();
+			rebuildQueue.pop();
+
+			chunk->BuildMesh();
 		}
 		ReleaseSRWLockExclusive(pDestroyMutex);
 	}

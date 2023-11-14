@@ -18,6 +18,7 @@ bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<pai
 	bool didDraw = false;
 
 	for(Model* model : models) {
+		if (model == nullptr) continue;
 		if (!model->IsTransparent()) //If object is opaque, draw immediately upon request
 		{
 			model->Draw(deviceCtx, transform.mx(), worldMx);

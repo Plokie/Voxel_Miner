@@ -231,7 +231,7 @@ void CameraController::Update(float dTime)
 		camBlockPos.ToString() + "\n"
 		+ chunkIndex.ToString() + "\n"
 		+ Vector3Int(FloorMod(camBlockPos.x, CHUNKSIZE_X), FloorMod(camBlockPos.y, CHUNKSIZE_Y), FloorMod(camBlockPos.z, CHUNKSIZE_Z)).ToString() + "\n"
-		+ to_string(chunkManager->GetBlockLightAtWorldPos(camBlockPos)) + "\n"
+		+ to_string(chunkManager->GetBlockLightAtWorldPos(camBlockPos - Vector3Int(0,1,0))) + "\n"
 		//velocity.ToString() + "\n" + 
 		//to_string(isGrounded) + "\n" + "\n" +
 		//playerTopPos.ToString() + "\n" +

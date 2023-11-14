@@ -5,6 +5,7 @@
 #include <tuple>
 #include <thread>
 #include <atomic>
+#include <queue>
 
 #include "../Engine/Engine.h"
 #include "Chunk.h"
@@ -41,6 +42,8 @@ private:
 
 
 public:
+	queue<Chunk*> rebuildQueue;
+
 	Lighting* GetLighting() const {
 		return this->lighting;
 	}

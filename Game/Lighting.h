@@ -44,6 +44,7 @@ class Lighting {
 	SRWLOCK lightQueueMutex;
 	queue<LightNode> lightBfsQueue = {};
 	queue<RemoveLightNode> removeLightBfsQueue = {};
+	//queue<LightNode> lightDoubleQueue = {}; // Queues for next tick, very roundabout way of doing it but if it works it works
 
 	map<Chunk*, bool> chunkIndexRebuildQueue = {};
 
