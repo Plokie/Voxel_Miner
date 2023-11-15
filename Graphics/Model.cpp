@@ -44,6 +44,7 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worl
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	deviceCtx->IASetVertexBuffers(0, 1, &mesh->vertexBuffer, &stride, &offset);
+	//if(mesh == nullptr) return;
  	deviceCtx->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
 	if (pixelShader != nullptr)

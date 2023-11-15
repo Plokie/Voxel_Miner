@@ -55,6 +55,41 @@ void Chunk::SetBlockLightIncludingNeighbours(const int& x, const int& y, const i
 	}
 }
 
+void Chunk::CorrectIndexForNeighbours(const int& x, const int& y, const int& z, Chunk** outChunk, Vector3Int* outIndex){
+	if(x < 0 || x>CHUNKSIZE_X - 1 || y < 0 || y>CHUNKSIZE_Y - 1 || z < 0 || z>CHUNKSIZE_Z - 1) // sample from another chunk
+	{
+		Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
+		tuple<int, int, int> chunkIndex = ChunkManager::ToChunkIndexPositionTuple(x, y, z);
+		if(chunkManager->GetChunkMap().find(chunkIndex) != chunkManager->GetChunkMap().end()) {
+			*outIndex = Vector3Int(FloorMod(x + chunkPosition.x, CHUNKSIZE_X), FloorMod(y + chunkPosition.y, CHUNKSIZE_Y), FloorMod(z + chunkPosition.z, CHUNKSIZE_Z));
+			*outChunk = chunkManager->GetChunk(chunkIndex);
+
+
+		// If chunk is loaded
+
+			//AcquireSRWLockExclusive(&this->gAccessMutex);
+			//Chunk* chunk = chunkMap.at(chunkIndex);
+			//AcquireSRWLockExclusive(&chunk->gAccessMutex);
+			//BlockID blockID = static_cast<BlockID>(chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z]);
+			//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+			//ReleaseSRWLockExclusive(&this->gAccessMutex);
+			return;
+		}
+		*outChunk = nullptr;
+		*outIndex = Vector3Int(0, 0, 0);
+	}
+	else {
+		//return (BlockID)blockData[x][y][z];
+		*outChunk = this;
+		*outIndex = Vector3Int(x, y, z);
+	}
+}
+
+void Chunk::CorrectIndexForNeighbours(const Vector3Int& index, Chunk** outChunk, Vector3Int* outIndex)
+{
+	CorrectIndexForNeighbours(index.x, index.y, index.z, outChunk, outIndex);
+}
+
 BlockID Chunk::GetBlockIncludingNeighbours(const int& x, const int& y, const int& z)
 {
 	if(x < 0 || x>CHUNKSIZE_X - 1 || y < 0 || y>CHUNKSIZE_Y - 1 || z < 0 || z>CHUNKSIZE_Z - 1) // sample from another chunk

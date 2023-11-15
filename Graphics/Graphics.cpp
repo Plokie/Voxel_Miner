@@ -418,6 +418,8 @@ bool Graphics::Init(HWND hwnd, int width, int height) {
 	windowWidth = width;
 	windowHeight = height;
 
+	InitializeSRWLock(&gRenderingMutex);
+
 	if(!InitDX(hwnd)) {
 		return false;
 	}
@@ -493,6 +495,8 @@ void Graphics::Render(Scene* scene) {
 
 	//camera.viewFrustum = Frustum::CreateFrustumFromCamera(camera, )
 
+	AcquireSRWLockExclusive(&gRenderingMutex);
+
 	//todo: precompute sceneObjects values vector whenever an object is appended or removed
 	for(map<string, Object3D*>::iterator it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); ++it) {
 		//AcquireSRWLockExclusive(&it->second->gAccessMutex);
@@ -542,6 +546,7 @@ void Graphics::Render(Scene* scene) {
 	for (map<string, Object2D*>::iterator it = scene->GetSceneObjects2D()->begin(); it != scene->GetSceneObjects2D()->end(); ++it) {
 		it->second->Draw(this->spriteBatch);
 	}
+	ReleaseSRWLockExclusive(&gRenderingMutex);
 
 
 	this->spriteBatch->End();

@@ -51,6 +51,9 @@ public:
 	int GetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z);
 	void SetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z, const int& val);
 
+	void CorrectIndexForNeighbours(const int& x, const int& y, const int& z, Chunk** outChunk, Vector3Int* outIndex);
+	void CorrectIndexForNeighbours(const Vector3Int& index, Chunk** outChunk, Vector3Int* outIndex);
+
 	BlockID GetBlockIncludingNeighbours(const int& x, const int& y, const int& z);
 
 	void SetBlockLight(const int& x, const int& y, const int& z, const int& val);

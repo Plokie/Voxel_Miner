@@ -56,6 +56,8 @@ private:
 
 	ID3D11BlendState* blendState = nullptr;
 
+	
+
 	bool ChooseAdapter();
 	bool SetupSwapChain(HWND hwnd);
 	bool SetupDepthBuffer();
@@ -78,6 +80,7 @@ private:
 
 	static Graphics* _Instance;
 public:
+	SRWLOCK gRenderingMutex;
 	Camera camera;
 	int windowWidth=0, windowHeight=0;
 

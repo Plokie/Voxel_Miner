@@ -56,36 +56,42 @@ void Lighting::TryRemoveLight(const Vector3Int& neighbourIndex, const int& curre
 	int neighbourLevel = chunk->GetBlockLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z);
 
 	if(neighbourLevel != 0 && neighbourLevel < currentLevel) {
-		 chunk->SetBlockLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, 0);
+		chunk->SetBlockLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, 0);
 
-		 Vector3Int realIndex = lightBfsQueue.front().localIndexPos;
-		 Chunk* realChunk = lightBfsQueue.front().chunk;
-		 lightBfsQueue.pop(); // Remove the block we just added from the light queue
+		Vector3Int realIndex = lightBfsQueue.front().localIndexPos;
+		Chunk* realChunk = lightBfsQueue.front().chunk;
+		lightBfsQueue.pop(); // Remove the block we just added from the light queue
 		//Also yoink the index and chunk information, and its correct for the neighbours
+
+		//Chunk* realChunk = nullptr;
+		//Vector3Int realIndex{ 0,0,0 };
+
+		//chunk->CorrectIndexForNeighbours(neighbourIndex, &realChunk, &realIndex);
+		//realChunk->SetBlockLight(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, 0);
 
 		// error because outside of chunk borders, chunk is pointing to the incorrect chunk i think
 		 removeLightBfsQueue.emplace(realIndex, realChunk, neighbourLevel);
 	}
 	else if(neighbourLevel >= currentLevel) { // if neighbour light is brigther than current light, then re-spread the light back over this block
-		chunk->SetBlockLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, neighbourLevel); // Tells it to re-flood the light // NOT WORKING >:(
+		//chunk->SetBlockLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, neighbourLevel); // Tells it to re-flood the light // NOT WORKING >:(
 		//lightBfsQueue.pop(); // Remove the block we just added from the light queue
-		//removeLightBfsQueue.emplace(Vector3Int(0, 0, 0), nullptr, 0);
+		//Chunk* realChunk = nullptr;
+		//Vector3Int realIndex{ 0,0,0 };
 
-		//Vector3Int realIndex = lightBfsQueue.front().localIndexPos;
-		//Chunk* realChunk = lightBfsQueue.front().chunk;
-		//Also yoink the index and chunk information, and its correct for the neighbours
+		//chunk->CorrectIndexForNeighbours(neighbourIndex, &realChunk, &realIndex);
 
-		// error because outside of chunk borders, chunk is pointing to the incorrect chunk i think
 		//lightBfsQueue.emplace(realIndex, realChunk);
 	}
 }
 
 void Lighting::LightingThread()
 {
+	//int debugCooldown = 10;
 	while(_isRunning) {
 		
 		//AcquireSRWLockExclusive(&lightQueueMutex);
-		while(!lightBfsQueue.empty()) {
+ 		while(!lightBfsQueue.empty()) {
+			//debugCooldown = 10;
 			LightNode& node = lightBfsQueue.front();
 
 			Vector3Int index = node.localIndexPos;
@@ -104,6 +110,9 @@ void Lighting::LightingThread()
 			TryFloodLightTo(index + Vector3Int(0, 1, 0), lightLevel, chunk);
 			TryFloodLightTo(index + Vector3Int(0, 0, -1), lightLevel, chunk);
 			TryFloodLightTo(index + Vector3Int(0, 0, 1), lightLevel, chunk);
+
+			//this_thread::sleep_for(chrono::milliseconds(1));
+			//chunkManager->rebuildQueue.push(chunk);
 		}
 		//ReleaseSRWLockExclusive(&lightQueueMutex);
 
@@ -120,17 +129,20 @@ void Lighting::LightingThread()
 			if (chunkIndexRebuildQueue.find(chunk) == chunkIndexRebuildQueue.end())
 				chunkIndexRebuildQueue[chunk] = true;
 
-			TryRemoveLight(index + Vector3Int(1, 0, 0), lightLevel, chunk);
 			TryRemoveLight(index + Vector3Int(-1, 0, 0), lightLevel, chunk);
-			TryRemoveLight(index + Vector3Int(0, 1, 0), lightLevel, chunk);
+			TryRemoveLight(index + Vector3Int(1, 0, 0), lightLevel, chunk);
 			TryRemoveLight(index + Vector3Int(0, -1, 0), lightLevel, chunk);
-			TryRemoveLight(index + Vector3Int(0, 0, 1), lightLevel, chunk);
+			TryRemoveLight(index + Vector3Int(0, 1, 0), lightLevel, chunk);
 			TryRemoveLight(index + Vector3Int(0, 0, -1), lightLevel, chunk);
+			TryRemoveLight(index + Vector3Int(0, 0, 1), lightLevel, chunk);
 
-			__nop();
+			//debug
+			this_thread::sleep_for(chrono::milliseconds(1));
+			chunkManager->rebuildQueue.push(chunk);
+			//__nop();
 		}
 
-
+		//debugCooldown--;
 
 
 		//AcquireSRWLockExclusive(&chunkManager->destroy);

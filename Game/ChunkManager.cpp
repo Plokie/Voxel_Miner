@@ -133,6 +133,7 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 
 		if(oldBlock == LAMP && id == AIR) {
 			lighting->QueueRemoveLight({ localVoxelPos, chunk, 15 });
+
 			chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 0);
 			lighting->PopLightQueue();
 		}
@@ -226,6 +227,7 @@ void ChunkManager::Init(Transform* cameraTransform)
 void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,int>, Chunk*>* pChunkMap)
 {
 	Engine* engine = Engine::Get();
+	Graphics* gfx = Graphics::Get();
 	SRWLOCK* pDestroyMutex = engine->GetDestroyObjectsMutex();
 	//SRWLOCK* pCreateMutex = engine->GetCreateObjectsMutex();
 
@@ -273,7 +275,8 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 		}
 		ReleaseSRWLockExclusive(pDestroyMutex);
 
-		//AcquireSRWLockExclusive(pDestroyMutex);
+		AcquireSRWLockExclusive(&gfx->gRenderingMutex);
+
 		while (!rebuildQueue.empty()) {
 			Chunk* chunk = rebuildQueue.front();
 			rebuildQueue.pop();
@@ -281,7 +284,7 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 			chunk->BuildMesh();
 			ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 		}
-		//ReleaseSRWLockExclusive(pDestroyMutex);
+		ReleaseSRWLockExclusive(&gfx->gRenderingMutex);
 	}
 }
 

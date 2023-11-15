@@ -61,6 +61,10 @@ public:
 		return nullptr;
 	}
 
+	map<tuple<int, int, int>, Chunk*>& GetChunkMap() {
+		return chunkMap;
+	}
+
 
 	void TryRegen(Vector3Int chunkCoords);
 	// long name because really shouldnt use this in most cases, but it /does/ have its use
