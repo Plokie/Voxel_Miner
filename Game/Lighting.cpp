@@ -73,8 +73,8 @@ void Lighting::TryRemoveLight(const Vector3Int& neighbourIndex, const int& curre
 		 removeLightBfsQueue.emplace(realIndex, realChunk, neighbourLevel);
 	}
 	else if(neighbourLevel >= currentLevel) { // if neighbour light is brigther than current light, then re-spread the light back over this block
-		//chunk->SetBlockLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, neighbourLevel); // Tells it to re-flood the light // NOT WORKING >:(
-		//lightBfsQueue.pop(); // Remove the block we just added from the light queue
+		chunk->SetBlockLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, 15); // Tells it to re-flood the light // NOT WORKING >:(
+		lightBfsQueue.pop(); // Remove the block we just added from the light queue
 		//Chunk* realChunk = nullptr;
 		//Vector3Int realIndex{ 0,0,0 };
 
