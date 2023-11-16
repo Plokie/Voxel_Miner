@@ -73,8 +73,8 @@ void Lighting::TryRemoveLight(const Vector3Int& neighbourIndex, const int& curre
 		 removeLightBfsQueue.emplace(realIndex, realChunk, neighbourLevel);
 	}
 	else if(neighbourLevel >= currentLevel) { // if neighbour light is brigther than current light, then re-spread the light back over this block
-		chunk->SetBlockLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, 15); // Tells it to re-flood the light // NOT WORKING >:(
-		lightBfsQueue.pop(); // Remove the block we just added from the light queue
+		chunk->SetBlockLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, neighbourLevel); // Tells it to re-flood the light // NOT WORKING >:(
+		//lightBfsQueue.pop(); // Remove the block we just added from the light queue
 		//Chunk* realChunk = nullptr;
 		//Vector3Int realIndex{ 0,0,0 };
 
@@ -86,6 +86,7 @@ void Lighting::TryRemoveLight(const Vector3Int& neighbourIndex, const int& curre
 
 void Lighting::LightingThread()
 {
+	bool debug_hasRemLightBeenAppended = false;
 	//int debugCooldown = 10;
 	while(_isRunning) {
 		
@@ -111,12 +112,16 @@ void Lighting::LightingThread()
 			TryFloodLightTo(index + Vector3Int(0, 0, -1), lightLevel, chunk);
 			TryFloodLightTo(index + Vector3Int(0, 0, 1), lightLevel, chunk);
 
-			//this_thread::sleep_for(chrono::milliseconds(1));
-			//chunkManager->rebuildQueue.push(chunk);
+			if (debug_hasRemLightBeenAppended) {
+				this_thread::sleep_for(chrono::milliseconds(1));
+				chunkManager->rebuildQueue.push(chunk);
+			}
+			__nop();
 		}
 		//ReleaseSRWLockExclusive(&lightQueueMutex);
 
 		while (!removeLightBfsQueue.empty()) {
+			debug_hasRemLightBeenAppended = true;
 			RemoveLightNode& node = removeLightBfsQueue.front();
 
 			Vector3Int index = node.localIndexPos;
