@@ -127,12 +127,12 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 
 		//TODO: READ LIGHT DATA FROM BLOCK DATA, THIS IS JUST A TEST
 		if(id == LAMP) {
-			chunkMap[chunkIndex]->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 15);
+			chunkMap[chunkIndex]->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 15/*lamp light level*/);
 			//lighting->QueueLight({ localVoxelPos, chunkMap[chunkIndex] });
 		}
 
 		if(oldBlock == LAMP && id == AIR) {
-			lighting->QueueRemoveLight({ localVoxelPos, chunk, 15 });
+			lighting->QueueRemoveLight({ localVoxelPos, chunk, 15/*lamp light level*/});
 
 			chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 0);
 			lighting->PopLightQueue();
@@ -141,6 +141,27 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 		//chunkMap[chunkIndex]->BuildMesh();
 		rebuildQueue.push(chunk);
 
+		//SetBlockLightAtWorldPos(x+1, y, z, GetBlockLightAtWorldPos(x+1, y, z));
+		//SetBlockLightAtWorldPos(x-1, y, z, GetBlockLightAtWorldPos(x-1, y, z));
+		//SetBlockLightAtWorldPos(x, y+1, z, GetBlockLightAtWorldPos(x, y+1, z));
+		//SetBlockLightAtWorldPos(x, y-1, z, GetBlockLightAtWorldPos(x, y-1, z));
+		//SetBlockLightAtWorldPos(x, y, z+1, GetBlockLightAtWorldPos(x, y, z+1));
+		//SetBlockLightAtWorldPos(x, y, z-1, GetBlockLightAtWorldPos(x, y, z-1));
+		if(oldBlock != LAMP && id !=LAMP) {
+			lighting->QueueRemoveLight({ localVoxelPos, chunk, (short)chunk->GetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z)});
+			//chunk->SetBlockLightIncludingNeighbours(localVoxelPos.x + 1, localVoxelPos.y, localVoxelPos.z, chunk->GetBlockLightIncludingNeighbours(localVoxelPos.x + 1, localVoxelPos.y, localVoxelPos.z));
+			//chunk->SetBlockLightIncludingNeighbours(localVoxelPos.x - 1, localVoxelPos.y, localVoxelPos.z, chunk->GetBlockLightIncludingNeighbours(localVoxelPos.x - 1, localVoxelPos.y, localVoxelPos.z));
+			//chunk->SetBlockLightIncludingNeighbours(localVoxelPos.x, localVoxelPos.y + 1, localVoxelPos.z, chunk->GetBlockLightIncludingNeighbours(localVoxelPos.x, localVoxelPos.y + 1, localVoxelPos.z));
+			//chunk->SetBlockLightIncludingNeighbours(localVoxelPos.x, localVoxelPos.y - 1, localVoxelPos.z, chunk->GetBlockLightIncludingNeighbours(localVoxelPos.x, localVoxelPos.y - 1, localVoxelPos.z));
+			//chunk->SetBlockLightIncludingNeighbours(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z + 1, chunk->GetBlockLightIncludingNeighbours(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z + 1));
+			//chunk->SetBlockLightIncludingNeighbours(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z - 1, chunk->GetBlockLightIncludingNeighbours(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z - 1));
+			if(id != AIR) {
+				chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 0);
+			}
+			else {
+				chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, chunk->GetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z));
+			}
+		}
 
 		if(localVoxelPos.x == 0) { // Regen -x neighbour
 			TryRegen(chunkIndex + Vector3(-1, 0, 0));
@@ -201,9 +222,9 @@ void ChunkManager::SetBlockLightAtWorldPos(const int& x, const int& y, const int
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
 		Chunk* chunk = chunkMap.at(chunkIndex);
-		AcquireSRWLockExclusive(&chunk->gAccessMutex);
+		//AcquireSRWLockExclusive(&chunk->gAccessMutex);
 		chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, val);
-		ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+		//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 	}
 }
 

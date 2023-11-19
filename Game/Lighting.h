@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <queue>
+#include <stack>
 #include "../Engine/MathUtil.h"
 
 using namespace std;
@@ -42,11 +43,14 @@ class Lighting {
 	vector<thread> _lightingThreads = {};
 	atomic<bool> _isRunning{ true };
 	SRWLOCK lightQueueMutex;
-	queue<LightNode> lightBfsQueue = {};
+	stack<LightNode> lightBfsQueue = {};
 	queue<RemoveLightNode> removeLightBfsQueue = {};
 	//queue<LightNode> lightDoubleQueue = {}; // Queues for next tick, very roundabout way of doing it but if it works it works
 
 	map<Chunk*, bool> chunkIndexRebuildQueue = {};
+
+	//int debug_removeLightAdditions;
+	//int debug_removeLightLoops;
 
 	void TryFloodLightTo(const Vector3Int& index, const int& currentLevel, Chunk* chunk);
 	void TryRemoveLight(const Vector3Int& index, const int& currentLevel, Chunk* chunk);

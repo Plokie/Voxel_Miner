@@ -226,12 +226,13 @@ void CameraController::Update(float dTime)
 
 	//AcquireSRWLockExclusive(&ChunkDatabase::Get()->chunkHashMutex);
 	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
-	Vector3Int chunkIndex = ChunkManager::ToChunkIndexPosition(camBlockPos.x, camBlockPos.y, camBlockPos.z);
+	Vector3Int footPos = camBlockPos - Vector3Int(0, 1, 0);
+	Vector3Int chunkIndex = ChunkManager::ToChunkIndexPosition(footPos.x, footPos.y, footPos.z);
 	worldPosLabel->SetText(
-		camBlockPos.ToString() + "\n"
+		footPos.ToString() + "\n"
 		+ chunkIndex.ToString() + "\n"
 		+ Vector3Int(FloorMod(camBlockPos.x, CHUNKSIZE_X), FloorMod(camBlockPos.y, CHUNKSIZE_Y), FloorMod(camBlockPos.z, CHUNKSIZE_Z)).ToString() + "\n"
-		+ to_string(chunkManager->GetBlockLightAtWorldPos(camBlockPos - Vector3Int(0,1,0))) + "\n"
+		+ to_string(chunkManager->GetBlockLightAtWorldPos(footPos)) + "\n"
 		//velocity.ToString() + "\n" + 
 		//to_string(isGrounded) + "\n" + "\n" +
 		//playerTopPos.ToString() + "\n" +

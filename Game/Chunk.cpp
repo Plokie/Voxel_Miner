@@ -10,25 +10,6 @@ bool Chunk::RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int 
 	BlockID neighborBlock = GetBlockIncludingNeighbours(x, y, z);
 	bool isNeighborSolid = BlockDef::GetDef(neighborBlock).IsSolid();
 	return (isCurrentBlockSolid && !isNeighborSolid) || (!isCurrentBlockSolid && neighborBlock == AIR);
-
-	//const bool isCurrentBlockSolid = BlockDef::GetDef(currentBlock).IsSolid();
-	//if(x < 0 || x>CHUNKSIZE_X-1 || y < 0 || y>CHUNKSIZE_Y-1 || z < 0 || z>CHUNKSIZE_Z-1) // sample from another chunk
-	//{
-	//	Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
-	//	BlockID neighborBlock = chunkManager->GetBlockAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z);
-
-	//	const bool isNeighborSolid(BlockDef::GetDef(neighborBlock).IsSolid());
-
-	//	return (isCurrentBlockSolid && !isNeighborSolid) || (!isCurrentBlockSolid && neighborBlock == AIR);
-	//	//return isNeighborSolid==isCurrentBlockSolid || neighborBlock != AIR;
-	//}
-	//else {
-	//	BlockID neighborBlock = (BlockID)blockData[x][y][z];
-	//	const bool isNeighborSolid(BlockDef::GetDef(neighborBlock).IsSolid());
-
-
-	//	return (isCurrentBlockSolid && !isNeighborSolid) || (!isCurrentBlockSolid && neighborBlock == AIR);
-	//}
 }
 
 int Chunk::GetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z)
@@ -51,7 +32,7 @@ void Chunk::SetBlockLightIncludingNeighbours(const int& x, const int& y, const i
 		chunkManager->SetBlockLightAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z, val);
 	}
 	else {
-		return SetBlockLight(x, y, z, val);
+		SetBlockLight(x, y, z, val);
 	}
 }
 
@@ -64,15 +45,6 @@ void Chunk::CorrectIndexForNeighbours(const int& x, const int& y, const int& z, 
 			*outIndex = Vector3Int(FloorMod(x + chunkPosition.x, CHUNKSIZE_X), FloorMod(y + chunkPosition.y, CHUNKSIZE_Y), FloorMod(z + chunkPosition.z, CHUNKSIZE_Z));
 			*outChunk = chunkManager->GetChunk(chunkIndex);
 
-
-		// If chunk is loaded
-
-			//AcquireSRWLockExclusive(&this->gAccessMutex);
-			//Chunk* chunk = chunkMap.at(chunkIndex);
-			//AcquireSRWLockExclusive(&chunk->gAccessMutex);
-			//BlockID blockID = static_cast<BlockID>(chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z]);
-			//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
-			//ReleaseSRWLockExclusive(&this->gAccessMutex);
 			return;
 		}
 		*outChunk = nullptr;
@@ -460,9 +432,11 @@ void Chunk::SetBlockLight(const int& x, const int& y, const int& z, const int& v
 {
 	this->lightLevel[x][y][z] = (this->lightLevel[x][y][z] & 0xF0) | val;
 
-	//if(outChunk != nullptr) *outChunk = this;
 	 chunkManager->GetLighting()->QueueLight(LightNode(x, y, z, this));
-	//lightBfsQueue.emplace(x, y, z, this);
+}
+
+void Chunk::SetBlockLightNoUpdate(const int& x, const int& y, const int& z, const int& val) {
+	this->lightLevel[x][y][z] = (this->lightLevel[x][y][z] & 0xF0) | val;
 }
 
 void Chunk::SetSkyLight(const int& x, const int& y, const int& z, const int& val)
