@@ -45,20 +45,27 @@ class Lighting {
 	SRWLOCK lightQueueMutex;
 	stack<LightNode> lightBfsQueue = {};
 	queue<RemoveLightNode> removeLightBfsQueue = {};
-	//queue<LightNode> lightDoubleQueue = {}; // Queues for next tick, very roundabout way of doing it but if it works it works
+
+	stack<LightNode> skyLightQueue = {};
+	queue<RemoveLightNode> removeSkyLightQueue = {};
 
 	map<Chunk*, bool> chunkIndexRebuildQueue = {};
-
-	//int debug_removeLightAdditions;
-	//int debug_removeLightLoops;
+	queue<Chunk*> newSkyChunks = {};
 
 	void TryFloodLightTo(const Vector3Int& index, const int& currentLevel, Chunk* chunk);
 	void TryRemoveLight(const Vector3Int& index, const int& currentLevel, Chunk* chunk);
+
+	void TryFloodSkyLightTo(const Vector3Int& index, const int& currentLevel, Chunk* chunk, bool isDown=false);
+	void TryRemoveSkyLight(const Vector3Int& index, const int& currentLevel, Chunk* chunk, bool isDown=false);
 public:
 	Lighting(ChunkManager* chunkManager);
 
+	void QueueNewChunk(Chunk* chunk);
+
 	void QueueLight(const LightNode& light);
+	void QueueSkyLight(const LightNode& light);
 	void QueueRemoveLight(const RemoveLightNode& remLight);
+	void QueueRemoveSkyLight(const RemoveLightNode& remLight);
 
 	void PopLightQueue() {
 		if(lightBfsQueue.size()>0)

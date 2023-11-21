@@ -31,38 +31,46 @@ enum BlockID {
 class Block {
 private:
 	string name;
-	bool isSolid;
+
+	bool isOpaque; // Is the block see-through
+	int lightValue = 0;
+
 	int topUvIdX, topUvIdY;
 	int bottUvIdX, bottUvIdY;
 	int sideUvIdX, sideUvIdY;
 public:
 
 	Block(string _Name, 
-		bool _IsSolid, 
+		bool _isOpaque,
+		int _lightValue,
 		int UvIdX, int UvIdY
 	): 
 		name(_Name), 
-		isSolid(_IsSolid), 
+		isOpaque(_isOpaque),
+		lightValue(_lightValue),
 		topUvIdX(UvIdX), topUvIdY(UvIdY),
 		bottUvIdX(UvIdX), bottUvIdY(UvIdY),
 		sideUvIdX(UvIdX), sideUvIdY(UvIdY)
 	{}
 
 	Block(string _Name,
-		bool _IsSolid,
+		bool _isOpaque,
+		int _lightValue,
 		int TopUvIdX, int TopUvIdY,
 		int SideUvIdX, int SideUvIdY,
 		int BottUvIdX, int BottUvIdY
 	) :
 		name(_Name),
-		isSolid(_IsSolid),
+		isOpaque(_isOpaque),
+		lightValue(_lightValue),
 		topUvIdX(TopUvIdX), topUvIdY(TopUvIdY),
 		sideUvIdX(SideUvIdX), sideUvIdY(SideUvIdY),
 		bottUvIdX(BottUvIdX), bottUvIdY(BottUvIdY)
 	{}
 
 	const string GetName() const;
-	const bool IsSolid() const;
+	const bool IsOpaque() const;
+	const int LightValue() const;
 
 	const int GetTopUVidx() const;
 	const int GetTopUVidy() const;

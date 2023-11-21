@@ -84,6 +84,13 @@ public:
 	void SetBlockLightAtWorldPos(const int& x, const int& y, const int& z, const int& val) const;
 	void SetBlockLightAtWorldPos(const Vector3Int& p, const int& val) const;
 
+	int GetSkyLightAtWorldPos(const int& x, const int& y, const int& z) const;
+	int GetSkyLightAtWorldPos(const Vector3Int& p) const;
+	void SetSkyLightAtWorldPos(const int& x, const int& y, const int& z, const int& val) const;
+	void SetSkyLightAtWorldPos(const Vector3Int& p, const int& val) const;
+
+	short GetRawLightAtWorldPos(const int& x, const int& y, const int& z) const;
+
 	static ChunkManager* Create(Transform* cameraTransform);
 	void Init(Transform* cameraTransform);
 

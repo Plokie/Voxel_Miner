@@ -29,8 +29,8 @@ private:
 	ChunkManager* chunkManager = nullptr;
 	Object3D* player = nullptr;
 	UINT8 lightLevel[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};
+	UINT8 highestBlock[CHUNKSIZE_X][CHUNKSIZE_Z] = {};
 public:
-
 	Vector3Int chunkIndexPosition = Vector3Int();
 
 	USHORT blockData[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};
@@ -47,9 +47,15 @@ public:
 	void Update(float dTime) override;
 
 	int GetBlockLight(const int& x, const int& y, const int& z);
-	int GetSkyLight(const int& x, const int& y, const int& z);
 	int GetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z);
 	void SetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z, const int& val);
+
+	int GetSkyLight(const int& x, const int& y, const int& z);
+	int GetSkyLightIncludingNeighbours(const int& x, const int& y, const int& z);
+	void SetSkyLightIncludingNeighbours(const int& x, const int& y, const int& z, const int& val);
+
+	short GetRawLightIncludingNeighbours(const int& x, const int& y, const int& z);
+	short GetRawLight(const int& x, const int& y, const int& z);
 
 	void CorrectIndexForNeighbours(const int& x, const int& y, const int& z, Chunk** outChunk, Vector3Int* outIndex);
 	void CorrectIndexForNeighbours(const Vector3Int& index, Chunk** outChunk, Vector3Int* outIndex);

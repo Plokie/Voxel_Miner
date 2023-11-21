@@ -6,35 +6,13 @@
 
 
 bool Chunk::RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z) {
-	const bool isCurrentBlockSolid = BlockDef::GetDef(currentBlock).IsSolid();
+	const bool isCurrentBlockSolid = BlockDef::GetDef(currentBlock).IsOpaque();
 	BlockID neighborBlock = GetBlockIncludingNeighbours(x, y, z);
-	bool isNeighborSolid = BlockDef::GetDef(neighborBlock).IsSolid();
+	bool isNeighborSolid = BlockDef::GetDef(neighborBlock).IsOpaque();
 	return (isCurrentBlockSolid && !isNeighborSolid) || (!isCurrentBlockSolid && neighborBlock == AIR);
 }
 
-int Chunk::GetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z)
-{
-	if(x < 0 || x>CHUNKSIZE_X - 1 || y < 0 || y>CHUNKSIZE_Y - 1 || z < 0 || z>CHUNKSIZE_Z - 1) // sample from another chunk
-	{
-		Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
-		return chunkManager->GetBlockLightAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z);
-	}
-	else {
-		return GetBlockLight(x, y, z);
-	}
-}
 
-void Chunk::SetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z, const int& val)
-{
-	if(x < 0 || x>CHUNKSIZE_X - 1 || y < 0 || y>CHUNKSIZE_Y - 1 || z < 0 || z>CHUNKSIZE_Z - 1)
-	{
-		Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
-		chunkManager->SetBlockLightAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z, val);
-	}
-	else {
-		SetBlockLight(x, y, z, val);
-	}
-}
 
 void Chunk::CorrectIndexForNeighbours(const int& x, const int& y, const int& z, Chunk** outChunk, Vector3Int* outIndex){
 	if(x < 0 || x>CHUNKSIZE_X - 1 || y < 0 || y>CHUNKSIZE_Y - 1 || z < 0 || z>CHUNKSIZE_Z - 1) // sample from another chunk
@@ -143,7 +121,10 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 	//if(px && nx && py && ny && pz && nz) return; 
 
 	if(px) {
-		int light = GetBlockLightIncludingNeighbours(x+1, y, z);
+		//int light = max(GetBlockLightIncludingNeighbours(x+1, y, z), GetSkyLightIncludingNeighbours(x+1, y, z));
+		short rawLight = GetRawLightIncludingNeighbours(x + 1, y, z);
+		int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
+
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			(float)x, (float)y, (float)z,
@@ -157,7 +138,9 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		);
 	}
 	if(nx) {
-		int light = GetBlockLightIncludingNeighbours(x - 1, y, z);
+		short rawLight = GetRawLightIncludingNeighbours(x - 1, y, z);
+		int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
+
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			(float)x, (float)y, (float)z,
@@ -171,7 +154,9 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		);
 	}
 	if(py) {
-		int light = GetBlockLightIncludingNeighbours(x, y + 1, z);
+		short rawLight = GetRawLightIncludingNeighbours(x, y + 1, z);
+		int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
+
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			(float)x, (float)y, (float)z,
@@ -185,7 +170,9 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		);
 	}
 	if(ny) {
-		int light = GetBlockLightIncludingNeighbours(x, y - 1, z);
+		short rawLight = GetRawLightIncludingNeighbours(x, y - 1, z);
+		int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
+
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			(float)x, (float)y, (float)z,
@@ -199,7 +186,9 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		);
 	}
 	if(pz) {
-		int light = GetBlockLightIncludingNeighbours(x, y, z+1);
+		short rawLight = GetRawLightIncludingNeighbours(x, y, z+1);
+		int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
+
 		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			(float)x, (float)y, (float)z,
@@ -213,9 +202,10 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 		);
 	}
 	if(nz) {
-		int light = GetBlockLightIncludingNeighbours(x, y, z - 1);
-		PushIndices(vertices.size(), indices);
+		short rawLight = GetRawLightIncludingNeighbours(x, y, z - 1);
+		int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
 
+		PushIndices(vertices.size(), indices);
 		PushFace(vertices, blockID,
 			(float)x, (float)y, (float)z,
 			0, 0, 0,
@@ -309,12 +299,15 @@ void Chunk::BuildMesh()
 				BlockID blockid = (BlockID)blockData[x][y][z];
 				if(blockid == BlockID::AIR) continue;
 
-				if(BlockDef::GetDef(blockid).IsSolid()) {
+				if(highestBlock[x][z] < y) highestBlock[x][z] = y;
+
+				if(BlockDef::GetDef(blockid).IsOpaque()) {
 					MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
 
 					if(blockid == GRASS && RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
 						//int light = chunkManager->GetBlockLightAtWorldPos(x, y + 1, z);
-						int light = GetBlockLightIncludingNeighbours(x, y + 1, z);
+						short rawLight = GetRawLightIncludingNeighbours(x, y+1, z);
+						int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
 
 						for(int i = 1; i < shellCount+1; i++) {
 							int index = i - 1; // get compiler to shut up about "sub expression overflow" false positive
@@ -406,14 +399,13 @@ bool Chunk::Load()
 void Chunk::Start() {
 	this->cullBox = AABB(transform.position + Vector3(8.f, 8.f, 8.f), Vector3(8.f, 8.f, 8.f));
 	this->player = Engine::Get()->GetCurrentScene()->GetObject3D("CameraController");
+
+	chunkManager->GetLighting()->QueueNewChunk(this);
 }
 
-void Chunk::Update(float dTime)
-{
-}
+void Chunk::Update(float dTime){}
 
 void Chunk::Release() {
-	//delete[CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z] blockData;
 	//delete blockData;
 }
 
@@ -422,11 +414,29 @@ int Chunk::GetBlockLight(const int& x, const int& y, const int& z)
 	return this->lightLevel[x][y][z] & 0x0F;
 }
 
-int Chunk::GetSkyLight(const int& x, const int& y, const int& z)
+int Chunk::GetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z)
 {
-	return (this->lightLevel[x][y][z] & 0xF0) >> 4;
+	if(x < 0 || x>CHUNKSIZE_X - 1 || y < 0 || y>CHUNKSIZE_Y - 1 || z < 0 || z>CHUNKSIZE_Z - 1) // sample from another chunk
+	{
+		Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
+		return chunkManager->GetBlockLightAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z);
+	}
+	else {
+		return GetBlockLight(x, y, z);
+	}
 }
 
+void Chunk::SetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z, const int& val)
+{
+	if(x < 0 || x>CHUNKSIZE_X - 1 || y < 0 || y>CHUNKSIZE_Y - 1 || z < 0 || z>CHUNKSIZE_Z - 1)
+	{
+		Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
+		chunkManager->SetBlockLightAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z, val);
+	}
+	else {
+		SetBlockLight(x, y, z, val);
+	}
+}
 
 void Chunk::SetBlockLight(const int& x, const int& y, const int& z, const int& val)
 {
@@ -439,7 +449,56 @@ void Chunk::SetBlockLightNoUpdate(const int& x, const int& y, const int& z, cons
 	this->lightLevel[x][y][z] = (this->lightLevel[x][y][z] & 0xF0) | val;
 }
 
+int Chunk::GetSkyLight(const int& x, const int& y, const int& z)
+{
+	return (this->lightLevel[x][y][z] & 0xF0) >> 4;
+}
+
+int Chunk::GetSkyLightIncludingNeighbours(const int& x, const int& y, const int& z)
+{
+	if(x < 0 || x>CHUNKSIZE_X - 1 || y < 0 || y>CHUNKSIZE_Y - 1 || z < 0 || z>CHUNKSIZE_Z - 1) // sample from another chunk
+	{
+		Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
+		return chunkManager->GetSkyLightAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z);
+	}
+	else {
+		return GetSkyLight(x, y, z);
+	}
+}
+
+void Chunk::SetSkyLightIncludingNeighbours(const int& x, const int& y, const int& z, const int& val)
+{
+	if(x < 0 || x>CHUNKSIZE_X - 1 || y < 0 || y>CHUNKSIZE_Y - 1 || z < 0 || z>CHUNKSIZE_Z - 1)
+	{
+		Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
+		chunkManager->SetSkyLightAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z, val);
+	}
+	else {
+		SetSkyLight(x, y, z, val);
+	}
+}
+
+short Chunk::GetRawLightIncludingNeighbours(const int& x, const int& y, const int& z)
+{
+	if(x < 0 || x>CHUNKSIZE_X - 1 || y < 0 || y>CHUNKSIZE_Y - 1 || z < 0 || z>CHUNKSIZE_Z - 1) // sample from another chunk
+	{
+		Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
+		return chunkManager->GetRawLightAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z);
+	}
+	else {
+		return GetRawLight(x, y, z);
+	}
+}
+
+short Chunk::GetRawLight(const int& x, const int& y, const int& z)
+{
+	return this->lightLevel[x][y][z];
+}
+
+
 void Chunk::SetSkyLight(const int& x, const int& y, const int& z, const int& val)
 {
 	this->lightLevel[x][y][z] = (this->lightLevel[x][y][z] & 0xF) | (val << 4);
+
+	//chunkManager->GetLighting()->QueueSkyLight(LightNode(x, y, z, this));
 }

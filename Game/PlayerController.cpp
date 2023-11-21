@@ -43,7 +43,7 @@ vector<AABB> CameraController::GetNearbyAABBs(ChunkManager* chunkManager) {
 				Vector3Int playerBlockPos = Vector3Int::FloorToInt(transform.position);
 				Vector3Int blockPos = playerBlockPos + offset;
 				BlockID block = chunkManager->GetBlockAtWorldPos(blockPos);
-				if(BlockDef::GetDef(block).IsSolid()) {
+				if(BlockDef::GetDef(block).IsOpaque()) {
 					ret.push_back(AABB(Vector3(static_cast<float>(blockPos.x), static_cast<float>(blockPos.y), static_cast<float>(blockPos.z)) + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f)));
 				}
 			}
@@ -233,6 +233,7 @@ void CameraController::Update(float dTime)
 		+ chunkIndex.ToString() + "\n"
 		+ Vector3Int(FloorMod(camBlockPos.x, CHUNKSIZE_X), FloorMod(camBlockPos.y, CHUNKSIZE_Y), FloorMod(camBlockPos.z, CHUNKSIZE_Z)).ToString() + "\n"
 		+ to_string(chunkManager->GetBlockLightAtWorldPos(footPos)) + "\n"
+		+ to_string(chunkManager->GetSkyLightAtWorldPos(footPos)) + "\n"
 		//velocity.ToString() + "\n" + 
 		//to_string(isGrounded) + "\n" + "\n" +
 		//playerTopPos.ToString() + "\n" +

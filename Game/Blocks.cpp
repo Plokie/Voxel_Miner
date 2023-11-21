@@ -5,50 +5,50 @@
 //todo: database?
 // json parser perhaps
 const map<BlockID, Block> BlockDef::def = {
-	{BlockID::ERR,	Block("ERROR", false, 
+	{BlockID::ERR,	Block("ERROR", false, 0,
 		0, 0
 	) },
-	{BlockID::AIR,		Block("Air", false, 
+	{BlockID::AIR,		Block("Air", false, 0,
 		0 ,0
 	)},
 
-	{BlockID::GRASS,	Block("Grass", true, 
+	{BlockID::GRASS,	Block("Grass", true, 0,
 		1, 0,
 		2, 0,
 		3, 0
 	)},
-	{BlockID::DIRT,		Block("Dirt", true, 
+	{BlockID::DIRT,		Block("Dirt", true, 0,
 		3, 0
 	)},
-	{BlockID::STONE,	Block("Stone", true, 
+	{BlockID::STONE,	Block("Stone", true, 0,
 		5, 0
 	)},
-	{BlockID::BLACKSTONE,Block("Blackstone", true,
+	{BlockID::BLACKSTONE,Block("Blackstone", true, 0,
 		5, 1
 	)},
-	{BlockID::SAND,		Block("Sand", true,
+	{BlockID::SAND,		Block("Sand", true, 0,
 		4, 0
 	)},
-	{BlockID::CLAY,		Block("Clay", true,
+	{BlockID::CLAY,		Block("Clay", true, 0,
 		4, 3
 	)},
-	{BlockID::WATER,	Block("Water", false,
+	{BlockID::WATER,	Block("Water", false, 0,
 		4, 1
 	)},
 
-	{BlockID::OAK_LOG,	Block("Oak Log", true,
+	{BlockID::OAK_LOG,	Block("Oak Log", true, 0,
 		1, 1,
 		0, 1,
 		1, 1
 	)},
-	{BlockID::OAK_LEAVES,	Block("Oak Leaves", false,
+	{BlockID::OAK_LEAVES,	Block("Oak Leaves", false, 0,
 		2, 1
 	)},
-	{BlockID::OAK_PLANKS,	Block("Oak Planks", true,
+	{BlockID::OAK_PLANKS,	Block("Oak Planks", true, 0,
 		3, 1
 	)},
 
-	{BlockID::LAMP,	Block("Lamp", false,
+	{BlockID::LAMP,	Block("Lamp", true, 15,
 		3, 1
 	)},
 };
@@ -57,8 +57,12 @@ const string Block::GetName() const {
 	return this->name;
 }
 
-const bool Block::IsSolid() const {
-	return this->isSolid;
+const bool Block::IsOpaque() const {
+	return this->isOpaque;
+}
+
+const int Block::LightValue() const {
+	return this->lightValue;
 }
 
 const int Block::GetTopUVidx() const {
