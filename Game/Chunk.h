@@ -62,6 +62,8 @@ public:
 
 	BlockID GetBlockIncludingNeighbours(const int& x, const int& y, const int& z);
 
+	Vector3Int LocalToWorld(const int x, const int y, const int z);
+
 	void SetBlockLight(const int& x, const int& y, const int& z, const int& val);
 	void SetBlockLightNoUpdate(const int& x, const int& y, const int& z, const int& val);
 	void SetSkyLight(const int& x, const int& y, const int& z, const int& val);

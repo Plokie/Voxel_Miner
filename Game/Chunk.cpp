@@ -52,6 +52,12 @@ BlockID Chunk::GetBlockIncludingNeighbours(const int& x, const int& y, const int
 	}
 }
 
+Vector3Int Chunk::LocalToWorld(const int x, const int y, const int z)
+{
+	Vector3Int chunkPosition = Vector3Int(chunkIndexPosition.x * CHUNKSIZE_X, chunkIndexPosition.y * CHUNKSIZE_Y, chunkIndexPosition.z * CHUNKSIZE_Z);
+	return Vector3Int(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z);
+}
+
 
 void PushIndices(size_t size, vector<DWORD>& indices) {
 	int int_size = static_cast<int>(size);
@@ -500,5 +506,5 @@ void Chunk::SetSkyLight(const int& x, const int& y, const int& z, const int& val
 {
 	this->lightLevel[x][y][z] = (this->lightLevel[x][y][z] & 0xF) | (val << 4);
 
-	//chunkManager->GetLighting()->QueueSkyLight(LightNode(x, y, z, this));
+	chunkManager->GetLighting()->QueueSkyLight(LightNode(x, y, z, this));
 }

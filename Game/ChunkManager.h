@@ -5,6 +5,7 @@
 #include <tuple>
 #include <thread>
 #include <atomic>
+#include <stack>
 #include <queue>
 
 #include "../Engine/Engine.h"
@@ -42,7 +43,7 @@ private:
 
 
 public:
-	queue<Chunk*> rebuildQueue;
+	stack<Chunk*> rebuildQueue;
 
 	Lighting* GetLighting() const {
 		return this->lighting;

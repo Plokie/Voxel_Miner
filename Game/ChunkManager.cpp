@@ -345,17 +345,22 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 		}
 		ReleaseSRWLockExclusive(pDestroyMutex);
 
-		AcquireSRWLockExclusive(&gfx->gRenderingMutex);
 
-		while (!rebuildQueue.empty()) {
-			Chunk* chunk = rebuildQueue.front();
+		//while (!rebuildQueue.empty()) {
+		if(!rebuildQueue.empty()) {
+			Chunk* chunk = rebuildQueue.top();
 			
-			AcquireSRWLockExclusive(&chunk->gAccessMutex);
-			chunk->BuildMesh();
-			ReleaseSRWLockExclusive(&chunk->gAccessMutex);
-			rebuildQueue.pop();
+			//AcquireSRWLockExclusive(&chunk->gAccessMutex);
+			if (TryAcquireSRWLockExclusive(&gfx->gRenderingMutex)) {
+				if (TryAcquireSRWLockExclusive(&chunk->gAccessMutex)) {
+					chunk->BuildMesh();
+
+					rebuildQueue.pop();
+					ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+				}
+				ReleaseSRWLockExclusive(&gfx->gRenderingMutex);
+			}
 		}
-		ReleaseSRWLockExclusive(&gfx->gRenderingMutex);
 	}
 }
 

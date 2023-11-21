@@ -96,6 +96,8 @@ void Lighting::TryFloodSkyLightTo(const Vector3Int& neighbourIndex, const int& c
 		// Spreads light to the available neighbour, but with a light level decreased from the current tile
 		// This function appends even more to the lightBfsQueue, continuuing the while loop until all light has spread
 		chunk->SetSkyLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, currentLevel - (isDown ? 0 : 1));
+		//skyLightQueue.emplace(neighbourIndex, chunk);
+
 	}
 }
 
@@ -121,6 +123,7 @@ void Lighting::TryRemoveSkyLight(const Vector3Int& neighbourIndex, const int& cu
 	else if(neighbourLevel >= currentLevel) { // if neighbour light is brigther than current light, then re-spread the light back over this block'
 		// Queues neighbour to be recalculated
 		chunk->SetSkyLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, neighbourLevel);
+		skyLightQueue.emplace(neighbourIndex, chunk);
 	}
 }
 
@@ -174,113 +177,153 @@ void Lighting::LightingThread()
 			TryFloodLightTo(index + Vector3Int(0, 0, 1), lightLevel, chunk);
 		}
 
-		while(!newSkyChunks.empty()) {
-			Chunk* chunk = newSkyChunks.front();
+		//while(!newSkyChunks.empty()) {
+		//	Chunk* chunk = newSkyChunks.front();
 
-			// chunkManager pointer is sometimes offset for some reason?
+		//	// chunkManager pointer is sometimes offset for some reason?
 
-			//if(chunk->chunkIndexPosition.y >= 0) { // Only do inital light flooding for chunks in sky
-			if(chunk->chunkIndexPosition.y == 1) { // Only do inital light flooding for chunks in sky
-				int y = chunk->chunkIndexPosition.y * CHUNKSIZE_Y;
-				for(int x = 0; x < CHUNKSIZE_X; x++) {
-					for(int z = 0; z < CHUNKSIZE_Z; z++) {
-						BlockID block = AIR;
+		//	//if(chunk->chunkIndexPosition.y >= 0) { // Only do inital light flooding for chunks in sky
+		//	if(chunk->chunkIndexPosition.y == 1) { // Only do inital light flooding for chunks in sky
+		//		//for (int x = 0; x < CHUNKSIZE_X; x++) {
+		//		//	for (int z = 0; z < CHUNKSIZE_Z; z++) {
+		//		//		chunk->SetSkyLight(x, CHUNKSIZE_Y-1, z, 15);
+		//		//		//skyLightQueue.emplace(x, CHUNKSIZE_Y - 1, z, chunk);
+		//		//	}
+		//		//}
 
-						while(block == AIR) {
-							block = chunk->GetBlockIncludingNeighbours(x, y, z);
-							if(block != AIR || block==ERR) break;
+		//		int y = (CHUNKSIZE_Y - 1);
+		//		for(int x = 0; x < CHUNKSIZE_X; x++) {
+		//			for(int z = 0; z < CHUNKSIZE_Z; z++) {
+		//				BlockID block = AIR;
 
-							chunk->SetSkyLight(x, y, z, 15);
-							//skyLightQueue.pop();
+		//				chunk->SetSkyLight(x, CHUNKSIZE_Y-1, z, 15);
 
-							y--;
-						}
-					}
-				}
-			}
-			
-			// Find sky light levels of 15 neighbouring levels of 0 to flood
-			for(int x = 0; x < CHUNKSIZE_X; x++) {
-				for(int y = 0; y < CHUNKSIZE_Y; y++) {
-					for(int z = 0; z < CHUNKSIZE_Z; z++) {
-						if(chunk->GetSkyLight(x, y, z) < 15) continue;
+		//				//for (;;) {
+		//				//	block = chunk->GetBlockIncludingNeighbours(x, y--, z);
+		//				//	if (block != AIR || y < -CHUNKSIZE_Y*2) break;
 
-						if(chunk->GetSkyLightIncludingNeighbours(x - 1, y, z) == 0) {
-							skyLightQueue.emplace(x, y, z, chunk);
-						}
-						if(chunk->GetSkyLightIncludingNeighbours(x + 1, y, z) == 0) {
-							skyLightQueue.emplace(x, y, z, chunk);
-						}
-						if(chunk->GetSkyLightIncludingNeighbours(x, y - 1, z) == 0) {
-							skyLightQueue.emplace(x, y, z, chunk);
-						}
-						if(chunk->GetSkyLightIncludingNeighbours(x, y + 1, z) == 0) {
-							skyLightQueue.emplace(x, y, z, chunk);
-						}
-						if(chunk->GetSkyLightIncludingNeighbours(x, y, z - 1) == 0) {
-							skyLightQueue.emplace(x, y, z, chunk);
-						}
-						if(chunk->GetSkyLightIncludingNeighbours(x, y, z + 1) == 0) {
-							skyLightQueue.emplace(x, y, z, chunk);
-						}
-					}
-				}
-			}
+		//				//	chunk->SetSkyLight(x, y, z, 15);
+		//				//	skyLightQueue.pop();
+		//				//}
 
-			newSkyChunks.pop();
-		}
-		//AcquireSRWLockExclusive(pDestroyMutex);
-		while(!removeSkyLightQueue.empty()) {
-			RemoveLightNode& node = removeSkyLightQueue.front();
-			Vector3Int index = node.localIndexPos;
-			Chunk* chunk = node.chunk;
-			int lightLevel = node.val;
+		//				//while(block == AIR) {
+		//				//	//block = chunk->GetBlockIncludingNeighbours(x, y, z);
+		//				//	
+		//				//	block = chunkManager->GetBlockAtWorldPos(chunk->LocalToWorld(x, y, z));
+		//				//	if(block != AIR || block==ERR) break;
 
-			removeSkyLightQueue.pop();
+		//				//	chunk->SetSkyLight(x, y, z, 15);
+		//				//	skyLightQueue.pop();
 
-			if(node.chunk == nullptr) continue;
+		//				//	y--;
+		//				//}
+		//			}
+		//		}
+		//	}
+		//	
+		//	// Find sky light levels of 15 neighbouring levels of 0 to flood
+		//	//for(int x = 0; x < CHUNKSIZE_X; x++) {
+		//	//	for(int y = 0; y < CHUNKSIZE_Y; y++) {
+		//	//		for(int z = 0; z < CHUNKSIZE_Z; z++) {
+		//	//			if(chunk->GetSkyLight(x, y, z) < 15) continue;
 
-			// Add to Map of chunks to be queued to rebuilt
-			chunkIndexRebuildQueue[chunk] = true;
+		//	//			Vector3Int worldPos = chunk->LocalToWorld(x, y, z);
+
+		//	//			if(chunkManager->GetSkyLightAtWorldPos(worldPos + Vector3Int(-1, 0, 0)) == 0) {
+		//	//				skyLightQueue.emplace(x, y, z, chunk);
+		//	//			}
+		//	//			else if (chunkManager->GetSkyLightAtWorldPos(worldPos + Vector3Int(1, 0, 0)) == 0) {
+		//	//				skyLightQueue.emplace(x, y, z, chunk);
+		//	//			}
+		//	//			else if (chunkManager->GetSkyLightAtWorldPos(worldPos + Vector3Int(0, -1, 0)) == 0) {
+		//	//				skyLightQueue.emplace(x, y, z, chunk);
+		//	//			}
+		//	//			else if (chunkManager->GetSkyLightAtWorldPos(worldPos + Vector3Int(0, 1, 0)) == 0) {
+		//	//				skyLightQueue.emplace(x, y, z, chunk);
+		//	//			}
+		//	//			else if (chunkManager->GetSkyLightAtWorldPos(worldPos + Vector3Int(0, 0, -1)) == 0) {
+		//	//				skyLightQueue.emplace(x, y, z, chunk);
+		//	//			}
+		//	//			else if (chunkManager->GetSkyLightAtWorldPos(worldPos + Vector3Int(0, 0, 1)) == 0) {
+		//	//				skyLightQueue.emplace(x, y, z, chunk);
+		//	//			}
+		//	//			
+		//	//			//if(chunk->GetSkyLightIncludingNeighbours(x - 1, y, z) == 0) {
+		//	//			//	skyLightQueue.emplace(x, y, z, chunk);
+		//	//			//}
+		//	//			//if(chunk->GetSkyLightIncludingNeighbours(x + 1, y, z) == 0) {
+		//	//			//	skyLightQueue.emplace(x, y, z, chunk);
+		//	//			//}
+		//	//			//if(chunk->GetSkyLightIncludingNeighbours(x, y - 1, z) == 0) {
+		//	//			//	skyLightQueue.emplace(x, y, z, chunk);
+		//	//			//}
+		//	//			//if(chunk->GetSkyLightIncludingNeighbours(x, y + 1, z) == 0) {
+		//	//			//	skyLightQueue.emplace(x, y, z, chunk);
+		//	//			//}
+		//	//			//if(chunk->GetSkyLightIncludingNeighbours(x, y, z - 1) == 0) {
+		//	//			//	skyLightQueue.emplace(x, y, z, chunk);
+		//	//			//}
+		//	//			//if(chunk->GetSkyLightIncludingNeighbours(x, y, z + 1) == 0) {
+		//	//			//	skyLightQueue.emplace(x, y, z, chunk);
+		//	//			//}
+		//	//		}
+		//	//	}
+		//	//}
+
+		//	newSkyChunks.pop();
+		//}
+		////AcquireSRWLockExclusive(pDestroyMutex);
+		//while(!removeSkyLightQueue.empty()) {
+		//	RemoveLightNode& node = removeSkyLightQueue.front();
+		//	Vector3Int index = node.localIndexPos;
+		//	Chunk* chunk = node.chunk;
+		//	int lightLevel = node.val;
+
+		//	removeSkyLightQueue.pop();
+
+		//	if(node.chunk == nullptr) continue;
+
+		//	// Add to Map of chunks to be queued to rebuilt
+		//	chunkIndexRebuildQueue[chunk] = true;
 
 
 
-			// incoming bug: because sunlight spreads downward infinitely, so should the removal of it
+		//	// incoming bug: because sunlight spreads downward infinitely, so should the removal of it
 
-			//TryRemoveSkyLight(index + Vector3Int(-1, 0, 0), lightLevel, chunk);
-			//TryRemoveSkyLight(index + Vector3Int(1, 0, 0), lightLevel, chunk);
-			//TryRemoveSkyLight(index + Vector3Int(0, -1, 0), lightLevel, chunk,true);
-			//TryRemoveSkyLight(index + Vector3Int(0, 1, 0), lightLevel, chunk);
-			//TryRemoveSkyLight(index + Vector3Int(0, 0, -1), lightLevel, chunk);
-			//TryRemoveSkyLight(index + Vector3Int(0, 0, 1), lightLevel, chunk);
-		}
+		//	//TryRemoveSkyLight(index + Vector3Int(-1, 0, 0), lightLevel, chunk);
+		//	//TryRemoveSkyLight(index + Vector3Int(1, 0, 0), lightLevel, chunk);
+		//	//TryRemoveSkyLight(index + Vector3Int(0, -1, 0), lightLevel, chunk,true);
+		//	//TryRemoveSkyLight(index + Vector3Int(0, 1, 0), lightLevel, chunk);
+		//	//TryRemoveSkyLight(index + Vector3Int(0, 0, -1), lightLevel, chunk);
+		//	//TryRemoveSkyLight(index + Vector3Int(0, 0, 1), lightLevel, chunk);
+		//}
 
-		//ReleaseSRWLockExclusive(pDestroyMutex);
-		while(!skyLightQueue.empty()) {
-			//debugCooldown = 10;
-			LightNode& node = skyLightQueue.top();
+		////ReleaseSRWLockExclusive(pDestroyMutex);
+		//while(!skyLightQueue.empty()) {
+		//	//debugCooldown = 10;
+		//	LightNode& node = skyLightQueue.top();
 
-			Vector3Int index = node.localIndexPos;
-			Chunk* chunk = node.chunk;
-			skyLightQueue.pop();
+		//	Vector3Int index = node.localIndexPos;
+		//	Chunk* chunk = node.chunk;
+		//	skyLightQueue.pop();
 
-			if(chunk == nullptr) continue;
+		//	if(chunk == nullptr) continue;
 
-			int lightLevel = chunk->GetSkyLight(index.x, index.y, index.z);
+		//	int lightLevel = chunk->GetSkyLight(index.x, index.y, index.z);
 
-			// Add to Map of chunks to be queued to rebuilt
-			chunkIndexRebuildQueue[chunk] = true;
-			
-			//AcquireSRWLockExclusive(pDestroyMutex);
+		//	// Add to Map of chunks to be queued to rebuilt
+		//	chunkIndexRebuildQueue[chunk] = true;
+		//	
+		//	//AcquireSRWLockExclusive(pDestroyMutex);
 
-			//TryFloodSkyLightTo(index + Vector3Int(-1, 0, 0), lightLevel, chunk);
-			//TryFloodSkyLightTo(index + Vector3Int(1, 0, 0), lightLevel, chunk);
-			TryFloodSkyLightTo(index + Vector3Int(0, -1, 0), lightLevel, chunk,true);
-			//TryFloodSkyLightTo(index + Vector3Int(0, 1, 0), lightLevel, chunk);
-			//TryFloodSkyLightTo(index + Vector3Int(0, 0, -1), lightLevel, chunk);
-			//TryFloodSkyLightTo(index + Vector3Int(0, 0, 1), lightLevel, chunk);
+		//	//TryFloodSkyLightTo(index + Vector3Int(-1, 0, 0), lightLevel, chunk);
+		//	//TryFloodSkyLightTo(index + Vector3Int(1, 0, 0), lightLevel, chunk);
+		//	TryFloodSkyLightTo(index + Vector3Int(0, -1, 0), lightLevel, chunk,true);
+		//	//TryFloodSkyLightTo(index + Vector3Int(0, 1, 0), lightLevel, chunk);
+		//	//TryFloodSkyLightTo(index + Vector3Int(0, 0, -1), lightLevel, chunk);
+		//	//TryFloodSkyLightTo(index + Vector3Int(0, 0, 1), lightLevel, chunk);
 
-		}
+		//}
 		//ReleaseSRWLockExclusive(pDestroyMutex);
 
 		if(!chunkIndexRebuildQueue.empty()) {

@@ -11,7 +11,7 @@ Model* Model::Init(ID3D11Device* device) {
 }
 
 void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worldMx) {
-	//if(mesh == nullptr) return;
+	if(mesh == nullptr) return;
 	
 	CB_VS_vertexshader mxData;
 	CB_VS_pixelshader alphaData;
