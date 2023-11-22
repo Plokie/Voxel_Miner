@@ -75,7 +75,8 @@ map<string, Object2D*>* Scene::GetSceneObjects2D()
 
 Scene::~Scene()
 {
-	for(pair<string, Object3D*> pair : sceneObjects3D) {
+	for(pair<const string, Object3D*>& pair : sceneObjects3D) {
 		delete pair.second;
+		pair.second = nullptr;
 	}
 }

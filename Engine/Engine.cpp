@@ -180,8 +180,9 @@ bool Engine::Service() {
 Engine::~Engine() {
 	
 
-	for(auto pair : scenes) {
+	for(pair<const string, Scene*>& pair : scenes) {
 		delete pair.second;
+		pair.second = nullptr;
 	}
 
 	gfx->~Graphics();

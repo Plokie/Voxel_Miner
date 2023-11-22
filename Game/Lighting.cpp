@@ -91,11 +91,13 @@ void Lighting::TryFloodSkyLightTo(const Vector3Int& neighbourIndex, const int& c
 	const Block& def = BlockDef::GetDef(block);
 
 	// Checks if the neighbour block is transparent and if neighbour light level +2 is less than current level
-	if((!def.IsOpaque() || def.LightValue()) && ((light + 2 <= currentLevel) || isDown))
+	//if((!def.IsOpaque() || def.LightValue()) && ((light + 2 <= currentLevel) || isDown))
+	if((!def.IsOpaque() || def.LightValue()) && (light + 2 <= currentLevel))
 	{
 		// Spreads light to the available neighbour, but with a light level decreased from the current tile
 		// This function appends even more to the lightBfsQueue, continuuing the while loop until all light has spread
-		chunk->SetSkyLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, currentLevel - (isDown ? 0 : 1));
+		//chunk->SetSkyLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, currentLevel - (isDown ? 0 : 1));
+		chunk->SetSkyLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, currentLevel - 1);
 		//skyLightQueue.emplace(neighbourIndex, chunk);
 
 	}
@@ -106,7 +108,8 @@ void Lighting::TryRemoveSkyLight(const Vector3Int& neighbourIndex, const int& cu
 	//BlockID block = chunk->GetBlockIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z);
 	int neighbourLevel = chunk->GetSkyLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z);
 
-	if((neighbourLevel != 0 && neighbourLevel < currentLevel) || (currentLevel == 15 && isDown)) {
+	//if((neighbourLevel != 0 && neighbourLevel < currentLevel) || (currentLevel == 15 && isDown)) {
+	if((neighbourLevel != 0 && neighbourLevel < currentLevel)) {
 		chunk->SetSkyLightIncludingNeighbours(neighbourIndex.x, neighbourIndex.y, neighbourIndex.z, 0);
 
 		// Take the data from the front of the lightQueue which was just added in the previous func call
@@ -177,8 +180,13 @@ void Lighting::LightingThread()
 			TryFloodLightTo(index + Vector3Int(0, 0, 1), lightLevel, chunk);
 		}
 
+		// This is the initial propagation of sunlight level 15. There is no flooding, only casting DIRECTLY downwards from the sky levels of 15
 		while(!newSkyChunks.empty()) {
 			Chunk* chunk = newSkyChunks.front();
+			if(chunk == nullptr) {
+				newSkyChunks.pop();
+				continue;
+			}
 			AcquireSRWLockExclusive(&chunk->gAccessMutex);
 
 			if(chunk->chunkIndexPosition.y == 1) { // Only do inital light flooding for chunks in sky
@@ -195,7 +203,7 @@ void Lighting::LightingThread()
 							if (block != AIR || y < -CHUNKSIZE_Y*3) break;
 
 							//chunk->SetSkyLight(x, y, z, 15);
-							int oldLen = skyLightQueue.size();
+							size_t oldLen = skyLightQueue.size();
 							chunk->SetSkyLightIncludingNeighbours(x, y, z, 15);
 							if(skyLightQueue.size() > oldLen)
 								skyLightQueue.pop();
@@ -208,67 +216,62 @@ void Lighting::LightingThread()
 			newSkyChunks.pop();
 		}
 
-
+		// This then scans the recently propagated chunks for sunlight neighbouring unlit blocks, and then adds it to the flood queue
 		while(!skyChunksToFlood.empty()) {
 			Chunk* chunk = skyChunksToFlood.front();
+			if(chunk == nullptr) {
+				skyChunksToFlood.pop();
+				continue;
+			}
 			AcquireSRWLockExclusive(&chunk->gAccessMutex);
 			// Find sky light levels of 15 neighbouring levels of 0 to flood
 			for(int x = 0; x < CHUNKSIZE_X; x++) {
 				for(int y = 0; y < CHUNKSIZE_Y; y++) {
 					for(int z = 0; z < CHUNKSIZE_Z; z++) {
-						if(chunk == nullptr) continue;
 						if(chunk->GetSkyLight(x, y, z) < 15) continue;
 
-						if(chunk->GetSkyLightIncludingNeighbours(x - 1, y, z) == 0) {
-							skyLightQueue.emplace(x, y, z, chunk);
-						}
-						if(chunk->GetSkyLightIncludingNeighbours(x + 1, y, z) == 0) {
-							skyLightQueue.emplace(x, y, z, chunk);
-						}
-						if(chunk->GetSkyLightIncludingNeighbours(x, y - 1, z) == 0) {
-							skyLightQueue.emplace(x, y, z, chunk);
-						}
-						if(chunk->GetSkyLightIncludingNeighbours(x, y + 1, z) == 0) {
-							skyLightQueue.emplace(x, y, z, chunk);
-						}
-						if(chunk->GetSkyLightIncludingNeighbours(x, y, z - 1) == 0) {
-							skyLightQueue.emplace(x, y, z, chunk);
-						}
-						if(chunk->GetSkyLightIncludingNeighbours(x, y, z + 1) == 0) {
+						if(
+							chunk->GetSkyLightIncludingNeighbours(x - 1, y, z) == 0 || 
+							chunk->GetSkyLightIncludingNeighbours(x + 1, y, z) == 0 ||
+							chunk->GetSkyLightIncludingNeighbours(x, y - 1, z) == 0 ||
+							chunk->GetSkyLightIncludingNeighbours(x, y + 1, z) == 0 ||
+							chunk->GetSkyLightIncludingNeighbours(x, y, z - 1) == 0 ||
+							chunk->GetSkyLightIncludingNeighbours(x, y, z + 1) == 0
+						) {
 							skyLightQueue.emplace(x, y, z, chunk);
 						}
 					}
 				}
 			}
-			ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+			ReleaseSRWLockExclusive(&chunk->gAccessMutex); // why is visual studio gaslighting me
 			skyChunksToFlood.pop();
 		}
 
 		////AcquireSRWLockExclusive(pDestroyMutex);
-		//while(!removeSkyLightQueue.empty()) {
-		//	RemoveLightNode& node = removeSkyLightQueue.front();
-		//	Vector3Int index = node.localIndexPos;
-		//	Chunk* chunk = node.chunk;
-		//	int lightLevel = node.val;
+		while(!removeSkyLightQueue.empty()) {
+			RemoveLightNode& node = removeSkyLightQueue.front();
+			Vector3Int index = node.localIndexPos;
+			Chunk* chunk = node.chunk;
+			int lightLevel = node.val;
 
-		//	removeSkyLightQueue.pop();
+			removeSkyLightQueue.pop();
 
-		//	if(node.chunk == nullptr) continue;
+			if(node.chunk == nullptr) continue;
 
-		//	// Add to Map of chunks to be queued to rebuilt
-		//	chunkIndexRebuildQueue[chunk] = true;
+			// Add to Map of chunks to be queued to rebuilt
+			chunkIndexRebuildQueue[chunk] = true;
 
 
 
-		//	// incoming bug: because sunlight spreads downward infinitely, so should the removal of it
+			// incoming bug: because sunlight spreads downward infinitely, so should the removal of it
 
-		//	//TryRemoveSkyLight(index + Vector3Int(-1, 0, 0), lightLevel, chunk);
-		//	//TryRemoveSkyLight(index + Vector3Int(1, 0, 0), lightLevel, chunk);
-		//	//TryRemoveSkyLight(index + Vector3Int(0, -1, 0), lightLevel, chunk,true);
-		//	//TryRemoveSkyLight(index + Vector3Int(0, 1, 0), lightLevel, chunk);
-		//	//TryRemoveSkyLight(index + Vector3Int(0, 0, -1), lightLevel, chunk);
-		//	//TryRemoveSkyLight(index + Vector3Int(0, 0, 1), lightLevel, chunk);
-		//}
+			TryRemoveSkyLight(index + Vector3Int(-1, 0, 0), lightLevel, chunk);
+			TryRemoveSkyLight(index + Vector3Int(1, 0, 0), lightLevel, chunk);
+			TryRemoveSkyLight(index + Vector3Int(0, -1, 0), lightLevel, chunk,true);
+			TryRemoveSkyLight(index + Vector3Int(0, 1, 0), lightLevel, chunk);
+			TryRemoveSkyLight(index + Vector3Int(0, 0, -1), lightLevel, chunk);
+			TryRemoveSkyLight(index + Vector3Int(0, 0, 1), lightLevel, chunk);
+		}
 
 		//ReleaseSRWLockExclusive(pDestroyMutex);
 		while(!skyLightQueue.empty()) {
@@ -278,9 +281,9 @@ void Lighting::LightingThread()
 			Vector3Int index = node.localIndexPos;
 			Chunk* chunk = node.chunk;
 			skyLightQueue.pop();
+			if(chunk == nullptr) continue;
 			AcquireSRWLockExclusive(&chunk->gAccessMutex);
 
-			if(chunk == nullptr) continue;
 
 			int lightLevel = chunk->GetSkyLight(index.x, index.y, index.z);
 

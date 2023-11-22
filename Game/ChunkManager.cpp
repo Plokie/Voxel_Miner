@@ -128,6 +128,9 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 
 		chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z] = (USHORT)id;
 
+		lighting->QueueRemoveSkyLight({ localVoxelPos, chunk, (short)15 });
+		lighting->QueueSkyLight({ localVoxelPos, chunk });
+
 		// If the new block placed had a light value
 		if(newBlockDef.LightValue()!=0) {
 			chunkMap[chunkIndex]->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, newBlockDef.LightValue());
@@ -136,6 +139,7 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 		// If a light is being removed
 		if(oldBlockDef.LightValue()!=0 && id == AIR) { 
 			lighting->QueueRemoveLight({ localVoxelPos, chunk, static_cast<short>(oldBlockDef.LightValue()) });
+			
 
 			chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 0);
 			lighting->PopLightQueue();
@@ -253,9 +257,9 @@ void ChunkManager::SetSkyLightAtWorldPos(const int& x, const int& y, const int& 
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
 		Chunk* chunk = chunkMap[chunkIndex];
-		//AcquireSRWLockExclusive(&chunk->gAccessMutex);
+		AcquireSRWLockExclusive(&chunk->gAccessMutex);
 		chunk->SetSkyLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, val);
-		//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+		ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 	}
 }
 
