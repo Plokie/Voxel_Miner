@@ -51,6 +51,7 @@ class Lighting {
 
 	map<Chunk*, bool> chunkIndexRebuildQueue = {};
 	queue<Chunk*> newSkyChunks = {};
+	queue<Chunk*> skyChunksToFlood = {};
 
 	void TryFloodLightTo(const Vector3Int& index, const int& currentLevel, Chunk* chunk);
 	void TryRemoveLight(const Vector3Int& index, const int& currentLevel, Chunk* chunk);

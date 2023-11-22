@@ -86,10 +86,10 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 		
 		//AcquireSRWLockExclusive(&this->gAccessMutex);
-		Chunk* chunk = chunkMap.at(chunkIndex);
-		AcquireSRWLockExclusive(&chunk->gAccessMutex);
+		Chunk* chunk = chunkMap[chunkIndex];
+		//bool didMutex = TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
 		BlockID blockID = static_cast<BlockID>(chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z]);
-		ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+		//if(didMutex) ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 		//ReleaseSRWLockExclusive(&this->gAccessMutex);
 		return blockID;
 	}
@@ -225,7 +225,7 @@ void ChunkManager::SetBlockLightAtWorldPos(const Vector3Int& p, const int& val) 
 	SetBlockLightAtWorldPos(p.x, p.y, p.z, val);
 }
 
-int ChunkManager::GetSkyLightAtWorldPos(const int& x, const int& y, const int& z) const
+int ChunkManager::GetSkyLightAtWorldPos(const int& x, const int& y, const int& z)
 {
 	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 
@@ -233,7 +233,7 @@ int ChunkManager::GetSkyLightAtWorldPos(const int& x, const int& y, const int& z
 	if(chunkMap.find(chunkIndex) != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
-		Chunk* chunk = chunkMap.at(chunkIndex);
+		Chunk* chunk = chunkMap[chunkIndex];
 		AcquireSRWLockExclusive(&chunk->gAccessMutex);
 		int light = chunk->GetSkyLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z);
 		ReleaseSRWLockExclusive(&chunk->gAccessMutex);
@@ -242,24 +242,24 @@ int ChunkManager::GetSkyLightAtWorldPos(const int& x, const int& y, const int& z
 	return -1;
 }
 
-int ChunkManager::GetSkyLightAtWorldPos(const Vector3Int& p) const
+int ChunkManager::GetSkyLightAtWorldPos(const Vector3Int& p)
 {
 	return GetSkyLightAtWorldPos(p.x, p.y, p.z);
 }
 
-void ChunkManager::SetSkyLightAtWorldPos(const int& x, const int& y, const int& z, const int& val) const {
+void ChunkManager::SetSkyLightAtWorldPos(const int& x, const int& y, const int& z, const int& val) {
 	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 	if(chunkMap.find(chunkIndex) != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
-		Chunk* chunk = chunkMap.at(chunkIndex);
+		Chunk* chunk = chunkMap[chunkIndex];
 		//AcquireSRWLockExclusive(&chunk->gAccessMutex);
 		chunk->SetSkyLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, val);
 		//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 	}
 }
 
-void ChunkManager::SetSkyLightAtWorldPos(const Vector3Int& p, const int& val) const
+void ChunkManager::SetSkyLightAtWorldPos(const Vector3Int& p, const int& val)
 {
 	SetSkyLightAtWorldPos(p.x, p.y, p.z, val);
 }

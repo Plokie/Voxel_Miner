@@ -136,13 +136,14 @@ bool Engine::DestroyObject3DImmediate(string name)
 {
 	//todo: move procedure to scene class
 	if(currentScene->GetSceneObjects3D()->count(name)) {
-		Object3D* objectToDelete = currentScene->GetSceneObjects3D()->at(name);
+		Object3D*& objectToDelete = currentScene->GetSceneObjects3D()->at(name);
 		
 		AcquireSRWLockShared(&objectToDelete->gAccessMutex);
 		
 		delete objectToDelete;
+		objectToDelete = nullptr;
 
-		currentScene->GetSceneObjects3D()->at(name) = nullptr;
+		//currentScene->GetSceneObjects3D()->at(name) = nullptr;
 		//ReleaseSRWLockShared(&objectToDelete->gAccessMutex);
 		currentScene->GetSceneObjects3D()->erase(name);
 
