@@ -490,12 +490,12 @@ void Graphics::Render(Scene* scene) {
 
 	camera.UpdateViewFrustum();
 
-	vector<pair<Model*,XMMATRIX>> transparentModels = {}; // Transparent meshes to be drawn AFTER the opaque geometry
+	vector<tuple<Model*,XMMATRIX, Object3D*>> transparentModels = {}; // Transparent meshes to be drawn AFTER the opaque geometry
 	vector<Object3D*> objects = {};
 
 	//camera.viewFrustum = Frustum::CreateFrustumFromCamera(camera, )
 
-	AcquireSRWLockExclusive(&gRenderingMutex);
+	//AcquireSRWLockExclusive(&gRenderingMutex);
 
 	//todo: precompute sceneObjects values vector whenever an object is appended or removed
 	for(map<string, Object3D*>::iterator it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); ++it) {
@@ -526,10 +526,10 @@ void Graphics::Render(Scene* scene) {
 	deviceCtx->OMSetDepthStencilState(alphaDepthStencilState, 0);
 
 	//Draw alpha geometry
-	for(vector<pair<Model*, XMMATRIX>>::iterator it = transparentModels.begin(); it!=transparentModels.end(); ++it) {
+	for(vector<tuple<Model*, XMMATRIX, Object3D*>>::iterator it = transparentModels.begin(); it!=transparentModels.end(); ++it) {
 		//AcquireSRWLockExclusive(it->first)
-		if (it->first->GetMesh() == nullptr) continue;
-		it->first->Draw(deviceCtx, it->second, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
+		if (get<0>(*it)->GetMesh() == nullptr || get<2>(*it)==nullptr || get<2>(*it)->pendingDeletion ) continue;
+		get<0>(*it)->Draw(deviceCtx, get<1>(*it), worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
 		deviceCtx->PSSetShaderResources(0, 1, &errTex);
 		deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
 		deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
@@ -546,7 +546,7 @@ void Graphics::Render(Scene* scene) {
 	for (map<string, Object2D*>::iterator it = scene->GetSceneObjects2D()->begin(); it != scene->GetSceneObjects2D()->end(); ++it) {
 		it->second->Draw(this->spriteBatch);
 	}
-	ReleaseSRWLockExclusive(&gRenderingMutex);
+	//ReleaseSRWLockExclusive(&gRenderingMutex);
 
 
 	this->spriteBatch->End();

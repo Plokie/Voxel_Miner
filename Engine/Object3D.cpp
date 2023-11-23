@@ -13,7 +13,7 @@ Model* Object3D::AddModel(ID3D11Device* device) {
 	return newMesh;
 }
 
-bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<pair<Model*, XMMATRIX>>* transparentModels) {
+bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<tuple<Model*, XMMATRIX, Object3D*>>* transparentModels) {
 	//AcquireSRWLockExclusive(&this->gAccessMutex);
 	bool didDraw = false;
 
@@ -26,7 +26,7 @@ bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<pai
 		}
 		else //if objects contains transparency, queue to be rendered after opaque geometry
 		{
-			transparentModels->push_back(pair<Model*, XMMATRIX>(model, transform.mx()));
+			transparentModels->push_back(tuple<Model*, XMMATRIX, Object3D*>(model, transform.mx(), this));
 		}
 	}
 

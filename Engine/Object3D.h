@@ -9,6 +9,7 @@ public:
 	SRWLOCK gAccessMutex = {};
 
 	bool doRender = true;
+	bool pendingDeletion = false;
 
 	// The general AABB box describing the max area of the object
 	// Used for frustum culling
@@ -23,7 +24,7 @@ public:
 	Object3D(){}
 	Object3D(ID3D11Device* device);
 
-	bool Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<pair<Model*, XMMATRIX>>* transparentModels);
+	bool Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<tuple<Model*, XMMATRIX, Object3D*>>* transparentModels);
 
 	Model* AddModel(ID3D11Device* device);
 

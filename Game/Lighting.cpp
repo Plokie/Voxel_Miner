@@ -183,7 +183,7 @@ void Lighting::LightingThread()
 		// This is the initial propagation of sunlight level 15. There is no flooding, only casting DIRECTLY downwards from the sky levels of 15
 		while(!newSkyChunks.empty()) {
 			Chunk* chunk = newSkyChunks.front();
-			if(chunk == nullptr) {
+			if(chunk == nullptr || chunk->pendingDeletion) {
 				newSkyChunks.pop();
 				continue;
 			}
@@ -223,17 +223,24 @@ void Lighting::LightingThread()
 				skyChunksToFlood.pop();
 				continue;
 			}
-			AcquireSRWLockShared(&chunk->gAccessMutex);
+			AcquireSRWLockExclusive(&chunk->gAccessMutex);
 			// Find sky light levels of 15 neighbouring levels of 0 to flood
 			for(int x = 0; x < CHUNKSIZE_X; x++) {
 				for(int y = 0; y < CHUNKSIZE_Y; y++) {
 					for(int z = 0; z < CHUNKSIZE_Z; z++) {
-						if (x == 9 && y == 1 && z == 15 && chunk->chunkIndexPosition.y == 0 && chunk->chunkIndexPosition.x == -1 && chunk->chunkIndexPosition.z==0)
+						if (
+							(
+								(x == 9 && y == 1 && z == 15) || 
+								(x == 9 && y == 2 && z == 15) ||
+								(x == 9 && y == 3 && z == 15)
+								) && chunk->chunkIndexPosition.y == 0 && chunk->chunkIndexPosition.x == -1 && chunk->chunkIndexPosition.z == 0
+							)
 							__nop();
 
 						BlockID debug = (BlockID)chunk->blockData[x][y][z];
+						int debugLight = chunk->GetSkyLight(x, y, z);
 
-						if(chunk->GetSkyLight(x, y, z) < 15) continue;
+						if(debugLight < 15) continue;
 
 						if(
 							chunk->GetSkyLightIncludingNeighbours(x - 1, y, z) == 0 || 
@@ -248,7 +255,7 @@ void Lighting::LightingThread()
 					}
 				}
 			}
-			ReleaseSRWLockShared(&chunk->gAccessMutex);
+			ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 			skyChunksToFlood.pop();
 		}
 
