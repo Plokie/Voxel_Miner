@@ -223,11 +223,16 @@ void Lighting::LightingThread()
 				skyChunksToFlood.pop();
 				continue;
 			}
-			AcquireSRWLockExclusive(&chunk->gAccessMutex);
+			AcquireSRWLockShared(&chunk->gAccessMutex);
 			// Find sky light levels of 15 neighbouring levels of 0 to flood
 			for(int x = 0; x < CHUNKSIZE_X; x++) {
 				for(int y = 0; y < CHUNKSIZE_Y; y++) {
 					for(int z = 0; z < CHUNKSIZE_Z; z++) {
+						if (x == 9 && y == 1 && z == 15 && chunk->chunkIndexPosition.y == 0 && chunk->chunkIndexPosition.x == -1 && chunk->chunkIndexPosition.z==0)
+							__nop();
+
+						BlockID debug = (BlockID)chunk->blockData[x][y][z];
+
 						if(chunk->GetSkyLight(x, y, z) < 15) continue;
 
 						if(
@@ -243,7 +248,7 @@ void Lighting::LightingThread()
 					}
 				}
 			}
-			ReleaseSRWLockExclusive(&chunk->gAccessMutex); // why is visual studio gaslighting me
+			ReleaseSRWLockShared(&chunk->gAccessMutex);
 			skyChunksToFlood.pop();
 		}
 
@@ -289,6 +294,9 @@ void Lighting::LightingThread()
 
 			// Add to Map of chunks to be queued to rebuilt
 			chunkIndexRebuildQueue[chunk] = true;
+
+			if (index.x == 9 && index.y == 1 && index.z == 15 && chunk->chunkIndexPosition.y == 0 && chunk->chunkIndexPosition.x == -1 && chunk->chunkIndexPosition.z == 0)
+				__nop();
 			
 			//AcquireSRWLockExclusive(pDestroyMutex);
 			TryFloodSkyLightTo(index + Vector3Int(-1, 0, 0), lightLevel, chunk);

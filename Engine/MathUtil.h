@@ -196,8 +196,11 @@ public:
 		return Vector3Int(static_cast<int>(floorf(v.x)), static_cast<int>(floorf(v.y)), static_cast<int>(floorf(v.z)));
 	}
 
-	Vector3Int operator+(Vector3Int& a) {
+	Vector3Int operator+(const Vector3Int& a) {
 		return Vector3Int(x + a.x, y + a.y, z + a.z);
+	}
+	Vector3Int operator+(const Vector3& a) {
+		return Vector3Int(static_cast<int>(x + a.x), static_cast<int>(y + a.y), static_cast<int>(z + a.z));
 	}
 	Vector3Int& operator+=(const Vector3Int& a) {
 		this->x += a.x;
@@ -206,8 +209,11 @@ public:
 		return *this;
 	}
 
-	Vector3Int operator-(Vector3Int& a) {
+	Vector3Int operator-(const Vector3Int& a) {
 		return Vector3Int(x - a.x, y - a.y, z - a.z);
+	}
+	Vector3Int operator-(const Vector3& a) {
+		return Vector3Int(static_cast<int>(x - a.x), static_cast<int>(y - a.y), static_cast<int>(z - a.z));
 	}
 	Vector3Int& operator-=(const Vector3Int& a) {
 		this->x -= a.x;
@@ -295,7 +301,7 @@ public:
 		return Vector3(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
 	}
 
-	operator XMVECTOR() const {
+	explicit operator XMVECTOR() const {
 		return XMVectorSet(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z), 0.0f);
 	}
 };
