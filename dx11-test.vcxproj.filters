@@ -245,6 +245,9 @@
     <ClInclude Include="Game\ChunkLightData.h">
       <Filter>Header Files\Game\World</Filter>
     </ClInclude>
+    <ClInclude Include="Game\ShardGen.h">
+      <Filter>Header Files\Game\World</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="vertexshader.hlsl">

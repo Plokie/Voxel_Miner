@@ -87,22 +87,24 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 		
 		//AcquireSRWLockExclusive(&this->gAccessMutex);
 		Chunk* chunk = chunkMap[chunkIndex];
+		if(!(chunk == nullptr || chunk->pendingDeletion)) {
+			//TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
 
+			// Okay this might seem redundant, but i promise its not (i think)
+			// this basically makes it so nothing else can modify it WHILE its being read from
+			// but if somethings already writing to it, we can read it anyway
+			bool didMutex = TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
 
-		AcquireSRWLockExclusive(&chunk->gAccessMutex);
-		//bool didMutex = TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
-
-		BlockID blockID = static_cast<BlockID>(chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z]);
-		//if(didMutex) ReleaseSRWLockExclusive(&chunk->gAccessMutex);
-		ReleaseSRWLockExclusive(&chunk->gAccessMutex);
-		return blockID;
+			BlockID blockID = static_cast<BlockID>(chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z]);
+			if(didMutex) ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+			//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+			return blockID;
+		}
 	}
-	else { // If chunk isn't loaded, sample from world gen instead (next best thing)
 
 		//todo: read from chunk cache of height,temp,moist samples?
 		return WorldGen::GetBlockAt(x, y, z);
 
-	}
 
 }
 
@@ -328,6 +330,11 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 		for(auto it = pChunkMap->cbegin(); it != pChunkMap->cend();) {
 			const pair<tuple<int, int, int>, Chunk*>& pair = *it;
 
+			if(pair.second == nullptr || pair.second->pendingDeletion) {
+				++it;
+				continue;
+			}
+
 			//Vector3Int indexPos = Vector3Int(get<0>(pair.first), get<1>(pair.first), get<2>(pair.first));
 			Vector3Int indexPos = pair.first;
 
@@ -366,12 +373,13 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 
 
 
-			if (TryAcquireSRWLockExclusive(&chunk->gAccessMutex)) {
-				chunk->BuildMesh();
+			//if (TryAcquireSRWLockExclusive(&chunk->gAccessMutex)) {
+			AcquireSRWLockExclusive(&chunk->gAccessMutex);
+			chunk->BuildMesh();
 
-				rebuildQueue.pop();
-				ReleaseSRWLockExclusive(&chunk->gAccessMutex);
-			}
+			rebuildQueue.pop();
+			ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+			//}
 
 
 

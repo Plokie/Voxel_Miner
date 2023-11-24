@@ -213,6 +213,7 @@
     <ClInclude Include="Engine\Object2D.h" />
     <ClInclude Include="Engine\Label.h" />
     <ClInclude Include="Game\Lighting.h" />
+    <ClInclude Include="Game\ShardGen.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="demopixelshader.hlsl">

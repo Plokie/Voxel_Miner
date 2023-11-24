@@ -14,6 +14,12 @@ inline int FloorMod(const int& a, const int& b) {
 	return (a % b + b) % b;
 }
 
+inline float frac(float f) {
+	float ff = abs(f) - floorf(abs(f));
+	if(f < 0) return 1.0f - ff;
+	return ff;
+}
+
 struct Vector3 {
 public:
 	float x=0, y=0, z=0;
@@ -322,7 +328,7 @@ public:
 		return Vector2(0.f, 0.f);
 	}
 
-	Vector2 operator+(Vector2& a) {
+	Vector2 operator+(const Vector2& a) {
 		return Vector2(x + a.x, y + a.y);
 	}
 	Vector2& operator+=(const Vector2& a) {
@@ -331,7 +337,7 @@ public:
 		return *this;
 	}
 
-	Vector2 operator-(Vector2& a) {
+	Vector2 operator-(const Vector2& a) {
 		return Vector2(x - a.x, y - a.y);
 	}
 	Vector2& operator-=(const Vector2& a) {
@@ -367,6 +373,10 @@ public:
 		return *this;
 	}
 
+	static float dot(const Vector2& lhs, const Vector2& rhs) {
+		return (lhs.x * rhs.x) + (lhs.y * rhs.y);
+	};
+
 	float sqrMagnitude() const {
 		return (x * x) + (y * y);
 	}
@@ -385,7 +395,7 @@ public:
 		return XMVectorSet(x, y, 0.0f, 0.0f);
 	}
 
-	operator XMVECTOR() const {
+	explicit operator XMVECTOR() const {
 		return XMVectorSet(x, y, 0.0f, 0.0f);
 	}
 

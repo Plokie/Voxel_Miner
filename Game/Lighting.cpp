@@ -133,6 +133,7 @@ void Lighting::TryRemoveSkyLight(const Vector3Int& neighbourIndex, const int& cu
 void Lighting::LightingThread()
 {
 	SRWLOCK* pDestroyMutex = Engine::Get()->GetDestroyObjectsMutex();
+	map<Chunk*, bool> floodedChunksHash = {};
 	while(_isRunning) {
 		while (!removeLightBfsQueue.empty()) {
 			RemoveLightNode& node = removeLightBfsQueue.front();
@@ -180,6 +181,8 @@ void Lighting::LightingThread()
 			TryFloodLightTo(index + Vector3Int(0, 0, 1), lightLevel, chunk);
 		}
 
+		floodedChunksHash.clear();
+
 		// This is the initial propagation of sunlight level 15. There is no flooding, only casting DIRECTLY downwards from the sky levels of 15
 		while(!newSkyChunks.empty()) {
 			Chunk* chunk = newSkyChunks.front();
@@ -187,6 +190,7 @@ void Lighting::LightingThread()
 				newSkyChunks.pop();
 				continue;
 			}
+			
 			AcquireSRWLockExclusive(&chunk->gAccessMutex);
 
 			if(chunk->chunkIndexPosition.y == 1) { // Only do inital light flooding for chunks in sky
@@ -200,29 +204,43 @@ void Lighting::LightingThread()
 
 						for (;;) {
 							block = chunk->GetBlockIncludingNeighbours(x, --y, z);
-							if (block != AIR || y < -CHUNKSIZE_Y*3) break;
+							if (BlockDef::GetDef(block).IsOpaque() || y < -CHUNKSIZE_Y*5) break;
 
 							//chunk->SetSkyLight(x, y, z, 15);
 							size_t oldLen = skyLightQueue.size();
 							chunk->SetSkyLightIncludingNeighbours(x, y, z, 15);
-							if(skyLightQueue.size() > oldLen)
+							if(skyLightQueue.size() > oldLen) {
+
+								floodedChunksHash[skyLightQueue.top().chunk] = true; // Dont re-flood this chunk
+								chunkIndexRebuildQueue[skyLightQueue.top().chunk] = true;
 								skyLightQueue.pop();
+							}
 						}
 					}
 				}
 			}
 			ReleaseSRWLockExclusive(&chunk->gAccessMutex);
-			skyChunksToFlood.emplace(chunk);
+			//skyChunksToFlood.emplace(chunk);
 			newSkyChunks.pop();
 		}
 
+		
+
 		// This then scans the recently propagated chunks for sunlight neighbouring unlit blocks, and then adds it to the flood queue
-		while(!skyChunksToFlood.empty()) {
-			Chunk* chunk = skyChunksToFlood.front();
-			if(chunk == nullptr) {
-				skyChunksToFlood.pop();
+		for(const pair<Chunk*, bool>& pair : floodedChunksHash) {
+			Chunk* chunk = pair.first;
+		//}
+
+		//while(!skyChunksToFlood.empty()) {
+			//Chunk* chunk = skyChunksToFlood.front();
+			if(chunk == nullptr || chunk->pendingDeletion || (floodedChunksHash.find(chunk) != floodedChunksHash.end())) {
+				//skyChunksToFlood.pop();
 				continue;
 			}
+
+			if(chunk->chunkIndexPosition.y == 0 && chunk->chunkIndexPosition.x == -1 && chunk->chunkIndexPosition.z == 0)
+				__nop();
+			
 			AcquireSRWLockExclusive(&chunk->gAccessMutex);
 			// Find sky light levels of 15 neighbouring levels of 0 to flood
 			for(int x = 0; x < CHUNKSIZE_X; x++) {
@@ -256,7 +274,7 @@ void Lighting::LightingThread()
 				}
 			}
 			ReleaseSRWLockExclusive(&chunk->gAccessMutex);
-			skyChunksToFlood.pop();
+			//skyChunksToFlood.pop();
 		}
 
 		////AcquireSRWLockExclusive(pDestroyMutex);

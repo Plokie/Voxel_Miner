@@ -528,11 +528,18 @@ void Graphics::Render(Scene* scene) {
 	//Draw alpha geometry
 	for(vector<tuple<Model*, XMMATRIX, Object3D*>>::iterator it = transparentModels.begin(); it!=transparentModels.end(); ++it) {
 		//AcquireSRWLockExclusive(it->first)
-		if (get<0>(*it)->GetMesh() == nullptr || get<2>(*it)==nullptr || get<2>(*it)->pendingDeletion ) continue;
-		get<0>(*it)->Draw(deviceCtx, get<1>(*it), worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
+		Model*& model = get<0>(*it);
+		Object3D*& obj = get<2>(*it);
+		if (model->GetMesh() == nullptr || obj == nullptr || obj->pendingDeletion ) continue;
+
+		AcquireSRWLockExclusive(&obj->gAccessMutex);
+
+		model->Draw(deviceCtx, get<1>(*it), worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
 		deviceCtx->PSSetShaderResources(0, 1, &errTex);
 		deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
 		deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
+
+		ReleaseSRWLockExclusive(&obj->gAccessMutex);
 	}
 
 	//

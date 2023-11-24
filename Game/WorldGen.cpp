@@ -1,11 +1,15 @@
 #include "WorldGen.h"
 
 #include <time.h>
+#include "ShardGen.h"
 
 WorldGen* WorldGen::_Instance = new WorldGen();
 
 float NormalizeNoise(const float& noise) {
 	return (noise + 1.0f) / 2.0f;
+}
+float DeNormalizeNoise(const float& noise) {
+	return (noise * 2.0f) - 1.0f;
 }
 
 WorldGen::WorldGen()
@@ -51,10 +55,26 @@ WorldGen::WorldGen()
 	noiseSampler_Moisture.SetFractalType(FastNoiseLite::FractalType_None);
 }
 
+inline float clamp(float x, float minX, float maxX) {
+	return min(max(x, minX), maxX);
+}
+
+inline float smoothstep(float edge0, float edge1, float x) {
+	x = clamp((x - edge0) / (edge1 - edge0), 0.f, 1.f);
+	return x * x * (3.0f - 2.0f * x);
+}
+
 float WorldGen::SampleWorldHeight(const int& x, const int& z)
 {
+#if 0
 	float rawNoiseSample = _Instance->noiseSampler_Height1.GetNoise((float)x, (float)z);
+	rawNoiseSample = DeNormalizeNoise(smoothstep(0.2f, 0.8f, NormalizeNoise(rawNoiseSample)));
 
+#else
+	Vector2 samp = Vector2((float)x, (float)z);
+	samp /= 450.f;
+	float rawNoiseSample = (layered_shard_noise(samp) * 2.f) - 1.f;
+#endif
 
 	return rawNoiseSample * 30.f;
 }
@@ -103,19 +123,19 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 	// maybe tree structure?
 
 	if(y > heightSample) {
-		if(y < SEA_LEVEL) return WATER;
-		if(y > SKY_LEVEL) {
-			int skyTop = static_cast<int>((NormalizeNoise(_Instance->noiseSampler_Sky_Top.GetNoise((float)x, (float)z)) * 30.0f) + SKY_LEVEL);
-			int skyUnder = static_cast<int>((NormalizeNoise(_Instance->noiseSampler_Sky_Under.GetNoise((float)x, (float)z) - 0.5f) * 70.0f) + SKY_LEVEL);
+		if(y < SEA_LEVEL-1) return WATER;
+		//if(y > SKY_LEVEL) {
+		//	int skyTop = static_cast<int>((NormalizeNoise(_Instance->noiseSampler_Sky_Top.GetNoise((float)x, (float)z)) * 30.0f) + SKY_LEVEL);
+		//	int skyUnder = static_cast<int>((NormalizeNoise(_Instance->noiseSampler_Sky_Under.GetNoise((float)x, (float)z) - 0.5f) * 70.0f) + SKY_LEVEL);
 
-			if(y <= skyTop && y > skyUnder) {
-				if(y == skyTop) return GRASS;
-				if(y == skyTop - 1) return DIRT;
-				if(y == skyTop - 2) return DIRT;
-				return STONE;
-			}
-			return AIR;
-		}
+		//	if(y <= skyTop && y > skyUnder) {
+		//		if(y == skyTop) return GRASS;
+		//		if(y == skyTop - 1) return DIRT;
+		//		if(y == skyTop - 2) return DIRT;
+		//		return STONE;
+		//	}
+		//	return AIR;
+		//}
 		return AIR;
 	}
 
