@@ -204,7 +204,7 @@ void Lighting::LightingThread()
 
 						for (;;) {
 							block = chunk->GetBlockIncludingNeighbours(x, --y, z);
-							if (BlockDef::GetDef(block).IsOpaque() || y < -CHUNKSIZE_Y*5) break;
+							if (BlockDef::GetDef(block).IsOpaque() || y < -CHUNKSIZE_Y*3) break;
 
 							//chunk->SetSkyLight(x, y, z, 15);
 							size_t oldLen = skyLightQueue.size();
@@ -229,31 +229,31 @@ void Lighting::LightingThread()
 		// This then scans the recently propagated chunks for sunlight neighbouring unlit blocks, and then adds it to the flood queue
 		for(const pair<Chunk*, bool>& pair : floodedChunksHash) {
 			Chunk* chunk = pair.first;
+
+			if(chunk->chunkIndexPosition.y == 0 && chunk->chunkIndexPosition.x == -1 && chunk->chunkIndexPosition.z == 0)
+				__nop();
 		//}
 
 		//while(!skyChunksToFlood.empty()) {
 			//Chunk* chunk = skyChunksToFlood.front();
-			if(chunk == nullptr || chunk->pendingDeletion || (floodedChunksHash.find(chunk) != floodedChunksHash.end())) {
+			if(chunk == nullptr || chunk->pendingDeletion) {
 				//skyChunksToFlood.pop();
 				continue;
 			}
-
-			if(chunk->chunkIndexPosition.y == 0 && chunk->chunkIndexPosition.x == -1 && chunk->chunkIndexPosition.z == 0)
-				__nop();
 			
 			AcquireSRWLockExclusive(&chunk->gAccessMutex);
 			// Find sky light levels of 15 neighbouring levels of 0 to flood
 			for(int x = 0; x < CHUNKSIZE_X; x++) {
 				for(int y = 0; y < CHUNKSIZE_Y; y++) {
 					for(int z = 0; z < CHUNKSIZE_Z; z++) {
-						if (
-							(
-								(x == 9 && y == 1 && z == 15) || 
-								(x == 9 && y == 2 && z == 15) ||
-								(x == 9 && y == 3 && z == 15)
-								) && chunk->chunkIndexPosition.y == 0 && chunk->chunkIndexPosition.x == -1 && chunk->chunkIndexPosition.z == 0
-							)
-							__nop();
+						//if (
+						//	(
+						//		(x == 9 && y == 1 && z == 15) || 
+						//		(x == 9 && y == 2 && z == 15) ||
+						//		(x == 9 && y == 3 && z == 15)
+						//		) && chunk->chunkIndexPosition.y == 0 && chunk->chunkIndexPosition.x == -1 && chunk->chunkIndexPosition.z == 0
+						//	)
+						//	__nop();
 
 						BlockID debug = (BlockID)chunk->blockData[x][y][z];
 						int debugLight = chunk->GetSkyLight(x, y, z);
@@ -291,7 +291,14 @@ void Lighting::LightingThread()
 			// Add to Map of chunks to be queued to rebuilt
 			chunkIndexRebuildQueue[chunk] = true;
 
-
+			//if(
+			//	(
+			//		(index.x == 9 && index.y == 1 && index.z == 15) ||
+			//		(index.x == 9 && index.y == 2 && index.z == 15) ||
+			//		(index.x == 9 && index.y == 3 && index.z == 15)
+			//		) && chunk->chunkIndexPosition.y == 0 && chunk->chunkIndexPosition.x == -1 && chunk->chunkIndexPosition.z == 0
+			//	)
+			//	__nop();
 
 			// incoming bug: because sunlight spreads downward infinitely, so should the removal of it
 

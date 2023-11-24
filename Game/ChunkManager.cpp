@@ -114,6 +114,8 @@ BlockID ChunkManager::GetBlockAtWorldPos(const Vector3Int& v) {
 
 void ChunkManager::TryRegen(Vector3Int chunkCoords) {
 	if(chunkMap.count(chunkCoords)) {
+		Chunk*& chunk = chunkMap[chunkCoords];
+		if(chunk == nullptr || chunk->pendingDeletion) return;
 		//chunkMap[chunkCoords]->BuildMesh();
 		rebuildQueue.push(chunkMap[chunkCoords]);
 	}
@@ -367,6 +369,10 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 		//while (!rebuildQueue.empty()) {
 		if(!rebuildQueue.empty()) {
 			Chunk* chunk = rebuildQueue.top();
+			if(chunk == nullptr || chunk->pendingDeletion) {
+				rebuildQueue.pop();
+				continue;
+			}
 			
 			//AcquireSRWLockExclusive(&chunk->gAccessMutex);
 			//if (TryAcquireSRWLockExclusive(&gfx->gRenderingMutex)) {

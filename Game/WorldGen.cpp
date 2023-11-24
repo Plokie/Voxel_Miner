@@ -68,7 +68,7 @@ float WorldGen::SampleWorldHeight(const int& x, const int& z)
 {
 #if 0
 	float rawNoiseSample = _Instance->noiseSampler_Height1.GetNoise((float)x, (float)z);
-	rawNoiseSample = DeNormalizeNoise(smoothstep(0.2f, 0.8f, NormalizeNoise(rawNoiseSample)));
+	//rawNoiseSample = DeNormalizeNoise(smoothstep(0.2f, 0.8f, NormalizeNoise(rawNoiseSample)));
 
 #else
 	Vector2 samp = Vector2((float)x, (float)z);
