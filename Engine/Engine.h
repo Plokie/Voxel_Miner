@@ -13,6 +13,8 @@
 #include "..\Graphics\ExampleMeshes.h"
 #include "Scene.h"
 
+class Audio;
+
 using namespace std;
 
 class Engine {
@@ -21,6 +23,7 @@ private:
 	//SRWLOCK gCreateObjectsMutex;
 
 	Graphics* gfx;
+	Audio* audio;
 	WinManager winMgr;
 	//World world;
 	static Engine* _Instance;

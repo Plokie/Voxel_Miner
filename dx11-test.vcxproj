@@ -72,13 +72,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ExecutablePath>..\..\DirectXTK\Bin\Desktop_2022_Win10\x64\Debug;$(ExecutablePath)</ExecutablePath>
-    <LibraryPath>..\..\DirectXTK\Bin\Desktop_2022_Win10\x64\Debug;$(LibraryPath)</LibraryPath>
-    <IncludePath>..\..\DirectXTK\Inc;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\DirectXTK\Bin\Desktop_2022_Win10\x64\Debug;..\..\FMOD\lib\x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\DirectXTK\Inc;..\..\FMOD\inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ExecutablePath>..\..\DirectXTK\Bin\Desktop_2022_Win10\x64\Release;$(ExecutablePath)</ExecutablePath>
     <LibraryPath>$(SolutionDir)..\..\DirectXTK\Bin\Desktop_2022_Win10\x64\Release;$(LibraryPath)</LibraryPath>
-    <IncludePath>..\..\DirectXTK\Inc;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\DirectXTK\Inc;..\..\FMOD\inc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>..\..\DirectXTK\Inc;$(IncludePath)</IncludePath>
@@ -125,6 +125,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>fmod_vc.lib;fmodstudio_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\FMOD\lib\x64</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

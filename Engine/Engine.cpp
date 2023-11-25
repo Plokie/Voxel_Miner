@@ -2,6 +2,8 @@
 
 #include <assert.h>
 
+#include "../Audio/Audio.h"
+
 Engine* Engine::_Instance;
 
 void Engine::Init(_In_ HINSTANCE hInstance) {
@@ -19,6 +21,8 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 	if(!gfx->Init(winMgr.window, winMgr.width, winMgr.height)) {
 		exit(992);
 	}
+
+	audio = new Audio();
 
 	Input::Init(winMgr.window);
 	
