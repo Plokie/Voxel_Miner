@@ -73,7 +73,7 @@ float WorldGen::SampleWorldHeight(const int& x, const int& z)
 #else
 	Vector2 samp = Vector2((float)x, (float)z);
 	samp /= 450.f;
-	float rawNoiseSample = (layered_shard_noise(samp) * 2.f) - 1.f;
+	float rawNoiseSample = DeNormalizeNoise( layered_shard_noise(samp, 4.f, 5) );
 #endif
 
 	return rawNoiseSample * 30.f;
