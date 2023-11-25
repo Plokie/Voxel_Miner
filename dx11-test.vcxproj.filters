@@ -49,6 +49,12 @@
     <Filter Include="Header Files\Game\World\TerrainFeatures">
       <UniqueIdentifier>{dcdeb11a-1bad-49ee-8f5e-5c7349d4866b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Audio">
+      <UniqueIdentifier>{32f3bea1-65cc-4a72-b58b-fc549eb8d09b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Audio">
+      <UniqueIdentifier>{92198124-d207-4479-b02a-ef7bae5d2dfa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -143,6 +149,9 @@
     </ClCompile>
     <ClCompile Include="Game\TerrainFeature.cpp">
       <Filter>Source Files\Game\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\Audio.cpp">
+      <Filter>Source Files\Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -259,6 +268,9 @@
     </ClInclude>
     <ClInclude Include="Game\TerrainFeature.h">
       <Filter>Header Files\Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Audio\Audio.h">
+      <Filter>Header Files\Audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

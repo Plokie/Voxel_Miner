@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Audio\Audio.cpp" />
     <ClCompile Include="Game\ChunkDatabase.cpp" />
     <ClCompile Include="Engine\AABB.cpp" />
     <ClCompile Include="Game\ChunkLightData.cpp" />
@@ -178,6 +179,7 @@
     <ClCompile Include="Engine\Object2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Audio\Audio.h" />
     <ClInclude Include="Engine\json.hpp" />
     <ClInclude Include="Engine\AABB.h" />
     <ClInclude Include="Game\ChunkLightData.h" />
