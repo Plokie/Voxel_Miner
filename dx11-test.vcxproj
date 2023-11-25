@@ -154,6 +154,7 @@
     <ClCompile Include="Game\PlayerController.cpp" />
     <ClCompile Include="Game\ExampleObject3D.cpp" />
     <ClCompile Include="Game\GameStart.cpp" />
+    <ClCompile Include="Game\TerrainFeature.cpp" />
     <ClCompile Include="Graphics\Camera.cpp" />
     <ClCompile Include="Engine\Engine.cpp" />
     <ClCompile Include="Graphics\ExampleMeshes.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="Engine\Label.h" />
     <ClInclude Include="Game\Lighting.h" />
     <ClInclude Include="Game\ShardGen.h" />
+    <ClInclude Include="Game\TerrainFeature.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="demopixelshader.hlsl">

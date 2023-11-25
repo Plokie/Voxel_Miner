@@ -43,6 +43,12 @@
     <Filter Include="Source Files\Game\Definitions">
       <UniqueIdentifier>{76fed6dd-8eda-41cc-bd0a-3ec2441cd7dd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\World\TerrainFeatures">
+      <UniqueIdentifier>{02c6a40f-772a-4362-ac5b-c4042dfb995e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\World\TerrainFeatures">
+      <UniqueIdentifier>{dcdeb11a-1bad-49ee-8f5e-5c7349d4866b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -133,6 +139,9 @@
       <Filter>Source Files\Game\World</Filter>
     </ClCompile>
     <ClCompile Include="Game\ChunkLightData.cpp">
+      <Filter>Source Files\Game\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\TerrainFeature.cpp">
       <Filter>Source Files\Game\World</Filter>
     </ClCompile>
   </ItemGroup>
@@ -246,6 +255,9 @@
       <Filter>Header Files\Game\World</Filter>
     </ClInclude>
     <ClInclude Include="Game\ShardGen.h">
+      <Filter>Header Files\Game\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\TerrainFeature.h">
       <Filter>Header Files\Game\World</Filter>
     </ClInclude>
   </ItemGroup>
