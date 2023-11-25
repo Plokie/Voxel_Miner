@@ -318,7 +318,8 @@ void Lighting::LightingThread()
 			Vector3Int index = node.localIndexPos;
 			Chunk* chunk = node.chunk;
 			skyLightQueue.pop();
-			if(chunk == nullptr) continue;
+			if(chunk == nullptr || chunk->pendingDeletion) continue;
+
 			AcquireSRWLockExclusive(&chunk->gAccessMutex);
 
 

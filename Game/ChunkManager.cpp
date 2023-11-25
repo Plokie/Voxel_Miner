@@ -207,6 +207,7 @@ int ChunkManager::GetBlockLightAtWorldPos(const int& x, const int& y, const int&
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
 		Chunk* chunk = chunkMap.at(chunkIndex);
+		if(chunk == nullptr || chunk->pendingDeletion) return -1;
 		AcquireSRWLockExclusive(&chunk->gAccessMutex);
 		int light = chunk->GetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z);
 		ReleaseSRWLockExclusive(&chunk->gAccessMutex);
@@ -226,6 +227,7 @@ void ChunkManager::SetBlockLightAtWorldPos(const int& x, const int& y, const int
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
 		Chunk* chunk = chunkMap.at(chunkIndex);
+		if(chunk == nullptr || chunk->pendingDeletion) return;
 		//AcquireSRWLockExclusive(&chunk->gAccessMutex);
 		chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, val);
 		//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
@@ -246,6 +248,16 @@ int ChunkManager::GetSkyLightAtWorldPos(const int& x, const int& y, const int& z
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
 		Chunk* chunk = chunkMap[chunkIndex];
+		if(chunk == nullptr || chunk->pendingDeletion) return -1;
+		// i should write this down because ill forget.
+		// 
+		// I think whats happening and causing random hangs, is that an srwlock at a nullptr chunk is being acquired
+		// telling some kind of handler that an SRWLock at 0x0000 is held
+		// this marks the SRWLock Ptr 0x0000 as an acquired Lock, even though its a nullptr
+
+		// that way, whenever a something else requests a pointer and find its "free" (Ptr = 0x0000), it thinks its an Acquired Ptr, and hangs.
+		// i think.......
+
 		AcquireSRWLockExclusive(&chunk->gAccessMutex);
 		int light = chunk->GetSkyLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z);
 		ReleaseSRWLockExclusive(&chunk->gAccessMutex);
@@ -266,7 +278,7 @@ void ChunkManager::SetSkyLightAtWorldPos(const int& x, const int& y, const int& 
 
 		Chunk* chunk = chunkMap[chunkIndex];
 
-		if (chunk == nullptr) return;
+		if (chunk == nullptr || chunk->pendingDeletion) return;
 
 		AcquireSRWLockExclusive(&chunk->gAccessMutex);
 		chunk->SetSkyLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, val);
