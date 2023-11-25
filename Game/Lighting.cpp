@@ -346,7 +346,8 @@ void Lighting::LightingThread()
 		if(!chunkIndexRebuildQueue.empty()) {
 			//AcquireSRWLockExclusive(&chunkManager->destroy);
 			for(const pair<Chunk*, bool>& pair : chunkIndexRebuildQueue) {
-				chunkManager->rebuildQueue.push(pair.first);
+				//chunkManager->rebuildQueue.push(pair.first);
+				chunkManager->TryRegen(pair.first);
 			}
 			//ReleaseSRWLockExclusive(&pair.first->gAccessMutex);
 			chunkIndexRebuildQueue.clear();

@@ -181,6 +181,7 @@
     <ClCompile Include="Engine\Object2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AudioClip.h" />
     <ClInclude Include="Audio\Audio.h" />
     <ClInclude Include="Engine\json.hpp" />
     <ClInclude Include="Engine\AABB.h" />

@@ -116,9 +116,19 @@ void ChunkManager::TryRegen(Vector3Int chunkCoords) {
 	if(chunkMap.count(chunkCoords)) {
 		Chunk*& chunk = chunkMap[chunkCoords];
 		if(chunk == nullptr || chunk->pendingDeletion) return;
-		//chunkMap[chunkCoords]->BuildMesh();
+		
+		AcquireSRWLockExclusive(&rebuildQueueMutex);
 		rebuildQueue.push(chunkMap[chunkCoords]);
+		ReleaseSRWLockExclusive(&rebuildQueueMutex);
 	}
+}
+
+void ChunkManager::TryRegen(Chunk* chunk) {
+	if(chunk == nullptr || chunk->pendingDeletion) return;
+
+	AcquireSRWLockExclusive(&rebuildQueueMutex);
+	rebuildQueue.push(chunk);
+	ReleaseSRWLockExclusive(&rebuildQueueMutex);
 }
 
 
@@ -298,6 +308,7 @@ short ChunkManager::GetRawLightAtWorldPos(const int& x, const int& y, const int&
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
 		Chunk* chunk = chunkMap.at(chunkIndex);
+		if(chunk == nullptr || chunk->pendingDeletion) return 0x00;
 		//AcquireSRWLockExclusive(&chunk->gAccessMutex);
 		//chunk->SetSkyLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, val);
 		return chunk->GetRawLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z);
@@ -379,31 +390,23 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 
 
 		//while (!rebuildQueue.empty()) {
+		AcquireSRWLockExclusive(&rebuildQueueMutex);
 		if(!rebuildQueue.empty()) {
+
 			Chunk* chunk = rebuildQueue.top();
 			if(chunk == nullptr || chunk->pendingDeletion) {
 				rebuildQueue.pop();
-				continue;
+				
 			}
-			
-			//AcquireSRWLockExclusive(&chunk->gAccessMutex);
-			//if (TryAcquireSRWLockExclusive(&gfx->gRenderingMutex)) {
+			else{
+				AcquireSRWLockExclusive(&chunk->gAccessMutex);
+				chunk->BuildMesh();
 
-
-
-			//if (TryAcquireSRWLockExclusive(&chunk->gAccessMutex)) {
-			AcquireSRWLockExclusive(&chunk->gAccessMutex);
-			chunk->BuildMesh();
-
-			rebuildQueue.pop();
-			ReleaseSRWLockExclusive(&chunk->gAccessMutex);
-			//}
-
-
-
-			//	ReleaseSRWLockExclusive(&gfx->gRenderingMutex);
-			//}
+				rebuildQueue.pop();
+				ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+			}
 		}
+		ReleaseSRWLockExclusive(&rebuildQueueMutex);
 	}
 }
 
@@ -413,6 +416,8 @@ void ChunkManager::Start()
 	if (this->pEngine == nullptr || this->pCameraTransform == nullptr ) {
 		exit(204); 
 	}
+	InitializeSRWLock(&rebuildQueueMutex);
+
 	InitializeSRWLock(&this->gAccessMutex);
 	_chunkLoaderThreads.emplace_back([&]() { LoaderThreadFunc(pCameraTransform, &chunkMap); });
 	lighting = new Lighting(this);

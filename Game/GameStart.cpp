@@ -1,6 +1,6 @@
 #include "GameStart.h"
 
-
+#include "../Audio/Audio.h"
 
 
 // Include all Object3D and child type references
@@ -16,6 +16,9 @@
 
 // Call game-related initialisation stuff from here
 void GameStart(Engine* engine) {
+
+	// todo: move resource loading to a separate thread, so the main thread can display a loading screen
+
 	Resources::LoadTexture(L"Data\\Textures\\err.dds", "err");
 	Resources::LoadTexture(L"Data\\Textures\\img.dds", "head");
 	Resources::LoadTexture(L"Data\\Textures\\pfp.dds", "pfp");
@@ -31,6 +34,11 @@ void GameStart(Engine* engine) {
 	Resources::LoadVertexShader(L"vertexshader.cso", "vertexshader");
 	Resources::LoadVertexShader(L"watervertexshader.cso", "watervertexshader");
 	Resources::LoadVertexShader(L"vertexshellgrass.cso", "vertexshellgrass");
+
+	Audio::LoadClipStream("Data\\Sounds\\MoV.ogg", "MoV");
+
+	//Audio::Play("MoV", { 0.f,0.f,0.f }, 0.5f);
+	Audio::Play("MoV", 1.f);
 
 	Resources::LoadMesh("cube");
 	Resources::LoadMesh(exampleFloorVertices, ARRAYSIZE(exampleFloorVertices), exampleCubeIndices, ARRAYSIZE(exampleCubeIndices), "floorMesh");
@@ -57,6 +65,8 @@ void GameStart(Engine* engine) {
 	gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "0 0 0", XMFLOAT4(0, 0, 0, 1.0f)), "worldpos");
 	gameScene->GetObject2D("worldpos")->SetPosition(Vector2(0.f, 24.f));
 	gameScene->GetObject2D<Label>("worldpos")->SetColour(1.0f, 1.0f, 1.0f, 1.0f);
+
+	Audio::SetListener(&Graphics::Get()->camera.transform);
 
 	//gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "0 0 0", XMFLOAT4(0, 0, 0, 1.0f)), "chunkpos");
 	//gameScene->GetObject2D("chunkpos")->position = Vector2(0.f, 48.f);
