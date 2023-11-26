@@ -28,20 +28,29 @@ void TerrainFeature::_GenerateFunc()
 	}
 }
 
-void TerrainFeature::Generate(Vector3Int origin, Chunk* chunk)
+TerrainFeature::TerrainFeature(const Vector3Int& origin)
 {
 	this->origin = origin;
-	this->parentChunk = chunk;
+	_GenerateFunc();
+}
+
+void TerrainFeature::Generate(const Vector3Int& origin, Chunk* chunk)
+{
+	this->origin = origin;
+	//this->parentChunk = chunk;
 
 	_GenerateFunc();
 }
 
-BlockID TerrainFeature::PopBlockWorld(const float x, const float y, const float z)
+BlockID TerrainFeature::PopBlockWorld(const float x, const float y, const float z, bool* outWasLastBlock)
 {
 	tuple<int,int,int> local = Vector3Int(x, y, z) - origin;
 	if(_localStructure.find(local) != _localStructure.end()) {
 		BlockID block = _localStructure[local];
 		_localStructure.erase(local);
+
+		*outWasLastBlock = _localStructure.empty();
+
 		return block;
 	}
 
@@ -56,11 +65,17 @@ bool TerrainFeature::IsPosWithinBounds(const Vector3Int& pos)
 bool TerrainFeature::IsPosWithinBounds(const float x, const float y, const float z)
 {
 	return(
-		_minBoundX > x && _maxBoundX < x&&
-		_minBoundY > y && _maxBoundY < y&&
-		_minBoundZ > z && _maxBoundZ < z
+		_minBoundX >= x && _maxBoundX <= x&&
+		_minBoundY >= y && _maxBoundY <= y&&
+		_minBoundZ >= z && _maxBoundZ <= z
 	);
 
+}
+
+bool TerrainFeature::IsWorldPosWithinBounds(Vector3Int pos)
+{
+	pos = pos - origin;
+	return IsPosWithinBounds(pos);
 }
 
 bool TerrainFeature::IsChunkIndexWithinBounds(const Vector3Int& chunkIndex)

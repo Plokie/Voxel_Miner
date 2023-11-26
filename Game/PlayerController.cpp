@@ -65,7 +65,7 @@ void CameraController::Update(float dTime)
 		freeCam = !freeCam;
 	}
 
-	//if(Input::IsMouseLocked()) {
+	if(Input::IsMouseLocked()) {
 		if (Input::IsKeyHeld(VK_SHIFT)) {
 			//transform.position -= Vector3(0, camSpeed, 0);
 			movementSpeed = 5.612f;
@@ -98,7 +98,7 @@ void CameraController::Update(float dTime)
 
 		transform.position += moveAxis;
 		transform.rotation += Vector3(mouseDelta.y * lookSpeed, mouseDelta.x * lookSpeed, 0.f);
-	//}
+	}
 
 	if (Input::IsKeyPressed(VK_ESCAPE)) {
 		Input::SetMouseLocked(!Input::IsMouseLocked());

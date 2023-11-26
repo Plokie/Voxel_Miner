@@ -29,7 +29,7 @@ private:
 	ChunkManager* chunkManager = nullptr;
 	Object3D* player = nullptr;
 	UINT8 lightLevel[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};
-	UINT8 highestBlock[CHUNKSIZE_X][CHUNKSIZE_Z] = {};
+	//UINT8 highestBlock[CHUNKSIZE_X][CHUNKSIZE_Z] = {};
 public:
 	Vector3Int chunkIndexPosition = Vector3Int();
 

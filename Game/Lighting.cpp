@@ -193,7 +193,7 @@ void Lighting::LightingThread()
 			
 			AcquireSRWLockExclusive(&chunk->gAccessMutex);
 
-			if(chunk->chunkIndexPosition.y == 1) { // Only do inital light flooding for chunks in sky
+			if(chunk->chunkIndexPosition.y == 2) { // Only do inital light flooding for chunks in sky
 
 				for(int x = 0; x < CHUNKSIZE_X; x++) {
 					for(int z = 0; z < CHUNKSIZE_Z; z++) {

@@ -2,6 +2,7 @@
 
 #include "FastNoiseLite.h"
 #include "Blocks.h"
+#include "TerrainFeature.h"
 
 class WorldGen {
 	FastNoiseLite noiseSampler_HeightVal0;
@@ -17,6 +18,11 @@ class WorldGen {
 	FastNoiseLite noiseSampler_Moisture;
 
 	FastNoiseLite noiseSampler_Mountains;
+
+	FastNoiseLite noiseSampler_treeValue;
+	FastNoiseLite noiseSampler_treeDist;
+
+	vector<TerrainFeature*> _pendingFeatures;
 
 	static WorldGen* _Instance;
 public:

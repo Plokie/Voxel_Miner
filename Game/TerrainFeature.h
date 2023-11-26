@@ -14,7 +14,7 @@ using namespace std;
 class TerrainFeature {
 private:
 	Vector3Int origin;
-	Chunk* parentChunk;
+	//Chunk* parentChunk;
 	Vector3Int originChunkIndex;
 
 	float _minBoundX,_minBoundY,_minBoundZ;
@@ -30,12 +30,16 @@ private:
 	// Creates local instance of terrain feature
 	virtual void _GenerateFunc();
 public:
-	void Generate(Vector3Int origin, Chunk* chunk);
+	TerrainFeature(const Vector3Int& origin);
 
-	BlockID PopBlockWorld(const float x, const float y, const float z);
+	void Generate(const Vector3Int& origin, Chunk* chunk);
+
+	BlockID PopBlockWorld(const float x, const float y, const float z, bool* outWasLastBlock);
 
 	bool IsPosWithinBounds(const Vector3Int& pos);
 	bool IsPosWithinBounds(const float x, const float y, const float z);
+
+	bool IsWorldPosWithinBounds(Vector3Int pos);
 
 	bool IsChunkIndexWithinBounds(const Vector3Int& chunkIndex);
 };

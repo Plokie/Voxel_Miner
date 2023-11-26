@@ -512,14 +512,15 @@ void Graphics::Render(Scene* scene) {
 	SortObjects(objects, 0, (int)(objects.size() - 1));
 
 	for(vector<Object3D*>::iterator it = objects.begin(); it != objects.end(); ++it) {
-		AcquireSRWLockExclusive(&(*it)->gAccessMutex);
-		if ((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentModels)) {
-			//If it drew something, return back to default error textures+shaders afterwards (so we can see missing tex objects)
-			deviceCtx->PSSetShaderResources(0, 1, &errTex);
-			deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
-			deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
+		if(TryAcquireSRWLockExclusive(&(*it)->gAccessMutex)) {
+			if ((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentModels)) {
+				//If it drew something, return back to default error textures+shaders afterwards (so we can see missing tex objects)
+				deviceCtx->PSSetShaderResources(0, 1, &errTex);
+				deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
+				deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
+			}
+			ReleaseSRWLockExclusive(&(*it)->gAccessMutex);
 		}
-		ReleaseSRWLockExclusive(&(*it)->gAccessMutex);
 	}
 
 	// Set depth stencil to alpha geometry mode
@@ -532,14 +533,15 @@ void Graphics::Render(Scene* scene) {
 		Object3D*& obj = get<2>(*it);
 		if (model->GetMesh() == nullptr || obj == nullptr || obj->pendingDeletion ) continue;
 
-		AcquireSRWLockExclusive(&obj->gAccessMutex);
+		if(TryAcquireSRWLockExclusive(&obj->gAccessMutex)) {
+			model->Draw(deviceCtx, get<1>(*it), worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
+			deviceCtx->PSSetShaderResources(0, 1, &errTex);
+			deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
+			deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
 
-		model->Draw(deviceCtx, get<1>(*it), worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
-		deviceCtx->PSSetShaderResources(0, 1, &errTex);
-		deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
-		deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
+			ReleaseSRWLockExclusive(&obj->gAccessMutex);
+		}
 
-		ReleaseSRWLockExclusive(&obj->gAccessMutex);
 	}
 
 	//

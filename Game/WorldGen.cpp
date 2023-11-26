@@ -65,6 +65,16 @@ WorldGen::WorldGen()
 	noiseSampler_Mountains = FastNoiseLite(seed);
 	noiseSampler_Mountains.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
 	noiseSampler_Mountains.SetFrequency(0.004f);
+
+	noiseSampler_treeDist = FastNoiseLite(seed);
+noiseSampler_treeDist.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
+noiseSampler_treeDist.SetFrequency(0.155f);
+noiseSampler_treeDist.SetCellularReturnType(FastNoiseLite::CellularReturnType_Distance);
+
+noiseSampler_treeValue = FastNoiseLite(seed);
+noiseSampler_treeValue.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
+noiseSampler_treeValue.SetFrequency(0.155f);
+noiseSampler_treeValue.SetCellularReturnType(FastNoiseLite::CellularReturnType_CellValue);
 }
 
 inline float clamp(float x, float minX, float maxX) {
@@ -82,27 +92,32 @@ inline float lerp(float t, float a, float b) {
 
 float WorldGen::SampleWorldHeight(const int& x, const int& z)
 {
-	float returnHeight = 0.0f;
-#if 0
+#if 0 //Old world gen (keeping for legacy worlds)
 	float rawNoiseSample = _Instance->noiseSampler_Height1.GetNoise((float)x, (float)z);
 	//rawNoiseSample = DeNormalizeNoise(smoothstep(0.2f, 0.8f, NormalizeNoise(rawNoiseSample)));
 
-	returnHeight = rawNoiseSample * 30.f;
+	return rawNoiseSample * 30.f;
 #else
+	// Sample point
 	Vector2 samp = Vector2((float)x, (float)z);
-	samp /= 450.f;
-	float basicHeight = DeNormalizeNoise( layered_shard_noise(samp, _Instance->noiseSampler_HeightVal0, _Instance->noiseSampler_HeightVal1, 0.f, 4.f, 5) ) * 30.f;
+	samp /= 450.f; // Frequency
 
+	// The basic non-mountainous heightmap
+	float basicHeight = DeNormalizeNoise(layered_shard_noise(samp, _Instance->noiseSampler_HeightVal0, _Instance->noiseSampler_HeightVal1, 0.f, 4.f, 5)) * 30.f;
+
+	// Mountainous presence map (not height sample)
 	float mountains = NormalizeNoise(_Instance->noiseSampler_Mountains.GetNoise((float)x, (float)z));
-	mountains = clamp(smoothstep(0.5f, 1.f, mountains), 0.f, 1.f);
+	mountains = clamp(smoothstep(0.5f, 1.f, mountains), 0.f, 1.f); // Smoothstep and clamp to reduce spots
 
+	// Since increasing the inital v value of shard_noise offsets the base height, we need to account for that here
 	float mountainHeightOffset = lerp(mountains, 0.f, 22.f);
-	float mountainHeight = (DeNormalizeNoise(layered_shard_noise(samp, _Instance->noiseSampler_HeightVal0, _Instance->noiseSampler_HeightVal1, 1.f, 4.f, 5)) * 30.f) - mountainHeightOffset;
+	// Sample raw height before offset base height
+	float rawMountainSample = DeNormalizeNoise(layered_shard_noise(samp, _Instance->noiseSampler_HeightVal0, _Instance->noiseSampler_HeightVal1, 1.f, 4.f, 5));
+	// Clamp height and then offset by base height
+	float mountainHeight = (clamp(rawMountainSample, 0, 3.f) * 30.f) - mountainHeightOffset;
 
-	returnHeight = lerp(mountains, basicHeight, mountainHeight);
+	return lerp(mountains, basicHeight, mountainHeight);
 #endif
-
-	return returnHeight;
 }
 
 float WorldGen::SampleTemperature(const int& x, const int& z) {
@@ -144,6 +159,25 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 	// I know the bunch of if statements look weird, but if we follow it like the computer does, its actually faster than precomputing the individual conditions
 
 	// maybe tree structure?
+
+	// this sucks, i just want something that gets wood in the world
+	// todo: use terrain features
+	if(heightSample >= SEA_LEVEL) {
+		if(_Instance->noiseSampler_treeValue.GetNoise((float)x, (float)z) < -0.9f) {
+			if(y > heightSample && y < heightSample + 9) {
+				float distSamp = _Instance->noiseSampler_treeDist.GetNoise((float)x, (float)z);
+				
+				if(distSamp < -0.989f && y < heightSample + 6) {
+					return OAK_LOG;
+				}
+
+				if(distSamp < -0.9f && y > heightSample + 3) {
+					return OAK_LEAVES;
+				}
+			}
+
+		}
+	}
 
 	if(y > heightSample) {
 		if(y < SEA_LEVEL-1) return WATER;

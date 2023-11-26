@@ -390,8 +390,8 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 
 
 		//while (!rebuildQueue.empty()) {
-		AcquireSRWLockExclusive(&rebuildQueueMutex);
 		if(!rebuildQueue.empty()) {
+			AcquireSRWLockExclusive(&rebuildQueueMutex);
 
 			Chunk* chunk = rebuildQueue.top();
 			if(chunk == nullptr || chunk->pendingDeletion) {
@@ -405,8 +405,8 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 				rebuildQueue.pop();
 				ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 			}
+			ReleaseSRWLockExclusive(&rebuildQueueMutex);
 		}
-		ReleaseSRWLockExclusive(&rebuildQueueMutex);
 	}
 }
 

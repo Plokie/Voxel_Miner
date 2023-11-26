@@ -299,47 +299,57 @@ void Chunk::BuildMesh()
 	}
 
 	//todo: optimised chunk building (not looping through every single block, most of them are invisible)
-	for(int y = 0; y < CHUNKSIZE_Y; y++) {
-		for(int z = 0; z < CHUNKSIZE_Z; z++) {
-			for(int x = 0; x < CHUNKSIZE_X; x++) {
-				BlockID blockid = (BlockID)blockData[x][y][z];
-				if(blockid == BlockID::AIR) continue;
+	// this is very slow
 
-				if(highestBlock[x][z] < y) highestBlock[x][z] = y;
+	for(int i = 0; i < CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z; i++) {
+		const Vector3Int indexPos = { i % CHUNKSIZE_X, i / (CHUNKSIZE_X*CHUNKSIZE_X), (i % (CHUNKSIZE_X*CHUNKSIZE_X)) / CHUNKSIZE_X };
+		const BlockID& block = (BlockID)blockData[indexPos.x][indexPos.y][indexPos.z];
+		if(block == BlockID::AIR) continue;
 
-				if(BlockDef::GetDef(blockid).IsOpaque()) {
-					MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
-
-					if(blockid == GRASS && RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
-						//int light = chunkManager->GetBlockLightAtWorldPos(x, y + 1, z);
-						short rawLight = GetRawLightIncludingNeighbours(x, y+1, z);
-						int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
-
-						for(int i = 1; i < shellCount+1; i++) {
-							int index = i - 1; // get compiler to shut up about "sub expression overflow" false positive
-							PushIndices(grassShellsVertices[index].size(), grassShellsIndices[index]);
-							PushFace(grassShellsVertices[index], blockid,
-								(float)x, (float)y + ((float)shellSeperation * i), (float)z,
-								0, 1, 0,
-								0, 1, 1,
-								1, 1, 1,
-								1, 1, 0,
-								0, 1, 0,
-								light
-							);
-						}
-					}
-				}
-				else if(blockid == BlockID::WATER)
-				{
-					MakeVoxel(blockid, x, y, z, waterVertices, waterIndices);
-				}
-				else{
-					MakeVoxel(blockid, x, y, z, transVertices, transIndices);
-				}
-			}
-		}
+		const Block& def = BlockDef::GetDef(block);
 	}
+
+	//for(int y = 0; y < CHUNKSIZE_Y; y++) {
+	//	for(int z = 0; z < CHUNKSIZE_Z; z++) {
+	//		for(int x = 0; x < CHUNKSIZE_X; x++) {
+	//			BlockID blockid = (BlockID)blockData[x][y][z];
+	//			if(blockid == BlockID::AIR) continue;
+
+	//			if(highestBlock[x][z] < y) highestBlock[x][z] = y;
+
+	//			if(BlockDef::GetDef(blockid).IsOpaque()) {
+	//				MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
+
+	//				if(blockid == GRASS && RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
+	//					//int light = chunkManager->GetBlockLightAtWorldPos(x, y + 1, z);
+	//					short rawLight = GetRawLightIncludingNeighbours(x, y+1, z);
+	//					int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
+
+	//					for(int i = 1; i < shellCount+1; i++) {
+	//						int index = i - 1; // get compiler to shut up about "sub expression overflow" false positive
+	//						PushIndices(grassShellsVertices[index].size(), grassShellsIndices[index]);
+	//						PushFace(grassShellsVertices[index], blockid,
+	//							(float)x, (float)y + ((float)shellSeperation * i), (float)z,
+	//							0, 1, 0,
+	//							0, 1, 1,
+	//							1, 1, 1,
+	//							1, 1, 0,
+	//							0, 1, 0,
+	//							light
+	//						);
+	//					}
+	//				}
+	//			}
+	//			else if(blockid == BlockID::WATER)
+	//			{
+	//				MakeVoxel(blockid, x, y, z, waterVertices, waterIndices);
+	//			}
+	//			else{
+	//				MakeVoxel(blockid, x, y, z, transVertices, transIndices);
+	//			}
+	//		}
+	//	}
+	//}
 
 	PushChunkMesh(solidVertices, solidIndices);
 
