@@ -4,6 +4,9 @@
 #include "Blocks.h"
 
 class WorldGen {
+	FastNoiseLite noiseSampler_HeightVal0;
+	FastNoiseLite noiseSampler_HeightVal1;
+
 	FastNoiseLite noiseSampler_Height1;
 	FastNoiseLite noiseSampler_Caves1;
 
@@ -12,6 +15,8 @@ class WorldGen {
 
 	FastNoiseLite noiseSampler_Temperature;
 	FastNoiseLite noiseSampler_Moisture;
+
+	FastNoiseLite noiseSampler_Mountains;
 
 	static WorldGen* _Instance;
 public:

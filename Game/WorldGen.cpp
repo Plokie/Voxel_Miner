@@ -18,16 +18,24 @@ WorldGen::WorldGen()
 
 	//srand(time(NULL));
 	//int seed = rand();
-	int seed = 69;
+	int seed = 1337;
 
-	noiseSampler_Height1 = FastNoiseLite(seed);
-	noiseSampler_Height1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
-	noiseSampler_Height1.SetFrequency(0.02f);
-	noiseSampler_Height1.SetFractalType(FastNoiseLite::FractalType_FBm);
+	//noiseSampler_Height1 = FastNoiseLite(seed);
+	//noiseSampler_Height1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+	//noiseSampler_Height1.SetFrequency(0.02f);
+	//noiseSampler_Height1.SetFractalType(FastNoiseLite::FractalType_FBm);
+	// 
+	//noiseSampler_Height1.SetFractalOctaves(3);
+	//noiseSampler_Height1.SetFractalLacunarity(2.03f);
+	//noiseSampler_Height1.SetFractalGain(0.6f);
 
-	noiseSampler_Height1.SetFractalOctaves(3);
-	noiseSampler_Height1.SetFractalLacunarity(2.03f);
-	noiseSampler_Height1.SetFractalGain(0.6f);
+	noiseSampler_HeightVal0 = FastNoiseLite(seed);
+	noiseSampler_HeightVal0.SetNoiseType(FastNoiseLite::NoiseType_Value);
+	noiseSampler_HeightVal0.SetFrequency(1.f);
+
+	noiseSampler_HeightVal1 = FastNoiseLite(seed+1);
+	noiseSampler_HeightVal1.SetNoiseType(FastNoiseLite::NoiseType_Value);
+	noiseSampler_HeightVal1.SetFrequency(1.f);
 
 	noiseSampler_Caves1 = FastNoiseLite(seed);
 	noiseSampler_Caves1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
@@ -53,6 +61,10 @@ WorldGen::WorldGen()
 	noiseSampler_Moisture.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	noiseSampler_Moisture.SetFrequency(0.005f);
 	noiseSampler_Moisture.SetFractalType(FastNoiseLite::FractalType_None);
+
+	noiseSampler_Mountains = FastNoiseLite(seed);
+	noiseSampler_Mountains.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+	noiseSampler_Mountains.SetFrequency(0.004f);
 }
 
 inline float clamp(float x, float minX, float maxX) {
@@ -64,19 +76,33 @@ inline float smoothstep(float edge0, float edge1, float x) {
 	return x * x * (3.0f - 2.0f * x);
 }
 
+inline float lerp(float t, float a, float b) {
+	return a + t * (b - a);
+}
+
 float WorldGen::SampleWorldHeight(const int& x, const int& z)
 {
+	float returnHeight = 0.0f;
 #if 0
 	float rawNoiseSample = _Instance->noiseSampler_Height1.GetNoise((float)x, (float)z);
 	//rawNoiseSample = DeNormalizeNoise(smoothstep(0.2f, 0.8f, NormalizeNoise(rawNoiseSample)));
 
+	returnHeight = rawNoiseSample * 30.f;
 #else
 	Vector2 samp = Vector2((float)x, (float)z);
 	samp /= 450.f;
-	float rawNoiseSample = DeNormalizeNoise( layered_shard_noise(samp, 4.f, 5) );
+	float basicHeight = DeNormalizeNoise( layered_shard_noise(samp, _Instance->noiseSampler_HeightVal0, _Instance->noiseSampler_HeightVal1, 0.f, 4.f, 5) ) * 30.f;
+
+	float mountains = NormalizeNoise(_Instance->noiseSampler_Mountains.GetNoise((float)x, (float)z));
+	mountains = clamp(smoothstep(0.5f, 1.f, mountains), 0.f, 1.f);
+
+	float mountainHeightOffset = lerp(mountains, 0.f, 22.f);
+	float mountainHeight = (DeNormalizeNoise(layered_shard_noise(samp, _Instance->noiseSampler_HeightVal0, _Instance->noiseSampler_HeightVal1, 1.f, 4.f, 5)) * 30.f) - mountainHeightOffset;
+
+	returnHeight = lerp(mountains, basicHeight, mountainHeight);
 #endif
 
-	return rawNoiseSample * 30.f;
+	return returnHeight;
 }
 
 float WorldGen::SampleTemperature(const int& x, const int& z) {
@@ -105,17 +131,14 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 	const int SEA_LEVEL = 0;
 	const int SKY_LEVEL = 200;
 
-	//const bool decisions[7] = {
-	//	y > heightSample, //		above ground
-	//	y == heightSample, //		is surface
-	//	y == heightSample - 1, //	just below surface
-	//	y == heightSample - 2, //	bottom of surface layer
+	BlockID SURFACE = GRASS;
+	BlockID EARTH_TOP = DIRT;
+	BlockID EARTH_BOTTOM = DIRT;
 
-	//	y < SEA_LEVEL, //			4	below sea level
-	//	y > SKY_LEVEL, //			2	above sky level
+	BlockID SAND_TYPE = SAND;
+	BlockID CLAY_TYPE = CLAY;
 
-	//	IsBlockCave(x, y, z), //	1	in cave
-	//};
+	BlockID STONE_TYPE = STONE;
 
 	//todo: this doesnt feel right, there HAS HAS HAS to be a better way to do this
 	// I know the bunch of if statements look weird, but if we follow it like the computer does, its actually faster than precomputing the individual conditions
@@ -141,28 +164,28 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 
 
 	if(y == heightSample) {
-		if(y < SEA_LEVEL) return SAND;
+		if(y < SEA_LEVEL) return SAND_TYPE;
 		bool isInCave = IsBlockCave(x, y, z);
 		if(isInCave) return AIR;
-		return GRASS;
+		return SURFACE;
 	}
 
 	if(y == heightSample - 1) { // Just below the surface
-		if(y < SEA_LEVEL) return SAND;
+		if(y < SEA_LEVEL) return SAND_TYPE;
 		bool isInCave = IsBlockCave(x, y, z);
 		if(isInCave) return AIR;
-		return DIRT;
+		return EARTH_TOP;
 		
 	}
 
 	if(y == heightSample - 2) { // Bottom of crust
-		if(y < SEA_LEVEL) return CLAY;
+		if(y < SEA_LEVEL) return CLAY_TYPE;
 		bool isInCave = IsBlockCave(x, y, z);
 		if(isInCave) return AIR;
-		return DIRT;
+		return EARTH_BOTTOM;
 	}
 
 	bool isInCave = IsBlockCave(x, y, z);
 	if(isInCave) return AIR;
-	return STONE;
+	return STONE_TYPE;
 }

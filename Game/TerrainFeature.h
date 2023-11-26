@@ -32,6 +32,8 @@ private:
 public:
 	void Generate(Vector3Int origin, Chunk* chunk);
 
+	BlockID PopBlockWorld(const float x, const float y, const float z);
+
 	bool IsPosWithinBounds(const Vector3Int& pos);
 	bool IsPosWithinBounds(const float x, const float y, const float z);
 
