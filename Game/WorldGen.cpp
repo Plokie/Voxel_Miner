@@ -5,7 +5,11 @@
 
 WorldGen* WorldGen::_Instance = new WorldGen();
 
-map<WorldGen::BiomeID, WorldGen::Biome> WorldGen::Biome::def = {  };
+map<WorldGen::BiomeID, WorldGen::Biome> WorldGen::Biome::def = { 
+	{WorldGen::BiomeID::GRASSLANDS, {
+
+	}}
+};
 
 
 float NormalizeNoise(const float& noise) {
