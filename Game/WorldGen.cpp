@@ -140,6 +140,11 @@ bool WorldGen::IsBlockCave(const int& x, const int& y, const int& z) {
 }
 
 
+// This is also slow, need to think hmmm
+// just thought of a way
+
+// sample height noise at chunk origin
+// if the chunk is so high (or maybe so below) the height, dont bother generating the chunk
 
 BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, const int& heightSample, const float& tempSample, const float& moistSample)
 {
