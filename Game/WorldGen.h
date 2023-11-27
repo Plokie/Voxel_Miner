@@ -1,31 +1,41 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "FastNoiseLite.h"
 #include "Blocks.h"
 #include "TerrainFeature.h"
 
-class WorldGen {
+enum BiomeID {
+	GRASSLANDS,
+	SNOW,
+	DESERT
+};
+class Biome {
 public:
-	enum BiomeID {
-		GRASSLANDS
-	};
-	class Biome {
-		const BlockID surface;
-		const BlockID earthTop;
-		const BlockID earthBottom;
-		const BlockID stone;
+	string name = "N/A";
+	BlockID surface = ERR;
+	BlockID earthTop = ERR;
+	BlockID earthBottom = ERR;
+	BlockID stone = ERR;
 
-		const BlockID wood;
-		const BlockID leaves;
+	BlockID sandType = ERR;
+	BlockID clayType = ERR;
 
-		Biome(BlockID surface, BlockID earthTop, BlockID earthBottom, BlockID stone, BlockID wood, BlockID leaves) : 
-			surface(surface), earthTop(earthTop), earthBottom(earthBottom), stone(stone), wood(wood), leaves(leaves) {}
-	
-		static map<WorldGen::BiomeID, Biome> def;
-		//static const Biome& Get(WorldGen::BiomeID id);
-	};
+	BlockID wood = ERR;
+	BlockID leaves = ERR;
 
+	Biome() = default;
+	Biome(const string& name, BlockID surface, BlockID earthTop, BlockID earthBottom, BlockID stone, BlockID sandType, BlockID clayType, BlockID wood, BlockID leaves) :
+		name(name), surface(surface), earthTop(earthTop), earthBottom(earthBottom), stone(stone), sandType(sandType), clayType(clayType), wood(wood), leaves(leaves) {}
 
+	static map<BiomeID, Biome> def;
+	static vector<pair<BiomeID, AABB>> range;
+	static const Biome& Get(float temperature, float moisture);
+
+};
+
+class WorldGen {
 
 
 private:
@@ -56,6 +66,6 @@ public:
 	static float SampleTemperature(const int& x, const int& z);
 	static float SampleMoisture(const int& x, const int& z);
 	static BlockID GetBlockAt(const int& x, const int& y, const int& z);
-	static BlockID GetBlockGivenHeight(const int& x, const int& y, const int& z, const int& heightSample, const float& tempSample, const float& moistSample);
+	static BlockID GetBlockGivenHeight(const int& x, const int& y, const int& z, const int& heightSample, const Biome& biome);
 	static bool IsBlockCave(const int& x, const int& y, const int& z);
 };

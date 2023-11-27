@@ -230,8 +230,8 @@ void Lighting::LightingThread()
 		for(const pair<Chunk*, bool>& pair : floodedChunksHash) {
 			Chunk* chunk = pair.first;
 
-			if(chunk->chunkIndexPosition.y == 0 && chunk->chunkIndexPosition.x == -1 && chunk->chunkIndexPosition.z == 0)
-				__nop();
+			//if(chunk->chunkIndexPosition.y == 0 && chunk->chunkIndexPosition.x == -1 && chunk->chunkIndexPosition.z == 0)
+			//	__nop();
 		//}
 
 		//while(!skyChunksToFlood.empty()) {

@@ -1,14 +1,69 @@
 #include "WorldGen.h"
 
 #include <time.h>
+
 #include "ShardGen.h"
 
 WorldGen* WorldGen::_Instance = new WorldGen();
 
-map<WorldGen::BiomeID, WorldGen::Biome> WorldGen::Biome::def = { 
-	{WorldGen::BiomeID::GRASSLANDS, {
+map<BiomeID, Biome> Biome::def = { 
+	{BiomeID::GRASSLANDS, {
+		"Grasslands",
+		GRASS,
+		DIRT,
+		DIRT,
+		STONE,
 
+		SAND,
+		CLAY,
+
+		OAK_LOG,
+		OAK_LEAVES
+	}},
+	{BiomeID::SNOW, {
+		"Snow",
+		STONE,
+		DIRT,
+		DIRT,
+		STONE,
+
+		SAND,
+		CLAY,
+
+		BLACKSTONE,
+		OAK_LEAVES
+	}},
+	{BiomeID::DESERT, {
+		"Desert",
+		SAND,
+		SAND,
+		SAND,
+		STONE,
+
+		SAND,
+		CLAY,
+
+		OAK_LOG,
+		OAK_LEAVES
 	}}
+};
+
+// AABB lookup is based on bottom left to top right
+// X = Moisture 0.0f to 1.0f
+// Y = Temperature 0.0f to 1.0f
+vector<pair<BiomeID, AABB>> Biome::range = {
+	//{WorldGen::BiomeID::SNOW, AABB({0.5f, 0.5f}, {0.5f, 0.5f})},
+	{	 BiomeID::SNOW, AABB::FromMinMax(
+		{0.0f, 0.0f}, {1.0f, 0.2f}
+	)},
+
+	{ BiomeID::DESERT, AABB::FromMinMax(
+		{0.0f, 0.8f}, {1.0f, 1.0f}
+	)},
+
+	{ BiomeID::GRASSLANDS, AABB( // Final fallback. Defaults to grasslands
+		{0.5f, 0.5f}, {0.5f, 0.5f}
+	)},
 };
 
 
@@ -139,7 +194,10 @@ BlockID WorldGen::GetBlockAt(const int& x, const int& y, const int& z) {
 	float heightSample = SampleWorldHeight(x, z);
 	float temperatureSample = SampleTemperature(x, z);
 	float moistureSample = SampleMoisture(x, z);
-	return GetBlockGivenHeight(x, y, z, static_cast<int>(heightSample), temperatureSample, moistureSample);
+
+
+
+	return GetBlockGivenHeight(x, y, z, static_cast<int>(heightSample), Biome::Get(temperatureSample, moistureSample));
 }
 
 bool WorldGen::IsBlockCave(const int& x, const int& y, const int& z) {
@@ -153,19 +211,21 @@ bool WorldGen::IsBlockCave(const int& x, const int& y, const int& z) {
 // sample height noise at chunk origin
 // if the chunk is so high (or maybe so below) the height, dont bother generating the chunk
 
-BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, const int& heightSample, const float& tempSample, const float& moistSample)
+BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, const int& heightSample, const Biome& biome)
 {
 	const int SEA_LEVEL = 0;
 	const int SKY_LEVEL = 200;
 
-	BlockID SURFACE = GRASS;
-	BlockID EARTH_TOP = DIRT;
-	BlockID EARTH_BOTTOM = DIRT;
+	//const Biome& biome = Biome::Get(tempSample, moistSample);
 
-	BlockID SAND_TYPE = SAND;
-	BlockID CLAY_TYPE = CLAY;
+	BlockID SURFACE = biome.surface;
+	BlockID EARTH_TOP = biome.earthTop;
+	BlockID EARTH_BOTTOM = biome.earthBottom;
 
-	BlockID STONE_TYPE = STONE;
+	BlockID SAND_TYPE = biome.sandType;
+	BlockID CLAY_TYPE = biome.clayType;
+
+	BlockID STONE_TYPE = biome.stone;
 
 	//todo: this doesnt feel right, there HAS HAS HAS to be a better way to do this
 	// I know the bunch of if statements look weird, but if we follow it like the computer does, its actually faster than precomputing the individual conditions
@@ -237,7 +297,13 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 	return STONE_TYPE;
 }
 
-//const WorldGen::Biome& WorldGen::Biome::Get(WorldGen::BiomeID id)
-//{
-//	// TODO: insert return statement here
-//}
+const Biome& Biome::Get(float temperature, float moisture)
+{
+	Vector3 point = Vector3(moisture, temperature, 0.0f);
+ 	for (auto& p : Biome::range) {
+		if (p.second.IsPointWithin(point)) {
+			return Biome::def[p.first];
+		}
+	}
+	return Biome::def[GRASSLANDS];
+}

@@ -34,6 +34,25 @@ public:
 		this->halfSize = halfSize;
 		RecalculateMinMax();
 	}
+	AABB(const Vector2& center, const Vector2& halfSize) {
+		this->center = Vector3(center.x, center.y, 0.f);
+		this->halfSize = Vector3(halfSize.x, halfSize.y, 1.f);
+		RecalculateMinMax();
+	}
+
+	static AABB FromMinMax(const Vector3& min, const Vector3& max) {
+		AABB newAABB = AABB(Vector3::Zero(), Vector3::Zero());
+
+		newAABB.halfSize = (max - min) / 2.f;
+		newAABB.center = min + newAABB.halfSize;
+		newAABB.min = min;
+		newAABB.max = max;
+		return newAABB;
+	}
+
+	static AABB FromMinMax(const Vector2& min, const Vector2& max) {
+		return FromMinMax(Vector3(min.x, min.y, -1.f), Vector3(max.x, max.y, 1.f));
+	}
 
 	void SetPosition(const Vector3& pos) {
 		this->center = pos;

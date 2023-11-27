@@ -387,11 +387,13 @@ bool Chunk::Load()
 				float tempSample = WorldGen::SampleTemperature(worldX, worldZ);
 				float moistSample = WorldGen::SampleMoisture(worldX, worldZ);
 
+				const Biome& biome = Biome::Get(tempSample, moistSample);
+
 				for(int y = 0; y < CHUNKSIZE_Y; y++) {
 					worldY = y + (chunkIndexPosition.y * CHUNKSIZE_Y);
 				
 					// some kind of thread thing is going wrong here
-					blockData[x][y][z] = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, static_cast<int>(heightSample), tempSample, moistSample);
+					blockData[x][y][z] = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, static_cast<int>(heightSample), biome);
 
 				}
 			}
