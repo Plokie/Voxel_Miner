@@ -16,7 +16,7 @@
 
 #define CHUNKLOAD_AREA_X 5
 #define CHUNKLOAD_AREA_NY 3
-#define CHUNKLOAD_AREA_PY 3
+#define CHUNKLOAD_AREA_PY 4
 #define CHUNKLOAD_AREA_Z 5
 
 using namespace std;

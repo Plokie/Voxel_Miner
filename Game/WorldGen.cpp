@@ -167,6 +167,7 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 
 	// this sucks, i just want something that gets wood in the world
 	// todo: use terrain features
+	
 	if(heightSample >= SEA_LEVEL) {
 		if(_Instance->noiseSampler_treeValue.GetNoise((float)x, (float)z) < -0.9f) {
 			if(y > heightSample && y < heightSample + 9) {
@@ -225,6 +226,6 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 	}
 
 	bool isInCave = IsBlockCave(x, y, z);
-	if(isInCave) return AIR;
+	if (isInCave) return AIR;
 	return STONE_TYPE;
 }

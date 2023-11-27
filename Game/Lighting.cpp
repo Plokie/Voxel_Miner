@@ -193,7 +193,7 @@ void Lighting::LightingThread()
 			
 			AcquireSRWLockExclusive(&chunk->gAccessMutex);
 
-			if(chunk->chunkIndexPosition.y == 2) { // Only do inital light flooding for chunks in sky
+			if(chunk->chunkIndexPosition.y == 4) { // Only do inital light flooding for chunks in sky
 
 				for(int x = 0; x < CHUNKSIZE_X; x++) {
 					for(int z = 0; z < CHUNKSIZE_Z; z++) {
@@ -204,7 +204,7 @@ void Lighting::LightingThread()
 
 						for (;;) {
 							block = chunk->GetBlockIncludingNeighbours(x, --y, z);
-							if (BlockDef::GetDef(block).IsOpaque() || y < -CHUNKSIZE_Y*3) break;
+							if (BlockDef::GetDef(block).IsOpaque() || y < -CHUNKSIZE_Y*5) break;
 
 							//chunk->SetSkyLight(x, y, z, 15);
 							size_t oldLen = skyLightQueue.size();
