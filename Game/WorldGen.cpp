@@ -5,6 +5,9 @@
 
 WorldGen* WorldGen::_Instance = new WorldGen();
 
+map<WorldGen::BiomeID, WorldGen::Biome> WorldGen::Biome::def = {  };
+
+
 float NormalizeNoise(const float& noise) {
 	return (noise + 1.0f) / 2.0f;
 }
@@ -67,14 +70,14 @@ WorldGen::WorldGen()
 	noiseSampler_Mountains.SetFrequency(0.004f);
 
 	noiseSampler_treeDist = FastNoiseLite(seed);
-noiseSampler_treeDist.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
-noiseSampler_treeDist.SetFrequency(0.155f);
-noiseSampler_treeDist.SetCellularReturnType(FastNoiseLite::CellularReturnType_Distance);
+	noiseSampler_treeDist.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
+	noiseSampler_treeDist.SetFrequency(0.155f);
+	noiseSampler_treeDist.SetCellularReturnType(FastNoiseLite::CellularReturnType_Distance);
 
-noiseSampler_treeValue = FastNoiseLite(seed);
-noiseSampler_treeValue.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
-noiseSampler_treeValue.SetFrequency(0.155f);
-noiseSampler_treeValue.SetCellularReturnType(FastNoiseLite::CellularReturnType_CellValue);
+	noiseSampler_treeValue = FastNoiseLite(seed);
+	noiseSampler_treeValue.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
+	noiseSampler_treeValue.SetFrequency(0.155f);
+	noiseSampler_treeValue.SetCellularReturnType(FastNoiseLite::CellularReturnType_CellValue);
 }
 
 inline float clamp(float x, float minX, float maxX) {
@@ -229,3 +232,8 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 	if (isInCave) return AIR;
 	return STONE_TYPE;
 }
+
+//const WorldGen::Biome& WorldGen::Biome::Get(WorldGen::BiomeID id)
+//{
+//	// TODO: insert return statement here
+//}
