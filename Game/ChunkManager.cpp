@@ -340,11 +340,12 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 	while(_isRunning) {
 		Vector3Int camIndex = ChunkFloorPosForPositionCalculation(camTransform->position);
 
-		for(int y = 1 - CHUNKLOAD_AREA_NY; y < CHUNKLOAD_AREA_PY + 1; y++) {
+		//for(int y = 1 - CHUNKLOAD_AREA_NY; y < CHUNKLOAD_AREA_PY + 1; y++) {
+		for(int y = 1 - CHUNKLOAD_FIXED_NY; y < CHUNKLOAD_FIXED_PY + 1; y++) {
 		//for(int y = CHUNKLOAD_AREA_PY + 1; y > 1 - CHUNKLOAD_AREA_NY; y--) {
 			for(int x = 1 - CHUNKLOAD_AREA_X; x < CHUNKLOAD_AREA_X + 1; x++) {
 				for(int z = 1 - CHUNKLOAD_AREA_Z; z < CHUNKLOAD_AREA_Z + 1; z++) {
-					CreateChunk(camIndex.x + x, camIndex.y + y, camIndex.z + z);
+					CreateChunk(camIndex.x + x, y, camIndex.z + z);
 
 					if(!_isRunning) return;
 				}
@@ -365,8 +366,10 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 
 			if(
 				abs(indexPos.x - camIndex.x) > CHUNKLOAD_AREA_X ||
-				indexPos.y - camIndex.y > CHUNKLOAD_AREA_PY ||
-				camIndex.y - indexPos.y  > CHUNKLOAD_AREA_NY ||
+
+				//indexPos.y - camIndex.y > CHUNKLOAD_AREA_PY ||
+				//camIndex.y - indexPos.y  > CHUNKLOAD_AREA_NY ||
+
 				abs(indexPos.z - camIndex.z) > CHUNKLOAD_AREA_Z
 				) { // Erase chunk from map (it is out of range)
 
@@ -393,6 +396,9 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 		if(!rebuildQueue.empty()) {
 			AcquireSRWLockExclusive(&rebuildQueueMutex);
 
+
+			// some chunks are getting here corrupt. Values are mostly 0 with some 0xdddd s, but chunk pointer isnt nullptr
+			// is the map being reallocated?
 			Chunk* chunk = rebuildQueue.top();
 			if(chunk == nullptr || chunk->pendingDeletion) {
 				rebuildQueue.pop();

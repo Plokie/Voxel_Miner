@@ -14,24 +14,28 @@ map<BiomeID, Biome> Biome::def = {
 		DIRT,
 		STONE,
 
-		SAND,
-		CLAY,
+		SAND, // Shore
+		SAND, // Water bed
+		SAND, // Sand under surface
+		CLAY, // Clay layer under sand
 
 		OAK_LOG,
 		OAK_LEAVES
 	}},
 	{BiomeID::SNOW, {
 		"Snow",
-		STONE,
+		SNOW_GRASS,
 		DIRT,
 		DIRT,
-		STONE,
-
-		SAND,
-		CLAY,
-
 		BLACKSTONE,
-		OAK_LEAVES
+
+		SNOW_GRASS, // Shore
+		DIRT, // Water bed
+		DIRT, // Sand under surface
+		CLAY, // Clay layer under sand
+
+		SPRUCE_LOG,
+		SPRUCE_LEAVES
 	}},
 	{BiomeID::DESERT, {
 		"Desert",
@@ -40,12 +44,59 @@ map<BiomeID, Biome> Biome::def = {
 		SAND,
 		STONE,
 
-		SAND,
-		CLAY,
+		SAND, // Shore
+		SAND, // Water bed
+		SAND, // Sand under surface
+		CLAY, // Clay layer under sand
 
 		OAK_LOG,
-		OAK_LEAVES
-	}}
+		AIR
+	}},
+	{BiomeID::TAIGA, {
+		"Taiga",
+		TAIGA_GRASS,
+		DIRT,
+		DIRT,
+		STONE,
+
+		TAIGA_GRASS,
+		DIRT,
+		DIRT,
+		DIRT,
+
+		SPRUCE_LOG,
+		SPRUCE_LEAVES
+	}},
+	{BiomeID::CHERRY, {
+		"Cherry",
+		CHERRY_GRASS,
+		DIRT,
+		DIRT,
+		STONE,
+
+		CHERRY_GRASS,
+		DIRT,
+		DIRT,
+		DIRT,
+
+		CHERRY_LOG,
+		CHERRY_LEAVES
+	}},
+	{BiomeID::MAPLE, {
+		"Maple",
+		MAPLE_GRASS,
+		DIRT,
+		DIRT,
+		STONE,
+
+		MAPLE_GRASS,
+		DIRT,
+		DIRT,
+		DIRT,
+
+		BIRCH_LOG,
+		BIRCH_LEAVES
+	}},
 };
 
 // AABB lookup is based on bottom left to top right
@@ -56,14 +107,27 @@ vector<pair<BiomeID, AABB>> Biome::range = {
 	{	 BiomeID::SNOW, AABB::FromMinMax(
 		{0.0f, 0.0f}, {1.0f, 0.2f}
 	)},
+	{	 BiomeID::TAIGA, AABB::FromMinMax(
+		{0.0f, 0.2f}, {1.0f, 0.35f}
+	)},
+	{	 BiomeID::MAPLE, AABB::FromMinMax(
+		{0.6f, 0.45f}, {1.0f, 1.0f}
+	)},
+
+
+	//JUNGLE / RAINFOREST
+	/*{	 BiomeID::TAIGA, AABB::FromMinMax(
+		{0.6f, 0.66666f}, {1.0f, 1.0f}
+	)},*/
 
 	{ BiomeID::DESERT, AABB::FromMinMax(
-		{0.0f, 0.8f}, {1.0f, 1.0f}
+		{0.0f, 0.66666f}, {0.5f, 1.0f}
 	)},
 
-	{ BiomeID::GRASSLANDS, AABB( // Final fallback. Defaults to grasslands
-		{0.5f, 0.5f}, {0.5f, 0.5f}
-	)},
+	// GRASSLANDS is a default fallbakc when calling Get()
+	//{ BiomeID::GRASSLANDS, AABB( // Final fallback. Defaults to grasslands
+	//	{0.5f, 0.5f}, {0.5f, 0.5f}
+	//)},
 };
 
 
@@ -104,24 +168,24 @@ WorldGen::WorldGen()
 	noiseSampler_Caves1.SetFrequency(0.035f);
 	noiseSampler_Caves1.SetFractalType(FastNoiseLite::FractalType_FBm);
 
-	noiseSampler_Sky_Top = FastNoiseLite(seed);
-	noiseSampler_Sky_Top.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2S);
-	noiseSampler_Sky_Top.SetFrequency(0.02f);
-	noiseSampler_Sky_Top.SetFractalType(FastNoiseLite::FractalType_FBm);
+	//noiseSampler_Sky_Top = FastNoiseLite(seed);
+	//noiseSampler_Sky_Top.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2S);
+	//noiseSampler_Sky_Top.SetFrequency(0.02f);
+	//noiseSampler_Sky_Top.SetFractalType(FastNoiseLite::FractalType_FBm);
 
-	noiseSampler_Sky_Under = FastNoiseLite(seed+1);
-	noiseSampler_Sky_Under.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2S);
-	noiseSampler_Sky_Under.SetFrequency(0.0375f);
-	noiseSampler_Sky_Under.SetFractalType(FastNoiseLite::FractalType_FBm);
+	//noiseSampler_Sky_Under = FastNoiseLite(seed+1);
+	//noiseSampler_Sky_Under.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2S);
+	//noiseSampler_Sky_Under.SetFrequency(0.0375f);
+	//noiseSampler_Sky_Under.SetFractalType(FastNoiseLite::FractalType_FBm);
 
 	noiseSampler_Temperature = FastNoiseLite(seed + 1);
 	noiseSampler_Temperature.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
-	noiseSampler_Temperature.SetFrequency(0.005f);
+	noiseSampler_Temperature.SetFrequency(0.0015f);
 	noiseSampler_Temperature.SetFractalType(FastNoiseLite::FractalType_None);
 
 	noiseSampler_Moisture = FastNoiseLite(seed + 2);
 	noiseSampler_Moisture.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
-	noiseSampler_Moisture.SetFrequency(0.005f);
+	noiseSampler_Moisture.SetFrequency(0.0015f);
 	noiseSampler_Moisture.SetFractalType(FastNoiseLite::FractalType_None);
 
 	noiseSampler_Mountains = FastNoiseLite(seed);
@@ -197,11 +261,15 @@ BlockID WorldGen::GetBlockAt(const int& x, const int& y, const int& z) {
 
 
 
-	return GetBlockGivenHeight(x, y, z, static_cast<int>(heightSample), Biome::Get(temperatureSample, moistureSample));
+	return GetBlockGivenHeight(x, y, z, static_cast<int>(heightSample), Biome::Get(temperatureSample, moistureSample), moistureSample);
 }
 
 bool WorldGen::IsBlockCave(const int& x, const int& y, const int& z) {
-	return _Instance->noiseSampler_Caves1.GetNoise(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)) > 0.25f;
+	float sample = _Instance->noiseSampler_Caves1.GetNoise(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
+
+	//return abs(sample) > 0.25f && abs(sample) < 0.75f;
+
+	return sample > 0.25f;
 }
 
 
@@ -211,21 +279,25 @@ bool WorldGen::IsBlockCave(const int& x, const int& y, const int& z) {
 // sample height noise at chunk origin
 // if the chunk is so high (or maybe so below) the height, dont bother generating the chunk
 
-BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, const int& heightSample, const Biome& biome)
+BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, const int& heightSample, const Biome& biome, const float moisture)
 {
 	const int SEA_LEVEL = 0;
 	const int SKY_LEVEL = 200;
 
 	//const Biome& biome = Biome::Get(tempSample, moistSample);
 
-	BlockID SURFACE = biome.surface;
-	BlockID EARTH_TOP = biome.earthTop;
-	BlockID EARTH_BOTTOM = biome.earthBottom;
+	//const BlockID SURFACE = biome.surface;
+	//const BlockID EARTH_TOP = biome.earthTop;
+	//const BlockID EARTH_BOTTOM = biome.earthBottom;
 
-	BlockID SAND_TYPE = biome.sandType;
-	BlockID CLAY_TYPE = biome.clayType;
+	//const BlockID SAND_TYPE_TOP = biome.sandTypeTop;
+	//const BlockID SAND_TYPE_BOTTOM = biome.sandTypeBottom;
+	//const BlockID CLAY_TYPE = biome.clayType;
 
-	BlockID STONE_TYPE = biome.stone;
+	//const BlockID STONE_TYPE = biome.stone;
+
+	//const BlockID LOG_TYPE = biome.wood;
+	//const BlockID LEAVES_TYPE = biome.leaves;
 
 	//todo: this doesnt feel right, there HAS HAS HAS to be a better way to do this
 	// I know the bunch of if statements look weird, but if we follow it like the computer does, its actually faster than precomputing the individual conditions
@@ -236,16 +308,21 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 	// todo: use terrain features
 	
 	if(heightSample >= SEA_LEVEL) {
-		if(_Instance->noiseSampler_treeValue.GetNoise((float)x, (float)z) < -0.9f) {
+		const float moistureSlope = moisture / 1.15f;
+		const float treeDensity = clamp(moistureSlope * moistureSlope * moistureSlope + 0.1f, 0.f, 1.f);
+
+		if(_Instance->noiseSampler_treeValue.GetNoise((float)x, (float)z) < -(0.9f - treeDensity)) {
+
+
 			if(y > heightSample && y < heightSample + 9) {
 				float distSamp = _Instance->noiseSampler_treeDist.GetNoise((float)x, (float)z);
 				
 				if(distSamp < -0.989f && y < heightSample + 6) {
-					return OAK_LOG;
+					return biome.wood;
 				}
 
 				if(distSamp < -0.9f && y > heightSample + 3) {
-					return OAK_LEAVES;
+					return biome.leaves;
 				}
 			}
 
@@ -254,47 +331,38 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 
 	if(y > heightSample) {
 		if(y < SEA_LEVEL-1) return WATER;
-		//if(y > SKY_LEVEL) {
-		//	int skyTop = static_cast<int>((NormalizeNoise(_Instance->noiseSampler_Sky_Top.GetNoise((float)x, (float)z)) * 30.0f) + SKY_LEVEL);
-		//	int skyUnder = static_cast<int>((NormalizeNoise(_Instance->noiseSampler_Sky_Under.GetNoise((float)x, (float)z) - 0.5f) * 70.0f) + SKY_LEVEL);
-
-		//	if(y <= skyTop && y > skyUnder) {
-		//		if(y == skyTop) return GRASS;
-		//		if(y == skyTop - 1) return DIRT;
-		//		if(y == skyTop - 2) return DIRT;
-		//		return STONE;
-		//	}
-		//	return AIR;
-		//}
 		return AIR;
 	}
 
 
 	if(y == heightSample) {
-		if(y < SEA_LEVEL) return SAND_TYPE;
+		if(y < SEA_LEVEL) {
+			if(y < SEA_LEVEL-1) return biome.waterBed;
+			return biome.shore;
+		}
 		bool isInCave = IsBlockCave(x, y, z);
 		if(isInCave) return AIR;
-		return SURFACE;
+		return biome.surface;
 	}
 
 	if(y == heightSample - 1) { // Just below the surface
-		if(y < SEA_LEVEL) return SAND_TYPE;
+		if(y < SEA_LEVEL) return biome.sandTypeBottom;
 		bool isInCave = IsBlockCave(x, y, z);
 		if(isInCave) return AIR;
-		return EARTH_TOP;
+		return biome.earthTop;
 		
 	}
 
 	if(y == heightSample - 2) { // Bottom of crust
-		if(y < SEA_LEVEL) return CLAY_TYPE;
+		if(y < SEA_LEVEL) return biome.clayType;
 		bool isInCave = IsBlockCave(x, y, z);
 		if(isInCave) return AIR;
-		return EARTH_BOTTOM;
+		return biome.earthBottom;
 	}
 
 	bool isInCave = IsBlockCave(x, y, z);
 	if (isInCave) return AIR;
-	return STONE_TYPE;
+	return biome.stone;
 }
 
 const Biome& Biome::Get(float temperature, float moisture)

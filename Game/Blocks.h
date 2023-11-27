@@ -25,7 +25,24 @@ enum BlockID {
 	OAK_LEAVES,
 	OAK_PLANKS,
 
-	LAMP
+	LAMP,
+
+	SNOW_GRASS,
+	TAIGA_GRASS,
+	MAPLE_GRASS,
+	CHERRY_GRASS,
+
+	BIRCH_LOG,
+	BIRCH_LEAVES,
+	BIRCH_PLANKS,
+
+	SPRUCE_LOG,
+	SPRUCE_LEAVES,
+	SPRUCE_PLANKS,
+
+	CHERRY_LOG,
+	CHERRY_LEAVES,
+	CHERRY_PLANKS,
 };
 
 class Block {
@@ -38,19 +55,23 @@ private:
 	int topUvIdX, topUvIdY;
 	int bottUvIdX, bottUvIdY;
 	int sideUvIdX, sideUvIdY;
+
+	bool hasShell = false;
 public:
 
 	Block(string _Name, 
 		bool _isOpaque,
 		int _lightValue,
-		int UvIdX, int UvIdY
+		int UvIdX, int UvIdY,
+		bool hasShell=false
 	): 
 		name(_Name), 
 		isOpaque(_isOpaque),
 		lightValue(_lightValue),
 		topUvIdX(UvIdX), topUvIdY(UvIdY),
 		bottUvIdX(UvIdX), bottUvIdY(UvIdY),
-		sideUvIdX(UvIdX), sideUvIdY(UvIdY)
+		sideUvIdX(UvIdX), sideUvIdY(UvIdY),
+		hasShell(hasShell)
 	{}
 
 	Block(string _Name,
@@ -58,19 +79,22 @@ public:
 		int _lightValue,
 		int TopUvIdX, int TopUvIdY,
 		int SideUvIdX, int SideUvIdY,
-		int BottUvIdX, int BottUvIdY
+		int BottUvIdX, int BottUvIdY,
+		bool hasShell=false
 	) :
 		name(_Name),
 		isOpaque(_isOpaque),
 		lightValue(_lightValue),
 		topUvIdX(TopUvIdX), topUvIdY(TopUvIdY),
 		sideUvIdX(SideUvIdX), sideUvIdY(SideUvIdY),
-		bottUvIdX(BottUvIdX), bottUvIdY(BottUvIdY)
+		bottUvIdX(BottUvIdX), bottUvIdY(BottUvIdY),
+		hasShell(hasShell)
 	{}
 
 	const string GetName() const;
 	const bool IsOpaque() const;
 	const int LightValue() const;
+	const bool HasShell() const { return hasShell; }
 
 	const int GetTopUVidx() const;
 	const int GetTopUVidy() const;

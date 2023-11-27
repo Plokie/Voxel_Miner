@@ -15,7 +15,8 @@ const map<BlockID, Block> BlockDef::def = {
 	{BlockID::GRASS,	Block("Grass", true, 0,
 		1, 0,
 		2, 0,
-		3, 0
+		3, 0,
+		true // has shell texture
 	)},
 	{BlockID::DIRT,		Block("Dirt", true, 0,
 		3, 0
@@ -50,6 +51,69 @@ const map<BlockID, Block> BlockDef::def = {
 
 	{BlockID::LAMP,	Block("Lamp", true, 15,
 		3, 1
+	)},
+
+	{BlockID::SNOW_GRASS, Block("Snowy Grass", true, 0,
+		1, 9,
+		0, 9,
+		3, 0
+	)},
+
+	{BlockID::TAIGA_GRASS, Block("Taiga Grass", true, 0,
+		1, 5,
+		0, 5,
+		3, 0,
+		true
+	)},
+
+	{BlockID::MAPLE_GRASS, Block("Maple Grass", true, 0,
+		1, 8,
+		0, 8,
+		3, 0,
+		true
+	)},
+
+	{BlockID::CHERRY_GRASS, Block("Cherry Grass", true, 0,
+		1, 7,
+		0, 7,
+		3, 0,
+		true
+	)},
+
+	{BlockID::BIRCH_LOG,	Block("Birch Log", true, 0,
+		1, 2,
+		0, 2,
+		1, 2
+	)},
+	{BlockID::BIRCH_LEAVES,	Block("Birch Leaves", false, 0,
+		2, 2
+	)},
+	{BlockID::BIRCH_PLANKS,	Block("Birch Planks", true, 0,
+		3, 2
+	)},
+
+	{BlockID::CHERRY_LOG,	Block("Cherry Log", true, 0,
+		1, 4,
+		0, 4,
+		1, 4
+	)},
+	{BlockID::CHERRY_LEAVES,	Block("Cherry Leaves", false, 0,
+		2, 4
+	)},
+	{BlockID::CHERRY_PLANKS,	Block("Cherry Planks", true, 0,
+		3, 4
+	)},
+
+	{BlockID::SPRUCE_LOG,	Block("Spruce Log", true, 0,
+		1, 3,
+		0, 3,
+		1, 3
+	)},
+	{BlockID::SPRUCE_LEAVES,	Block("Spruce Leaves", false, 0,
+		2, 3
+	)},
+	{BlockID::SPRUCE_PLANKS,	Block("Spruce Planks", true, 0,
+		3, 3
 	)},
 };
 

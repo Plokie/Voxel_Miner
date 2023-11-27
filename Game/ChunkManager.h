@@ -19,6 +19,9 @@
 #define CHUNKLOAD_AREA_PY 4
 #define CHUNKLOAD_AREA_Z 5
 
+#define CHUNKLOAD_FIXED_NY 6
+#define CHUNKLOAD_FIXED_PY 4
+
 using namespace std;
 
 class ChunkManager : public Object3D {
