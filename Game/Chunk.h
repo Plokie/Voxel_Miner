@@ -47,6 +47,8 @@ public:
 	void Start() override;
 	void Update(float dTime) override;
 
+	void GenerateBlockData();
+
 	int GetBlockLight(const int& x, const int& y, const int& z);
 	int GetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z);
 	void SetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z, const int& val);
@@ -69,7 +71,7 @@ public:
 	void SetBlockLightNoUpdate(const int& x, const int& y, const int& z, const int& val);
 	void SetSkyLight(const int& x, const int& y, const int& z, const int& val);
 
-	void BuildMesh_PoolFunc();
+	void BuildMesh_PoolFunc(bool acquireMutex=true);
 
 	Chunk(Vector3Int ChunkIndexPos, ChunkManager* chnkMgr): chunkIndexPosition(ChunkIndexPos), chunkManager(chnkMgr){}
 

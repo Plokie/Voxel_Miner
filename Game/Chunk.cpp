@@ -270,8 +270,8 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 	}
 }
 
-void Chunk::BuildMesh_PoolFunc() {
-	AcquireSRWLockExclusive(&this->gAccessMutex);
+void Chunk::BuildMesh_PoolFunc(bool acquireMutex) {
+	if(acquireMutex)AcquireSRWLockExclusive(&this->gAccessMutex);
 	//AcquireSRWLockExclusive(&chunk->modelsMutex);
 	for (Model*& model : this->models) {
 		model->ReleaseMesh();
@@ -367,108 +367,8 @@ void Chunk::BuildMesh_PoolFunc() {
 	//PushChunkMesh(grassShellVertices, grassShellIndices, SHELL);
 	this->PushChunkMesh(transVertices, transIndices, Chunk::MESHFLAG::TRANS);
 	this->PushChunkMesh(waterVertices, waterIndices, Chunk::MESHFLAG::WATER);
-	ReleaseSRWLockExclusive(&this->gAccessMutex);
-}
 
-
-
-void Chunk::BuildMesh()
-{
-	for(Model*& model : models) {
-		model->ReleaseMesh();
-		model = nullptr;
-		//delete model;
-	}
-	models.clear();
-
-	const int reserveSizeSolid = (CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z) / 2;
-	const int reserveSizeTrans = (CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z) / 4;
-	const int reserveSizeShellLayer = (CHUNKSIZE_X * CHUNKSIZE_Z);
-
-	vector<Vertex> solidVertices = {};
-	vector<DWORD> solidIndices = {};
-	solidVertices.reserve(reserveSizeSolid);
-	solidIndices.reserve(reserveSizeSolid);
-
-	//proud of them
-	vector<Vertex> transVertices = {};
-	vector<DWORD> transIndices = {};
-	transVertices.reserve(reserveSizeTrans);
-	transIndices.reserve(reserveSizeTrans);
-
-	vector<Vertex> waterVertices = {};
-	vector<DWORD> waterIndices = {};
-	waterVertices.reserve((CHUNKSIZE_X * CHUNKSIZE_Z) / 2);
-	waterIndices.reserve((CHUNKSIZE_X * CHUNKSIZE_Z) / 2);
-
-	const int shellCount = 5;
-	const float shellPixelHeight = 2.f;
-	const float shellSeperation = ((1.f / 16.f) * shellPixelHeight) / static_cast<float>(shellCount);
-
-	vector<vector<Vertex>> grassShellsVertices = {};
-	vector<vector<DWORD>> grassShellsIndices = {};
-
-	for(int i = 0; i < shellCount; i++) {
-		grassShellsVertices.push_back({});
-		grassShellsIndices.push_back({});
-
-		grassShellsVertices[i].reserve(reserveSizeShellLayer);
-		grassShellsIndices[i].reserve(reserveSizeShellLayer);
-	}
-
-	//todo: optimised chunk building (not looping through every single block, most of them are invisible)
-	// this is very very very very very very very very very very slow
-	for(int y = 0; y < CHUNKSIZE_Y; y++) {
-		for(int z = 0; z < CHUNKSIZE_Z; z++) {
-			for(int x = 0; x < CHUNKSIZE_X; x++) {
-				BlockID blockid = (BlockID)blockData[x][y][z];
-				if(blockid == BlockID::AIR) continue;
-				const Block& def = BlockDef::GetDef(blockid);
-
-				if(def.IsOpaque()) {
-					MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
-
-					if(def.HasShell() && RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
-						//int light = chunkManager->GetBlockLightAtWorldPos(x, y + 1, z);
-						short rawLight = GetRawLightIncludingNeighbours(x, y+1, z);
-						int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
-
-						for(int i = 1; i < shellCount+1; i++) {
-							int index = i - 1; // get compiler to shut up about "sub expression overflow" false positive
-							PushIndices(grassShellsVertices[index].size(), grassShellsIndices[index]);
-							PushFace(grassShellsVertices[index], blockid,
-								(float)x, (float)y + ((float)shellSeperation * i), (float)z,
-								0, 1, 0,
-								0, 1, 1,
-								1, 1, 1,
-								1, 1, 0,
-								0, 1, 0,
-								light
-							);
-						}
-					}
-				}
-				else if(blockid == BlockID::WATER)
-				{
-					MakeVoxel(blockid, x, y, z, waterVertices, waterIndices);
-				}
-				else{
-					MakeVoxel(blockid, x, y, z, transVertices, transIndices);
-				}
-			}
-		}
-	}
-
-	PushChunkMesh(solidVertices, solidIndices);
-
-	for(int i = 0; i < shellCount; i++) {
-		PushChunkMesh(grassShellsVertices[i], grassShellsIndices[i], SHELL);
-	}
-
-	//PushChunkMesh(grassShellVertices, grassShellIndices, SHELL);
-	PushChunkMesh(transVertices, transIndices, TRANS);
-	PushChunkMesh(waterVertices, waterIndices, WATER);
-
+	if(acquireMutex)ReleaseSRWLockExclusive(&this->gAccessMutex);
 #ifdef _DEBUG
 #if 0
 	{
@@ -486,7 +386,7 @@ bool Chunk::Load()
 {
 	if(this == nullptr) return false;
 
-	int worldX = 0, worldY = 0, worldZ = 0;
+	
 	bool returnVal = false;
 
 	Vector3Int worldPos = Vector3Int(CHUNKSIZE_X * chunkIndexPosition.x, CHUNKSIZE_Y * chunkIndexPosition.y, CHUNKSIZE_Z * chunkIndexPosition.z);
@@ -503,32 +403,11 @@ bool Chunk::Load()
 		worldPos.y - WorldGen::SampleWorldHeight(worldPos.x + (CHUNKSIZE_X/2), worldPos.z + (CHUNKSIZE_Z/2)) < 20.f
 		)
 	{
-		for(int z = 0; z < CHUNKSIZE_Z; z++) {
-			worldZ = z + (chunkIndexPosition.z * CHUNKSIZE_Z);
-			for(int x = 0; x < CHUNKSIZE_X; x++) {
-				worldX = x + (chunkIndexPosition.x * CHUNKSIZE_X);
-				float heightSample = WorldGen::SampleWorldHeight(worldX, worldZ);
-				float tempSample = WorldGen::SampleTemperature(worldX, worldZ);
-				float moistSample = WorldGen::SampleMoisture(worldX, worldZ);
-
-				const Biome& biome = Biome::Get(tempSample, moistSample);
-
-				for(int y = 0; y < CHUNKSIZE_Y; y++) {
-					worldY = y + (chunkIndexPosition.y * CHUNKSIZE_Y);
-					
-					if(chunkIndexPosition.y == -(CHUNKLOAD_FIXED_NY-1) && y == 0) {
-						blockData[x][y][z] = BLACKSTONE;
-						continue;
-					}
-
-					// some kind of thread thing is going wrong here
-					blockData[x][y][z] = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, static_cast<int>(heightSample), biome, moistSample);
-
-				}
-			}
-		}
+		GenerateBlockData();
+		//chunkManager->threadPool->Queue([this] { GenerateBlockData(); });
 	}
 	else {
+		AcquireSRWLockExclusive(&gAccessMutex);
 		for(int z = 0; z < CHUNKSIZE_Z; z++) {
 			for(int x = 0; x < CHUNKSIZE_X; x++) {
 				for(int y = 0; y < CHUNKSIZE_Y; y++) {
@@ -536,6 +415,7 @@ bool Chunk::Load()
 				}
 			}
 		}
+		ReleaseSRWLockExclusive(&gAccessMutex);
 	}
 	//chunkManager->GetLighting()->QueueNewChunk(this);
 	//BuildMesh();
@@ -552,6 +432,37 @@ void Chunk::Start() {
 }
 
 void Chunk::Update(float dTime){}
+
+void Chunk::GenerateBlockData()
+{
+	AcquireSRWLockExclusive(&gAccessMutex);
+	int worldX = 0, worldY = 0, worldZ = 0;
+	for(int z = 0; z < CHUNKSIZE_Z; z++) {
+		worldZ = z + (chunkIndexPosition.z * CHUNKSIZE_Z);
+		for(int x = 0; x < CHUNKSIZE_X; x++) {
+			worldX = x + (chunkIndexPosition.x * CHUNKSIZE_X);
+			float heightSample = WorldGen::SampleWorldHeight(worldX, worldZ);
+			float tempSample = WorldGen::SampleTemperature(worldX, worldZ);
+			float moistSample = WorldGen::SampleMoisture(worldX, worldZ);
+
+			const Biome& biome = Biome::Get(tempSample, moistSample);
+
+			for(int y = 0; y < CHUNKSIZE_Y; y++) {
+				worldY = y + (chunkIndexPosition.y * CHUNKSIZE_Y);
+
+				if(chunkIndexPosition.y == -(CHUNKLOAD_FIXED_NY - 1) && y == 0) {
+					blockData[x][y][z] = BLACKSTONE;
+					continue;
+				}
+
+				// some kind of thread thing is going wrong here
+				blockData[x][y][z] = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, static_cast<int>(heightSample), biome, moistSample);
+
+			}
+		}
+	}
+	ReleaseSRWLockExclusive(&gAccessMutex);
+}
 
 void Chunk::Release() {
 	//delete blockData;

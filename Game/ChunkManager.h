@@ -16,10 +16,10 @@
 #include "../Engine/ThreadPool.h"
 
 
-#define CHUNKLOAD_AREA_X 5
+#define CHUNKLOAD_AREA_X 6
 #define CHUNKLOAD_AREA_NY 3
 #define CHUNKLOAD_AREA_PY 4
-#define CHUNKLOAD_AREA_Z 5
+#define CHUNKLOAD_AREA_Z 6
 
 #define CHUNKLOAD_FIXED_NY 6
 #define CHUNKLOAD_FIXED_PY 4
@@ -37,7 +37,6 @@ private:
 
 	vector<thread> _chunkLoaderThreads = {};
 
-	ThreadPool* meshBuilderPool;
 
 	atomic<bool> _isRunning{true};
 
@@ -48,8 +47,9 @@ private:
 	//atomic<vector<Chunk*>> _rebuildQueue{ {} }; // List of chunks that are awaiting re-build on the chunk builder thread
 
 	SRWLOCK rebuildQueueMutex;
-	stack<Chunk*> rebuildQueue;
+	stack<pair<Chunk*, bool>> rebuildQueue;
 public:
+	ThreadPool* threadPool;
 
 	Lighting* GetLighting() const {
 		return this->lighting;
@@ -73,8 +73,8 @@ public:
 	}
 
 
-	void TryRegen(Vector3Int chunkCoords);
-	void TryRegen(Chunk* chunk);
+	void TryRegen(Vector3Int chunkCoords, bool important = false);
+	void TryRegen(Chunk* chunk, bool important = false);
 	// long name because really shouldnt use this in most cases, but it /does/ have its use
 	static Vector3Int ChunkFloorPosForPositionCalculation(Vector3 worldPosition);
 	static Vector3Int ToChunkIndexPosition(const int& x, const int& y, const int& z);

@@ -512,7 +512,8 @@ void Graphics::Render(Scene* scene) {
 	SortObjects(objects, 0, (int)(objects.size() - 1));
 
 	for(vector<Object3D*>::iterator it = objects.begin(); it != objects.end(); ++it) {
-		if(TryAcquireSRWLockExclusive(&(*it)->gAccessMutex)) {
+
+		if(TryAcquireSRWLockExclusive(&(*it)->gAccessMutex) || (*it)->importantRenderPass) {
 			if ((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentModels)) {
 				//If it drew something, return back to default error textures+shaders afterwards (so we can see missing tex objects)
 				deviceCtx->PSSetShaderResources(0, 1, &errTex);
@@ -533,7 +534,7 @@ void Graphics::Render(Scene* scene) {
 		Object3D*& obj = get<2>(*it);
 		if (model->GetMesh() == nullptr || obj == nullptr || obj->pendingDeletion ) continue;
 
-		if(TryAcquireSRWLockExclusive(&obj->gAccessMutex)) {
+		AcquireSRWLockExclusive(&obj->gAccessMutex); {
 			model->Draw(deviceCtx, get<1>(*it), worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
 			deviceCtx->PSSetShaderResources(0, 1, &errTex);
 			deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);

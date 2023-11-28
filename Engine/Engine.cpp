@@ -38,14 +38,26 @@ void Engine::Render(float dTime) {
 void Engine::DestroyQueuedObjects() {
 	// Safe to delete objects here, presumably no more operations
 
+	// destroy max 30 per frame
 	AcquireSRWLockExclusive(&gDestroyObjectsMutex);
 	//int maxDestroy = 20;
-	for(const string& name : destroyObjectQueue) {
-		DestroyObject3DImmediate(name);
+	for(int i = 0; i < min(30, destroyObjectQueue.size()); i++) {
+		DestroyObject3DImmediate(destroyObjectQueue[destroyObjectQueue.size()-1]);
+		destroyObjectQueue.pop_back();
 	}
+	/*int destructions = 30;
+	for(auto it = destroyObjectQueue.rbegin(); it != destroyObjectQueue.rend(); it++) {
+		if(destructions <= 0) break;
+		destroyObjectQueue.erase(it);
+		destructions--;
+	}*/
+	
+	/*for(const string& name : destroyObjectQueue) {
+		DestroyObject3DImmediate(name);
+	}*/
 	ReleaseSRWLockExclusive(&gDestroyObjectsMutex);
 
-	destroyObjectQueue.clear();
+	//destroyObjectQueue.clear();
 }
 
 Scene* Engine::GetCurrentScene()

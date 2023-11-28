@@ -20,11 +20,11 @@ Chunk* ChunkManager::CreateChunk(int x, int y, int z)
 	// something is happening between line 9 and inside Load() (when setting block data) which is corrupting the chunk
 	// was it deleted on the previous frame?
 
-	AcquireSRWLockExclusive(&newChunk->gAccessMutex);
+	//AcquireSRWLockExclusive(&newChunk->gAccessMutex);
 
 	newChunk->transform.position = Vector3(static_cast<float>(CHUNKSIZE_X * x), static_cast<float>(CHUNKSIZE_Y * y), static_cast<float>(CHUNKSIZE_Z * z));
 	bool didChunkExistAlready = newChunk->Load();
-	ReleaseSRWLockExclusive(&newChunk->gAccessMutex);
+	//ReleaseSRWLockExclusive(&newChunk->gAccessMutex);
 
 	AcquireSRWLockExclusive(&this->gAccessMutex);
 	this->chunkMap[tuple<int, int, int>(x, y, z)] = newChunk;
@@ -112,23 +112,23 @@ BlockID ChunkManager::GetBlockAtWorldPos(const Vector3Int& v) {
 	return GetBlockAtWorldPos(v.x, v.y, v.z);
 }
 
-void ChunkManager::TryRegen(Vector3Int chunkCoords) {
+void ChunkManager::TryRegen(Vector3Int chunkCoords, bool important) {
 	if(chunkMap.count(chunkCoords)) {
 		Chunk*& chunk = chunkMap[chunkCoords];
 		if(chunk == nullptr || chunk->pendingDeletion) return;
 		
 		AcquireSRWLockExclusive(&rebuildQueueMutex);
-		rebuildQueue.push(chunkMap[chunkCoords]);
+		rebuildQueue.push({ chunkMap[chunkCoords], important });
 		//meshBuilderPool->Queue([&] { chunk->BuildMesh_PoolFunc(); });
 		ReleaseSRWLockExclusive(&rebuildQueueMutex);
 	}
 }
 
-void ChunkManager::TryRegen(Chunk* chunk) {
+void ChunkManager::TryRegen(Chunk* chunk, bool important) {
 	if(chunk == nullptr || chunk->pendingDeletion) return;
 
 	AcquireSRWLockExclusive(&rebuildQueueMutex);
-	rebuildQueue.push(chunk);
+	rebuildQueue.push({ chunk, important });
 	//meshBuilderPool->Queue([&] { 
 	//	//assert(false);
 	//	chunk->BuildMesh_PoolFunc(); 
@@ -183,7 +183,9 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 			}
 		}
 
-		rebuildQueue.push(chunk);
+		//rebuildQueue.push(chunk);
+		chunk->BuildMesh_PoolFunc(false);
+		//TryRegen(chunk, true);
 
 		if(localVoxelPos.x == 0) { // Regen -x neighbour
 			TryRegen(chunkIndex + Vector3(-1, 0, 0));
@@ -360,7 +362,7 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 			}
 		}
 
-		AcquireSRWLockExclusive(pDestroyMutex);
+		
 		for(auto it = pChunkMap->cbegin(); it != pChunkMap->cend();) {
 			const pair<tuple<int, int, int>, Chunk*>& pair = *it;
 
@@ -382,10 +384,12 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 				) { // Erase chunk from map (it is out of range)
 
 				AcquireSRWLockExclusive(&pair.second->gAccessMutex);
+				AcquireSRWLockExclusive(pDestroyMutex);
 
 				ChunkDatabase::Get()->UnloadChunk(indexPos);
 				engine->DestroyObject3D(pair.second); // Delete chunk in-engine (adds to queue)
 
+				ReleaseSRWLockExclusive(pDestroyMutex);
 				ReleaseSRWLockExclusive(&pair.second->gAccessMutex);
 
 
@@ -397,14 +401,14 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 				++it;
 			}
 		}
-		ReleaseSRWLockExclusive(pDestroyMutex);
 
 		if(!rebuildQueue.empty()) {
 			AcquireSRWLockExclusive(&rebuildQueueMutex);
 
 			// some chunks are getting here corrupt. Values are mostly 0 with some 0xdddd s, but chunk pointer isnt nullptr
 			// is the map being reallocated?
-			Chunk* chunk = rebuildQueue.top();
+			Chunk*& chunk = rebuildQueue.top().first;
+			bool important = rebuildQueue.top().second;
 			if(chunk == nullptr || chunk->pendingDeletion) {
 				rebuildQueue.pop();
 				
@@ -415,7 +419,10 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 				if (chunk->chunkIndexPosition == Vector3Int(-1, 0, -1)) {
 					__nop();
 				}
-				meshBuilderPool->Queue([=] { chunk->BuildMesh_PoolFunc(); });
+				threadPool->Queue([=] { 
+					chunk->BuildMesh_PoolFunc();
+					if(important) chunk->importantRenderPass = true;
+				});
 
 				rebuildQueue.pop();
 				
@@ -435,9 +442,9 @@ void ChunkManager::Start()
 
 	InitializeSRWLock(&this->gAccessMutex);
 
-	meshBuilderPool = new ThreadPool();
-	meshBuilderPool->thread_count = 4u;
-	meshBuilderPool->Init();
+	threadPool = new ThreadPool();
+	threadPool->thread_count = 8u;
+	threadPool->Init();
 
 	_chunkLoaderThreads.emplace_back([&]() { LoaderThreadFunc(pCameraTransform, &chunkMap); });
 	lighting = new Lighting(this);
@@ -456,7 +463,7 @@ ChunkManager::~ChunkManager()
 		thread.join();
 	}
 
-	meshBuilderPool->Stop();
+	threadPool->Stop();
 
 	if(lighting) delete lighting;
 

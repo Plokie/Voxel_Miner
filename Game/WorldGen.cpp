@@ -105,13 +105,16 @@ map<BiomeID, Biome> Biome::def = {
 vector<pair<BiomeID, AABB>> Biome::range = {
 	//{WorldGen::BiomeID::SNOW, AABB({0.5f, 0.5f}, {0.5f, 0.5f})},
 	{	 BiomeID::SNOW, AABB::FromMinMax(
-		{0.0f, 0.0f}, {1.0f, 0.2f}
+		{0.0f, 0.0f}, {0.5f, 0.35f}
 	)},
 	{	 BiomeID::TAIGA, AABB::FromMinMax(
-		{0.0f, 0.2f}, {1.0f, 0.35f}
+		{0.5f, 0.0f}, {1.0f, 0.35f}
+	)},
+	{	 BiomeID::CHERRY, AABB::FromMinMax(
+		{0.6f, 0.45f}, {1.0f, 1.0f}
 	)},
 	{	 BiomeID::MAPLE, AABB::FromMinMax(
-		{0.6f, 0.45f}, {1.0f, 1.0f}
+		{0.35f, 0.45f}, {1.0f, 1.0f}
 	)},
 
 

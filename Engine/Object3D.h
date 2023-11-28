@@ -11,6 +11,7 @@ public:
 
 	bool doRender = true;
 	bool pendingDeletion = false;
+	bool importantRenderPass = false;
 
 	// The general AABB box describing the max area of the object
 	// Used for frustum culling

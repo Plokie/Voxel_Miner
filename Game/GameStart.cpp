@@ -35,11 +35,11 @@ void GameStart(Engine* engine) {
 	Resources::LoadVertexShader(L"watervertexshader.cso", "watervertexshader");
 	Resources::LoadVertexShader(L"vertexshellgrass.cso", "vertexshellgrass");
 
-	Audio::LoadClipStream("Data\\Sounds\\MoV.ogg", "MoV");
+	Audio::LoadClipStream("Data\\Music\\UndercoverVampirePoliceman.ogg", "MusicBg");
 	Audio::LoadClip("Data\\Sounds\\hit.wav", "hit");
 
-	//Audio::Play("MoV", { 0.f,0.f,0.f }, 0.5f);
-	Audio::Play("MoV", 1.f);
+	//Audio::Play("MusicBg", { 0.f,0.f,0.f }, 0.5f);
+	Audio::Play("MusicBg", 1.f);
 
 	Resources::LoadMesh("cube");
 	Resources::LoadMesh(exampleFloorVertices, ARRAYSIZE(exampleFloorVertices), exampleCubeIndices, ARRAYSIZE(exampleCubeIndices), "floorMesh");
