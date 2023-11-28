@@ -70,7 +70,7 @@ private:
 	PixelShader* pixelShader = nullptr;
 
 public:
-
+	//SRWLOCK gAcquireMutex;
 	//SIZE_T indexCount = 0;
 	float alpha = 1.0f;
 

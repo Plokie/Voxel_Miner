@@ -232,7 +232,9 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 	size_t modelCount = models.size();
 
 	if(vertSize > 0 && indSize > 0) {
+		//AcquireSRWLockExclusive(&modelsMutex);
 		models.push_back(Model::Create(Graphics::Get()->GetDevice()));
+		
 		Model* newModel = models[modelCount];
 		newModel->SetTexture(0, "atlas");
 
@@ -264,11 +266,109 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 		newMesh->LoadIndices(&indices[0], static_cast<int>(indices.size()));
 
 		newModel->SetMesh(newMesh);
+		//ReleaseSRWLockExclusive(&modelsMutex);
 	}
 }
 
-void GenerateMesh_PoolFunc(Chunk* chunk) {
+void Chunk::BuildMesh_PoolFunc(Chunk* chunk) {
+	AcquireSRWLockExclusive(&chunk->gAccessMutex);
+	//AcquireSRWLockExclusive(&chunk->modelsMutex);
+	for (Model*& model : chunk->models) {
+		model->ReleaseMesh();
+		model = nullptr;
+		//delete model;
+	}
+	chunk->models.clear();
+	//ReleaseSRWLockExclusive(&chunk->modelsMutex);
 
+	const int reserveSizeSolid = (CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z) / 2;
+	const int reserveSizeTrans = (CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z) / 4;
+	const int reserveSizeShellLayer = (CHUNKSIZE_X * CHUNKSIZE_Z);
+
+	vector<Vertex> solidVertices = {};
+	vector<DWORD> solidIndices = {};
+	solidVertices.reserve(reserveSizeSolid);
+	solidIndices.reserve(reserveSizeSolid);
+
+	//proud of them
+	vector<Vertex> transVertices = {};
+	vector<DWORD> transIndices = {};
+	transVertices.reserve(reserveSizeTrans);
+	transIndices.reserve(reserveSizeTrans);
+
+	vector<Vertex> waterVertices = {};
+	vector<DWORD> waterIndices = {};
+	waterVertices.reserve((CHUNKSIZE_X * CHUNKSIZE_Z) / 2);
+	waterIndices.reserve((CHUNKSIZE_X * CHUNKSIZE_Z) / 2);
+
+	const int shellCount = 5;
+	const float shellPixelHeight = 2.f;
+	const float shellSeperation = ((1.f / 16.f) * shellPixelHeight) / static_cast<float>(shellCount);
+
+	vector<vector<Vertex>> grassShellsVertices = {};
+	vector<vector<DWORD>> grassShellsIndices = {};
+
+	for (int i = 0; i < shellCount; i++) {
+		grassShellsVertices.push_back({});
+		grassShellsIndices.push_back({});
+
+		grassShellsVertices[i].reserve(reserveSizeShellLayer);
+		grassShellsIndices[i].reserve(reserveSizeShellLayer);
+	}
+
+	//todo: optimised chunk building (not looping through every single block, most of them are invisible)
+	// this is very very very very very very very very very very slow
+	for (int y = 0; y < CHUNKSIZE_Y; y++) {
+		for (int z = 0; z < CHUNKSIZE_Z; z++) {
+			for (int x = 0; x < CHUNKSIZE_X; x++) {
+				BlockID blockid = (BlockID)chunk->blockData[x][y][z];
+				if (blockid == BlockID::AIR) continue;
+				const Block& def = BlockDef::GetDef(blockid);
+
+				if (def.IsOpaque()) {
+					chunk->MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
+
+					if (def.HasShell() && chunk->RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
+						//int light = chunkManager->GetBlockLightAtWorldPos(x, y + 1, z);
+						short rawLight = chunk->GetRawLightIncludingNeighbours(x, y + 1, z);
+						int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
+
+						for (int i = 1; i < shellCount + 1; i++) {
+							int index = i - 1; // get compiler to shut up about "sub expression overflow" false positive
+							PushIndices(grassShellsVertices[index].size(), grassShellsIndices[index]);
+							PushFace(grassShellsVertices[index], blockid,
+								(float)x, (float)y + ((float)shellSeperation * i), (float)z,
+								0, 1, 0,
+								0, 1, 1,
+								1, 1, 1,
+								1, 1, 0,
+								0, 1, 0,
+								light
+							);
+						}
+					}
+				}
+				else if (blockid == BlockID::WATER)
+				{
+					chunk->MakeVoxel(blockid, x, y, z, waterVertices, waterIndices);
+				}
+				else {
+					chunk->MakeVoxel(blockid, x, y, z, transVertices, transIndices);
+				}
+			}
+		}
+	}
+
+	chunk->PushChunkMesh(solidVertices, solidIndices);
+
+	for (int i = 0; i < shellCount; i++) {
+		chunk->PushChunkMesh(grassShellsVertices[i], grassShellsIndices[i], Chunk::MESHFLAG::SHELL);
+	}
+
+	//PushChunkMesh(grassShellVertices, grassShellIndices, SHELL);
+	chunk->PushChunkMesh(transVertices, transIndices, Chunk::MESHFLAG::TRANS);
+	chunk->PushChunkMesh(waterVertices, waterIndices, Chunk::MESHFLAG::WATER);
+	ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 }
 
 
@@ -439,7 +539,8 @@ bool Chunk::Load()
 		}
 	}
 	//chunkManager->GetLighting()->QueueNewChunk(this);
-	BuildMesh();
+	//BuildMesh();
+	chunkManager->TryRegen(this);
 	return returnVal;
 }
 

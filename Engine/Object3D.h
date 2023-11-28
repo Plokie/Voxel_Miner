@@ -7,6 +7,7 @@
 class Object3D {
 public:
 	SRWLOCK gAccessMutex = {};
+	SRWLOCK modelsMutex = {};
 
 	bool doRender = true;
 	bool pendingDeletion = false;

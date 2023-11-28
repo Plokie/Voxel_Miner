@@ -23,14 +23,15 @@ public:
 		SHELL
 	};
 private:
-	void PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESHFLAG isTransparent = SOLID);
-	bool RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z);
-	void MakeVoxel(const BlockID blockID, const int x, const int y, const int z, vector<Vertex>& vertices, vector<DWORD>& indices);
 	ChunkManager* chunkManager = nullptr;
 	Object3D* player = nullptr;
 	UINT8 lightLevel[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};
 	//UINT8 highestBlock[CHUNKSIZE_X][CHUNKSIZE_Z] = {};
 public:
+	void PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESHFLAG isTransparent = SOLID);
+	bool RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z);
+	void MakeVoxel(const BlockID blockID, const int x, const int y, const int z, vector<Vertex>& vertices, vector<DWORD>& indices);
+
 	Vector3Int chunkIndexPosition = Vector3Int();
 
 	USHORT blockData[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};
@@ -67,6 +68,8 @@ public:
 	void SetBlockLight(const int& x, const int& y, const int& z, const int& val);
 	void SetBlockLightNoUpdate(const int& x, const int& y, const int& z, const int& val);
 	void SetSkyLight(const int& x, const int& y, const int& z, const int& val);
+
+	static void BuildMesh_PoolFunc(Chunk* chunk);
 
 	Chunk(Vector3Int ChunkIndexPos, ChunkManager* chnkMgr): chunkIndexPosition(ChunkIndexPos), chunkManager(chnkMgr){}
 

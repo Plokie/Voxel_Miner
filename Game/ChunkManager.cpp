@@ -405,11 +405,12 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 				
 			}
 			else{
-				AcquireSRWLockExclusive(&chunk->gAccessMutex);
-				chunk->BuildMesh();
+				
+				//chunk->BuildMesh();
+				meshBuilderPool.Queue([&] { Chunk::BuildMesh_PoolFunc(chunk); });
 
 				rebuildQueue.pop();
-				ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+				
 			}
 			ReleaseSRWLockExclusive(&rebuildQueueMutex);
 		}
@@ -425,6 +426,10 @@ void ChunkManager::Start()
 	InitializeSRWLock(&rebuildQueueMutex);
 
 	InitializeSRWLock(&this->gAccessMutex);
+
+	meshBuilderPool.thread_count = 8u;
+	meshBuilderPool.Init();
+
 	_chunkLoaderThreads.emplace_back([&]() { LoaderThreadFunc(pCameraTransform, &chunkMap); });
 	lighting = new Lighting(this);
 	lighting->StartThread();

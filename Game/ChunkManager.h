@@ -13,6 +13,8 @@
 #include "WorldGen.h"
 #include "../Engine/MathUtil.h"
 #include "Lighting.h"
+#include "../Engine/ThreadPool.h"
+
 
 #define CHUNKLOAD_AREA_X 5
 #define CHUNKLOAD_AREA_NY 3
@@ -35,6 +37,7 @@ private:
 
 	vector<thread> _chunkLoaderThreads = {};
 
+	ThreadPool meshBuilderPool;
 
 	atomic<bool> _isRunning{true};
 

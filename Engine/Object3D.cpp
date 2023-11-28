@@ -17,6 +17,7 @@ bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<tup
 	//AcquireSRWLockExclusive(&this->gAccessMutex);
 	bool didDraw = false;
 
+	AcquireSRWLockExclusive(&modelsMutex);
 	for(Model* model : models) {
 		if (model == nullptr) continue;
 		if (!model->IsTransparent()) //If object is opaque, draw immediately upon request
@@ -29,6 +30,7 @@ bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<tup
 			transparentModels->push_back(tuple<Model*, XMMATRIX, Object3D*>(model, transform.mx(), this));
 		}
 	}
+	ReleaseSRWLockExclusive(&modelsMutex);
 
 	//ReleaseSRWLockExclusive(&this->gAccessMutex);
 

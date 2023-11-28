@@ -153,6 +153,9 @@
     <ClCompile Include="Audio\Audio.cpp">
       <Filter>Source Files\Audio</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\ThreadPool.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics\Graphics.h">
@@ -274,6 +277,9 @@
     </ClInclude>
     <ClInclude Include="AudioClip.h">
       <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\ThreadPool.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
