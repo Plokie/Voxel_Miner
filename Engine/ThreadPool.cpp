@@ -5,17 +5,15 @@
 void ThreadPool::_MainLoop()
 {
 	while (this->isRunning) {
+		//if (jobs.empty()) continue;
 		std::function<void()> job;
 		
 		{
 			unique_lock<std::mutex> lock(queueMutex);
 			new_job_cond.wait(lock, [this] {
 				// Predicate
-				//return !jobs.empty() || !isRunning;
-				return true;
-				//if (!isRunning) return;
+				return !jobs.empty() || !isRunning;
 			});
-			if (jobs.empty()) continue;
 			if (!isRunning) return;
 
 			job = jobs.front();
@@ -35,11 +33,11 @@ void ThreadPool::Init()
 	}
 }
 
-void ThreadPool::Queue(const function<void()>& func)
+void ThreadPool::Queue(function<void()> func)
 {
 	{
 		unique_lock<std::mutex> lock(queueMutex);
-		jobs.emplace(func);
+		jobs.push(func);
 	}
 	new_job_cond.notify_one();
 }
@@ -50,9 +48,11 @@ void ThreadPool::Stop()
 		unique_lock<std::mutex> lock(queueMutex);
 		this->isRunning = false;
 	}
+	
 	new_job_cond.notify_all();
-	for (auto& thread : threads) {
-		thread.join();
+
+	for (thread& thr : threads) {
+		thr.join();
 	}
 	threads.clear();
 }

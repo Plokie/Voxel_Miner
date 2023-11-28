@@ -270,15 +270,15 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 	}
 }
 
-void Chunk::BuildMesh_PoolFunc(Chunk* chunk) {
-	AcquireSRWLockExclusive(&chunk->gAccessMutex);
+void Chunk::BuildMesh_PoolFunc() {
+	AcquireSRWLockExclusive(&this->gAccessMutex);
 	//AcquireSRWLockExclusive(&chunk->modelsMutex);
-	for (Model*& model : chunk->models) {
+	for (Model*& model : this->models) {
 		model->ReleaseMesh();
 		model = nullptr;
 		//delete model;
 	}
-	chunk->models.clear();
+	this->models.clear();
 	//ReleaseSRWLockExclusive(&chunk->modelsMutex);
 
 	const int reserveSizeSolid = (CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z) / 2;
@@ -317,20 +317,19 @@ void Chunk::BuildMesh_PoolFunc(Chunk* chunk) {
 	}
 
 	//todo: optimised chunk building (not looping through every single block, most of them are invisible)
-	// this is very very very very very very very very very very slow
 	for (int y = 0; y < CHUNKSIZE_Y; y++) {
 		for (int z = 0; z < CHUNKSIZE_Z; z++) {
 			for (int x = 0; x < CHUNKSIZE_X; x++) {
-				BlockID blockid = (BlockID)chunk->blockData[x][y][z];
+				BlockID blockid = (BlockID)this->blockData[x][y][z];
 				if (blockid == BlockID::AIR) continue;
 				const Block& def = BlockDef::GetDef(blockid);
 
 				if (def.IsOpaque()) {
-					chunk->MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
+					this->MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
 
-					if (def.HasShell() && chunk->RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
+					if (def.HasShell() && this->RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
 						//int light = chunkManager->GetBlockLightAtWorldPos(x, y + 1, z);
-						short rawLight = chunk->GetRawLightIncludingNeighbours(x, y + 1, z);
+						short rawLight = this->GetRawLightIncludingNeighbours(x, y + 1, z);
 						int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
 
 						for (int i = 1; i < shellCount + 1; i++) {
@@ -350,25 +349,25 @@ void Chunk::BuildMesh_PoolFunc(Chunk* chunk) {
 				}
 				else if (blockid == BlockID::WATER)
 				{
-					chunk->MakeVoxel(blockid, x, y, z, waterVertices, waterIndices);
+					this->MakeVoxel(blockid, x, y, z, waterVertices, waterIndices);
 				}
 				else {
-					chunk->MakeVoxel(blockid, x, y, z, transVertices, transIndices);
+					this->MakeVoxel(blockid, x, y, z, transVertices, transIndices);
 				}
 			}
 		}
 	}
 
-	chunk->PushChunkMesh(solidVertices, solidIndices);
+	this->PushChunkMesh(solidVertices, solidIndices);
 
 	for (int i = 0; i < shellCount; i++) {
-		chunk->PushChunkMesh(grassShellsVertices[i], grassShellsIndices[i], Chunk::MESHFLAG::SHELL);
+		this->PushChunkMesh(grassShellsVertices[i], grassShellsIndices[i], Chunk::MESHFLAG::SHELL);
 	}
 
 	//PushChunkMesh(grassShellVertices, grassShellIndices, SHELL);
-	chunk->PushChunkMesh(transVertices, transIndices, Chunk::MESHFLAG::TRANS);
-	chunk->PushChunkMesh(waterVertices, waterIndices, Chunk::MESHFLAG::WATER);
-	ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+	this->PushChunkMesh(transVertices, transIndices, Chunk::MESHFLAG::TRANS);
+	this->PushChunkMesh(waterVertices, waterIndices, Chunk::MESHFLAG::WATER);
+	ReleaseSRWLockExclusive(&this->gAccessMutex);
 }
 
 
@@ -540,7 +539,7 @@ bool Chunk::Load()
 	}
 	//chunkManager->GetLighting()->QueueNewChunk(this);
 	//BuildMesh();
-	chunkManager->TryRegen(this);
+	
 	return returnVal;
 }
 
@@ -549,6 +548,7 @@ void Chunk::Start() {
 	this->player = Engine::Get()->GetCurrentScene()->GetObject3D("CameraController");
 
 	chunkManager->GetLighting()->QueueNewChunk(this);
+	chunkManager->TryRegen(this);
 }
 
 void Chunk::Update(float dTime){}

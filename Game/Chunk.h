@@ -69,7 +69,7 @@ public:
 	void SetBlockLightNoUpdate(const int& x, const int& y, const int& z, const int& val);
 	void SetSkyLight(const int& x, const int& y, const int& z, const int& val);
 
-	static void BuildMesh_PoolFunc(Chunk* chunk);
+	void BuildMesh_PoolFunc();
 
 	Chunk(Vector3Int ChunkIndexPos, ChunkManager* chnkMgr): chunkIndexPosition(ChunkIndexPos), chunkManager(chnkMgr){}
 

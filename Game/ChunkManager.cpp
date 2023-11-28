@@ -119,6 +119,7 @@ void ChunkManager::TryRegen(Vector3Int chunkCoords) {
 		
 		AcquireSRWLockExclusive(&rebuildQueueMutex);
 		rebuildQueue.push(chunkMap[chunkCoords]);
+		//meshBuilderPool->Queue([&] { chunk->BuildMesh_PoolFunc(); });
 		ReleaseSRWLockExclusive(&rebuildQueueMutex);
 	}
 }
@@ -128,6 +129,13 @@ void ChunkManager::TryRegen(Chunk* chunk) {
 
 	AcquireSRWLockExclusive(&rebuildQueueMutex);
 	rebuildQueue.push(chunk);
+	//meshBuilderPool->Queue([&] { 
+	//	//assert(false);
+	//	chunk->BuildMesh_PoolFunc(); 
+	//});
+	//meshBuilderPool.Queue([&] {
+	//	Chunk::BuildMesh_PoolFunc(chunk); 
+	//});
 	ReleaseSRWLockExclusive(&rebuildQueueMutex);
 }
 
@@ -391,11 +399,8 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 		}
 		ReleaseSRWLockExclusive(pDestroyMutex);
 
-
-		//while (!rebuildQueue.empty()) {
 		if(!rebuildQueue.empty()) {
 			AcquireSRWLockExclusive(&rebuildQueueMutex);
-
 
 			// some chunks are getting here corrupt. Values are mostly 0 with some 0xdddd s, but chunk pointer isnt nullptr
 			// is the map being reallocated?
@@ -407,7 +412,10 @@ void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,i
 			else{
 				
 				//chunk->BuildMesh();
-				meshBuilderPool.Queue([&] { Chunk::BuildMesh_PoolFunc(chunk); });
+				if (chunk->chunkIndexPosition == Vector3Int(-1, 0, -1)) {
+					__nop();
+				}
+				meshBuilderPool->Queue([=] { chunk->BuildMesh_PoolFunc(); });
 
 				rebuildQueue.pop();
 				
@@ -427,8 +435,9 @@ void ChunkManager::Start()
 
 	InitializeSRWLock(&this->gAccessMutex);
 
-	meshBuilderPool.thread_count = 8u;
-	meshBuilderPool.Init();
+	meshBuilderPool = new ThreadPool();
+	meshBuilderPool->thread_count = 4u;
+	meshBuilderPool->Init();
 
 	_chunkLoaderThreads.emplace_back([&]() { LoaderThreadFunc(pCameraTransform, &chunkMap); });
 	lighting = new Lighting(this);
@@ -447,10 +456,14 @@ ChunkManager::~ChunkManager()
 		thread.join();
 	}
 
+	meshBuilderPool->Stop();
+
 	if(lighting) delete lighting;
 
 	ChunkDatabase::Get()->SaveChunks();
 	ChunkDatabase::Get()->SaveWorldData();
+
+	
 
 	//for(const pair<tuple<int, int, int>, Chunk*>& pair : this->chunkMap) {
 	//	delete pair.second;

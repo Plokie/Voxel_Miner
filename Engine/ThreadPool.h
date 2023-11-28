@@ -21,7 +21,7 @@ public:
 	unsigned int thread_count = 4;
 
 	void Init();
-	void Queue(const function<void()>& func);
+	void Queue(function<void()> func);
 	void Stop();
 	bool IsBusy();
 };

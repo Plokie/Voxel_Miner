@@ -299,6 +299,10 @@ public:
 		return XMVectorSet(x, y, z, 0.0f);
 	}*/
 
+	bool operator==(const Vector3Int& a) {
+		return x == a.x && y == a.y && z == a.z;
+	}
+
 	operator tuple<int, int, int>() const {
 		return tuple<int, int, int>(x, y, z);
 	}

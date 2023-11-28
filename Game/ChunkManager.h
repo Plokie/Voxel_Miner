@@ -37,7 +37,7 @@ private:
 
 	vector<thread> _chunkLoaderThreads = {};
 
-	ThreadPool meshBuilderPool;
+	ThreadPool* meshBuilderPool;
 
 	atomic<bool> _isRunning{true};
 
