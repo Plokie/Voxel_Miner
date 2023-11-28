@@ -5,6 +5,8 @@
 #include "ChunkManager.h"
 #include "ChunkDatabase.h"
 
+#include "../Audio/Audio.h"
+
 void CameraController::Start()
 {
 	Engine* engine = Engine::Get();
@@ -191,6 +193,7 @@ void CameraController::Update(float dTime)
 		// INPUT MODIFY
 		if(Input::IsMouseLocked()) {
 			if(Input::IsMouseKeyPressed(MOUSE_L)) {
+				Audio::Play("hit", 1.f);
 				chunkManager->SetBlockAtWorldPos(lookHitPoint, AIR);
 			}
 

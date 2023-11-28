@@ -36,6 +36,7 @@ void GameStart(Engine* engine) {
 	Resources::LoadVertexShader(L"vertexshellgrass.cso", "vertexshellgrass");
 
 	Audio::LoadClipStream("Data\\Sounds\\MoV.ogg", "MoV");
+	Audio::LoadClip("Data\\Sounds\\hit.wav", "hit");
 
 	//Audio::Play("MoV", { 0.f,0.f,0.f }, 0.5f);
 	Audio::Play("MoV", 1.f);
@@ -45,6 +46,7 @@ void GameStart(Engine* engine) {
 	Resources::LoadMesh(chunkBorderVertices, ARRAYSIZE(chunkBorderVertices), exampleCubeIndices, ARRAYSIZE(exampleCubeIndices), "chunkborder");
 	Resources::LoadMesh(exampleInverseCubeVertices, ARRAYSIZE(exampleInverseCubeVertices), exampleInverseCubeIndices, ARRAYSIZE(exampleInverseCubeIndices), "inverse-cube");
 
+	//todo: scene serialzation to disc. So its not always in memory
 	Scene* titleScene = new Scene(Graphics::Get());
 
 	titleScene->CreateObject3D(new TitleScreen(), "titlescreen");
