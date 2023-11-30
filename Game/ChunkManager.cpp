@@ -298,6 +298,7 @@ void ChunkManager::SetSkyLightAtWorldPos(const int& x, const int& y, const int& 
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
 		Chunk* chunk = chunkMap[chunkIndex];
+		if (Engine::Get()->IsObjDeleted(chunk)) return;
 
 		if (chunk == nullptr || chunk->pendingDeletion) return;
 
