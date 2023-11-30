@@ -6,6 +6,23 @@
 
 Engine* Engine::_Instance;
 
+void Engine::OverwriteDeletedPtr(void* ptr)
+{
+	auto it = dbg_deletedObjects.find(ptr);
+	if(it != dbg_deletedObjects.end()) {
+		it->second = false;
+	}
+}
+
+bool Engine::IsObjDeleted(void* objPtr)
+{
+	auto it = dbg_deletedObjects.find(objPtr);
+	if(it != dbg_deletedObjects.end()) {
+		return it->second;
+	}
+	return false;
+}
+
 void Engine::Init(_In_ HINSTANCE hInstance) {
 	if (_Instance != nullptr) delete _Instance;
 	_Instance = this;
@@ -79,7 +96,7 @@ Scene* Engine::AddScene(string name)
 Scene* Engine::AddScene(Scene* scene, string name)
 {
 	this->scenes[name] = scene;
-	scene->Init(gfx);
+	scene->Init(gfx, this);
 	if(currentScene == nullptr) currentScene = scene;
 	return scene;
 }
@@ -158,6 +175,8 @@ bool Engine::DestroyObject3DImmediate(string name)
 		AcquireSRWLockExclusive(&objectToDelete->gAccessMutex);
 		ReleaseSRWLockExclusive(&objectToDelete->gAccessMutex);
 		
+		dbg_deletedObjects[objectToDelete] = true;
+
 		delete objectToDelete;
 		objectToDelete = nullptr;
 

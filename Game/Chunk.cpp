@@ -271,6 +271,8 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 }
 
 void Chunk::BuildMesh_PoolFunc(bool acquireMutex) {
+	if(Engine::Get()->IsObjDeleted(this)) return; // last resort failsafe, im out of options
+
 	if(acquireMutex)AcquireSRWLockExclusive(&this->gAccessMutex);
 	//AcquireSRWLockExclusive(&chunk->modelsMutex);
 	for (Model*& model : this->models) {
@@ -347,7 +349,7 @@ void Chunk::BuildMesh_PoolFunc(bool acquireMutex) {
 						}
 					}
 				}
-				else if (blockid == BlockID::WATER)
+				else if (blockid == BlockID::WATER || blockid==LAVA)
 				{
 					this->MakeVoxel(blockid, x, y, z, waterVertices, waterIndices);
 				}
@@ -455,9 +457,14 @@ void Chunk::GenerateBlockData()
 					continue;
 				}
 
-				// some kind of thread thing is going wrong here
-				blockData[x][y][z] = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, static_cast<int>(heightSample), biome, moistSample);
+				short newBlock = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, static_cast<int>(heightSample), biome, moistSample);
 
+				blockData[x][y][z] = newBlock;
+
+				//int lightValue = BlockDef::GetDef((BlockID)newBlock).LightValue();
+				//if(lightValue) {
+				//	chunkManager->GetLighting()->QueueLight(LightNode(x, y, z, this));
+				//}
 			}
 		}
 	}

@@ -79,6 +79,7 @@ tuple<int, int, int> ChunkManager::ToChunkIndexPositionTuple(const int& x, const
 
 BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& z)
 {
+	if(this == nullptr) return WorldGen::GetBlockAt(x, y, z);
 	tuple<int,int,int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 
 	// If chunk is loaded

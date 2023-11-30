@@ -8,14 +8,16 @@
 using namespace std;
 
 class Graphics;
+class Engine;
 
 class Scene {
 private:
 	Graphics* gfx;
+	Engine* engine;
 	map<string, Object3D*> sceneObjects3D = {};
 	map<string, Object2D*> sceneObjects2D = {};
 public:
-	void Init(Graphics* gfx);
+	void Init(Graphics* gfx, Engine* engine);
 
 	Scene(Graphics* pGfx): gfx(pGfx){}
 

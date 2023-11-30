@@ -115,6 +115,52 @@ const map<BlockID, Block> BlockDef::def = {
 	{BlockID::SPRUCE_PLANKS,	Block("Spruce Planks", true, 0,
 		3, 3
 	)},
+
+	{ BlockID::COAL_ORE,	Block("Coal Ore", true, 0,
+		6, 0
+	) },
+	{ BlockID::COPPER_ORE,	Block("Copper Ore", true, 0,
+		7, 0
+	) },
+	{ BlockID::GOLD_ORE,	Block("Gold Ore", true, 0,
+		8, 0
+	) },
+	{ BlockID::AMETHYST_ORE,Block("Amethyst Ore", true, 0,
+		9, 0
+	) },
+	{ BlockID::TITANIUM_ORE,Block("Titanium Ore", true, 0,
+		10, 0
+	) },
+	{ BlockID::BLACK_COBBLESTONE,Block("Cobblestone", true, 0,
+		11, 0
+	) },
+
+	{ BlockID::BLACK_COAL_ORE,	Block("Blackstone Coal Ore", true, 0,
+		6, 1
+	) },
+	{ BlockID::BLACK_COPPER_ORE,	Block("Blackstone Copper Ore", true, 0,
+		7, 1
+	) },
+	{ BlockID::BLACK_GOLD_ORE,	Block("Blackstone Gold Ore", true, 0,
+		8, 1
+	) },
+	{ BlockID::BLACK_AMETHYST_ORE,Block("Blackstone Amethyst Ore", true, 0,
+		9, 1
+	) },
+	{ BlockID::BLACK_TITANIUM_ORE,Block("Blackstone Titanium Ore", true, 0,
+		10, 1
+	) },
+	{ BlockID::BLACK_COBBLESTONE,Block("Cobbled Blackstone", true, 0,
+		11, 1
+	) },
+
+	{ BlockID::GRAVEL,Block("Gravel", true, 0,
+		4, 2
+	) },
+
+	{ BlockID::LAVA, Block("Lava", false, 13,
+		4, 5
+	) },
 };
 
 const string Block::GetName() const {

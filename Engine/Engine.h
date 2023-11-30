@@ -32,9 +32,16 @@ private:
 	map<string, Scene*> scenes = {};
 	Scene* currentScene = nullptr;
 
+	map<void*, bool> dbg_deletedObjects = {};
+
 	float totalElapsedTime = 0.0f;
+
+
 public:
 	
+	void OverwriteDeletedPtr(void* ptr);
+	bool IsObjDeleted(void* objPtr);
+
 	// Initialise Engine
 	void Init(_In_ HINSTANCE hInstance);
 

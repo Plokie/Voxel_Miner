@@ -513,7 +513,7 @@ void Graphics::Render(Scene* scene) {
 
 	for(vector<Object3D*>::iterator it = objects.begin(); it != objects.end(); ++it) {
 
-		if(TryAcquireSRWLockExclusive(&(*it)->gAccessMutex) || (*it)->importantRenderPass) {
+		if(TryAcquireSRWLockExclusive(&(*it)->gAccessMutex)) {
 			if ((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentModels)) {
 				//If it drew something, return back to default error textures+shaders afterwards (so we can see missing tex objects)
 				deviceCtx->PSSetShaderResources(0, 1, &errTex);
@@ -521,6 +521,14 @@ void Graphics::Render(Scene* scene) {
 				deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
 			}
 			ReleaseSRWLockExclusive(&(*it)->gAccessMutex);
+		}
+		else if((*it)->importantRenderPass) {
+			if((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentModels)) {
+				//If it drew something, return back to default error textures+shaders afterwards (so we can see missing tex objects)
+				deviceCtx->PSSetShaderResources(0, 1, &errTex);
+				deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
+				deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
+			}
 		}
 	}
 

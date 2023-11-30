@@ -171,6 +171,16 @@ WorldGen::WorldGen()
 	noiseSampler_Caves1.SetFrequency(0.035f);
 	noiseSampler_Caves1.SetFractalType(FastNoiseLite::FractalType_FBm);
 
+	noiseSampler_CavesTunnels = FastNoiseLite(seed);
+	noiseSampler_CavesTunnels.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+	noiseSampler_CavesTunnels.SetFrequency(0.03f);
+	//noiseSampler_CavesTunnels.SetCellularDistanceFunction(FastNoiseLite::CellularDistanceFunction_EuclideanSq);
+	//noiseSampler_CavesTunnels.SetCellularReturnType(FastNoiseLite::CellularReturnType_Distance2Div);
+
+	noiseSampler_CavesTunnels.SetFractalType(FastNoiseLite::FractalType_PingPong);
+	noiseSampler_CavesTunnels.SetFractalOctaves(1);
+	noiseSampler_CavesTunnels.SetFractalPingPongStrength(1.95f);
+
 	//noiseSampler_Sky_Top = FastNoiseLite(seed);
 	//noiseSampler_Sky_Top.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2S);
 	//noiseSampler_Sky_Top.SetFrequency(0.02f);
@@ -269,8 +279,13 @@ BlockID WorldGen::GetBlockAt(const int& x, const int& y, const int& z) {
 
 bool WorldGen::IsBlockCave(const int& x, const int& y, const int& z) {
 	float sample = _Instance->noiseSampler_Caves1.GetNoise(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
+	//float sampleTunnels = _Instance->noiseSampler_CavesTunnels.GetNoise(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
 
-	//return abs(sample) > 0.25f && abs(sample) < 0.75f;
+	//return sample > 
+	//return sampleTunnels < -0.8f;
+	//return (sample > 0.25f) || (sampleTunnels > -0.1f);
+	//return (sample > 0.25f) || (sampleTunnels > 0.4f && sampleTunnels < 0.6f);
+	//return (sample > 0.25f) || (abs(sampleTunnels) > 0.4f && abs(sampleTunnels) < 0.6f);
 
 	return sample > 0.25f;
 }
@@ -340,8 +355,8 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 
 	if(y == heightSample) {
 		if(y < SEA_LEVEL) {
-			if(y < SEA_LEVEL-1) return biome.waterBed;
-			return biome.shore;
+			if(y >= SEA_LEVEL-2) return biome.shore;
+			return biome.waterBed;
 		}
 		bool isInCave = IsBlockCave(x, y, z);
 		if(isInCave) return AIR;
@@ -363,8 +378,34 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 		return biome.earthBottom;
 	}
 
+	
+
 	bool isInCave = IsBlockCave(x, y, z);
-	if (isInCave) return AIR;
+	if(isInCave) {
+		if(y < -77) return LAVA;
+		else return AIR;
+	}
+
+	// Value represents rarity
+	float valueSample = _Instance->noiseSampler_treeValue.GetNoise((float)x, (float)y, (float)z);
+	float distSample = _Instance->noiseSampler_treeDist.GetNoise((float)x, (float)y, (float)z);
+
+	if(valueSample < -0.9f && distSample < -0.9f) {
+		return COAL_ORE;
+	}
+	if(valueSample < -0.75f && distSample < -0.95f) {
+		return COPPER_ORE;
+	}
+	if(y < -30 && valueSample < -0.6f && distSample < -0.96f) {
+		return GOLD_ORE;
+	}
+	if(y < -45 && valueSample < -0.5f && distSample < -0.97f) {
+		return AMETHYST_ORE;
+	}
+	if(y < -61 && valueSample < -0.4f && distSample < -0.97f) {
+		return TITANIUM_ORE;
+	}
+
 	return biome.stone;
 }
 

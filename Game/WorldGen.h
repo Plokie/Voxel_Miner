@@ -49,6 +49,7 @@ private:
 
 	//FastNoiseLite noiseSampler_Height1;
 	FastNoiseLite noiseSampler_Caves1;
+	FastNoiseLite noiseSampler_CavesTunnels;
 
 	//FastNoiseLite noiseSampler_Sky_Under;
 	//FastNoiseLite noiseSampler_Sky_Top;

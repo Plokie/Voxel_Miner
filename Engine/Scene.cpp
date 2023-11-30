@@ -1,10 +1,12 @@
 #include "Scene.h"
 
 #include "../Graphics/Graphics.h"
+#include "Engine.h"
 
-void Scene::Init(Graphics* gfx)
+void Scene::Init(Graphics* gfx, Engine* engine)
 {
 	this->gfx = gfx;
+	this->engine = engine;
 }
 
 Object3D* Scene::CreateObject3D(Object3D* object3D, const string& name)
@@ -14,6 +16,9 @@ Object3D* Scene::CreateObject3D(Object3D* object3D, const string& name)
 	InitializeSRWLock(&object3D->gAccessMutex);
 	InitializeSRWLock(&object3D->modelsMutex);
 	
+	if(engine)
+	engine->OverwriteDeletedPtr(object3D);
+
 	return object3D;
 }
 
@@ -25,6 +30,9 @@ Object3D* Scene::CreateObject3D(Object3D* object3D, const string& name, const st
 
 	InitializeSRWLock(&object3D->gAccessMutex);
 	InitializeSRWLock(&object3D->modelsMutex);
+
+	if(engine)
+	engine->OverwriteDeletedPtr(object3D);
 
 	return object3D;
 }
@@ -39,6 +47,9 @@ Object3D* Scene::CreateObject3D(Object3D* object3D, const string& name, const st
 	InitializeSRWLock(&object3D->gAccessMutex);
 	InitializeSRWLock(&object3D->modelsMutex);
 
+	if(engine)
+	engine->OverwriteDeletedPtr(object3D);
+
 	return object3D;
 }
 
@@ -47,7 +58,7 @@ Object2D* Scene::CreateObject2D(Object2D* object2D, const string& name)
 	sceneObjects2D[name] = object2D;
 	
 	object2D->Init(gfx->GetDevice());
-	object2D->InitSelf(); //overriden fun to init child-specific features
+	object2D->InitSelf(); //overriden func to init child-specific features
 
 	return object2D;
 }
