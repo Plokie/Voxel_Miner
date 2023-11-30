@@ -371,6 +371,13 @@ void Chunk::BuildMesh_PoolFunc(bool acquireMutex) {
 	this->PushChunkMesh(waterVertices, waterIndices, Chunk::MESHFLAG::WATER);
 
 	if(acquireMutex)ReleaseSRWLockExclusive(&this->gAccessMutex);
+
+	//todo: mutex for thread collisions
+	Engine::Get()->GetCurrentScene()->CreateObject3D(
+		this,
+		"_c" + to_string(chunkIndexPosition.x) + "_" + to_string(chunkIndexPosition.y) + "_" + to_string(chunkIndexPosition.z)
+	);
+
 #ifdef _DEBUG
 #if 0
 	{
@@ -421,6 +428,8 @@ bool Chunk::Load()
 	}
 	//chunkManager->GetLighting()->QueueNewChunk(this);
 	//BuildMesh();
+
+	
 	
 	return returnVal;
 }
@@ -429,8 +438,8 @@ void Chunk::Start() {
 	this->cullBox = AABB(transform.position + Vector3(8.f, 8.f, 8.f), Vector3(8.f, 8.f, 8.f));
 	this->player = Engine::Get()->GetCurrentScene()->GetObject3D("CameraController");
 
-	chunkManager->GetLighting()->QueueNewChunk(this);
-	chunkManager->TryRegen(this);
+	//chunkManager->GetLighting()->QueueNewChunk(this);
+	//chunkManager->TryRegen(this);
 }
 
 void Chunk::Update(float dTime){}

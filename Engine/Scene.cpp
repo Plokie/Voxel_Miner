@@ -11,6 +11,8 @@ void Scene::Init(Graphics* gfx, Engine* engine)
 
 Object3D* Scene::CreateObject3D(Object3D* object3D, const string& name)
 {
+	if (sceneObjects3D.find(name) != sceneObjects3D.end()) return object3D;
+
 	sceneObjects3D[name] = object3D;
 
 	InitializeSRWLock(&object3D->gAccessMutex);

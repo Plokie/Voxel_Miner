@@ -39,13 +39,12 @@ Chunk* ChunkManager::CreateChunk(int x, int y, int z)
 		TryRegen(Vector3Int(x, y, z-1));
 	}
 
-	
+	TryRegen(newChunk);
 
-
-	this->pEngine->GetCurrentScene()->CreateObject3D(
+	/*this->pEngine->GetCurrentScene()->CreateObject3D(
 		newChunk,
 		"_c" + to_string(x) + "_" + to_string(y) + "_" + to_string(z)
-	);
+	);*/
 
 	return newChunk;
 }
