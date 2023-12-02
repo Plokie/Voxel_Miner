@@ -24,6 +24,7 @@ private:
 
 	ThreadPool* threadPool;
 
+
 	map<tuple<int, int, int>, Chunk*> chunkMap;
 
 	std::mutex newChunkQueueMutex;
@@ -79,8 +80,8 @@ public:
 
 	int GetSkyLightAtWorldPos(const int& x, const int& y, const int& z);
 	int GetSkyLightAtWorldPos(const Vector3Int& p);
-	void SetSkyLightAtWorldPos(const int& x, const int& y, const int& z, const int& val);
-	void SetSkyLightAtWorldPos(const Vector3Int& p, const int& val);
+	void SetSkyLightAtWorldPos(const int& x, const int& y, const int& z, const int& val, bool update = true);
+	void SetSkyLightAtWorldPos(const Vector3Int& p, const int& val, bool update=true);
 
 	short GetRawLightAtWorldPos(const int& x, const int& y, const int& z);
 

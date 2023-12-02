@@ -1,6 +1,8 @@
 #include "ThreadPool.h"
 
+#include <string>
 #include <math.h>
+#include "ThreadUtil.h"
 
 void ThreadPool::_MainLoop()
 {
@@ -30,6 +32,11 @@ void ThreadPool::Init()
 	unsigned int num_threads = min(thread::hardware_concurrency()-2, thread_count); 
 	for (unsigned int i = 0; i < num_threads; i++) {
 		threads.emplace_back(thread(&ThreadPool::_MainLoop, this));
+		if(namingScheme != "") {
+			//threads[i]
+			string name = namingScheme + " " + std::to_string(i);
+			SetThreadName(&threads[i], name.c_str());
+		}
 	}
 }
 

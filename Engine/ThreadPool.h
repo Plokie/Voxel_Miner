@@ -18,6 +18,7 @@ private:
 	vector<thread> threads = {};
 	queue<function<void()>> jobs;
 public:
+	string namingScheme = "";
 	unsigned int thread_count = 4;
 
 	void Init();

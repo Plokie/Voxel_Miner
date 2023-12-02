@@ -48,20 +48,31 @@ private:
 	ChunkManager* chunkManager = nullptr;
 	bool isRunning = true;
 
-	//std::mutex blockQueueMutex = {};
 	stack<LightNode> blockLightQueue = {};
 	queue<RemoveLightNode> removeBlockLightQueue = {};
 
-	void _Thread();
+	stack<LightNode> skyLightQueue = {};
+	queue<RemoveLightNode> removeSkyLightQueue = {};
+
+	void _ThreadBlock();
+	void _ThreadSky();
 
 	void TryFloodBlockLightTo(const Vector3Int& index, const int& currentLevel, Chunk* chunk);
 	void TryRemoveBlockLight(const Vector3Int& index, const int& currentLevel, Chunk* chunk);
+
+	void TryFloodSkyLightTo(const Vector3Int& index, const int& currentLevel, Chunk* chunk, bool isDown=false);
+	void TryRemoveSkyLight(const Vector3Int& index, const int& currentLevel, Chunk* chunk);
 public:
+	std::mutex skyLightQueueMutex = {};
+
 	VoxelLighting(ChunkManager* chunkManager);
 	~VoxelLighting();
 
 	void QueueBlockLight(const LightNode& light);
 	void QueueRemoveBlockLight(const RemoveLightNode& remLight);
+
+	void QueueSkyLight(const LightNode& light);
+	void QueueRemoveSkyLight(const RemoveLightNode& remLight);
 
 	void PopBlockLightQueue() {
 		if(blockLightQueue.size() > 0) blockLightQueue.pop();

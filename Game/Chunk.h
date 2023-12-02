@@ -48,14 +48,16 @@ public:
 
 	int GetSkyLight(const int& x, const int& y, const int& z);
 	int GetSkyLightIncludingNeighbours(const int& x, const int& y, const int& z);
-	void SetSkyLightIncludingNeighbours(const int& x, const int& y, const int& z, const int& val);
+	void SetSkyLightIncludingNeighbours(const int& x, const int& y, const int& z, const int& val, bool update=true);
 
 	short GetRawLightIncludingNeighbours(const int& x, const int& y, const int& z);
 	short GetRawLight(const int& x, const int& y, const int& z);
 
 	void SetBlockLight(const int& x, const int& y, const int& z, const int& val);
 	void SetBlockLightNoUpdate(const int& x, const int& y, const int& z, const int& val);
-	void SetSkyLight(const int& x, const int& y, const int& z, const int& val);
+	void SetSkyLight(const int& x, const int& y, const int& z, const int& val, bool update=true);
+
+	void InitSkyLight();
 
 
 	// World 

@@ -5,6 +5,7 @@
 #include "../Engine/Engine.h"
 #include "ChunkDatabase.h"
 #include "VoxelLighting.h"
+#include "../Engine/ThreadUtil.h"
 
 void ChunkManager::CreateChunk(const int x, const int y, const int z)
 {
@@ -19,6 +20,8 @@ void ChunkManager::CreateChunk(const int x, const int y, const int z)
 
 		newChunkQueue.push(newChunk);
 
+		//if(y == CHUNKLOAD_FIXED_PY) this_thread::sleep_for(std::chrono::milliseconds(10));
+
 		threadPool->Queue([=] {
 			//unique_lock<std::mutex> lock(newChunk->gAccessMutex);
 			if(ChunkDatabase::Get()->DoesDataExistForChunk({ x,y,z })) {
@@ -27,6 +30,15 @@ void ChunkManager::CreateChunk(const int x, const int y, const int z)
 			else {
 				newChunk->GenerateBlockData();
 			}
+			
+			newChunk->InitSkyLight();
+
+			/*if(y == CHUNKLOAD_FIXED_PY) {
+				this_thread::sleep_for(std::chrono::milliseconds(20));
+				threadPool->Queue([=] {
+					newChunk->InitSkyLight();
+				});
+			}*/
 		});
 	}
 }
@@ -61,12 +73,12 @@ void ChunkManager::Thread() {
 				threadPool->Queue([=] {
 
 					chunk->Finalize();
+					//chunk->InitSkyLight();
 				});
 
 				newChunkQueue.pop();
 			}
 		}
-
 
 		{	unique_lock<std::mutex> lock(regenQueueMutex);
 			while(!regenQueue.empty()) {
@@ -119,6 +131,7 @@ void ChunkManager::Start()
 
 	threadPool = new ThreadPool();
 	threadPool->thread_count = 8u;
+	threadPool->namingScheme = "ChnkMgr Worker";
 	threadPool->Init();
 
 	lighting = new VoxelLighting(this);
@@ -131,6 +144,8 @@ void ChunkManager::Start()
 	chnkMgrThread.emplace_back([&] {
 		Thread();
 	});
+
+	SetThreadName(&chnkMgrThread[0], "ChunkManager Master");
 }
 
 ChunkManager::~ChunkManager()
@@ -371,7 +386,7 @@ int ChunkManager::GetSkyLightAtWorldPos(const Vector3Int& p)
 	return GetSkyLightAtWorldPos(p.x, p.y, p.z);
 }
 
-void ChunkManager::SetSkyLightAtWorldPos(const int& x, const int& y, const int& z, const int& val) {
+void ChunkManager::SetSkyLightAtWorldPos(const int& x, const int& y, const int& z, const int& val, bool update) {
 	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 	if(chunkMap.find(chunkIndex) != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
@@ -389,9 +404,9 @@ void ChunkManager::SetSkyLightAtWorldPos(const int& x, const int& y, const int& 
 	}
 }
 
-void ChunkManager::SetSkyLightAtWorldPos(const Vector3Int& p, const int& val)
+void ChunkManager::SetSkyLightAtWorldPos(const Vector3Int& p, const int& val, bool update)
 {
-	SetSkyLightAtWorldPos(p.x, p.y, p.z, val);
+	SetSkyLightAtWorldPos(p.x, p.y, p.z, val, update);
 }
 
 short ChunkManager::GetRawLightAtWorldPos(const int& x, const int& y, const int& z)

@@ -15,6 +15,7 @@ void Chunk::Generate()
 
 void Chunk::Finalize() {
 	BuildMesh();
+	
 
 	{
 		unique_lock<std::mutex> lock(Engine::Get()->GetCurrentScene()->createObjectMutex);

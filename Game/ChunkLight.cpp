@@ -3,6 +3,91 @@
 #include "ChunkManager.h"
 #include "VoxelLighting.h"
 
+void Chunk::InitSkyLight() {
+	/*Chunk* top = chunkManager->GetChunk(Vector3Int( indexPosition.x, CHUNKLOAD_FIXED_PY, indexPosition.z ));
+	if(top == nullptr) 
+		return;*/
+
+	if(indexPosition.y == CHUNKLOAD_FIXED_PY) {
+		for(int x = 0; x < CHUNKSIZE_X; x++) {
+			for(int z = 0; z < CHUNKSIZE_Z; z++) {
+				SetSkyLight(x, CHUNKSIZE_Y - 1, z, 15);
+				chunkManager->GetLighting()->QueueSkyLight(LightNode(x, CHUNKSIZE_Y - 1, z, this));
+			}
+		}
+	}
+
+	//if(indexPosition.y == CHUNKLOAD_FIXED_PY) {
+	//	//unique_lock<std::mutex> lock(chunkManager->GetLighting()->skyLightQueueMutex);
+	//	for(int x = 0; x < CHUNKSIZE_X; x++) {
+	//		for(int z = 0; z < CHUNKSIZE_Z; z++) {
+	//			int y = CHUNKSIZE_Y;
+	//			BlockID block = AIR;
+
+	//			for(;;) {
+	//				block = GetBlockIncludingNeighbours(x, --y, z);
+	//				if(BlockDef::GetDef(block).IsOpaque() || y < -CHUNKSIZE_Y * 5) break;
+
+	//				SetSkyLightIncludingNeighbours(x, y, z, 15, false);
+	//				//size_t oldLen = skyLightQueue.size();
+	//				//chunk->SetSkyLightIncludingNeighbours(x, y, z, 15);
+	//				//if(skyLightQueue.size() > oldLen) {
+
+	//				//	floodedChunksHash[skyLightQueue.top().chunk] = true; // Dont re-flood this chunk
+	//				//	chunkIndexRebuildQueue[skyLightQueue.top().chunk] = true;
+	//				//	skyLightQueue.pop();
+	//				//}
+	//			}
+	//			//SetSkyLight(x, CHUNKSIZE_Y - 1, z, 15);
+	//		}
+	//	}
+	//}
+
+
+	//for(int x = 0; x < CHUNKSIZE_X; x++) {
+	//	for(int z = 0; z < CHUNKSIZE_Z; z++) {
+	//		int y = CHUNKSIZE_Y;
+	//		BlockID block = AIR;
+
+	//		for(;;) {
+	//			block = top->GetBlockIncludingNeighbours(x, --y, z);
+	//			if(BlockDef::GetDef(block).IsOpaque() || y < -CHUNKSIZE_Y * 5) break;
+
+	//			top->SetSkyLightIncludingNeighbours(x, y, z, 15);
+	//			//size_t oldLen = skyLightQueue.size();
+	//			//chunk->SetSkyLightIncludingNeighbours(x, y, z, 15);
+	//			//if(skyLightQueue.size() > oldLen) {
+
+	//			//	floodedChunksHash[skyLightQueue.top().chunk] = true; // Dont re-flood this chunk
+	//			//	chunkIndexRebuildQueue[skyLightQueue.top().chunk] = true;
+	//			//	skyLightQueue.pop();
+	//			//}
+	//		}
+	//	}
+	//}
+
+	//for(int x = 0; x < CHUNKSIZE_X; x++) {
+	//	for(int y = 0; y < CHUNKSIZE_Y; y++) {
+	//		for(int z = 0; z < CHUNKSIZE_Z; z++) {
+	//			int light = GetSkyLight(x, y, z);
+
+	//			if(light < 15) continue;
+
+	//			if(
+	//				GetSkyLightIncludingNeighbours(x - 1, y, z) == 0 ||
+	//				GetSkyLightIncludingNeighbours(x + 1, y, z) == 0 ||
+	//				GetSkyLightIncludingNeighbours(x, y - 1, z) == 0 ||
+	//				GetSkyLightIncludingNeighbours(x, y + 1, z) == 0 ||
+	//				GetSkyLightIncludingNeighbours(x, y, z - 1) == 0 ||
+	//				GetSkyLightIncludingNeighbours(x, y, z + 1) == 0
+	//				) {
+	//				SetSkyLight(x, y, z, light);
+	//			}
+	//		}
+	//	}
+	//}
+}
+
 int Chunk::GetBlockLight(const int& x, const int& y, const int& z)
 {
 	return this->lightLevel[x][y][z] & 0x0F;
@@ -60,15 +145,15 @@ int Chunk::GetSkyLightIncludingNeighbours(const int& x, const int& y, const int&
 	}
 }
 
-void Chunk::SetSkyLightIncludingNeighbours(const int& x, const int& y, const int& z, const int& val)
+void Chunk::SetSkyLightIncludingNeighbours(const int& x, const int& y, const int& z, const int& val, bool update)
 {
 	if(x < 0 || x>CHUNKSIZE_X - 1 || y < 0 || y>CHUNKSIZE_Y - 1 || z < 0 || z>CHUNKSIZE_Z - 1)
 	{
 		Vector3Int chunkPosition = Vector3Int(indexPosition.x * CHUNKSIZE_X, indexPosition.y * CHUNKSIZE_Y, indexPosition.z * CHUNKSIZE_Z);
-		chunkManager->SetSkyLightAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z, val);
+		chunkManager->SetSkyLightAtWorldPos(x + chunkPosition.x, y + chunkPosition.y, z + chunkPosition.z, val, update);
 	}
 	else {
-		SetSkyLight(x, y, z, val);
+		SetSkyLight(x, y, z, val, update);
 	}
 }
 
@@ -90,9 +175,9 @@ short Chunk::GetRawLight(const int& x, const int& y, const int& z)
 }
 
 
-void Chunk::SetSkyLight(const int& x, const int& y, const int& z, const int& val)
+void Chunk::SetSkyLight(const int& x, const int& y, const int& z, const int& val, bool update)
 {
 	this->lightLevel[x][y][z] = (this->lightLevel[x][y][z] & 0xF) | (val << 4);
 
-	//chunkManager->GetLighting()->QueueSkyLight(LightNode(x, y, z, this));
+	//if(update) chunkManager->GetLighting()->QueueSkyLight(LightNode(x, y, z, this));
 }

@@ -203,6 +203,7 @@
     <ClInclude Include="Game\ExampleObject3D.h" />
     <ClInclude Include="Game\FastNoiseLite.h" />
     <ClInclude Include="Game\GameStart.h" />
+    <ClInclude Include="Engine\ThreadUtil.h" />
     <ClInclude Include="Game\VoxelLighting.h" />
     <ClInclude Include="Game\PlayerController.h" />
     <ClInclude Include="Game\ShardGen.h" />
