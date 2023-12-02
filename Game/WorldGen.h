@@ -1,10 +1,10 @@
 #pragma once
 
-#include <unordered_map>
+#include <vector>
+#include "../Engine/AABB.h"
 
 #include "FastNoiseLite.h"
 #include "Blocks.h"
-#include "TerrainFeature.h"
 
 enum BiomeID {
 	GRASSLANDS,
@@ -62,7 +62,7 @@ private:
 	FastNoiseLite noiseSampler_treeValue;
 	FastNoiseLite noiseSampler_treeDist;
 
-	vector<TerrainFeature*> _pendingFeatures;
+	//vector<TerrainFeature*> _pendingFeatures;
 
 	static WorldGen* _Instance;
 public:

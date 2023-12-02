@@ -1,12 +1,12 @@
 #include "ChunkDatabase.h"
 
-ChunkDatabase* ChunkDatabase::_Instance = nullptr; 
+ChunkDatabase* ChunkDatabase::_Instance = nullptr;
 
 //https://stackoverflow.com/questions/6691555/converting-narrow-string-to-wide-string
 inline std::wstring convert(const std::string& as)
 {
 	// deal with trivial case of empty string
-	if (as.empty())    return std::wstring();
+	if(as.empty())    return std::wstring();
 
 	// determine required length of new string
 	size_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, as.c_str(), (int)as.length(), 0, 0);
@@ -25,17 +25,17 @@ string GetChunkFileName(const Vector3Int& chunkIndex) {
 	return "chunk" + to_string(chunkIndex.x) + "_" + to_string(chunkIndex.y) + "_" + to_string(chunkIndex.z) + ".dat";
 }
 
-void ChunkDatabase::SaveChunkIntoFile(const Vector3Int& chunkIndex, USHORT chunkDataArray[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z])
+void ChunkDatabase::SaveChunkIntoFile(const Vector3Int& chunkIndex, BlockID chunkDataArray[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z])
 {
-	
+
 	const string& filePath = "Worlds/" + worldName + "/" + GetChunkFileName(chunkIndex);
 
 
 	CreateDirectory(L"Worlds", NULL);
-	CreateDirectory(convert("Worlds/"+worldName).c_str(), NULL);
+	CreateDirectory(convert("Worlds/" + worldName).c_str(), NULL);
 
 	ofstream fileStream(filePath);
-	if (fileStream.is_open()) {
+	if(fileStream.is_open()) {
 		for(int x = 0; x < CHUNKSIZE_X; x++) {
 			for(int y = 0; y < CHUNKSIZE_Y; y++) {
 				for(int z = 0; z < CHUNKSIZE_Z; z++) {
@@ -49,20 +49,20 @@ void ChunkDatabase::SaveChunkIntoFile(const Vector3Int& chunkIndex, USHORT chunk
 	//else {
 	//	return;
 	//}
-	
+
 }
 
-void ChunkDatabase::LoadChunkFromFile(const Vector3Int& chunkIndex, USHORT chunkDataArray[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z]){
-	USHORT chunk1D[CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z] = {};
+void ChunkDatabase::LoadChunkFromFile(const Vector3Int& chunkIndex, BlockID chunkDataArray[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z]) {
+	BlockID chunk1D[CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z] = {};
 	char currentChar;
 	const string& filePath = "Worlds/" + worldName + "/" + GetChunkFileName(chunkIndex);
 	fstream chunkFile(filePath, fstream::in);
 	int index = 0;
 	while(chunkFile >> noskipws >> currentChar) {
-		chunk1D[index] = static_cast<USHORT>(currentChar);
+		chunk1D[index] = static_cast<BlockID>(currentChar);
 		index++;
 	}
-	
+
 	index = 0;
 	for(int x = 0; x < CHUNKSIZE_X; x++) {
 		for(int y = 0; y < CHUNKSIZE_Y; y++) {
@@ -76,7 +76,7 @@ void ChunkDatabase::LoadChunkFromFile(const Vector3Int& chunkIndex, USHORT chunk
 
 void ChunkDatabase::TryLoadChunkHash()
 {
-	if (!hasLoadedChunkHash) {
+	if(!hasLoadedChunkHash) {
 		const string& worldDatPath = "Worlds/" + worldName + "/world.dat";
 		ifstream f(worldDatPath);
 		if(!f) {
@@ -84,12 +84,12 @@ void ChunkDatabase::TryLoadChunkHash()
 			return; // Error reading file
 		}
 
-		if (f.good()) { // if file exists
+		if(f.good()) { // if file exists
 			ostringstream stringBuff;
 			stringBuff << f.rdbuf();
 
 			string test = stringBuff.str();
-			
+
 
 			nlohmann::json worldNameJson = nlohmann::json::parse(test);
 			///////
@@ -111,12 +111,12 @@ void ChunkDatabase::SaveWorldData() {
 	if(this == nullptr) return;
 	const string& worldDatPath = "Worlds/" + worldName + "/world.dat";
 	ofstream file(worldDatPath);
-	
+
 	CreateDirectory(L"Worlds", NULL);
 	CreateDirectory(convert("Worlds/" + worldName).c_str(), NULL);
 
 	vector<tuple<int, int, int>> chunkHashVector = {};
-	for (pair<tuple<int, int, int>, bool> pair : chunkHash) {
+	for(pair<tuple<int, int, int>, bool> pair : chunkHash) {
 		chunkHashVector.push_back(pair.first);
 	}
 
@@ -158,6 +158,11 @@ ChunkDatabase::ChunkDatabase()
 {
 }
 
+ChunkDatabase::~ChunkDatabase()
+{
+	
+}
+
 ChunkDatabase* ChunkDatabase::Get()
 {
 	return _Instance;
@@ -165,7 +170,7 @@ ChunkDatabase* ChunkDatabase::Get()
 
 void ChunkDatabase::Init()
 {
-	if (_Instance != nullptr) delete _Instance;
+	if(_Instance != nullptr) delete _Instance;
 	_Instance = new ChunkDatabase();
 
 	InitializeSRWLock(&_Instance->chunkHashMutex);
@@ -176,7 +181,7 @@ void ChunkDatabase::Init()
 bool ChunkDatabase::DoesDataExistForChunk(const Vector3Int& chunkIndex)
 {
 	TryLoadChunkHash();
-	return chunkHash.count(chunkIndex)>0;
+	return chunkHash.count(chunkIndex) > 0;
 }
 
 void ChunkDatabase::LoadChunkDataInto(const Vector3Int& chunkIndex, Chunk* chunk)

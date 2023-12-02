@@ -3,11 +3,13 @@
 #include "VoxelRaycast.h"
 
 #include "ChunkManager.h"
-#include "ChunkDatabase.h"
+#include "WorldGen.h"
+#include "Chunk.h"
+//#include "ChunkDatabase.h"
 
 #include "../Audio/Audio.h"
 
-void CameraController::Start()
+void PlayerController::Start()
 {
 	Engine* engine = Engine::Get();
 
@@ -31,16 +33,17 @@ void CameraController::Start()
 
 	aabb = AABB(transform.position, playerHalfExtents);
 
+	chunkManager = engine->GetCurrentScene()->GetObject3D<ChunkManager>("ChunkManager");
 }
 
 #define AABB_RANGE Vector3Int(2,4,2)
 
-vector<AABB> CameraController::GetNearbyAABBs(ChunkManager* chunkManager) {
+vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager) {
 	vector<AABB> ret;
 
-	for(int z = 1-AABB_RANGE.z; z < AABB_RANGE.z+1; z++) {
-		for(int y = 1-AABB_RANGE.y; y < AABB_RANGE.y+1; y++) {
-			for(int x = 1-AABB_RANGE.x; x < AABB_RANGE.x+1; x++) {
+	for(int z = 1 - AABB_RANGE.z; z < AABB_RANGE.z + 1; z++) {
+		for(int y = 1 - AABB_RANGE.y; y < AABB_RANGE.y + 1; y++) {
+			for(int x = 1 - AABB_RANGE.x; x < AABB_RANGE.x + 1; x++) {
 				Vector3 offset = Vector3(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
 				Vector3Int playerBlockPos = Vector3Int::FloorToInt(transform.position);
 				Vector3Int blockPos = playerBlockPos + offset;
@@ -56,11 +59,11 @@ vector<AABB> CameraController::GetNearbyAABBs(ChunkManager* chunkManager) {
 }
 
 
-void CameraController::Update(float dTime)
+void PlayerController::Update(float dTime)
 {
 	Engine* engine = Engine::Get();
 	Camera* camera = &engine->GetGraphics()->camera;
-	ChunkManager* chunkManager = engine->GetCurrentScene()->GetObject3D<ChunkManager>("ChunkManager");
+
 	float movementSpeed = 4.317f;
 
 	if(Input::IsKeyPressed('P')) {
@@ -68,7 +71,7 @@ void CameraController::Update(float dTime)
 	}
 
 	if(Input::IsMouseLocked()) {
-		if (Input::IsKeyHeld(VK_SHIFT)) {
+		if(Input::IsKeyHeld(VK_SHIFT)) {
 			//transform.position -= Vector3(0, camSpeed, 0);
 			movementSpeed = 5.612f;
 		}
@@ -87,22 +90,22 @@ void CameraController::Update(float dTime)
 
 		//velocity.x = moveAxis.x;
 		//velocity.z = moveAxis.z;
-	
 
-		if (Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_A)) {
+
+		if(Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_A)) {
 			transform.position += Vector3(0, movementSpeed, 0);
 		}
 
 		XMFLOAT2 mouseDelta = Input::MouseDelta();
 		float lookSpeed = 0.0025f; // The polling of the mouse is already tied to the framerate, so no dt
-	
+
 
 
 		transform.position += moveAxis;
 		transform.rotation += Vector3(mouseDelta.y * lookSpeed, mouseDelta.x * lookSpeed, 0.f);
 	}
 
-	if (Input::IsKeyPressed(VK_ESCAPE)) {
+	if(Input::IsKeyPressed(VK_ESCAPE)) {
 		Input::SetMouseLocked(!Input::IsMouseLocked());
 	}
 
@@ -110,9 +113,9 @@ void CameraController::Update(float dTime)
 	if(!freeCam) {
 		// GRAVITY PHYSICS
 		vector<AABB> blocks = GetNearbyAABBs(chunkManager);
-	
 
-		bool isGrounded = false; 
+
+		bool isGrounded = false;
 		for(const AABB& blockAABB : blocks) {
 			for(const Vector3& v : groundCheckPoints) {
 				if(blockAABB.IsPointWithin(transform.position - v)) {
@@ -133,7 +136,7 @@ void CameraController::Update(float dTime)
 
 		transform.position += velocity * dTime;
 
-	
+
 
 
 		// AABB COLLISION CHECK
@@ -171,7 +174,7 @@ void CameraController::Update(float dTime)
 	if(Input::IsKeyPressed('8')) this->TEMPcurrentBlockID = OAK_LOG;
 	if(Input::IsKeyPressed('9')) this->TEMPcurrentBlockID = OAK_PLANKS;
 	if(Input::IsKeyPressed('0')) this->TEMPcurrentBlockID = LAMP;
-	
+
 
 
 
@@ -182,14 +185,14 @@ void CameraController::Update(float dTime)
 
 	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.position = ray.origin + (ray.direction * 1.f);
 
-	Vector3Int lookHitPoint = Vector3Int(0,0,0);
+	Vector3Int lookHitPoint = Vector3Int(0, 0, 0);
 	Vector3Int lookHitNormal;
 	BlockID lookHitBlock;
-	if(VoxelRay::Cast(&ray, chunkManager, 10.f, &lookHitPoint, &lookHitBlock, &lookHitNormal )) {
+	if(VoxelRay::Cast(&ray, chunkManager, 10.f, &lookHitPoint, &lookHitBlock, &lookHitNormal)) {
 		blockSelectRef->models[0]->alpha = 0.99f; // fails sometimes
 		blockSelectRef->transform.position = Vector3((float)lookHitPoint.x, (float)lookHitPoint.y, (float)lookHitPoint.z) + Vector3(0.5f, 0.5f, 0.5f);
-	
-	
+
+
 		// INPUT MODIFY
 		if(Input::IsMouseLocked()) {
 			if(Input::IsMouseKeyPressed(MOUSE_L)) {
@@ -209,7 +212,7 @@ void CameraController::Update(float dTime)
 		blockSelectRef->models[0]->alpha = 0.0f;
 	}
 
-	
+
 
 
 
@@ -218,7 +221,7 @@ void CameraController::Update(float dTime)
 
 	//engine->GetCurrentScene()->GetObject3D("cam_bounds")->transform.position = transform.position - Vector3(0, 0.62f, 0);
 
-	fpsCounter->SetText(to_string(static_cast<int>(roundf(1.f/dTime))));
+	fpsCounter->SetText(to_string(static_cast<int>(roundf(1.f / dTime))));
 
 	//string debugChunkData = "";
 	//////AcquireSRWLockExclusive()
@@ -230,7 +233,7 @@ void CameraController::Update(float dTime)
 	//AcquireSRWLockExclusive(&ChunkDatabase::Get()->chunkHashMutex);
 	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
 	Vector3Int footPos = camBlockPos - Vector3Int(0, 1, 0);
-	Vector3Int chunkIndex = ChunkManager::ToChunkIndexPosition(footPos.x, footPos.y, footPos.z);
+	Vector3Int chunkIndex = ChunkManager::ToChunkIndexPositionTuple(footPos.x, footPos.y, footPos.z);
 
 	float temp = WorldGen::SampleTemperature(footPos.x, footPos.z);
 	float moist = WorldGen::SampleMoisture(footPos.x, footPos.z);

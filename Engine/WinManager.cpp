@@ -139,7 +139,7 @@ bool WinManager::Init(_In_ HINSTANCE hInstance) {
 	// Create the window
 	window = CreateWindow(
 		L"D3DWndClassName",		//Window class name
-		L"DX11 Voxel Gen",		//Window title
+		L"Voxel Miner",		//Window title
 		WS_OVERLAPPEDWINDOW,	//Window style
 		0, 0,					//Window X,Y position
 		width, height,			//Window X,Y size

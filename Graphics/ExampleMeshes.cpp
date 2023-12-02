@@ -1,7 +1,5 @@
 #include "ExampleMeshes.h"
 
-#include "../Game/ChunkManager.h"
-
 Vertex exampleCubeVertices[] = {
 		Vertex(-1.0f, -1.0f, -1.0f,	0.0f, 0.0f, -1.0f,	0.0f, 1.0f), //bottom-left		0  -Z
 		Vertex(-1.0f,  1.0f, -1.0f,	0.0f, 0.0f, -1.0f,	0.0f, 0.0f), //top-left			1

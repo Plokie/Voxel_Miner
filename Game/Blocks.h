@@ -8,7 +8,7 @@ using namespace std;
 #define ATLAS_SIZE 256
 #define ATLAS_TILE_SIZE 16
 
-enum BlockID {
+enum BlockID : unsigned short {
 	ERR,
 	AIR,
 
@@ -57,7 +57,7 @@ enum BlockID {
 	BLACK_AMETHYST_ORE,
 	BLACK_TITANIUM_ORE,
 	BLACK_COBBLESTONE,
-	
+
 	GRAVEL,
 	LAVA,
 };
@@ -76,13 +76,13 @@ private:
 	bool hasShell = false;
 public:
 
-	Block(string _Name, 
+	Block(string _Name,
 		bool _isOpaque,
 		int _lightValue,
 		int UvIdX, int UvIdY,
-		bool hasShell=false
-	): 
-		name(_Name), 
+		bool hasShell = false
+	) :
+		name(_Name),
 		isOpaque(_isOpaque),
 		lightValue(_lightValue),
 		topUvIdX(UvIdX), topUvIdY(UvIdY),
@@ -97,7 +97,7 @@ public:
 		int TopUvIdX, int TopUvIdY,
 		int SideUvIdX, int SideUvIdY,
 		int BottUvIdX, int BottUvIdY,
-		bool hasShell=false
+		bool hasShell = false
 	) :
 		name(_Name),
 		isOpaque(_isOpaque),

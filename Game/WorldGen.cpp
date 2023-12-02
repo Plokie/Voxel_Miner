@@ -6,7 +6,7 @@
 
 WorldGen* WorldGen::_Instance = new WorldGen();
 
-map<BiomeID, Biome> Biome::def = { 
+map<BiomeID, Biome> Biome::def = {
 	{BiomeID::GRASSLANDS, {
 		"Grasslands",
 		GRASS,
@@ -162,7 +162,7 @@ WorldGen::WorldGen()
 	noiseSampler_HeightVal0.SetNoiseType(FastNoiseLite::NoiseType_Value);
 	noiseSampler_HeightVal0.SetFrequency(1.f);
 
-	noiseSampler_HeightVal1 = FastNoiseLite(seed+1);
+	noiseSampler_HeightVal1 = FastNoiseLite(seed + 1);
 	noiseSampler_HeightVal1.SetNoiseType(FastNoiseLite::NoiseType_Value);
 	noiseSampler_HeightVal1.SetFrequency(1.f);
 
@@ -324,7 +324,7 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 
 	// this sucks, i just want something that gets wood in the world
 	// todo: use terrain features
-	
+
 	if(heightSample >= SEA_LEVEL) {
 		const float moistureSlope = moisture / 1.15f;
 		const float treeDensity = clamp(moistureSlope * moistureSlope * moistureSlope + 0.1f, 0.f, 1.f);
@@ -334,7 +334,7 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 
 			if(y > heightSample && y < heightSample + 9) {
 				float distSamp = _Instance->noiseSampler_treeDist.GetNoise((float)x, (float)z);
-				
+
 				if(distSamp < -0.989f && y < heightSample + 6) {
 					return biome.wood;
 				}
@@ -348,14 +348,14 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 	}
 
 	if(y > heightSample) {
-		if(y < SEA_LEVEL-1) return WATER;
+		if(y < SEA_LEVEL - 1) return WATER;
 		return AIR;
 	}
 
 
 	if(y == heightSample) {
 		if(y < SEA_LEVEL) {
-			if(y >= SEA_LEVEL-2) return biome.shore;
+			if(y >= SEA_LEVEL - 2) return biome.shore;
 			return biome.waterBed;
 		}
 		bool isInCave = IsBlockCave(x, y, z);
@@ -368,7 +368,7 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 		bool isInCave = IsBlockCave(x, y, z);
 		if(isInCave) return AIR;
 		return biome.earthTop;
-		
+
 	}
 
 	if(y == heightSample - 2) { // Bottom of crust
@@ -378,7 +378,7 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 		return biome.earthBottom;
 	}
 
-	
+
 
 	bool isInCave = IsBlockCave(x, y, z);
 	if(isInCave) {
@@ -412,8 +412,8 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 const Biome& Biome::Get(float temperature, float moisture)
 {
 	Vector3 point = Vector3(moisture, temperature, 0.0f);
- 	for (auto& p : Biome::range) {
-		if (p.second.IsPointWithin(point)) {
+	for(auto& p : Biome::range) {
+		if(p.second.IsPointWithin(point)) {
 			return Biome::def[p.first];
 		}
 	}

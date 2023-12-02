@@ -1,54 +1,47 @@
 #pragma once
 
-#include <queue>
 #include "../Engine/Engine.h"
 #include "Blocks.h"
-#include "WorldGen.h"
 
 #define CHUNKSIZE_X 16
 #define CHUNKSIZE_Y 16
 #define CHUNKSIZE_Z 16
 
-using namespace std;
-
 class ChunkManager;
-class ChunkLightData;
 
 class Chunk : public Object3D {
 public:
 	enum MESHFLAG {
 		SOLID,
 		TRANS,
-		WATER,
+		LIQUID,
 		SHELL
 	};
+
 private:
 	ChunkManager* chunkManager = nullptr;
-	Object3D* player = nullptr;
+
 	UINT8 lightLevel[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};
-	//UINT8 highestBlock[CHUNKSIZE_X][CHUNKSIZE_Z] = {};
-public:
+
+
+
 	void PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESHFLAG isTransparent = SOLID);
 	bool RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z);
 	void MakeVoxel(const BlockID blockID, const int x, const int y, const int z, vector<Vertex>& vertices, vector<DWORD>& indices);
-
-	Vector3Int chunkIndexPosition = Vector3Int();
-
-	USHORT blockData[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};
-
+	void CorrectIndexForNeighbours(const int& x, const int& y, const int& z, Chunk** outChunk, Vector3Int* outIndex);
+	void CorrectIndexForNeighbours(const Vector3Int& index, Chunk** outChunk, Vector3Int* outIndex);
+	//Vector3Int LocalToWorld(const int x, const int y, const int z);
+public:
+	void GenerateBlockData();
 	void BuildMesh();
 
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <returns>If the chunk had pre-existing data loaded into it</returns>
-	bool Load();
+	void Generate();
+	void Finalize();
 
-	void Start() override;
-	void Update(float dTime) override;
+	Vector3Int indexPosition = { 0,0,0 };
+	BlockID blockData[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};
 
-	void GenerateBlockData();
-
+	// Lighting
 	int GetBlockLight(const int& x, const int& y, const int& z);
 	int GetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z);
 	void SetBlockLightIncludingNeighbours(const int& x, const int& y, const int& z, const int& val);
@@ -60,25 +53,21 @@ public:
 	short GetRawLightIncludingNeighbours(const int& x, const int& y, const int& z);
 	short GetRawLight(const int& x, const int& y, const int& z);
 
-	void CorrectIndexForNeighbours(const int& x, const int& y, const int& z, Chunk** outChunk, Vector3Int* outIndex);
-	void CorrectIndexForNeighbours(const Vector3Int& index, Chunk** outChunk, Vector3Int* outIndex);
-
-	BlockID GetBlockIncludingNeighbours(const int& x, const int& y, const int& z);
-
-	Vector3Int LocalToWorld(const int x, const int y, const int z);
-
 	void SetBlockLight(const int& x, const int& y, const int& z, const int& val);
 	void SetBlockLightNoUpdate(const int& x, const int& y, const int& z, const int& val);
 	void SetSkyLight(const int& x, const int& y, const int& z, const int& val);
 
-	void BuildMesh_PoolFunc(bool acquireMutex=true);
 
-	Chunk(Vector3Int ChunkIndexPos, ChunkManager* chnkMgr): chunkIndexPosition(ChunkIndexPos), chunkManager(chnkMgr){}
+	// World 
+	BlockID GetBlockIncludingNeighbours(const int& x, const int& y, const int& z);
 
-	void Release();
 
+
+	void Start() override;
+	void Update(float dTime) override;
+
+	Chunk(Vector3Int ChunkIndexPos, ChunkManager* chnkMgr) : indexPosition(ChunkIndexPos), chunkManager(chnkMgr) {}
 	~Chunk() {
-
 		for(Model*& model : models) {
 			//model->~Model();
 			delete model;

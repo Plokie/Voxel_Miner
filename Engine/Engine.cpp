@@ -27,7 +27,7 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 	if (_Instance != nullptr) delete _Instance;
 	_Instance = this;
 
-	InitializeSRWLock(&gDestroyObjectsMutex);
+	//InitializeSRWLock(&gDestroyObjectsMutex);
 	//InitializeSRWLock(&gCreateObjectsMutex);
 
 	if(!winMgr.Init(hInstance)) {
@@ -56,12 +56,16 @@ void Engine::DestroyQueuedObjects() {
 	// Safe to delete objects here, presumably no more operations
 
 	// destroy max 30 per frame
-	AcquireSRWLockExclusive(&gDestroyObjectsMutex);
-	//int maxDestroy = 20;
-	for(int i = 0; i < min(30, destroyObjectQueue.size()); i++) {
-		DestroyObject3DImmediate(destroyObjectQueue[destroyObjectQueue.size()-1]);
-		destroyObjectQueue.pop_back();
+	//AcquireSRWLockExclusive(&gDestroyObjectsMutex);
+
+
+	{	unique_lock<std::mutex> lock(gDestroyObjectsMutex);
+		for(int i = 0; i < min(30, destroyObjectQueue.size()); i++) {
+			DestroyObject3DImmediate(destroyObjectQueue[destroyObjectQueue.size()-1]);
+			destroyObjectQueue.pop_back();
+		}
 	}
+	//int maxDestroy = 20;
 	/*int destructions = 30;
 	for(auto it = destroyObjectQueue.rbegin(); it != destroyObjectQueue.rend(); it++) {
 		if(destructions <= 0) break;
@@ -72,7 +76,7 @@ void Engine::DestroyQueuedObjects() {
 	/*for(const string& name : destroyObjectQueue) {
 		DestroyObject3DImmediate(name);
 	}*/
-	ReleaseSRWLockExclusive(&gDestroyObjectsMutex);
+	//ReleaseSRWLockExclusive(&gDestroyObjectsMutex);
 
 	//destroyObjectQueue.clear();
 }
@@ -119,6 +123,8 @@ void Engine::SetScene(string name)
 void Engine::Update(float dTime) {
 	totalElapsedTime += dTime;
 
+	unique_lock<std::mutex> lock(currentScene->createObjectMutex);
+	int debug = 0;
 	for (pair<string, Object3D*> pair : *currentScene->GetSceneObjects3D()) {
 		if(pair.second == nullptr) continue;
 
@@ -130,6 +136,7 @@ void Engine::Update(float dTime) {
 		//AcquireSRWLockExclusive(&pair.second->gAccessMutex);
 		pair.second->Update(dTime);
 		//ReleaseSRWLockExclusive(&pair.second->gAccessMutex);
+		debug++;
 	}
 
 	// Keep at end
@@ -172,8 +179,10 @@ bool Engine::DestroyObject3DImmediate(string name)
 		Object3D*& objectToDelete = currentScene->GetSceneObjects3D()->at(name);
 		objectToDelete->pendingDeletion = true;
 		// Immediately acquire and release to hopefully make sure we dont destroy it while another thread is using it
-		AcquireSRWLockExclusive(&objectToDelete->gAccessMutex);
-		ReleaseSRWLockExclusive(&objectToDelete->gAccessMutex);
+		//AcquireSRWLockExclusive(&objectToDelete->gAccessMutex);
+		//ReleaseSRWLockExclusive(&objectToDelete->gAccessMutex);
+		objectToDelete->gAccessMutex.lock();
+		objectToDelete->gAccessMutex.unlock();
 		
 		dbg_deletedObjects[objectToDelete] = true;
 
@@ -201,7 +210,7 @@ bool Engine::DestroyObject3DImmediate(Object3D* obj)
 	return false;
 }
 
-SRWLOCK* Engine::GetDestroyObjectsMutex()
+std::mutex* Engine::GetDestroyObjectsMutex()
 {
 	return &this->gDestroyObjectsMutex;
 }

@@ -34,8 +34,8 @@ private:
 
 	string worldName = "World";
 
-	void SaveChunkIntoFile(const Vector3Int& chunkIndex, USHORT chunkDataArray[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z]);
-	void LoadChunkFromFile(const Vector3Int& chunkIndex, USHORT chunkDataArray[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z]);
+	void SaveChunkIntoFile(const Vector3Int& chunkIndex, BlockID chunkDataArray[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z]);
+	void LoadChunkFromFile(const Vector3Int& chunkIndex, BlockID chunkDataArray[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z]);
 
 	void TryLoadChunkHash();
 
@@ -47,6 +47,7 @@ public:
 	map<tuple<int, int, int>, Chunk*> chunkHash = {}; // todo: move back to private
 
 	ChunkDatabase();
+	~ChunkDatabase();
 
 	static ChunkDatabase* Get();
 

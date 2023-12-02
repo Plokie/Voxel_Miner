@@ -19,7 +19,7 @@ using namespace std;
 
 class Engine {
 private:
-	SRWLOCK gDestroyObjectsMutex;
+	std::mutex gDestroyObjectsMutex;
 	//SRWLOCK gCreateObjectsMutex;
 
 	Graphics* gfx;
@@ -84,7 +84,7 @@ public:
 	bool DestroyObject3DImmediate(string name);
 	bool DestroyObject3DImmediate(Object3D* obj);
 
-	SRWLOCK* GetDestroyObjectsMutex();
+	std::mutex* GetDestroyObjectsMutex();
 
 	/// <summary>
 	/// Call at start of main while loop loop

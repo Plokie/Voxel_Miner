@@ -1,6 +1,6 @@
 #include "Graphics.h"
 #include "../Engine/Input.h"
-#include "../DebugMsg.h"
+//#include "../DebugMsg.h"
 
 
 using namespace std;
@@ -462,6 +462,8 @@ bool Graphics::OnResize(HWND hwnd, int width, int height) {
 }
 
 void Graphics::Render(Scene* scene) {
+	unique_lock<std::mutex> lock(scene->createObjectMutex);
+
 	//float bgCol[] = {1.0, 0.6, 1.0, 1.0};
 	const float bgCol[] = { 145.f / 255.f, 217.f / 255.f, 1.0f, 1.0f };
 	//const float bgCol[] = { 4.f / 255.f, 2.f / 255.f, 26.0f / 255.f, 1.0f };
@@ -513,14 +515,15 @@ void Graphics::Render(Scene* scene) {
 
 	for(vector<Object3D*>::iterator it = objects.begin(); it != objects.end(); ++it) {
 
-		AcquireSRWLockExclusive(&(*it)->gAccessMutex); {
+		//AcquireSRWLockExclusive(&(*it)->gAccessMutex); 
+		{ unique_lock<std::mutex> lock((*it)->gAccessMutex);
 			if ((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentModels)) {
 				//If it drew something, return back to default error textures+shaders afterwards (so we can see missing tex objects)
 				deviceCtx->PSSetShaderResources(0, 1, &errTex);
 				deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
 				deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
 			}
-			ReleaseSRWLockExclusive(&(*it)->gAccessMutex);
+			//ReleaseSRWLockExclusive(&(*it)->gAccessMutex);
 		}
 
 
@@ -544,13 +547,14 @@ void Graphics::Render(Scene* scene) {
 		Object3D*& obj = get<2>(*it);
 		if (model->GetMesh() == nullptr || obj == nullptr || obj->pendingDeletion ) continue;
 
-		AcquireSRWLockExclusive(&obj->gAccessMutex); {
+		//AcquireSRWLockExclusive(&obj->gAccessMutex); 
+		{	unique_lock<std::mutex> lock(obj->gAccessMutex);
 			model->Draw(deviceCtx, get<1>(*it), worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
 			deviceCtx->PSSetShaderResources(0, 1, &errTex);
 			deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
 			deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
 
-			ReleaseSRWLockExclusive(&obj->gAccessMutex);
+			//ReleaseSRWLockExclusive(&obj->gAccessMutex);
 		}
 
 	}

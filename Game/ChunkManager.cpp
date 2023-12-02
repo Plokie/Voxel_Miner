@@ -1,70 +1,146 @@
 #include "ChunkManager.h"
 
+#include "Chunk.h"
+#include "WorldGen.h"
+#include "../Engine/Engine.h"
 #include "ChunkDatabase.h"
 
-Chunk* ChunkManager::CreateChunk(int x, int y, int z)
+void ChunkManager::CreateChunk(const int x, const int y, const int z)
 {
-	// if chunk already exists, return
-	if (chunkMap.count(tuple<int, int, int>(x, y, z))) {
-		return nullptr;
+	tuple<int, int, int> pos = { x,y,z };
+	if(chunkMap.find(pos) == chunkMap.end()) {
+		Chunk* newChunk = new Chunk(pos, this);
+
+		{	unique_lock<std::mutex> lock(gAccessMutex);
+			chunkMap[pos] = newChunk;
+		}
+		newChunk->transform.position = Vector3(static_cast<float>(CHUNKSIZE_X * x), static_cast<float>(CHUNKSIZE_Y * y), static_cast<float>(CHUNKSIZE_Z * z));
+
+		newChunkQueue.push(newChunk);
+
+		threadPool->Queue([=] {
+			//unique_lock<std::mutex> lock(newChunk->gAccessMutex);
+			if(ChunkDatabase::Get()->DoesDataExistForChunk({ x,y,z })) {
+				ChunkDatabase::Get()->LoadChunkDataInto({ x,y,z }, newChunk);
+			}
+			else {
+				newChunk->GenerateBlockData();
+			}
+		});
 	}
-
-	Chunk* newChunk = new Chunk(Vector3Int(x, y, z), this);
-		
-	InitializeSRWLock(&newChunk->gAccessMutex);
-	//Chunk* newChunk = (Chunk*)this->pEngine->GetCurrentScene()->CreateObject3D(
-	//	new Chunk(Vector3Int(x, y, z), this), // chunk instance w/ initialised values (position and reference to ChunkManager)
-	//	"_c" + to_string(x) + "_" + to_string(y) + "_" + to_string(z) // Object3D name (using index as string)
-	//);
-	
-	// something is happening between line 9 and inside Load() (when setting block data) which is corrupting the chunk
-	// was it deleted on the previous frame?
-
-	//AcquireSRWLockExclusive(&newChunk->gAccessMutex);
-
-	newChunk->transform.position = Vector3(static_cast<float>(CHUNKSIZE_X * x), static_cast<float>(CHUNKSIZE_Y * y), static_cast<float>(CHUNKSIZE_Z * z));
-	bool didChunkExistAlready = newChunk->Load();
-	//ReleaseSRWLockExclusive(&newChunk->gAccessMutex);
-
-	AcquireSRWLockExclusive(&this->gAccessMutex);
-	this->chunkMap[tuple<int, int, int>(x, y, z)] = newChunk;
-	ReleaseSRWLockExclusive(&this->gAccessMutex);
-
-	if(didChunkExistAlready) { // If chunk had data that existed in the databse
-		TryRegen(Vector3Int(x+1, y, z)); // regenerate neighbouring chunks that might have old neighbour data
-		TryRegen(Vector3Int(x-1, y, z));
-		TryRegen(Vector3Int(x, y+1, z));
-		TryRegen(Vector3Int(x, y-1, z));
-		TryRegen(Vector3Int(x, y, z+1));
-		TryRegen(Vector3Int(x, y, z-1));
-	}
-
-	TryRegen(newChunk);
-
-	/*this->pEngine->GetCurrentScene()->CreateObject3D(
-		newChunk,
-		"_c" + to_string(x) + "_" + to_string(y) + "_" + to_string(z)
-	);*/
-
-	return newChunk;
 }
 
 Vector3Int ChunkManager::ChunkFloorPosForPositionCalculation(Vector3 worldPosition) {
 	return Vector3Int(
-		static_cast<int>(floorf(worldPosition.x / CHUNKSIZE_X)), 
-		static_cast<int>(floorf(worldPosition.y / CHUNKSIZE_Y)), 
+		static_cast<int>(floorf(worldPosition.x / CHUNKSIZE_X)),
+		static_cast<int>(floorf(worldPosition.y / CHUNKSIZE_Y)),
 		static_cast<int>(floorf(worldPosition.z / CHUNKSIZE_Z))
 	);
 }
 
-Vector3Int ChunkManager::ToChunkIndexPosition(const int& x, const int& y, const int& z) {
-	// this could really be done using a ternary operator, and would be more readable,
-	// however because this function is used so much, this is much faster since theres no branching
-	return Vector3Int(
-		(x - ((CHUNKSIZE_X - 1) * static_cast<int>(x < 0))) / CHUNKSIZE_X,
-		(y - ((CHUNKSIZE_Y - 1) * static_cast<int>(y < 0))) / CHUNKSIZE_Y,
-		(z - ((CHUNKSIZE_Z - 1) * static_cast<int>(z < 0))) / CHUNKSIZE_Z
-	);
+void ChunkManager::Update(float dTime) {}
+
+void ChunkManager::Thread() {
+
+	while(isRunning) {
+		Vector3Int camIndex = ChunkFloorPosForPositionCalculation(camTrans->position);
+
+		if(newChunkQueue.empty())
+			for(int y = 1 - CHUNKLOAD_FIXED_NY; y < CHUNKLOAD_FIXED_PY + 1; y++) {
+				for(int x = 1 - CHUNKLOAD_AREA_X; x < CHUNKLOAD_AREA_X + 1; x++) {
+					for(int z = 1 - CHUNKLOAD_AREA_Z; z < CHUNKLOAD_AREA_Z + 1; z++) {
+						CreateChunk(camIndex.x + x, y, camIndex.z + z);
+					}
+				}
+			}
+
+		if(!threadPool->IsBusy() && !newChunkQueue.empty()) {
+			while(!newChunkQueue.empty()) {
+				Chunk* chunk = newChunkQueue.front();
+				threadPool->Queue([=] {
+
+					chunk->Finalize();
+				});
+
+				newChunkQueue.pop();
+			}
+		}
+
+
+		{	unique_lock<std::mutex> lock(regenQueueMutex);
+			while(!regenQueue.empty()) {
+				Chunk* chunk = regenQueue.front();
+				threadPool->Queue([=] {
+					unique_lock<std::mutex> lock(chunk->gAccessMutex);
+					chunk->BuildMesh();
+				});
+				regenQueue.pop();
+			}
+		}
+
+		for(auto it = chunkMap.cbegin(); it != chunkMap.cend();) {
+			const pair<tuple<int, int, int>, Chunk*>& pair = *it;
+
+			if(pair.second == nullptr || pair.second->pendingDeletion || !pair.second->hasRanStartFunction) {
+				++it;
+				continue;
+			}
+
+			Vector3Int indexPos = pair.first;
+
+			if(
+				abs(indexPos.x - camIndex.x) > CHUNKLOAD_AREA_X ||
+				abs(indexPos.z - camIndex.z) > CHUNKLOAD_AREA_Z
+				) { // Erase chunk from map (it is out of range)
+
+					{
+						unique_lock<std::mutex> lock(pair.second->gAccessMutex);
+						unique_lock<std::mutex> destroyLock(*Engine::Get()->GetDestroyObjectsMutex());
+
+						//ChunkDatabase::Get()->UnloadChunk(indexPos);
+						engine->DestroyObject3D(pair.second); // Delete chunk in-engine (adds to queue)
+					}
+
+					{	unique_lock<std::mutex> lock(gAccessMutex);
+						chunkMap.erase(it++);
+					}
+			}
+			else { // Increment iterator 
+				++it;
+			}
+		}
+	}
+}
+
+void ChunkManager::Start()
+{
+	ChunkDatabase::Init();
+
+	threadPool = new ThreadPool();
+	threadPool->thread_count = 8u;
+	threadPool->Init();
+
+	engine = Engine::Get();
+	camTrans = &Graphics::Get()->camera.transform;
+
+	//chnkMgrThread = thread(ChunkManager::Thread, this);
+	chnkMgrThread.emplace_back([&] {
+		Thread();
+	});
+}
+
+ChunkManager::~ChunkManager()
+{
+	ChunkDatabase::Get()->SaveChunks();
+	ChunkDatabase::Get()->SaveWorldData();
+
+	isRunning = false;
+	for(auto& thread : chnkMgrThread) {
+		thread.join();
+	}
+
+	threadPool->Stop();
+	delete threadPool;
 }
 
 tuple<int, int, int> ChunkManager::ToChunkIndexPositionTuple(const int& x, const int& y, const int& z)
@@ -78,13 +154,14 @@ tuple<int, int, int> ChunkManager::ToChunkIndexPositionTuple(const int& x, const
 
 BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& z)
 {
+
 	if(this == nullptr) return WorldGen::GetBlockAt(x, y, z);
-	tuple<int,int,int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
+	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 
 	// If chunk is loaded
 	if(chunkMap.find(chunkIndex) != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
-		
+
 		//AcquireSRWLockExclusive(&this->gAccessMutex);
 		Chunk* chunk = chunkMap[chunkIndex];
 		if(!(chunk == nullptr || chunk->pendingDeletion)) {
@@ -93,55 +170,27 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 			// Okay this might seem redundant, but i promise its not (i think)
 			// this basically makes it so nothing else can modify it WHILE its being read from
 			// but if somethings already writing to it, we can read it anyway
-			bool didMutex = TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
+			//bool didMutex = TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
+			bool didMutex = chunk->gAccessMutex.try_lock();
 
 			BlockID blockID = static_cast<BlockID>(chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z]);
-			if(didMutex) ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+			//if(didMutex) ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+			if(didMutex) chunk->gAccessMutex.unlock();
 			//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 			return blockID;
 		}
 	}
 
-		//todo: read from chunk cache of height,temp,moist samples?
-		return WorldGen::GetBlockAt(x, y, z);
-
-
+	//todo: read from chunk cache of height,temp,moist samples?
+	return WorldGen::GetBlockAt(x, y, z);
 }
 
 BlockID ChunkManager::GetBlockAtWorldPos(const Vector3Int& v) {
 	return GetBlockAtWorldPos(v.x, v.y, v.z);
 }
 
-void ChunkManager::TryRegen(Vector3Int chunkCoords, bool important) {
-	if(chunkMap.count(chunkCoords)) {
-		Chunk*& chunk = chunkMap[chunkCoords];
-		if(chunk == nullptr || chunk->pendingDeletion) return;
-		
-		AcquireSRWLockExclusive(&rebuildQueueMutex);
-		rebuildQueue.push({ chunkMap[chunkCoords], important });
-		//meshBuilderPool->Queue([&] { chunk->BuildMesh_PoolFunc(); });
-		ReleaseSRWLockExclusive(&rebuildQueueMutex);
-	}
-}
-
-void ChunkManager::TryRegen(Chunk* chunk, bool important) {
-	if(chunk == nullptr || chunk->pendingDeletion) return;
-
-	AcquireSRWLockExclusive(&rebuildQueueMutex);
-	rebuildQueue.push({ chunk, important });
-	//meshBuilderPool->Queue([&] { 
-	//	//assert(false);
-	//	chunk->BuildMesh_PoolFunc(); 
-	//});
-	//meshBuilderPool.Queue([&] {
-	//	Chunk::BuildMesh_PoolFunc(chunk); 
-	//});
-	ReleaseSRWLockExclusive(&rebuildQueueMutex);
-}
-
-
 void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, const BlockID& id) {
-	Vector3Int chunkIndex = ToChunkIndexPosition(x, y, z);
+	Vector3Int chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 	if(chunkMap.count(chunkIndex)) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
@@ -152,60 +201,62 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 		const Block& newBlockDef = BlockDef::GetDef(id);
 		const Block& oldBlockDef = BlockDef::GetDef(oldBlock);
 
-		chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z] = (USHORT)id;
+		chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z] = id;
 
-		lighting->QueueRemoveSkyLight({ localVoxelPos, chunk, (short)15 });
-		lighting->QueueSkyLight({ localVoxelPos, chunk });
+		//lighting->QueueRemoveSkyLight({ localVoxelPos, chunk, (short)15 });
+		//lighting->QueueSkyLight({ localVoxelPos, chunk });
 
 		// If the new block placed had a light value
-		if(newBlockDef.LightValue()!=0) {
-			chunkMap[chunkIndex]->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, newBlockDef.LightValue());
-		}
+		//if(newBlockDef.LightValue() != 0) {
+		//	chunkMap[chunkIndex]->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, newBlockDef.LightValue());
+		//}
 
-		// If a light is being removed
-		if(oldBlockDef.LightValue()!=0 && id == AIR) { 
-			lighting->QueueRemoveLight({ localVoxelPos, chunk, static_cast<short>(oldBlockDef.LightValue()) });
-			
-
-			chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 0);
-			lighting->PopLightQueue();
-		}
+		//// If a light is being removed
+		//if(oldBlockDef.LightValue() != 0 && id == AIR) {
+		//	lighting->QueueRemoveLight({ localVoxelPos, chunk, static_cast<short>(oldBlockDef.LightValue()) });
 
 
-		if(oldBlockDef.LightValue() && newBlockDef.LightValue()) {
-			lighting->QueueRemoveLight({ localVoxelPos, chunk, (short)chunk->GetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z)});
+		//	chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 0);
+		//	lighting->PopLightQueue();
+		//}
 
-			if(id != AIR) {
-				chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 0);
-			}
-			else {
-				chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, chunk->GetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z));
-			}
-		}
+
+		//if(oldBlockDef.LightValue() && newBlockDef.LightValue()) {
+		//	lighting->QueueRemoveLight({ localVoxelPos, chunk, (short)chunk->GetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z) });
+
+		//	if(id != AIR) {
+		//		chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 0);
+		//	}
+		//	else {
+		//		chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, chunk->GetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z));
+		//	}
+		//}
 
 		//rebuildQueue.push(chunk);
-		chunk->BuildMesh_PoolFunc(false);
+		//chunk->BuildMesh_PoolFunc(false);
 		//TryRegen(chunk, true);
+		QueueRegen(chunk);
+
 
 		if(localVoxelPos.x == 0) { // Regen -x neighbour
-			TryRegen(chunkIndex + Vector3(-1, 0, 0));
+			QueueRegen(chunkIndex + Vector3(-1, 0, 0));
 		}
 		else if(localVoxelPos.x == CHUNKSIZE_X - 1) { // Regen +x neighbour
-			TryRegen(chunkIndex + Vector3(1, 0, 0));
+			QueueRegen(chunkIndex + Vector3(1, 0, 0));
 		}
 
 		if(localVoxelPos.y == 0) {  // -y border
-			TryRegen(chunkIndex + Vector3(0, -1, 0));
+			QueueRegen(chunkIndex + Vector3(0, -1, 0));
 		}
 		else if(localVoxelPos.y == CHUNKSIZE_Y - 1) { // +y border
-			TryRegen(chunkIndex + Vector3(0, 1, 0));
+			QueueRegen(chunkIndex + Vector3(0, 1, 0));
 		}
 
 		if(localVoxelPos.z == 0) {	// -z border
-			TryRegen(chunkIndex + Vector3(0, 0, -1));
+			QueueRegen(chunkIndex + Vector3(0, 0, -1));
 		}
 		else if(localVoxelPos.z == CHUNKSIZE_Z - 1) { // +z border
-			TryRegen(chunkIndex + Vector3(0, 0, 1));
+			QueueRegen(chunkIndex + Vector3(0, 0, 1));
 		}
 
 		ChunkDatabase::Get()->SaveChunkData(chunkIndex, chunkMap[chunkIndex]);
@@ -216,7 +267,22 @@ void ChunkManager::SetBlockAtWorldPos(const Vector3Int& pos, const BlockID& id) 
 	SetBlockAtWorldPos(pos.x, pos.y, pos.z, id);
 }
 
+void ChunkManager::QueueRegen(Chunk* p)
+{
+	if(p == nullptr || p->pendingDeletion) return;
+	unique_lock<std::mutex> regenLock(regenQueueMutex);
+	regenQueue.push(p);
+}
 
+void ChunkManager::QueueRegen(const Vector3Int& index)
+{
+	unique_lock<std::mutex> regenLock(regenQueueMutex);
+	auto it = chunkMap.find(index);
+	if(it != chunkMap.end()) {
+		if(it->second == nullptr || it->second->pendingDeletion) return;
+		regenQueue.push(it->second);
+	}
+}
 
 int ChunkManager::GetBlockLightAtWorldPos(const int& x, const int& y, const int& z) const
 {
@@ -228,9 +294,14 @@ int ChunkManager::GetBlockLightAtWorldPos(const int& x, const int& y, const int&
 
 		Chunk* chunk = chunkMap.at(chunkIndex);
 		if(chunk == nullptr || chunk->pendingDeletion) return -1;
-		AcquireSRWLockExclusive(&chunk->gAccessMutex);
-		int light = chunk->GetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z);
-		ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+		//AcquireSRWLockExclusive(&chunk->gAccessMutex);
+		int light = 0;
+		{	unique_lock<std::mutex> lock(chunk->gAccessMutex);
+		light = chunk->GetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z);
+		}
+		//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+
+
 		return light;
 	}
 	return 0;
@@ -238,7 +309,7 @@ int ChunkManager::GetBlockLightAtWorldPos(const int& x, const int& y, const int&
 
 int ChunkManager::GetBlockLightAtWorldPos(const Vector3Int& p) const
 {
-	return GetBlockLightAtWorldPos(p.x,p.y,p.z);
+	return GetBlockLightAtWorldPos(p.x, p.y, p.z);
 }
 
 void ChunkManager::SetBlockLightAtWorldPos(const int& x, const int& y, const int& z, const int& val) const {
@@ -278,9 +349,12 @@ int ChunkManager::GetSkyLightAtWorldPos(const int& x, const int& y, const int& z
 		// that way, whenever a something else requests a pointer and find its "free" (Ptr = 0x0000), it thinks its an Acquired Ptr, and hangs.
 		// i think.......
 
-		AcquireSRWLockExclusive(&chunk->gAccessMutex);
-		int light = chunk->GetSkyLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z);
-		ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+		//AcquireSRWLockExclusive(&chunk->gAccessMutex);
+		int light = 0;
+		{	unique_lock<std::mutex> lock(chunk->gAccessMutex);
+		light = chunk->GetSkyLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z);
+		}
+		//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 		return light;
 	}
 	return -1;
@@ -297,13 +371,15 @@ void ChunkManager::SetSkyLightAtWorldPos(const int& x, const int& y, const int& 
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
 		Chunk* chunk = chunkMap[chunkIndex];
-		if (Engine::Get()->IsObjDeleted(chunk)) return;
+		if(Engine::Get()->IsObjDeleted(chunk)) return;
 
-		if (chunk == nullptr || chunk->pendingDeletion) return;
+		if(chunk == nullptr || chunk->pendingDeletion) return;
 
-		AcquireSRWLockExclusive(&chunk->gAccessMutex);
-		chunk->SetSkyLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, val);
-		ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+		//AcquireSRWLockExclusive(&chunk->gAccessMutex);
+		{	unique_lock<std::mutex> lock(chunk->gAccessMutex);
+			chunk->SetSkyLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, val);
+		}
+		//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 	}
 }
 
@@ -312,13 +388,16 @@ void ChunkManager::SetSkyLightAtWorldPos(const Vector3Int& p, const int& val)
 	SetSkyLightAtWorldPos(p.x, p.y, p.z, val);
 }
 
-short ChunkManager::GetRawLightAtWorldPos(const int& x, const int& y, const int& z) const
+short ChunkManager::GetRawLightAtWorldPos(const int& x, const int& y, const int& z)
 {
 	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 	if(chunkMap.find(chunkIndex) != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
-		Chunk* chunk = chunkMap.at(chunkIndex);
+		Chunk* chunk = nullptr;
+		{	unique_lock<std::mutex> lock(gAccessMutex);
+			chunk = chunkMap.at(chunkIndex);
+		}
 		if(chunk == nullptr || chunk->pendingDeletion) return 0x00;
 		//AcquireSRWLockExclusive(&chunk->gAccessMutex);
 		//chunk->SetSkyLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, val);
@@ -326,154 +405,4 @@ short ChunkManager::GetRawLightAtWorldPos(const int& x, const int& y, const int&
 		//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 	}
 	return 0x00;
-}
-
-
-ChunkManager* ChunkManager::Create(Transform* cameraTransform) {
-	ChunkManager* chnkMgr = new ChunkManager();
-	chnkMgr->Init(cameraTransform);
-	return chnkMgr;
-}
-
-void ChunkManager::Init(Transform* cameraTransform)
-{
-	this->pCameraTransform = cameraTransform;
-	this->pEngine = Engine::Get();
-}
-
-void ChunkManager::LoaderThreadFunc(Transform* camTransform, map<tuple<int,int,int>, Chunk*>* pChunkMap)
-{
-	Engine* engine = Engine::Get();
-	Graphics* gfx = Graphics::Get();
-	SRWLOCK* pDestroyMutex = engine->GetDestroyObjectsMutex();
-	//SRWLOCK* pCreateMutex = engine->GetCreateObjectsMutex();
-
-	while(_isRunning) {
-		Vector3Int camIndex = ChunkFloorPosForPositionCalculation(camTransform->position);
-
-		//for(int y = 1 - CHUNKLOAD_AREA_NY; y < CHUNKLOAD_AREA_PY + 1; y++) {
-		for(int y = 1 - CHUNKLOAD_FIXED_NY; y < CHUNKLOAD_FIXED_PY + 1; y++) {
-		//for(int y = CHUNKLOAD_AREA_PY + 1; y > 1 - CHUNKLOAD_AREA_NY; y--) {
-			for(int x = 1 - CHUNKLOAD_AREA_X; x < CHUNKLOAD_AREA_X + 1; x++) {
-				for(int z = 1 - CHUNKLOAD_AREA_Z; z < CHUNKLOAD_AREA_Z + 1; z++) {
-					CreateChunk(camIndex.x + x, y, camIndex.z + z);
-
-					if(!_isRunning) return;
-				}
-			}
-		}
-
-		
-		for(auto it = pChunkMap->cbegin(); it != pChunkMap->cend();) {
-			const pair<tuple<int, int, int>, Chunk*>& pair = *it;
-
-			if(pair.second == nullptr || pair.second->pendingDeletion) {
-				++it;
-				continue;
-			}
-
-			//Vector3Int indexPos = Vector3Int(get<0>(pair.first), get<1>(pair.first), get<2>(pair.first));
-			Vector3Int indexPos = pair.first;
-
-			if(
-				abs(indexPos.x - camIndex.x) > CHUNKLOAD_AREA_X ||
-
-				//indexPos.y - camIndex.y > CHUNKLOAD_AREA_PY ||
-				//camIndex.y - indexPos.y  > CHUNKLOAD_AREA_NY ||
-
-				abs(indexPos.z - camIndex.z) > CHUNKLOAD_AREA_Z
-				) { // Erase chunk from map (it is out of range)
-
-				AcquireSRWLockExclusive(&pair.second->gAccessMutex);
-				AcquireSRWLockExclusive(pDestroyMutex);
-
-				ChunkDatabase::Get()->UnloadChunk(indexPos);
-				engine->DestroyObject3D(pair.second); // Delete chunk in-engine (adds to queue)
-
-				ReleaseSRWLockExclusive(pDestroyMutex);
-				ReleaseSRWLockExclusive(&pair.second->gAccessMutex);
-
-
-				AcquireSRWLockExclusive(&gAccessMutex);
-				pChunkMap->erase(it++);
-				ReleaseSRWLockExclusive(&gAccessMutex);
-			}
-			else { // Increment iterator 
-				++it;
-			}
-		}
-
-		if(!rebuildQueue.empty()) {
-			AcquireSRWLockExclusive(&rebuildQueueMutex);
-
-			// some chunks are getting here corrupt. Values are mostly 0 with some 0xdddd s, but chunk pointer isnt nullptr
-			// is the map being reallocated?
-			Chunk*& chunk = rebuildQueue.top().first;
-			bool important = rebuildQueue.top().second;
-			if(chunk == nullptr || chunk->pendingDeletion) {
-				rebuildQueue.pop();
-				
-			}
-			else{
-				
-				//chunk->BuildMesh();
-				if (chunk->chunkIndexPosition == Vector3Int(-1, 0, -1)) {
-					__nop();
-				}
-				threadPool->Queue([=] { 
-					chunk->BuildMesh_PoolFunc();
-					if(important) chunk->importantRenderPass = true;
-				});
-
-				rebuildQueue.pop();
-				
-			}
-			ReleaseSRWLockExclusive(&rebuildQueueMutex);
-		}
-	}
-}
-
-void ChunkManager::Start()
-{
-	ChunkDatabase::Init();
-	if (this->pEngine == nullptr || this->pCameraTransform == nullptr ) {
-		exit(204); 
-	}
-	InitializeSRWLock(&rebuildQueueMutex);
-
-	InitializeSRWLock(&this->gAccessMutex);
-
-	threadPool = new ThreadPool();
-	threadPool->thread_count = 8u;
-	threadPool->Init();
-
-	_chunkLoaderThreads.emplace_back([&]() { LoaderThreadFunc(pCameraTransform, &chunkMap); });
-	lighting = new Lighting(this);
-	lighting->StartThread();
-}
-
-void ChunkManager::Update(float dt)
-{
-
-}
-
-ChunkManager::~ChunkManager()
-{
-	_isRunning = false;
-	for(thread& thread : _chunkLoaderThreads) {
-		thread.join();
-	}
-
-	threadPool->Stop();
-
-	if(lighting) delete lighting;
-
-	ChunkDatabase::Get()->SaveChunks();
-	ChunkDatabase::Get()->SaveWorldData();
-
-	
-
-	//for(const pair<tuple<int, int, int>, Chunk*>& pair : this->chunkMap) {
-	//	delete pair.second;
-	//}
 }

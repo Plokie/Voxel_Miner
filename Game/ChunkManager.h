@@ -1,61 +1,47 @@
 #pragma once
 
-#include <vector>
 #include <map>
-#include <tuple>
-#include <thread>
-#include <atomic>
-#include <stack>
 #include <queue>
 
+#include "Blocks.h"
 #include "../Engine/Engine.h"
-#include "Chunk.h"
-#include "WorldGen.h"
-#include "../Engine/MathUtil.h"
-#include "Lighting.h"
 #include "../Engine/ThreadPool.h"
 
-
 #define CHUNKLOAD_AREA_X 6
-#define CHUNKLOAD_AREA_NY 3
-#define CHUNKLOAD_AREA_PY 4
 #define CHUNKLOAD_AREA_Z 6
-
 #define CHUNKLOAD_FIXED_NY 6
 #define CHUNKLOAD_FIXED_PY 4
 
-using namespace std;
+class Chunk;
 
 class ChunkManager : public Object3D {
 private:
-	Transform* pCameraTransform = nullptr;
-	Engine* pEngine = nullptr;
+	Engine* engine;
+	Transform* camTrans;
 
-	map<tuple<int, int, int>, Chunk*> chunkMap = {};
-
-	Chunk* CreateChunk(int x, int y, int z);
-
-	vector<thread> _chunkLoaderThreads = {};
-
-
-	atomic<bool> _isRunning{true};
-
-	Lighting* lighting = nullptr;
-
-	// To use less Mutexes and better performance, could just delete the queue from the chunkMap
-	//SRWLOCK _rebuildQueueMutex; // Permission to push / pop from rebuild queue
-	//atomic<vector<Chunk*>> _rebuildQueue{ {} }; // List of chunks that are awaiting re-build on the chunk builder thread
-
-	SRWLOCK rebuildQueueMutex;
-	stack<pair<Chunk*, bool>> rebuildQueue;
-public:
 	ThreadPool* threadPool;
 
-	Lighting* GetLighting() const {
-		return this->lighting;
-	}
+	map<tuple<int, int, int>, Chunk*> chunkMap;
 
-	Chunk* GetChunk(tuple<int,int,int> index) {
+	std::mutex newChunkQueueMutex;
+	queue<Chunk*> newChunkQueue;
+
+	std::mutex regenQueueMutex;
+	queue<Chunk*> regenQueue;
+
+	vector<thread> chnkMgrThread;
+
+	bool isRunning = true; //well then you better go catch it
+public:
+	void CreateChunk(const int x, const int y, const int z);
+
+	void Thread();
+
+	//Lighting* GetLighting() const {
+	//	return this->lighting;
+	//}
+
+	Chunk* GetChunk(tuple<int, int, int> index) {
 		if(chunkMap.find(index) != chunkMap.end()) {
 			return chunkMap[index];
 		}
@@ -73,14 +59,9 @@ public:
 	}
 
 
-	void TryRegen(Vector3Int chunkCoords, bool important = false);
-	void TryRegen(Chunk* chunk, bool important = false);
 	// long name because really shouldnt use this in most cases, but it /does/ have its use
 	static Vector3Int ChunkFloorPosForPositionCalculation(Vector3 worldPosition);
-	static Vector3Int ToChunkIndexPosition(const int& x, const int& y, const int& z);
-
-	// Used because faster when operating with
-	static tuple<int,int,int> ToChunkIndexPositionTuple(const int& x, const int& y, const int& z);
+	static tuple<int, int, int> ToChunkIndexPositionTuple(const int& x, const int& y, const int& z);
 
 	BlockID GetBlockAtWorldPos(const int& x, const int& y, const int& z);
 	BlockID GetBlockAtWorldPos(const Vector3Int& v);
@@ -97,15 +78,13 @@ public:
 	void SetSkyLightAtWorldPos(const int& x, const int& y, const int& z, const int& val);
 	void SetSkyLightAtWorldPos(const Vector3Int& p, const int& val);
 
-	short GetRawLightAtWorldPos(const int& x, const int& y, const int& z) const;
+	short GetRawLightAtWorldPos(const int& x, const int& y, const int& z);
 
-	static ChunkManager* Create(Transform* cameraTransform);
-	void Init(Transform* cameraTransform);
+	void QueueRegen(Chunk*);
+	void QueueRegen(const Vector3Int&);
 
-	void LoaderThreadFunc(Transform* camTransform, map<tuple<int, int, int>, Chunk*>* pChunkMap);
-
+	void Update(float dTime) override;
 	void Start() override;
-	void Update(float) override;
 
 	~ChunkManager();
 };

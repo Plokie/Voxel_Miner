@@ -27,9 +27,9 @@ bool VoxelRay::Cast(const VoxelRay* ray, ChunkManager* chunkManager, float max_d
 	);
 
 	const Vector3 deltat = Vector3(
-		1.0f/ abs(_pos2.x - _pos1.x),
-		1.0f/ abs(_pos2.y - _pos1.y),
-		1.0f/ abs(_pos2.z - _pos1.z)
+		1.0f / abs(_pos2.x - _pos1.x),
+		1.0f / abs(_pos2.y - _pos1.y),
+		1.0f / abs(_pos2.z - _pos1.z)
 	);
 
 	const Vector3 min = Vector3Int::FloorToInt(_pos1);

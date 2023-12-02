@@ -7,7 +7,7 @@
 
 class ChunkManager;
 
-class CameraController : public Object3D {
+class PlayerController : public Object3D {
 	//const float gravity = -9.81f;
 	const float gravity = -32.f;
 	const float terminalVelocity = -78.4f;
@@ -18,17 +18,19 @@ class CameraController : public Object3D {
 	Label* fpsCounter;
 	Label* worldPosLabel;
 
+	ChunkManager* chunkManager;
+
 #define COLLISION_CHECK_INSET 0.05f
 
 
-	bool freeCam = false;
+	bool freeCam = true;
 
 	BlockID TEMPcurrentBlockID = GRASS;
 
 	const Vector3 groundCheckPoints[4] = {
-		Vector3( (playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f,  (playerHalfExtents.z - COLLISION_CHECK_INSET)),
+		Vector3((playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f,  (playerHalfExtents.z - COLLISION_CHECK_INSET)),
 		Vector3(-(playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f,  (playerHalfExtents.z - COLLISION_CHECK_INSET)),
-		Vector3( (playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f, -(playerHalfExtents.z - COLLISION_CHECK_INSET)),
+		Vector3((playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f, -(playerHalfExtents.z - COLLISION_CHECK_INSET)),
 		Vector3(-(playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f, -(playerHalfExtents.z - COLLISION_CHECK_INSET)),
 	};
 

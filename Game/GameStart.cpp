@@ -6,9 +6,9 @@
 // Include all Object3D and child type references
 // ---------------------------------------
 #include "ExampleObject3D.h"
+#include "TitleScreen.h"
 #include "PlayerController.h"
 #include "ChunkManager.h"
-#include "TitleScreen.h"
 
 #include "../Engine/Label.h"
 // ---------------------------------------
@@ -29,7 +29,7 @@ void GameStart(Engine* engine) {
 
 	Resources::LoadPixelShader(L"pixelshader.cso", "pixelshader");
 	Resources::LoadPixelShader(L"pixelshellgrass.cso", "pixelshellgrass");
-	Resources::LoadPixelShader(L"demopixelshader.cso", "demopshader");
+	//Resources::LoadPixelShader(L"demopixelshader.cso", "demopshader");
 
 	Resources::LoadVertexShader(L"vertexshader.cso", "vertexshader");
 	Resources::LoadVertexShader(L"watervertexshader.cso", "watervertexshader");
@@ -38,7 +38,6 @@ void GameStart(Engine* engine) {
 	Audio::LoadClipStream("Data\\Music\\UndercoverVampirePoliceman.ogg", "MusicBg");
 	Audio::LoadClip("Data\\Sounds\\hit.wav", "hit");
 
-	//Audio::Play("MusicBg", { 0.f,0.f,0.f }, 0.5f);
 	Audio::Play("MusicBg", 1.f);
 
 	Resources::LoadMesh("cube");
@@ -58,8 +57,10 @@ void GameStart(Engine* engine) {
 
 	Scene* gameScene = new Scene(Graphics::Get());
 
-	gameScene->CreateObject3D(new CameraController(), "CameraController");
-	gameScene->CreateObject3D(ChunkManager::Create(&Graphics::Get()->camera.transform), "ChunkManager");
+	gameScene->CreateObject3D(new ChunkManager(), "ChunkManager");
+	gameScene->CreateObject3D(new PlayerController(), "PlayerController");
+	//gameScene->CreateObject3D(ChunkManager::Create(&Graphics::Get()->camera.transform), "ChunkManager");
+	gameScene->GetObject3D("PlayerController")->transform.position = Vector3(0, 10, 0);
 
 	gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "0", XMFLOAT4(0, 0, 0, 1.0f)), "fps-counter");
 	gameScene->GetObject2D<Label>("fps-counter")->SetColour(1.0f, 1.0f, 1.0f, 1.0f);
@@ -70,19 +71,9 @@ void GameStart(Engine* engine) {
 
 	Audio::SetListener(&Graphics::Get()->camera.transform);
 
-	//gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "0 0 0", XMFLOAT4(0, 0, 0, 1.0f)), "chunkpos");
-	//gameScene->GetObject2D("chunkpos")->position = Vector2(0.f, 48.f);
-
-	//gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "0 0 0", XMFLOAT4(0, 0, 0, 1.0f)), "indexpos");
-	//gameScene->GetObject2D("indexpos")->position = Vector2(0.f, 72.f);
-	
 	engine->AddScene(titleScene, "title");
 	engine->AddScene(gameScene, "game");
-	
-	//engine->SetScene("game");
 
-	//engine.s
-	//engine->GetScene("game")->GetObject3D("test2")->transform.position = Vector3(-8.f, 0.f, 0.f);
 }
 
 // Ideally don't want to use this, but it's here as an option

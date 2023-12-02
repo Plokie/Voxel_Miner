@@ -12,14 +12,16 @@ class Engine;
 
 class Scene {
 private:
-	Graphics* gfx;
-	Engine* engine;
+	Graphics* gfx = nullptr;
+	Engine* engine = nullptr;
 	map<string, Object3D*> sceneObjects3D = {};
 	map<string, Object2D*> sceneObjects2D = {};
 public:
 	void Init(Graphics* gfx, Engine* engine);
 
 	Scene(Graphics* pGfx): gfx(pGfx){}
+
+	std::mutex createObjectMutex = {};
 
 	Object3D* CreateObject3D(Object3D* object3D, const string& name);
 	Object3D* CreateObject3D(Object3D* object3D, const string& name, const string& meshName);

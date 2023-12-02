@@ -1,13 +1,15 @@
 #pragma once
 
+#include <mutex>
+
 #include "Transform.h"
 #include "..\Graphics\Model.h"
 #include "AABB.h"
 
 class Object3D {
 public:
-	SRWLOCK gAccessMutex = {};
-	SRWLOCK modelsMutex = {};
+	std::mutex gAccessMutex = {};
+	std::mutex modelsMutex = {};
 
 	bool doRender = true;
 	bool pendingDeletion = false;
