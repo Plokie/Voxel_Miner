@@ -4,6 +4,7 @@
 #include "WorldGen.h"
 #include "../Engine/Engine.h"
 #include "ChunkDatabase.h"
+#include "VoxelLighting.h"
 
 void ChunkManager::CreateChunk(const int x, const int y, const int z)
 {
@@ -120,6 +121,9 @@ void ChunkManager::Start()
 	threadPool->thread_count = 8u;
 	threadPool->Init();
 
+	lighting = new VoxelLighting(this);
+	lighting->StartThread();
+
 	engine = Engine::Get();
 	camTrans = &Graphics::Get()->camera.transform;
 
@@ -141,6 +145,8 @@ ChunkManager::~ChunkManager()
 
 	threadPool->Stop();
 	delete threadPool;
+
+	if(lighting) delete lighting;
 }
 
 tuple<int, int, int> ChunkManager::ToChunkIndexPositionTuple(const int& x, const int& y, const int& z)
@@ -207,30 +213,30 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 		//lighting->QueueSkyLight({ localVoxelPos, chunk });
 
 		// If the new block placed had a light value
-		//if(newBlockDef.LightValue() != 0) {
-		//	chunkMap[chunkIndex]->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, newBlockDef.LightValue());
-		//}
+		if(newBlockDef.LightValue() != 0) {
+			chunkMap[chunkIndex]->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, newBlockDef.LightValue());
+		}
 
-		//// If a light is being removed
-		//if(oldBlockDef.LightValue() != 0 && id == AIR) {
-		//	lighting->QueueRemoveLight({ localVoxelPos, chunk, static_cast<short>(oldBlockDef.LightValue()) });
-
-
-		//	chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 0);
-		//	lighting->PopLightQueue();
-		//}
+		// If a light is being removed
+		if(oldBlockDef.LightValue() != 0 && id == AIR) {
+			lighting->QueueRemoveBlockLight({ localVoxelPos, chunk, static_cast<short>(oldBlockDef.LightValue()) });
 
 
-		//if(oldBlockDef.LightValue() && newBlockDef.LightValue()) {
-		//	lighting->QueueRemoveLight({ localVoxelPos, chunk, (short)chunk->GetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z) });
+			chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 0);
+			lighting->PopBlockLightQueue();
+		}
 
-		//	if(id != AIR) {
-		//		chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 0);
-		//	}
-		//	else {
-		//		chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, chunk->GetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z));
-		//	}
-		//}
+
+		if(oldBlockDef.LightValue() && newBlockDef.LightValue()) {
+			lighting->QueueRemoveBlockLight({ localVoxelPos, chunk, (short)chunk->GetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z) });
+
+			if(id != AIR) {
+				chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, 0);
+			}
+			else {
+				chunk->SetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, chunk->GetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z));
+			}
+		}
 
 		//rebuildQueue.push(chunk);
 		//chunk->BuildMesh_PoolFunc(false);

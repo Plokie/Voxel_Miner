@@ -13,11 +13,14 @@
 #define CHUNKLOAD_FIXED_PY 4
 
 class Chunk;
+class VoxelLighting;
 
 class ChunkManager : public Object3D {
 private:
 	Engine* engine;
 	Transform* camTrans;
+
+	VoxelLighting* lighting;
 
 	ThreadPool* threadPool;
 
@@ -58,6 +61,7 @@ public:
 		return chunkMap;
 	}
 
+	VoxelLighting* GetLighting() { return lighting; }
 
 	// long name because really shouldnt use this in most cases, but it /does/ have its use
 	static Vector3Int ChunkFloorPosForPositionCalculation(Vector3 worldPosition);

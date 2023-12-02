@@ -1,6 +1,7 @@
 #include "Chunk.h"
 
 #include "ChunkManager.h"
+#include "VoxelLighting.h"
 
 int Chunk::GetBlockLight(const int& x, const int& y, const int& z)
 {
@@ -35,7 +36,7 @@ void Chunk::SetBlockLight(const int& x, const int& y, const int& z, const int& v
 {
 	this->lightLevel[x][y][z] = (this->lightLevel[x][y][z] & 0xF0) | val;
 
-	//chunkManager->GetLighting()->QueueLight(LightNode(x, y, z, this));
+	chunkManager->GetLighting()->QueueBlockLight(LightNode(x, y, z, this));
 }
 
 void Chunk::SetBlockLightNoUpdate(const int& x, const int& y, const int& z, const int& val) {
