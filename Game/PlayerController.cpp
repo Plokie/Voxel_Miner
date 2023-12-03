@@ -1,7 +1,7 @@
 #include "PlayerController.h"
 
 #include "VoxelRaycast.h"
-
+#include "../Engine/UI/Label.h"
 #include "ChunkManager.h"
 #include "WorldGen.h"
 #include "Chunk.h"
@@ -33,7 +33,7 @@ void PlayerController::Start()
 
 	aabb = AABB(transform.position, playerHalfExtents);
 
-	chunkManager = engine->GetCurrentScene()->GetObject3D<ChunkManager>("ChunkManager");
+	chunkManager = engine->GetCurrentScene()->GetObject3D<ChunkManager>("AChunkManager");
 }
 
 #define AABB_RANGE Vector3Int(2,4,2)

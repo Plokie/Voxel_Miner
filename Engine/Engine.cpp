@@ -176,12 +176,24 @@ bool Engine::DestroyObject3D(Object3D* obj)
 bool Engine::DestroyObject3DImmediate(string name)
 {
 	//todo: move procedure to scene class
+	//map<string, Object3D*>* sceneObjects = currentScene->GetSceneObjects3D();
+
+	//auto it = sceneObjects->find(name);
+
+	//if(it != sceneObjects->end()) {
+
 	if(currentScene->GetSceneObjects3D()->count(name)) {
-		Object3D*& objectToDelete = currentScene->GetSceneObjects3D()->at(name);
+		//Object3D*& objectToDelete = it->second;
+		Object3D* objectToDelete = currentScene->GetSceneObjects3D()->at(name);
+		//if(objectToDelete==nullptr || objectToDelete->pendingDeletion) return false;
+
+		//sceneObjects->erase(name);
+		currentScene->GetSceneObjects3D()->erase(name);
+
+
 		objectToDelete->pendingDeletion = true;
+
 		// Immediately acquire and release to hopefully make sure we dont destroy it while another thread is using it
-		//AcquireSRWLockExclusive(&objectToDelete->gAccessMutex);
-		//ReleaseSRWLockExclusive(&objectToDelete->gAccessMutex);
 		objectToDelete->gAccessMutex.lock();
 		objectToDelete->gAccessMutex.unlock();
 		
@@ -192,7 +204,6 @@ bool Engine::DestroyObject3DImmediate(string name)
 
 		//currentScene->GetSceneObjects3D()->at(name) = nullptr;
 		//ReleaseSRWLockShared(&objectToDelete->gAccessMutex);
-		currentScene->GetSceneObjects3D()->erase(name);
 
 		return true;
 	}

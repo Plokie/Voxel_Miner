@@ -18,6 +18,8 @@ const XMFLOAT4 Label::GetColour()
 void Label::SetText(const string& text)
 {
 	this->text = text;
+
+
 }
 
 const string& Label::GetText()
@@ -33,7 +35,8 @@ void Label::SetFontPath(const wstring& fontPath)
 Label::Label(const wstring& fontPath, const string& text, const XMFLOAT4& color)
 {
 	this->fontPath = fontPath;
-	this->text = text;
+	//this->text = text;
+	SetText(text);
 	this->color = color;
 }
 
@@ -47,5 +50,5 @@ void Label::Update(const float& dTime)
 
 void Label::Draw(SpriteBatch* spriteBatch)
 {
-	this->spriteFont->DrawString(spriteBatch, this->text.c_str(), XMFLOAT2(this->rawPosition.x, this->rawPosition.y), XMVectorSet(color.x,color.y,color.z,color.w));
+	this->spriteFont->DrawString(spriteBatch, this->text.c_str(), GetScreenPosition(), XMVectorSet(color.x, color.y, color.z, color.w));
 }

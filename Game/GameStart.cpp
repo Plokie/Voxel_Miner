@@ -10,7 +10,8 @@
 #include "PlayerController.h"
 #include "ChunkManager.h"
 
-#include "../Engine/Label.h"
+#include "../Engine/UI/Label.h"
+#include "../Engine/UI/UIRect.h"
 // ---------------------------------------
 
 
@@ -18,8 +19,6 @@
 void GameStart(Engine* engine) {
 
 	// todo: move resource loading to a separate thread, so the main thread can display a loading screen
-
-	Resources::LoadTexture(L"Data\\Textures\\err.dds", "err");
 	Resources::LoadTexture(L"Data\\Textures\\img.dds", "head");
 	Resources::LoadTexture(L"Data\\Textures\\pfp.dds", "pfp");
 	Resources::LoadTexture(L"Data\\Textures\\block-select.dds", "block-select");
@@ -52,12 +51,26 @@ void GameStart(Engine* engine) {
 	titleScene->CreateObject3D(new ExampleObject3D(-2.f, 0.f, 0.f), "test", "cube", "head");
 	titleScene->GetObject3D("test")->transform.position = Vector3(0.f, 0.f, 5.f);
 
-	titleScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "Press SPACE to start!", XMFLOAT4(0,0,0,1.0f)), "start-label");
-	titleScene->GetObject2D("start-label")->SetPosition(Vector2(100.f, 100.f));
+
+	UIRect* rect = (UIRect*)titleScene->CreateObject2D(new UIRect(), "rect");
+	rect->SetColour(.5f, .5f, .5f, 1.f);
+	rect->SetPosition(Vector2(0.f, 0.f));
+	rect->SetAnchor(Vector2(0.5f, 0.5f));
+	rect->SetDimensions(Vector2(500.f, 100.f));
+	rect->SetPivot(Vector2(250.f, 50.f));
+	
+	Label* label = (Label*)titleScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "Start", XMFLOAT4(0,0,0,1.0f)), "start-label");
+	label->SetPosition(Vector2(0.f, 0.f));
+	label->SetAnchor(Vector2(0.5f, 0.5f));
+	//label->SetDimensions(Vector2(500.f, 30.f));
+	//label->SetDimensions(Vector2(label->GetText().size() * 16.f, 30.f));
+	
+	label->SetPivot(label->GetDimensions() * 0.5f);
+	label->SetParent(rect);
 
 	Scene* gameScene = new Scene(Graphics::Get());
 
-	gameScene->CreateObject3D(new ChunkManager(), "ChunkManager");
+	gameScene->CreateObject3D(new ChunkManager(), "AChunkManager");
 	gameScene->CreateObject3D(new PlayerController(), "PlayerController");
 	//gameScene->CreateObject3D(ChunkManager::Create(&Graphics::Get()->camera.transform), "ChunkManager");
 	gameScene->GetObject3D("PlayerController")->transform.position = Vector3(0, 10, 0);

@@ -362,6 +362,10 @@ public:
 	Vector2 operator*(const float& a) {
 		return Vector2(x * a, y * a);
 	}
+	const Vector2& operator*(const float& a) const {
+		return Vector2(x * a, y * a);
+	}
+
 	Vector2& operator*=(const float& a) {
 		this->x *= a;
 		this->y *= a;
@@ -393,6 +397,14 @@ public:
 		float mag = magnitude();
 		if(mag == 0) return Vector2(0.f, 0.f);
 		return Vector2(x, y) / mag;
+	}
+
+	bool operator==(const Vector2& a) {
+		return x == a.x && y == a.y;
+	}
+
+	bool operator!=(const Vector2& a) {
+		return x != a.x || y != a.y;
 	}
 
 	const XMVECTOR& xmVec() {

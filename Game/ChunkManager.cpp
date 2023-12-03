@@ -187,7 +187,7 @@ tuple<int, int, int> ChunkManager::ToChunkIndexPositionTuple(const int& x, const
 BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& z)
 {
 
-	if(this == nullptr) return WorldGen::GetBlockAt(x, y, z);
+	if(this == nullptr || this->pendingDeletion) return WorldGen::GetBlockAt(x, y, z);
 	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 
 	// If chunk is loaded
@@ -197,6 +197,7 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 		//AcquireSRWLockExclusive(&this->gAccessMutex);
 		Chunk* chunk = chunkMap[chunkIndex];
 		if(!(chunk == nullptr || chunk->pendingDeletion)) {
+			if (!chunk->hasRanStartFunction) return WorldGen::GetBlockAt(x, y, z);
 			//TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
 
 			// Okay this might seem redundant, but i promise its not (i think)
@@ -423,13 +424,14 @@ void ChunkManager::SetSkyLightAtWorldPos(const Vector3Int& p, const int& val, bo
 short ChunkManager::GetRawLightAtWorldPos(const int& x, const int& y, const int& z)
 {
 	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
-	if(chunkMap.find(chunkIndex) != chunkMap.end()) {
+	auto it = chunkMap.find(chunkIndex);
+	if(it != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
-		Chunk* chunk = nullptr;
-		{	unique_lock<std::mutex> lock(gAccessMutex);
-			chunk = chunkMap.at(chunkIndex);
-		}
+		Chunk* chunk = it->second;
+		//{	unique_lock<std::mutex> lock(gAccessMutex);
+		//	chunk = chunkMap.at(chunkIndex);
+		//}
 		if(chunk == nullptr || chunk->pendingDeletion) return 0x00;
 		//AcquireSRWLockExclusive(&chunk->gAccessMutex);
 		//chunk->SetSkyLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, val);

@@ -495,18 +495,13 @@ void Graphics::Render(Scene* scene) {
 	vector<tuple<Model*,XMMATRIX, Object3D*>> transparentModels = {}; // Transparent meshes to be drawn AFTER the opaque geometry
 	vector<Object3D*> objects = {};
 
-	//camera.viewFrustum = Frustum::CreateFrustumFromCamera(camera, )
-
-	//AcquireSRWLockExclusive(&gRenderingMutex);
-
 	//todo: precompute sceneObjects values vector whenever an object is appended or removed
 	for(map<string, Object3D*>::iterator it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); ++it) {
-		//AcquireSRWLockExclusive(&it->second->gAccessMutex);
+
 		// if object has an AABB, and is visible by the camera
 		if(it->second != nullptr)
 		if((it->second->cullBox.GetHalfSize().magnitude() == 0.0f || camera.IsAABBInFrustum(it->second->cullBox)) && it->second->doRender )
 			objects.push_back(it->second);
-		//AcquireSRWLockExclusive(&it->second->gAccessMutex);
 
 		// aka: dont queue objects hidden to the camera to be drawn
 	}
@@ -515,26 +510,14 @@ void Graphics::Render(Scene* scene) {
 
 	for(vector<Object3D*>::iterator it = objects.begin(); it != objects.end(); ++it) {
 
-		//AcquireSRWLockExclusive(&(*it)->gAccessMutex); 
-		{ unique_lock<std::mutex> lock((*it)->gAccessMutex);
+		{	unique_lock<std::mutex> lock((*it)->gAccessMutex);
 			if ((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentModels)) {
 				//If it drew something, return back to default error textures+shaders afterwards (so we can see missing tex objects)
 				deviceCtx->PSSetShaderResources(0, 1, &errTex);
 				deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
 				deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
 			}
-			//ReleaseSRWLockExclusive(&(*it)->gAccessMutex);
 		}
-
-
-		//else if((*it)->importantRenderPass) {
-		//	if((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentModels)) {
-		//		//If it drew something, return back to default error textures+shaders afterwards (so we can see missing tex objects)
-		//		deviceCtx->PSSetShaderResources(0, 1, &errTex);
-		//		deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
-		//		deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
-		//	}
-		//}
 	}
 
 	// Set depth stencil to alpha geometry mode
@@ -547,14 +530,12 @@ void Graphics::Render(Scene* scene) {
 		Object3D*& obj = get<2>(*it);
 		if (model->GetMesh() == nullptr || obj == nullptr || obj->pendingDeletion ) continue;
 
-		//AcquireSRWLockExclusive(&obj->gAccessMutex); 
 		{	unique_lock<std::mutex> lock(obj->gAccessMutex);
 			model->Draw(deviceCtx, get<1>(*it), worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
 			deviceCtx->PSSetShaderResources(0, 1, &errTex);
 			deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
 			deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
 
-			//ReleaseSRWLockExclusive(&obj->gAccessMutex);
 		}
 
 	}
@@ -570,7 +551,6 @@ void Graphics::Render(Scene* scene) {
 	for (map<string, Object2D*>::iterator it = scene->GetSceneObjects2D()->begin(); it != scene->GetSceneObjects2D()->end(); ++it) {
 		it->second->Draw(this->spriteBatch);
 	}
-	//ReleaseSRWLockExclusive(&gRenderingMutex);
 
 
 	this->spriteBatch->End();

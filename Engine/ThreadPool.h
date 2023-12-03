@@ -14,7 +14,7 @@ private:
 	void _MainLoop();
 
 	bool isRunning = true;
-	std::mutex queueMutex;
+	std::mutex queueMutex = {};
 	condition_variable new_job_cond;
 	vector<thread> threads = {};
 

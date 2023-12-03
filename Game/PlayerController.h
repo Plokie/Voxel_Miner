@@ -3,8 +3,8 @@
 #include "../Engine/Engine.h"
 #include "../Engine/AABB.h"
 #include "Blocks.h"
-#include "../Engine/Label.h"
 
+class Label;
 class ChunkManager;
 
 class PlayerController : public Object3D {

@@ -42,7 +42,7 @@
     <ClCompile Include="Engine\Input.cpp">
       <Filter>Engine\Source</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Label.cpp">
+    <ClCompile Include="Engine\UI\Label.cpp">
       <Filter>Engine\Source</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Object2D.cpp">
@@ -129,6 +129,9 @@
     <ClCompile Include="Game\VoxelLighting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\UI\UIRect.cpp">
+      <Filter>Engine\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\AABB.h">
@@ -143,7 +146,7 @@
     <ClInclude Include="Engine\json.hpp">
       <Filter>Engine\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Label.h">
+    <ClInclude Include="Engine\UI\Label.h">
       <Filter>Engine\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Engine\MathUtil.h">
@@ -243,6 +246,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Engine\ThreadUtil.h">
+      <Filter>Engine\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UI\UIRect.h">
       <Filter>Engine\Headers</Filter>
     </ClInclude>
   </ItemGroup>

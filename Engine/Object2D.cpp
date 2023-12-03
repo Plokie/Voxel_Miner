@@ -1,6 +1,17 @@
 #include "Object2D.h"
 
 #include "WinManager.h"
+#include "MathUtil.h"
+
+void Object2D::SetParent(Object2D* parent)
+{
+    this->parent = parent;
+}
+
+Object2D* Object2D::GetParent() const
+{
+    return parent;
+}
 
 const Vector2& Object2D::GetPivot()
 {
@@ -33,6 +44,14 @@ void Object2D::SetAnchor(const Vector2& newAnchor)
     this->anchor = newAnchor;
 }
 
+const Vector2& Object2D::GetDimensions() const {
+    return dimensions;
+}
+
+void Object2D::SetDimensions(const Vector2& dim) {
+    this->dimensions = dim;
+}
+
 void Object2D::SetPosition(const Vector2& position)
 {
     this->rawPosition = position;
@@ -45,8 +64,19 @@ void Object2D::SetPosition(const float& x, const float& y)
 
 const Vector2& Object2D::GetScreenPosition()
 {
-    // TODO: insert return statement here
-    return this->rawPosition;
+    Vector2 res = { (float)winMgr->width, (float)winMgr->height};
+
+    Vector2 parentPosition = { 0.f, 0.f };
+    if (parent != nullptr) {
+        parentPosition = parent->GetScreenPosition();
+        if (parent->dimensions != Vector2(0.f, 0.f)) {
+            res = parent->dimensions;
+        }
+    }
+
+    const Vector2 resAnchor = (res ^ anchor);
+
+    return parentPosition + (this->rawPosition + resAnchor - pivot);
 }
 
 void Object2D::Init(ID3D11Device* pDevice) {
@@ -60,6 +90,4 @@ void Object2D::Start(){}
 
 void Object2D::Update(const float& dTime){}
 
-void Object2D::Draw(SpriteBatch* spriteBatch)
-{
-}
+void Object2D::Draw(SpriteBatch* spriteBatch) {}

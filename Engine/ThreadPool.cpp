@@ -55,6 +55,8 @@ void ThreadPool::Queue(function<void()> func, int priority)
 
 void ThreadPool::Stop()
 {
+	if (this == nullptr) return;
+
 	{
 		unique_lock<std::mutex> lock(queueMutex);
 		this->isRunning = false;

@@ -2,7 +2,7 @@
 
 #include <string>
 #include <SpriteFont.h>
-#include "Object2D.h"
+#include "../Object2D.h"
 
 class Label : public Object2D {
 private:
