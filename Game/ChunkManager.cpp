@@ -22,6 +22,10 @@ void ChunkManager::CreateChunk(const int x, const int y, const int z)
 
 		//if(y == CHUNKLOAD_FIXED_PY) this_thread::sleep_for(std::chrono::milliseconds(10));
 
+		//if(y == CHUNKLOAD_FIXED_PY) {
+		//	threadPool->Queue([&] {});
+		//}
+
 		threadPool->Queue([=] {
 			//unique_lock<std::mutex> lock(newChunk->gAccessMutex);
 			if(ChunkDatabase::Get()->DoesDataExistForChunk({ x,y,z })) {
@@ -39,7 +43,7 @@ void ChunkManager::CreateChunk(const int x, const int y, const int z)
 					newChunk->InitSkyLight();
 				});
 			}*/
-		});
+		}, y == CHUNKLOAD_FIXED_PY); // If the chunk is at the TOP, the higher priority value means it will be completed last
 	}
 }
 
@@ -51,7 +55,12 @@ Vector3Int ChunkManager::ChunkFloorPosForPositionCalculation(Vector3 worldPositi
 	);
 }
 
-void ChunkManager::Update(float dTime) {}
+void ChunkManager::Update(float dTime) {
+	if(Input::IsKeyPressed('I')) {
+		ChunkDatabase::Get()->SaveChunks();
+		ChunkDatabase::Get()->SaveWorldData();
+	}
+}
 
 void ChunkManager::Thread() {
 
@@ -84,6 +93,8 @@ void ChunkManager::Thread() {
 			while(!regenQueue.empty()) {
 				Chunk* chunk = regenQueue.front();
 				threadPool->Queue([=] {
+					if(chunk == nullptr || chunk->pendingDeletion) return;
+
 					unique_lock<std::mutex> lock(chunk->gAccessMutex);
 					chunk->BuildMesh();
 				});
@@ -110,7 +121,7 @@ void ChunkManager::Thread() {
 						unique_lock<std::mutex> lock(pair.second->gAccessMutex);
 						unique_lock<std::mutex> destroyLock(*Engine::Get()->GetDestroyObjectsMutex());
 
-						//ChunkDatabase::Get()->UnloadChunk(indexPos);
+						ChunkDatabase::Get()->UnloadChunk(indexPos);
 						engine->DestroyObject3D(pair.second); // Delete chunk in-engine (adds to queue)
 					}
 

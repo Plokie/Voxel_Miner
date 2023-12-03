@@ -51,6 +51,9 @@ public:
 
 	static ChunkDatabase* Get();
 
+	void SetWorldName(const string& name);
+	const string& GetWorldName() const;
+
 	static void Init();
 
 	void SaveWorldData();

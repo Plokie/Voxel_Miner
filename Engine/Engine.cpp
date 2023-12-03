@@ -161,6 +161,7 @@ bool Engine::DestroyObject3D(Object3D* obj)
 	//todo: move procedure to scene class
 	for(pair<string, Object3D*> pair : *currentScene->GetSceneObjects3D()) {
 		if(pair.second == obj) {
+			obj->pendingDeletion = true;
 			DestroyObject3D(pair.first);
 			return true;
 		}

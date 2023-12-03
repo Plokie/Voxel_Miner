@@ -18,8 +18,11 @@ void ThreadPool::_MainLoop()
 			});
 			if (!isRunning) return;
 
-			job = jobs.front();
-			jobs.pop();
+			job = jobs.begin()->second;
+			jobs.erase(jobs.begin());
+
+			//job = jobs.front();
+			//jobs.pop();
 		}
 
 		job();
@@ -40,11 +43,12 @@ void ThreadPool::Init()
 	}
 }
 
-void ThreadPool::Queue(function<void()> func)
+void ThreadPool::Queue(function<void()> func, int priority)
 {
 	{
 		unique_lock<std::mutex> lock(queueMutex);
-		jobs.push(func);
+		//jobs.push(func);
+		jobs.emplace(priority, func);
 	}
 	new_job_cond.notify_one();
 }

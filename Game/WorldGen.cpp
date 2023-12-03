@@ -390,20 +390,20 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 	float valueSample = _Instance->noiseSampler_treeValue.GetNoise((float)x, (float)y, (float)z);
 	float distSample = _Instance->noiseSampler_treeDist.GetNoise((float)x, (float)y, (float)z);
 
-	if(valueSample < -0.9f && distSample < -0.9f) {
-		return COAL_ORE;
+	if(valueSample < -0.85f && distSample < -0.9f) {
+		return static_cast<BlockID>(COAL_ORE + ((biome.stone == BLACKSTONE) * 6));
 	}
-	if(valueSample < -0.75f && distSample < -0.95f) {
-		return COPPER_ORE;
+	if(valueSample < -0.7f && distSample < -0.95f) {
+		return static_cast<BlockID>(COPPER_ORE + ((biome.stone == BLACKSTONE) * 6));
 	}
-	if(y < -30 && valueSample < -0.6f && distSample < -0.96f) {
-		return GOLD_ORE;
+	if(y < -30 && valueSample < -0.55f && distSample < -0.96f) {
+		return static_cast<BlockID>(GOLD_ORE + ((biome.stone == BLACKSTONE) * 6));
 	}
-	if(y < -45 && valueSample < -0.5f && distSample < -0.97f) {
-		return AMETHYST_ORE;
+	if(y < -45 && valueSample < -0.45f && distSample < -0.97f) {
+		return static_cast<BlockID>(AMETHYST_ORE + ((biome.stone == BLACKSTONE) * 6));
 	}
-	if(y < -61 && valueSample < -0.4f && distSample < -0.97f) {
-		return TITANIUM_ORE;
+	if(y < -61 && valueSample < -0.35f && distSample < -0.97f) {
+		return static_cast<BlockID>(TITANIUM_ORE + ((biome.stone == BLACKSTONE) * 6));
 	}
 
 	return biome.stone;

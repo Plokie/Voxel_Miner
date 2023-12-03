@@ -4,18 +4,44 @@
 #include "VoxelLighting.h"
 
 void Chunk::InitSkyLight() {
-	/*Chunk* top = chunkManager->GetChunk(Vector3Int( indexPosition.x, CHUNKLOAD_FIXED_PY, indexPosition.z ));
-	if(top == nullptr) 
-		return;*/
-
-	if(indexPosition.y == CHUNKLOAD_FIXED_PY) {
-		for(int x = 0; x < CHUNKSIZE_X; x++) {
+	for(int x = 0; x < CHUNKSIZE_X; x++) {
+		for(int y = 0; y < CHUNKSIZE_Y; y++) {
 			for(int z = 0; z < CHUNKSIZE_Z; z++) {
-				SetSkyLight(x, CHUNKSIZE_Y - 1, z, 15);
-				chunkManager->GetLighting()->QueueSkyLight(LightNode(x, CHUNKSIZE_Y - 1, z, this));
+				SetSkyLight(x, y, z, 15);
 			}
 		}
 	}
+
+
+	//if(indexPosition.y < -1) return; // meh
+
+	//if(indexPosition.y == CHUNKLOAD_FIXED_PY) {
+
+	//}
+
+	//Chunk* top = chunkManager->GetChunk(Vector3Int(indexPosition.x, CHUNKLOAD_FIXED_PY, indexPosition.z));
+	//unique_lock<std::mutex> lock(chunkManager->GetLighting()->skyLightQueueMutex);
+
+	//int breakCond = 100;
+	//do {
+	//	top = chunkManager->GetChunk(Vector3Int( indexPosition.x, CHUNKLOAD_FIXED_PY, indexPosition.z ));
+	//	this_thread::sleep_for(chrono::milliseconds(10));
+	//	if(breakCond-- <= 0) break;
+	//} while(top == nullptr);
+	
+	//if(top == nullptr || top->pendingDeletion) return;
+		//top = this;
+
+	//if(indexPosition.y == CHUNKLOAD_FIXED_PY) {
+		//for(int x = 0; x < CHUNKSIZE_X; x++) {
+		//	for(int z = 0; z < CHUNKSIZE_Z; z++) {
+		//		if(BlockDef::GetDef(top->blockData[x][CHUNKSIZE_Y - 1][z]).IsOpaque()) continue;
+
+		//		SetSkyLight(x, CHUNKSIZE_Y - 1, z, 15);
+		//		chunkManager->GetLighting()->QueueSkyLight(LightNode(x, CHUNKSIZE_Y - 1, z, top));
+		//	}
+		//}
+	//}
 
 	//if(indexPosition.y == CHUNKLOAD_FIXED_PY) {
 	//	//unique_lock<std::mutex> lock(chunkManager->GetLighting()->skyLightQueueMutex);
@@ -25,6 +51,8 @@ void Chunk::InitSkyLight() {
 	//			BlockID block = AIR;
 
 	//			for(;;) {
+	//				if(this->pendingDeletion) return;
+
 	//				block = GetBlockIncludingNeighbours(x, --y, z);
 	//				if(BlockDef::GetDef(block).IsOpaque() || y < -CHUNKSIZE_Y * 5) break;
 

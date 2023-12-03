@@ -4,18 +4,17 @@
 
 const Vector2& Object2D::GetPivot()
 {
-    // TODO: insert return statement here
     return this->pivot;
 }
 
 void Object2D::SetPivot(const float& x, const float& y)
 {
-    
+    SetPivot({ x, y });
 }
 
 void Object2D::SetPivot(const Vector2& newPivot)
 {
-    SetPivot(newPivot.x, newPivot.y);
+    this->pivot = newPivot;
 }
 
 const Vector2& Object2D::GetAnchor()
@@ -26,11 +25,12 @@ const Vector2& Object2D::GetAnchor()
 
 void Object2D::SetAnchor(const float& x, const float& y)
 {
+    SetAnchor({ x, y });
 }
 
 void Object2D::SetAnchor(const Vector2& newAnchor)
 {
-    SetAnchor(newAnchor.x, newAnchor.y);
+    this->anchor = newAnchor;
 }
 
 void Object2D::SetPosition(const Vector2& position)
@@ -40,7 +40,7 @@ void Object2D::SetPosition(const Vector2& position)
 
 void Object2D::SetPosition(const float& x, const float& y)
 {
-    this->rawPosition = Vector2(x,y);
+    SetPosition({ x,y });
 }
 
 const Vector2& Object2D::GetScreenPosition()

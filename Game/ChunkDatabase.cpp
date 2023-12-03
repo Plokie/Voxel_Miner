@@ -168,6 +168,16 @@ ChunkDatabase* ChunkDatabase::Get()
 	return _Instance;
 }
 
+void ChunkDatabase::SetWorldName(const string& name)
+{
+	worldName = name;
+}
+
+const string& ChunkDatabase::GetWorldName() const
+{
+	return worldName;
+}
+
 void ChunkDatabase::Init()
 {
 	if(_Instance != nullptr) delete _Instance;

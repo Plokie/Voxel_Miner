@@ -89,30 +89,33 @@ void VoxelLighting::_ThreadSky() {
 			TryRemoveSkyLight(index + Vector3Int(0, 0, 1), lightLevel, chunk);
 		}
 
-		while(!skyLightQueue.empty()) {
-			//debugCooldown = 10;
-			LightNode& node = skyLightQueue.top();
+		{
+			unique_lock<std::mutex> lock(chunkManager->GetLighting()->skyLightQueueMutex);
+			while(!skyLightQueue.empty()) {
+				//debugCooldown = 10;
+				LightNode& node = skyLightQueue.top();
 
-			Vector3Int index = node.localIndexPos;
-			Chunk* chunk = node.chunk;
-			skyLightQueue.pop();
-			if(chunk == nullptr || chunk->pendingDeletion) continue;
+				Vector3Int index = node.localIndexPos;
+				Chunk* chunk = node.chunk;
+				skyLightQueue.pop();
+				if(chunk == nullptr || chunk->pendingDeletion) continue;
 
-			//AcquireSRWLockExclusive(&chunk->gAccessMutex);
-			{	unique_lock<std::mutex> lock(chunk->gAccessMutex);
-				int lightLevel = chunk->GetSkyLight(index.x, index.y, index.z);
+				//AcquireSRWLockExclusive(&chunk->gAccessMutex);
+				{	unique_lock<std::mutex> lock(chunk->gAccessMutex);
+					int lightLevel = chunk->GetSkyLight(index.x, index.y, index.z);
 
-				// Add to Map of chunks to be queued to rebuilt
-				chunkIndexRebuildQueue[chunk] = true;
+					// Add to Map of chunks to be queued to rebuilt
+					chunkIndexRebuildQueue[chunk] = true;
 
-				//AcquireSRWLockExclusive(pDestroyMutex);
-				//TryFloodSkyLightTo(index + Vector3Int(-1, 0, 0), lightLevel, chunk);
-				//TryFloodSkyLightTo(index + Vector3Int(1, 0, 0), lightLevel, chunk);
-				TryFloodSkyLightTo(index + Vector3Int(0, -1, 0), lightLevel, chunk, true);
-				//TryFloodSkyLightTo(index + Vector3Int(0, 1, 0), lightLevel, chunk);
-				//TryFloodSkyLightTo(index + Vector3Int(0, 0, -1), lightLevel, chunk);
-				//TryFloodSkyLightTo(index + Vector3Int(0, 0, 1), lightLevel, chunk);
+					//AcquireSRWLockExclusive(pDestroyMutex);
+					//TryFloodSkyLightTo(index + Vector3Int(-1, 0, 0), lightLevel, chunk);
+					//TryFloodSkyLightTo(index + Vector3Int(1, 0, 0), lightLevel, chunk);
+					TryFloodSkyLightTo(index + Vector3Int(0, -1, 0), lightLevel, chunk, true);
+					//TryFloodSkyLightTo(index + Vector3Int(0, 1, 0), lightLevel, chunk);
+					//TryFloodSkyLightTo(index + Vector3Int(0, 0, -1), lightLevel, chunk);
+					//TryFloodSkyLightTo(index + Vector3Int(0, 0, 1), lightLevel, chunk);
 
+				}
 			}
 		}
 

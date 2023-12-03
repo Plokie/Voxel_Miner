@@ -5,6 +5,7 @@
 #include <thread>
 #include <queue>
 #include <functional>
+#include <map>
 
 using namespace std;
 
@@ -16,13 +17,16 @@ private:
 	std::mutex queueMutex;
 	condition_variable new_job_cond;
 	vector<thread> threads = {};
-	queue<function<void()>> jobs;
+
+	// map of priority to lambda func
+	multimap<int, function<void()>> jobs = {};
+	//queue<function<void()>> jobs;
 public:
 	string namingScheme = "";
 	unsigned int thread_count = 4;
 
 	void Init();
-	void Queue(function<void()> func);
+	void Queue(function<void()> func, int priority = 0);
 	void Stop();
 	bool IsBusy();
 };
