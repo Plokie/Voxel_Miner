@@ -154,6 +154,12 @@ void ChunkDatabase::LoadWorldData()
 		///////
 		WorldGen::SetSeed(json["seed"]);
 		this->worldName = json["worldName"];
+
+		//float arr[3] = json["playerPos"];
+		float x = json["playerPos"][0];
+		float y = json["playerPos"][1];
+		float z = json["playerPos"][2];
+
 		Engine::Get()->GetScene("game")->GetObject3D("PlayerController")->transform.position = { json["playerPos"][0], json["playerPos"][1], json["playerPos"][2] };
 	}
 	else { // if file doesnt exist
@@ -221,6 +227,8 @@ void ChunkDatabase::Init(const string& worldName)
 	_Instance->worldName = worldName;
 
 	InitializeSRWLock(&_Instance->chunkHashMutex);
+
+	Engine::Get()->GetScene("game")->GetObject3D("PlayerController")->transform.position.y = WorldGen::SampleWorldHeight(0, 0) + 5.f;
 
 	_Instance->TryLoadChunkHash();
 	_Instance->LoadWorldData();

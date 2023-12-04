@@ -103,6 +103,26 @@ void TextInput::SetRect(const XMFLOAT4& bgCol)
 	rect->SetParent(this);
 }
 
+void TextInput::SetCursor(const XMFLOAT4& bgCol)
+{
+	if(cursor == nullptr) {
+		cursor = new UIRect("white", bgCol);
+		cursor->Init(Engine::Get()->GetGraphics()->GetDevice());
+		cursor->InitSelf();
+		cursor->SetPosition({ 5.f, 0.f });
+		cursor->SetDimensions({5.f, 30.f});
+	}
+	else {
+		cursor->SetTexture("white");
+		cursor->SetColour(bgCol.x, bgCol.y, bgCol.z, bgCol.w);
+		cursor->SetPosition({5.f, 0.f});
+		cursor->SetDimensions({ 5.f, 30.f });
+	}
+	cursor->SetParent(label);
+	cursor->SetAnchor({ 1.0f, 0.5f });
+	cursor->SetPivot({ 0.5f, 0.5f });
+}
+
 void TextInput::SetDimensions(const Vector2& dim) {
 	this->dimensions = dim;
 
@@ -119,11 +139,13 @@ TextInput::TextInput(const wstring& fontPath, const XMFLOAT4& col) {
 	//InitSelf();
 	if(rect == nullptr) SetRect({ 1.f,1.f,1.f,1.f });
 	SetLabel("TEXT NOT SET", fontPath, col);
+	SetCursor({ 1.f,1.f,1.f,1.f });
 }
 
 TextInput::TextInput(const XMFLOAT4& bgCol) {
 	//InitSelf();
 	SetRect(bgCol);
+	SetCursor({ 1.f,1.f,1.f,1.f });
 }
 
 //Button::Button(const XMFLOAT4& txtCol, const XMFLOAT4& bgCol) {
@@ -136,6 +158,7 @@ TextInput::TextInput(const string& text, const wstring& fontPath, const XMFLOAT4
 	//InitSelf();
 	SetRect(bgCol);
 	SetLabel(text, fontPath, txtCol);
+	SetCursor({ 1.f,1.f,1.f,1.f });
 }
 
 void TextInput::InitSelf() {}
@@ -145,9 +168,6 @@ void TextInput::Start() {}
 void TextInput::Update(const float& dTime) {
 	XMFLOAT2 mPos = Input::MousePosition();
 	Vector2 sPos = GetScreenPosition();
-
-	bool dbgKeyPress = Input::IsKeyPressed('L');
-
 
 	isHovering =
 		mPos.x < sPos.x + dimensions.x &&
@@ -159,12 +179,7 @@ void TextInput::Update(const float& dTime) {
 		if(isHovering) {
 			engaged = true;
 			Input::OpenInputStream(this, [&](unsigned short kval) {
-				// 8 is backspace
-				//__nop();
-				//label->SetText(label->GetText() + static_cast<char>(kval));
-
 				this->HandleKey(kval);
-				
 			});
 		}
 		else {
@@ -172,17 +187,13 @@ void TextInput::Update(const float& dTime) {
 			Input::CloseInputStream(this);
 		}
 	}
-
-	//if(WasPressed()) {
-	//	for(auto& func : _onClick) {
-	//		func();
-	//	}
-	//}
 }
 
 void TextInput::Draw(SpriteBatch* spriteBatch) {
 	rect->Draw(spriteBatch);
 	label->Draw(spriteBatch);
+	if(engaged)
+	cursor->Draw(spriteBatch);
 }
 
 TextInput::~TextInput() {
@@ -192,7 +203,12 @@ TextInput::~TextInput() {
 	}
 
 	if(rect != nullptr) {
-		delete label;
-		label = nullptr;
+		delete rect;
+		rect = nullptr;
+	}
+
+	if(cursor != nullptr) {
+		delete cursor;
+		cursor = nullptr;
 	}
 }

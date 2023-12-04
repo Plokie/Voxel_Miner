@@ -14,6 +14,7 @@ private:
 public:
 	Label* label = nullptr;
 	UIRect* rect = nullptr;
+	UIRect* cursor = nullptr;
 
 	//void AddListener(function<void()> func);
 	void HandleKey(unsigned short vKey);
@@ -33,6 +34,7 @@ public:
 
 	void SetLabel(const string& text, const wstring& fontPath, const XMFLOAT4& col);
 	void SetRect(const XMFLOAT4& bgCol);
+	void SetCursor(const XMFLOAT4& bgCol);
 
 	void SetDimensions(const Vector2& dim) override;
 

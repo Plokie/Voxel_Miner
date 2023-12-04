@@ -139,7 +139,7 @@ void TitleScreen::Setup(Engine* engine)
 		Engine::Get()->SetScene("titlePlay");
 	});
 	AddButton(engine, titleMain, "Options", 0.f, [] {
-		Engine::Get()->SetScene("game");
+		//Engine::Get()->SetScene("game");
 	});
 	AddButton(engine, titleMain, "Quit", 100.f, [] {
 		Engine::StopGame();

@@ -13,7 +13,7 @@ void PlayerController::Start()
 {
 	Engine* engine = Engine::Get();
 
-	transform.position = Vector3(0, 5, 0);
+	//transform.position = Vector3(0, 5, 0);
 
 	engine->GetCurrentScene()->CreateObject3D(new Object3D(), "block_select", "cube", "block-select");
 	this->blockSelectRef = engine->GetCurrentScene()->GetObject3D("block_select");
