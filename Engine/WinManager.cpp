@@ -19,6 +19,9 @@ LRESULT CALLBACK DefaultMsgHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 		return DefWindowProc(hwnd, msg, wParam, lParam);
 
 		// WM_ACTIVATE is sent when the window is activated or deactivated.  
+	case WM_CHAR:
+		Input::HandleCharInput(wParam);
+		return DefWindowProc(hwnd, msg, wParam, lParam);
 
 	case WM_ACTIVATE:
 		//if(LOWORD(wParam) == WA_INACTIVE)

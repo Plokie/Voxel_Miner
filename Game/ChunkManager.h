@@ -17,12 +17,12 @@ class VoxelLighting;
 
 class ChunkManager : public Object3D {
 private:
-	Engine* engine;
-	Transform* camTrans;
+	Engine* engine = nullptr;
+	Transform* camTrans = nullptr;
 
-	VoxelLighting* lighting;
+	VoxelLighting* lighting = nullptr;
 
-	ThreadPool* threadPool;
+	ThreadPool* threadPool = nullptr;
 
 
 	map<tuple<int, int, int>, Chunk*> chunkMap;

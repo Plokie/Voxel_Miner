@@ -60,7 +60,7 @@ void UIRect::Draw(SpriteBatch* spriteBatch)
 	//spriteBatch->Draw(tex, GetScreenPosition(), { 0.f, 0.f, dimensions.x, dimensions.y }  );
 	//spriteBatch->Draw(tex, GetScreenPosition(), );
 	const Vector2 screenPos = GetScreenPosition();
-	const RECT r = { screenPos.x, screenPos.y, screenPos.x + dimensions.x, screenPos.y + dimensions.y };
+	const RECT r = { static_cast<LONG>(screenPos.x), static_cast<LONG>(screenPos.y), static_cast<LONG>(screenPos.x + dimensions.x), static_cast<LONG>(screenPos.y + dimensions.y) };
 
-	spriteBatch->Draw(tex, r);
+	spriteBatch->Draw(tex, r, {color.x, color.y, color.z, color.w});
 }

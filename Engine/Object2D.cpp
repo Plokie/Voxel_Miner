@@ -30,7 +30,6 @@ void Object2D::SetPivot(const Vector2& newPivot)
 
 const Vector2& Object2D::GetAnchor()
 {
-    // TODO: insert return statement here
     return this->anchor;
 }
 
@@ -69,14 +68,12 @@ const Vector2& Object2D::GetScreenPosition()
     Vector2 parentPosition = { 0.f, 0.f };
     if (parent != nullptr) {
         parentPosition = parent->GetScreenPosition();
-        if (parent->dimensions != Vector2(0.f, 0.f)) {
+        //if (parent->dimensions != Vector2(0.f, 0.f)) {
             res = parent->dimensions;
-        }
+        //}
     }
 
-    const Vector2 resAnchor = (res ^ anchor);
-
-    return parentPosition + (this->rawPosition + resAnchor - pivot);
+    return parentPosition + (this->rawPosition + (res ^ anchor) - (pivot ^ dimensions));
 }
 
 void Object2D::Init(ID3D11Device* pDevice) {

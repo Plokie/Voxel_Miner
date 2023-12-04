@@ -14,11 +14,11 @@ class PlayerController : public Object3D {
 	const float jumpHeight = 1.25f;
 	const float jumpVelocity = static_cast<float>(sqrt(2.0f * abs(gravity) * jumpHeight));
 	const Vector3 playerHalfExtents = Vector3(0.3f, 0.9f, 0.3f);
-	Object3D* blockSelectRef;
-	Label* fpsCounter;
-	Label* worldPosLabel;
+	Object3D* blockSelectRef = nullptr;
+	Label* fpsCounter = nullptr;
+	Label* worldPosLabel = nullptr;
 
-	ChunkManager* chunkManager;
+	ChunkManager* chunkManager = nullptr;
 
 #define COLLISION_CHECK_INSET 0.05f
 

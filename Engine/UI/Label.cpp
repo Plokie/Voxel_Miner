@@ -19,7 +19,8 @@ void Label::SetText(const string& text)
 {
 	this->text = text;
 
-
+	Vector2 dim = this->spriteFont->MeasureString(text.c_str());
+	dimensions = dim;
 }
 
 const string& Label::GetText()
@@ -31,12 +32,18 @@ void Label::SetFontPath(const wstring& fontPath)
 {
 	this->fontPath = fontPath;
 }
+//
+//Label::Label(const wstring& fontPath, const string& text, const XMFLOAT4& color)
+//{
+//	this->fontPath = fontPath;
+//	this->text = text;
+//	this->color = color;
+//}
 
-Label::Label(const wstring& fontPath, const string& text, const XMFLOAT4& color)
+Label::Label(const wstring& fontPath, const XMFLOAT4& color)
 {
 	this->fontPath = fontPath;
-	//this->text = text;
-	SetText(text);
+	this->text = "TEXT NOT SET";
 	this->color = color;
 }
 

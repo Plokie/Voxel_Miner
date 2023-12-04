@@ -12,6 +12,7 @@
 
 #include "../Engine/UI/Label.h"
 #include "../Engine/UI/UIRect.h"
+#include "../Engine/UI/Button.h"
 // ---------------------------------------
 
 
@@ -45,28 +46,8 @@ void GameStart(Engine* engine) {
 	Resources::LoadMesh(exampleInverseCubeVertices, ARRAYSIZE(exampleInverseCubeVertices), exampleInverseCubeIndices, ARRAYSIZE(exampleInverseCubeIndices), "inverse-cube");
 
 	//todo: scene serialzation to disc. So its not always in memory
-	Scene* titleScene = new Scene(Graphics::Get());
 
-	titleScene->CreateObject3D(new TitleScreen(), "titlescreen");
-	titleScene->CreateObject3D(new ExampleObject3D(-2.f, 0.f, 0.f), "test", "cube", "head");
-	titleScene->GetObject3D("test")->transform.position = Vector3(0.f, 0.f, 5.f);
-
-
-	UIRect* rect = (UIRect*)titleScene->CreateObject2D(new UIRect(), "rect");
-	rect->SetColour(.5f, .5f, .5f, 1.f);
-	rect->SetPosition(Vector2(0.f, 0.f));
-	rect->SetAnchor(Vector2(0.5f, 0.5f));
-	rect->SetDimensions(Vector2(500.f, 100.f));
-	rect->SetPivot(Vector2(250.f, 50.f));
-	
-	Label* label = (Label*)titleScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "Start", XMFLOAT4(0,0,0,1.0f)), "start-label");
-	label->SetPosition(Vector2(0.f, 0.f));
-	label->SetAnchor(Vector2(0.5f, 0.5f));
-	//label->SetDimensions(Vector2(500.f, 30.f));
-	//label->SetDimensions(Vector2(label->GetText().size() * 16.f, 30.f));
-	
-	label->SetPivot(label->GetDimensions() * 0.5f);
-	label->SetParent(rect);
+	TitleScreen::Setup(engine);
 
 	Scene* gameScene = new Scene(Graphics::Get());
 
@@ -75,16 +56,16 @@ void GameStart(Engine* engine) {
 	//gameScene->CreateObject3D(ChunkManager::Create(&Graphics::Get()->camera.transform), "ChunkManager");
 	gameScene->GetObject3D("PlayerController")->transform.position = Vector3(0, 10, 0);
 
-	gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "0", XMFLOAT4(0, 0, 0, 1.0f)), "fps-counter");
+	gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", XMFLOAT4(0, 0, 0, 1.0f)), "fps-counter");
 	gameScene->GetObject2D<Label>("fps-counter")->SetColour(1.0f, 1.0f, 1.0f, 1.0f);
 
-	gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", "0 0 0", XMFLOAT4(0, 0, 0, 1.0f)), "worldpos");
+	gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", XMFLOAT4(0, 0, 0, 1.0f)), "worldpos");
 	gameScene->GetObject2D("worldpos")->SetPosition(Vector2(0.f, 24.f));
 	gameScene->GetObject2D<Label>("worldpos")->SetColour(1.0f, 1.0f, 1.0f, 1.0f);
 
 	Audio::SetListener(&Graphics::Get()->camera.transform);
 
-	engine->AddScene(titleScene, "title");
+	
 	engine->AddScene(gameScene, "game");
 
 }

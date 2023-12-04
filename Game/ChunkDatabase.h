@@ -54,9 +54,10 @@ public:
 	void SetWorldName(const string& name);
 	const string& GetWorldName() const;
 
-	static void Init();
+	static void Init(const string& worldName = "World");
 
 	void SaveWorldData();
+	void LoadWorldData();
 
 	void SaveChunks();
 

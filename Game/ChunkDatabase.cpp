@@ -1,5 +1,8 @@
 #include "ChunkDatabase.h"
 
+#include "WorldGen.h"
+#include "../Engine/Engine.h"
+
 ChunkDatabase* ChunkDatabase::_Instance = nullptr;
 
 //https://stackoverflow.com/questions/6691555/converting-narrow-string-to-wide-string
@@ -120,13 +123,43 @@ void ChunkDatabase::SaveWorldData() {
 		chunkHashVector.push_back(pair.first);
 	}
 
+	Vector3 playerPos = Engine::Get()->GetScene("game")->GetObject3D("PlayerController")->transform.position;
+
 	nlohmann::json newJson = {
-		{"seed", 69},
+		{"seed", WorldGen::GetSeed()},
 		{"worldName", worldName.c_str()},
 		{"chunkHash", chunkHashVector},
-		{"playerPos", {0, 0, 0}}
+		{"playerPos", {playerPos.x, playerPos.y, playerPos.z}}
 	};
-	file << newJson.dump();
+	file << newJson.dump(2);
+}
+
+void ChunkDatabase::LoadWorldData()
+{
+	const string& worldDatPath = "Worlds/" + worldName + "/world.dat";
+	ifstream f(worldDatPath);
+	if(!f) {
+		f.close();
+		return; // Error reading file
+	}
+
+	if(f.good()) { // if file exists
+		ostringstream stringBuff;
+		stringBuff << f.rdbuf();
+
+		string test = stringBuff.str();
+
+
+		nlohmann::json json = nlohmann::json::parse(test);
+		///////
+		WorldGen::SetSeed(json["seed"]);
+		this->worldName = json["worldName"];
+		Engine::Get()->GetScene("game")->GetObject3D("PlayerController")->transform.position = { json["playerPos"][0], json["playerPos"][1], json["playerPos"][2] };
+	}
+	else { // if file doesnt exist
+		SaveWorldData(); // create world data file
+	}
+	f.close();
 }
 
 void ChunkDatabase::SaveChunks()
@@ -170,7 +203,7 @@ ChunkDatabase* ChunkDatabase::Get()
 
 void ChunkDatabase::SetWorldName(const string& name)
 {
-	worldName = name;
+	Init(name);
 }
 
 const string& ChunkDatabase::GetWorldName() const
@@ -178,14 +211,19 @@ const string& ChunkDatabase::GetWorldName() const
 	return worldName;
 }
 
-void ChunkDatabase::Init()
+void ChunkDatabase::Init(const string& worldName)
 {
-	if(_Instance != nullptr) delete _Instance;
+	//if(_Instance != nullptr) delete _Instance;
+	if(_Instance != nullptr) return;
+
 	_Instance = new ChunkDatabase();
+
+	_Instance->worldName = worldName;
 
 	InitializeSRWLock(&_Instance->chunkHashMutex);
 
 	_Instance->TryLoadChunkHash();
+	_Instance->LoadWorldData();
 }
 
 bool ChunkDatabase::DoesDataExistForChunk(const Vector3Int& chunkIndex)

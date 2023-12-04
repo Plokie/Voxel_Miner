@@ -87,6 +87,11 @@ Scene* Engine::GetCurrentScene()
 	return currentScene;
 }
 
+void Engine::StopGame()
+{
+	Engine::Get()->isRunning = false;
+}
+
 Scene* Engine::AddScene(string name)
 {
 	Scene* newScene = new Scene(gfx);
@@ -124,7 +129,7 @@ void Engine::Update(float dTime) {
 	totalElapsedTime += dTime;
 
 	unique_lock<std::mutex> lock(currentScene->createObjectMutex);
-	int debug = 0;
+	//int debug = 0;
 	for (pair<string, Object3D*> pair : *currentScene->GetSceneObjects3D()) {
 		if(pair.second == nullptr) continue;
 
@@ -136,7 +141,18 @@ void Engine::Update(float dTime) {
 		//AcquireSRWLockExclusive(&pair.second->gAccessMutex);
 		pair.second->Update(dTime);
 		//ReleaseSRWLockExclusive(&pair.second->gAccessMutex);
-		debug++;
+		//debug++;
+	}
+
+	for(pair<string, Object2D*> pair : *currentScene->GetSceneObjects2D()) {
+		if(pair.second == nullptr) continue;
+
+		//if(!pair.second->hasRanStartFunction) {
+		//	pair.second->Start();
+		//	pair.second->hasRanStartFunction = true;
+		//}
+
+		pair.second->Update(dTime);
 	}
 
 	// Keep at end
@@ -232,6 +248,7 @@ std::mutex* Engine::GetDestroyObjectsMutex()
 //}
 
 bool Engine::Service() {
+	if(!isRunning) return false;
 	return winMgr.StartWhile();
 }
 

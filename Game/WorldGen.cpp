@@ -145,9 +145,24 @@ WorldGen::WorldGen()
 {
 	this->_Instance = this;
 
+	Init();
+}
+
+void WorldGen::SetSeed(int seed)
+{
+	_Instance->seed = seed;
+	_Instance->Init();
+}
+
+int WorldGen::GetSeed() {
+	return _Instance->seed;
+}
+
+void WorldGen::Init()
+{
 	//srand(time(NULL));
 	//int seed = rand();
-	int seed = 1337;
+	//int seed = 1337;
 
 	//noiseSampler_Height1 = FastNoiseLite(seed);
 	//noiseSampler_Height1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);

@@ -2,7 +2,9 @@
 
 #include <Windows.h>
 #include <Xinput.h>
+#include <map>
 #include <Mouse.h>
+#include <functional>
 #include <string>
 
 #pragma comment(lib,"XInput.lib")
@@ -40,6 +42,9 @@ private:
 	bool prevmKeyBuffer[MKEYBUFF_SIZE];
 
 	bool isMouseLocked = false;
+
+	// Used for reading keyboard inputs as they come in (text input for example)
+	map<void*, function<void(unsigned short)>> inputStreams = {};
 
 	HWND hWnd;
 	unsigned int inputAge = 0, lastMouseGetAge = -1;
@@ -85,6 +90,7 @@ public:
 
 	static void HandleRawInput(HRAWINPUT input);
 	
+	static void HandleCharInput(WPARAM key);
 
 	static bool IsKeyPressed(USHORT VKEY) {
 		return _Instance->keyBuffer[VKEY] && !_Instance->prevKeyBuffer[VKEY];
@@ -122,6 +128,9 @@ public:
 	
 
 	static bool IsMouseLocked();
+
+	static void OpenInputStream(void* owner, function<void(unsigned short)> func);
+	static void CloseInputStream(void* owner);
 
 	//todo: make ways to create more input axes
 	// something akin to the new unity inputsystem?

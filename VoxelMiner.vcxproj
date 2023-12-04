@@ -120,6 +120,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\DirectXTK\DirectX_Desktop_2022.vcxproj</AdditionalIncludeDirectories>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,6 +149,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio\Audio.cpp" />
+    <ClCompile Include="Engine\UI\Button.cpp" />
+    <ClCompile Include="Engine\UI\TextInput.cpp" />
     <ClCompile Include="Game\Blocks.cpp" />
     <ClCompile Include="Game\Chunk.cpp" />
     <ClCompile Include="Game\ChunkDatabase.cpp" />
@@ -184,6 +187,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio\Audio.h" />
+    <ClInclude Include="Engine\UI\Button.h" />
+    <ClInclude Include="Engine\UI\TextInput.h" />
     <ClInclude Include="Game\Blocks.h" />
     <ClInclude Include="Game\Chunk.h" />
     <ClInclude Include="Game\ChunkDatabase.h" />

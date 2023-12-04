@@ -36,7 +36,7 @@ private:
 
 	float totalElapsedTime = 0.0f;
 
-
+	bool isRunning = true;
 public:
 	
 	void OverwriteDeletedPtr(void* ptr);
@@ -54,6 +54,7 @@ public:
 
 	Scene* GetCurrentScene();
 
+	static void StopGame();
 
 	static Engine* Get() { return _Instance; }
 

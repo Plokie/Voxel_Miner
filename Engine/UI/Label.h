@@ -20,7 +20,8 @@ public:
 
 	void SetFontPath(const wstring& fontPath);
 
-	Label(const wstring& fontPath, const string& text, const XMFLOAT4& = XMFLOAT4(1.f, 1.f, 1.f, 1.f));
+	//Label(const wstring& fontPath, const string& text, const XMFLOAT4& = XMFLOAT4(1.f, 1.f, 1.f, 1.f));
+	Label(const wstring& fontPath, const XMFLOAT4& = XMFLOAT4(1.f, 1.f, 1.f, 1.f));
 
 	void InitSelf() override;
 	void Start() override;

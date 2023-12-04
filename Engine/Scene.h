@@ -16,7 +16,10 @@ private:
 	Engine* engine = nullptr;
 	map<string, Object3D*> sceneObjects3D = {};
 	map<string, Object2D*> sceneObjects2D = {};
+
 public:
+	XMFLOAT4 clearColor = { 145.f / 255.f, 217.f / 255.f, 1.0f, 1.0f };
+
 	void Init(Graphics* gfx, Engine* engine);
 
 	Scene(Graphics* pGfx): gfx(pGfx){}

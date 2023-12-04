@@ -25,23 +25,23 @@ public:
 	void SetParent(Object2D* parent);
 	Object2D* GetParent() const;
 
-	// Gets the pivot (stored in pixels)
+	// Gets the pivot (stored as pixels)
 	const Vector2& GetPivot();
-	// Sets the pivot (stored in pixels)
+	// Sets the pivot (stored as pixels)
 	void SetPivot(const float& x, const float& y);
-	// Sets the pivot (stored in pixels)
+	// Sets the pivot (stored as ratio)
 	void SetPivot(const Vector2& newPivot);
 
-	// Gets the anchor (stored in screen size ratio)
+	// Gets the anchor (stored as ratio)
 	const Vector2& GetAnchor();
-	// Sets the anchor (stored in screen size ratio)
+	// Sets the anchor (stored as ratio)
 	void SetAnchor(const float& x, const float& y);
-	// Sets the anchor (stored in screen size ratio)
+	// Sets the anchor (stored as ratio)
 	void SetAnchor(const Vector2& newAnchor);
 
 
 	const Vector2& GetDimensions() const;
-	void SetDimensions(const Vector2& dim);
+	virtual void SetDimensions(const Vector2& dim);
 
 	void SetPosition(const Vector2& position);
 	void SetPosition(const float& x, const float& y);

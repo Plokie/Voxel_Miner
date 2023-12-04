@@ -465,9 +465,9 @@ void Graphics::Render(Scene* scene) {
 	unique_lock<std::mutex> lock(scene->createObjectMutex);
 
 	//float bgCol[] = {1.0, 0.6, 1.0, 1.0};
-	const float bgCol[] = { 145.f / 255.f, 217.f / 255.f, 1.0f, 1.0f };
+	//const float bgCol[] = { 145.f / 255.f, 217.f / 255.f, 1.0f, 1.0f };
 	//const float bgCol[] = { 4.f / 255.f, 2.f / 255.f, 26.0f / 255.f, 1.0f };
-	deviceCtx->ClearRenderTargetView(renderTargetView, bgCol);
+	deviceCtx->ClearRenderTargetView(renderTargetView, &scene->clearColor.x);
 	deviceCtx->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	//

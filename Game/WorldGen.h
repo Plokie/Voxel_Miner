@@ -64,9 +64,15 @@ private:
 
 	//vector<TerrainFeature*> _pendingFeatures;
 
+	int seed = 1337;
+
 	static WorldGen* _Instance;
 public:
 	WorldGen();
+
+	static void SetSeed(int seed);
+	static int GetSeed();
+	void Init();
 
 	static float SampleWorldHeight(const int& x, const int& z);
 	static float SampleTemperature(const int& x, const int& z);

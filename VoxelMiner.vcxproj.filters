@@ -28,6 +28,12 @@
     <Filter Include="Engine\Graphics">
       <UniqueIdentifier>{3fa21f89-9990-46d1-bc60-c1092febdce2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Source\UI">
+      <UniqueIdentifier>{f15619eb-ba7d-4976-bfb9-1c7ea0b3b7cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Headers\UI">
+      <UniqueIdentifier>{78021898-66dd-43ad-b656-c48716380f7e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -40,9 +46,6 @@
       <Filter>Engine\Source</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Input.cpp">
-      <Filter>Engine\Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\UI\Label.cpp">
       <Filter>Engine\Source</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Object2D.cpp">
@@ -129,8 +132,17 @@
     <ClCompile Include="Game\VoxelLighting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\UI\Label.cpp">
+      <Filter>Engine\Source\UI</Filter>
+    </ClCompile>
     <ClCompile Include="Engine\UI\UIRect.cpp">
-      <Filter>Engine\Source</Filter>
+      <Filter>Engine\Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\UI\Button.cpp">
+      <Filter>Engine\Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\UI\TextInput.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -144,9 +156,6 @@
       <Filter>Engine\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Engine\json.hpp">
-      <Filter>Engine\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\UI\Label.h">
       <Filter>Engine\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Engine\MathUtil.h">
@@ -248,8 +257,17 @@
     <ClInclude Include="Engine\ThreadUtil.h">
       <Filter>Engine\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\UI\Label.h">
+      <Filter>Engine\Headers\UI</Filter>
+    </ClInclude>
     <ClInclude Include="Engine\UI\UIRect.h">
-      <Filter>Engine\Headers</Filter>
+      <Filter>Engine\Headers\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UI\Button.h">
+      <Filter>Engine\Headers\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UI\TextInput.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

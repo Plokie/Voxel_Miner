@@ -77,6 +77,15 @@ void Input::HandleRawInput(HRAWINPUT input) {
 	}
 }
 
+void Input::HandleCharInput(WPARAM key)
+{
+	if(!_Instance->inputStreams.empty()) {
+		for(auto& kvp : _Instance->inputStreams) {
+			kvp.second(key);
+		}
+	}
+}
+
 void Input::GetMouseInformation() {
 	if(_Instance->lastMouseGetAge == _Instance->inputAge)
 		return; // The current mouse information is up to date, so exit
@@ -121,6 +130,24 @@ void Input::SetMouseLocked(bool isLocked) {
 
 bool Input::IsMouseLocked() {
 	return _Instance->isMouseLocked;
+}
+
+void Input::OpenInputStream(void* owner, function<void(unsigned short)> func)
+{
+	if(_Instance->inputStreams.find(owner) != _Instance->inputStreams.end()) {
+		CloseInputStream(owner);
+	}
+	_Instance->inputStreams[owner] = func;
+}
+
+void Input::CloseInputStream(void* owner)
+{
+	auto it = _Instance->inputStreams.find(owner);
+	if(it != _Instance->inputStreams.end()) {
+
+
+		_Instance->inputStreams.erase(it);
+	}
 }
 
 const float Input::GetInputAxis(string axisName, int controllerIdx) {
