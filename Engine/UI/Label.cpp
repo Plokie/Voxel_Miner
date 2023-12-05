@@ -51,7 +51,7 @@ void Label::Start()
 {
 }
 
-void Label::Update(const float& dTime)
+void Label::Update(const float dTime)
 {
 }
 

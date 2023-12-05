@@ -494,6 +494,7 @@ void Graphics::Render(Scene* scene) {
 
 	vector<tuple<Model*,XMMATRIX, Object3D*>> transparentModels = {}; // Transparent meshes to be drawn AFTER the opaque geometry
 	vector<Object3D*> objects = {};
+	objects.reserve(scene->GetSceneObjects3D()->size());
 
 	//todo: precompute sceneObjects values vector whenever an object is appended or removed
 	for(map<string, Object3D*>::iterator it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); ++it) {
@@ -506,7 +507,7 @@ void Graphics::Render(Scene* scene) {
 		// aka: dont queue objects hidden to the camera to be drawn
 	}
 
-	SortObjects(objects, 0, (int)(objects.size() - 1));
+	Sort3DObjects(objects, 0, (int)(objects.size() - 1));
 
 	for(vector<Object3D*>::iterator it = objects.begin(); it != objects.end(); ++it) {
 
@@ -542,14 +543,23 @@ void Graphics::Render(Scene* scene) {
 
 	//
 
+	vector<Object2D*> sorted2Dobjects = {};
+	sorted2Dobjects.reserve(scene->GetSceneObjects2D()->size());
+	for(auto it = scene->GetSceneObjects2D()->begin(); it != scene->GetSceneObjects2D()->end(); it++) {
+		if(it->second->DoDraw()) sorted2Dobjects.push_back(it->second);
+	}
+
+	Sort2DObjects(sorted2Dobjects, 0, (int)(sorted2Dobjects.size() - 1));
 
 	this->spriteBatch->Begin();
 
 	//this->testSpriteFont->DrawString(spriteBatch, L"Hello, world!", XMFLOAT2(0, 0));
 
-	//todo: z/depth sort
-	for (map<string, Object2D*>::iterator it = scene->GetSceneObjects2D()->begin(); it != scene->GetSceneObjects2D()->end(); ++it) {
-		it->second->Draw(this->spriteBatch);
+	//for (map<string, Object2D*>::iterator it = scene->GetSceneObjects2D()->begin(); it != scene->GetSceneObjects2D()->end(); ++it) {
+	//	it->second->Draw(this->spriteBatch);
+	//}
+	for (auto it = sorted2Dobjects.begin(); it != sorted2Dobjects.end(); ++it) {
+		(*it)->Draw(this->spriteBatch);
 	}
 
 
@@ -558,7 +568,7 @@ void Graphics::Render(Scene* scene) {
 	swapChain->Present(0, NULL);
 }
 
-void Graphics::SortObjects(vector<Object3D*>& objects, int start, int end) {
+void Graphics::Sort3DObjects(vector<Object3D*>& objects, int start, int end) {
 	// QUICKSORT OBJECTS BY DISTANCE TO CAMERA
 
 	if(start >= end) return;
@@ -593,8 +603,50 @@ void Graphics::SortObjects(vector<Object3D*>& objects, int start, int end) {
 		p = pivotIndex;
 	}
 
-	SortObjects(objects, start, p - 1);
-	SortObjects(objects, p + 1, end);
+	Sort3DObjects(objects, start, p - 1);
+	Sort3DObjects(objects, p + 1, end);
+
+
+	//
+}
+
+void Graphics::Sort2DObjects(vector<Object2D*>& objects, int start, int end) {
+	// QUICKSORT OBJECTS BY DISTANCE TO CAMERA
+
+	if(start >= end) return;
+
+	int p = 0;
+	{ // PARTITION
+		float pivot = objects[start]->GetDepth();
+
+		int count = 0;
+		for(int i = start + 1; i <= end; i++) {
+			if(objects[i]->GetDepth() < pivot)
+				count++;
+		}
+
+		int pivotIndex = start + count;
+		//swap(objects[pivotIndex], objects[start]);
+		iter_swap(objects.begin() + pivotIndex, objects.begin() + start);
+
+		int i = start, j = end;
+		while(i < pivotIndex && j > pivotIndex) {
+			while(objects[i]->GetDepth() < pivot) {
+				i++;
+			}
+			while(objects[j]->GetDepth() >= pivot) {
+				j--;
+			}
+			if(i < pivotIndex && j > pivotIndex) {
+				iter_swap(objects.begin() + i++, objects.begin() + j--);
+			}
+		}
+
+		p = pivotIndex;
+	}
+
+	Sort2DObjects(objects, start, p - 1);
+	Sort2DObjects(objects, p + 1, end);
 
 
 	//

@@ -165,7 +165,7 @@ void TextInput::InitSelf() {}
 
 void TextInput::Start() {}
 
-void TextInput::Update(const float& dTime) {
+void TextInput::Update(const float dTime) {
 	XMFLOAT2 mPos = Input::MousePosition();
 	Vector2 sPos = GetScreenPosition();
 

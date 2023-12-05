@@ -195,6 +195,7 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
 		//AcquireSRWLockExclusive(&this->gAccessMutex);
+		//unique_lock<std::mutex> lock(this->gAccessMutex);
 		Chunk* chunk = chunkMap[chunkIndex];
 		if(!(chunk == nullptr || chunk->pendingDeletion)) {
 			if (!chunk->hasRanStartFunction) return WorldGen::GetBlockAt(x, y, z);
@@ -228,6 +229,10 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
 		Chunk*& chunk = chunkMap[chunkIndex];
+		if(chunk == nullptr) {
+			assert(false);
+			return;
+		}
 
 		const BlockID oldBlock = (BlockID)chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z];
 

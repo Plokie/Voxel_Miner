@@ -17,13 +17,24 @@ protected:
 	Vector2 anchor = { 0.0f, 0.0f };
 	Vector2 dimensions = { 0.f, 0.f };
 	Vector2 rawPosition;
+
+	bool enabled = true;
+	float depth = 0.0f;
 private:
 
 public:
 	float rotation;
 
+	void SetEnabled(const bool e);
+	const bool GetEnabled() const;
+
+	bool DoDraw();
+
 	void SetParent(Object2D* parent);
 	Object2D* GetParent() const;
+
+	void SetDepth(const float depth);
+	const float GetDepth() const;
 
 	// Gets the pivot (stored as pixels)
 	const Vector2& GetPivot();
@@ -54,6 +65,6 @@ public:
 	virtual void InitSelf();
 
 	virtual void Start();
-	virtual void Update(const float& dTime);
+	virtual void Update(const float dTime);
 	virtual void Draw(SpriteBatch* spriteBatch);
 };

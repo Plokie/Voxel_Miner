@@ -3,6 +3,22 @@
 #include "WinManager.h"
 #include "MathUtil.h"
 
+void Object2D::SetEnabled(const bool e) {
+    this->enabled = e;
+}
+
+const bool Object2D::GetEnabled() const {
+    return enabled;
+}
+
+bool Object2D::DoDraw() {
+    if(parent != nullptr) {
+        return parent->DoDraw();
+    }
+
+    return enabled;
+}
+
 void Object2D::SetParent(Object2D* parent)
 {
     this->parent = parent;
@@ -11,6 +27,14 @@ void Object2D::SetParent(Object2D* parent)
 Object2D* Object2D::GetParent() const
 {
     return parent;
+}
+
+void Object2D::SetDepth(const float depth) {
+    this->depth = depth;
+}
+
+const float Object2D::GetDepth() const {
+    return depth;
 }
 
 const Vector2& Object2D::GetPivot()
@@ -85,6 +109,6 @@ void Object2D::InitSelf(){}
 
 void Object2D::Start(){}
 
-void Object2D::Update(const float& dTime){}
+void Object2D::Update(const float dTime){}
 
 void Object2D::Draw(SpriteBatch* spriteBatch) {}

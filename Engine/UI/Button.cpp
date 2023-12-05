@@ -115,7 +115,7 @@ void Button::InitSelf() {}
 
 void Button::Start() {}
 
-void Button::Update(const float& dTime) {
+void Button::Update(const float dTime) {
 	XMFLOAT2 mPos = Input::MousePosition();
 	Vector2 sPos = GetScreenPosition();
 

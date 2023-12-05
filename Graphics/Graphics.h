@@ -96,7 +96,8 @@ public:
 
 	void Render(Scene* scene);
 
-	void SortObjects(vector<Object3D*>& objects, int startIndex, int endIndex);
+	void Sort3DObjects(vector<Object3D*>& objects, int startIndex, int endIndex);
+	void Sort2DObjects(vector<Object2D*>& objects, int startIndex, int endIndex);
 
 	ID3D11Device* GetDevice() { return device; }
 

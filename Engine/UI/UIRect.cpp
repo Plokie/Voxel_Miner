@@ -50,7 +50,7 @@ void UIRect::Start()
 {
 }
 
-void UIRect::Update(const float& dTime)
+void UIRect::Update(const float dTime)
 {
 }
 

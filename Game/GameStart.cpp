@@ -13,6 +13,8 @@
 #include "../Engine/UI/Label.h"
 #include "../Engine/UI/UIRect.h"
 #include "../Engine/UI/Button.h"
+#include "../Engine/UI/HorizontalLayoutRect.h"
+#include "InventoryUI.h"
 // ---------------------------------------
 
 
@@ -62,6 +64,10 @@ void GameStart(Engine* engine) {
 	gameScene->CreateObject2D(new Label(L"Data\\Fonts\\algerian.spritefont", XMFLOAT4(0, 0, 0, 1.0f)), "worldpos");
 	gameScene->GetObject2D("worldpos")->SetPosition(Vector2(0.f, 24.f));
 	gameScene->GetObject2D<Label>("worldpos")->SetColour(1.0f, 1.0f, 1.0f, 1.0f);
+
+	gameScene->CreateObject2D(new InventoryUI(engine, gameScene), "invUI");
+
+	//Setup(engine, gameScene);
 
 	Audio::SetListener(&Graphics::Get()->camera.transform);
 

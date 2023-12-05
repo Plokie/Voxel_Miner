@@ -25,6 +25,6 @@ public:
 
 	void InitSelf() override;
 	void Start() override;
-	void Update(const float& dTime) override;
+	void Update(const float dTime) override;
 	void Draw(SpriteBatch* spriteBatch) override;
 };
