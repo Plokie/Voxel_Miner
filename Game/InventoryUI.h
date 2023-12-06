@@ -2,15 +2,14 @@
 
 #include <vector>
 #include "../Engine/Object2D.h"
+#include "Inventory.h"
 
 class Engine;
 class Scene;
 class HorizontalLayoutRect;
 class UIRect;
 class Inventory;
-
-#define INVSIZE_X 9
-#define INVSIZE_Y 4 // Includes hotbar
+class ItemIcon;
 
 class InventoryUI : public Object2D {
 private:
@@ -20,16 +19,21 @@ private:
 
 	// pair of slot parent and slot icon
 	UIRect* invSlots[INVSIZE_X][INVSIZE_Y];
-	vector<UIRect*> _spawnedIcons = {};
+	UIRect* hotbarSlots[INVSIZE_X];
+	vector<ItemIcon*> _spawnedIcons = {};
+	vector<ItemIcon*> _hotbarIcons = {};
 
 	bool isOpen = false;
 
 public:
 	InventoryUI(Engine* engine, Scene* gameScene);
+	~InventoryUI();
 
 	void Open();
 	void Close();
 	void Update(const float dTime) override;
 	void Start() override;
 	void Draw(SpriteBatch* spriteBatch) override;
+
+	void DrawHotbarIcons();
 };

@@ -21,15 +21,15 @@ const map<ItemID, Item> ItemDef::defs = {
 	{GOLD_BAR, Item("Gold Bar", 2, 1)},
 	{TITANIUM_BAR, Item("Titanium Bar", 4, 1)},
 
-	{COPPER_PICKAXE, Item("Copper Pickaxe", 1, 2)},
-	{GOLD_PICKAXE, Item("Gold Pickaxe", 2, 2)},
-	{AMETHYST_PICKAXE, Item("Amethyst Pickaxe", 3, 2)},
-	{TITANIUM_PICKAXE, Item("Titanium Pickaxe", 4, 2)},
+	{COPPER_PICKAXE, Item("Copper Pickaxe", 1, 2, 1)},
+	{GOLD_PICKAXE, Item("Gold Pickaxe", 2, 2, 1)},
+	{AMETHYST_PICKAXE, Item("Amethyst Pickaxe", 3, 2, 1)},
+	{TITANIUM_PICKAXE, Item("Titanium Pickaxe", 4, 2, 1)},
 
-	{COPPER_AXE, Item("Copper Axe", 1, 2)},
-	{GOLD_AXE, Item("Gold Axe", 2, 2)},
-	{AMETHYST_AXE, Item("Amethyst Axe", 3, 2)},
-	{TITANIUM_AXE, Item("Titanium Axe", 4, 2)},
+	{COPPER_AXE, Item("Copper Axe", 1, 2, 1)},
+	{GOLD_AXE, Item("Gold Axe", 2, 2, 1)},
+	{AMETHYST_AXE, Item("Amethyst Axe", 3, 2, 1)},
+	{TITANIUM_AXE, Item("Titanium Axe", 4, 2, 1)},
 };
 
 const Item& ItemDef::Get(ItemID id)

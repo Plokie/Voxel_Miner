@@ -187,6 +187,7 @@
     <ClCompile Include="Graphics\Resources.cpp" />
     <ClCompile Include="Graphics\Shaders.cpp" />
     <ClCompile Include="Game\Items.cpp" />
+    <ClCompile Include="Game\ItemIcon.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\UI\UIRect.cpp" />
   </ItemGroup>
@@ -237,6 +238,7 @@
     <ClInclude Include="Graphics\Vertex.h" />
     <ClInclude Include="Engine\UI\UIRect.h" />
     <ClInclude Include="Game\Items.h" />
+    <ClInclude Include="Game\ItemIcon.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="pixelshader.hlsl">

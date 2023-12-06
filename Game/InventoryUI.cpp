@@ -3,6 +3,7 @@
 #include "../Engine/UI/HorizontalLayoutRect.h"
 #include "../Engine/UI/Button.h"
 #include "../Engine/Engine.h"
+#include "ItemIcon.h"
 #include "Inventory.h"
 #include "InventoryItem.h"
 #include "Items.h"
@@ -14,15 +15,17 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 
 
 	// TODO: TEMP TEST INVENTORY ITEMS
-	inventory->items.push_back(InventoryItem(ItemID::AMETHYST_PICKAXE, 0, 0));
-	inventory->items.push_back(InventoryItem(ItemID::RAW_GOLD, 1, 0));
-	inventory->items.push_back(InventoryItem(ItemID::RAW_COPPER, 3, 3));
-	inventory->items.push_back(InventoryItem(ItemID::TITANIUM_BAR, 6, 2));
+	inventory->AddItem(ItemID::AMETHYST_PICKAXE, 2);
+	inventory->AddItem(ItemID::RAW_GOLD, 32);
+	inventory->AddItem(ItemID::RAW_COPPER, 12);
+	inventory->AddItem(ItemID::TITANIUM_BAR, 5);
 
-	inventory->items.push_back(InventoryItem(BlockID::GOLD_ORE, 2, 0));
-	inventory->items.push_back(InventoryItem(BlockID::GRASS, 3, 0));
-	inventory->items.push_back(InventoryItem(BlockID::OAK_LOG, 4, 0));
-	inventory->items.push_back(InventoryItem(BlockID::OAK_PLANKS, 5, 0));
+	inventory->AddItem(BlockID::GOLD_ORE);
+	inventory->AddItem(BlockID::GRASS, 14);
+	inventory->AddItem(BlockID::OAK_LOG, 10);
+	inventory->AddItem(BlockID::OAK_PLANKS, 93);
+
+	inventory->AddOnChangeEvent([&] {DrawHotbarIcons(); });
 
 	//
 
@@ -44,14 +47,10 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 		slot->SetDepth(1.0f);
 
 		hotbar->AddChild(slot);
-
-		UIRect* slotIcon = (UIRect*)gameScene->CreateObject2D(new UIRect("head", { 1.0f, 1.0f, 1.0f, 1.0f }), name + "-icon");
-		slotIcon->SetDimensions({ 50.f, 50.f });
-		slotIcon->SetPivot({ 0.5f, 0.5f });
-		slotIcon->SetAnchor({ 0.5f, 0.5f });
-		slotIcon->SetDepth(2.0f);
-		slotIcon->SetParent(slot);
+		hotbarSlots[i] = slot;
 	}
+
+	DrawHotbarIcons();
 
 
 	invBg = (UIRect*)gameScene->CreateObject2D(new UIRect("white", { 0.5f,0.5f,0.5f,1.0f }), "invBg");
@@ -59,6 +58,7 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 	invBg->SetPivot({ 0.5f, 0.5f });
 	invBg->SetAnchor({ 0.5f, 0.5f });
 	invBg->SetDepth(10.f);
+	invBg->SetEnabled(false);
 
 	for(int row = 0; row < INVSIZE_Y; row++) {
 		HorizontalLayoutRect* rowRect = (HorizontalLayoutRect*)gameScene->CreateObject2D(new HorizontalLayoutRect({ 0.4f,0.4f,0.4f,1.0f }), "row" + to_string(row));
@@ -83,36 +83,56 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 	}
 }
 
+InventoryUI::~InventoryUI() {
+	for(ItemIcon*& rect : _spawnedIcons) {
+		delete rect;
+		rect = nullptr;
+	}
+
+	for(ItemIcon*& rect : _hotbarIcons) {
+		delete rect;
+		rect = nullptr;
+	}
+}
+
+
+
 void InventoryUI::Open() {
 	isOpen = true;
 	invBg->SetEnabled(true);
 	Input::SetMouseLocked(false);
 
-	for(InventoryItem& invItem : this->inventory->items) {
-		const string& atlasName = (invItem.type == InventoryItem::Type::BLOCK) ? "atlas" : "item-atlas";
+	for(const InventoryItem& invItem : this->inventory->GetInventoryItems()) {
+		//const string& atlasName = (invItem.type == InventoryItem::Type::BLOCK) ? "atlas" : "item-atlas";
 
-		UIRect* icon = new UIRect(atlasName, { 1.f,1.f,1.f,1.f });
+		//UIRect* icon = new UIRect(atlasName, { 1.f,1.f,1.f,1.f });
+		//icon->Init(pDevice);
+		//icon->SetDimensions({ 50.f,50.f });
+		//icon->SetAnchor({ .5f,.5f });
+		//icon->SetPivot({ .5f,.5f });
+		//icon->SetDepth(13.f);
+
+		//Vector2Int uvPos = invItem.GetUVPos();
+		//LONG texPosX = static_cast<LONG>(ITEM_ATLAS_TILE_SIZE * uvPos.x);
+		//LONG texPosY = static_cast<LONG>(ITEM_ATLAS_TILE_SIZE * uvPos.y);
+
+		//icon->SetTexRect({
+		//	texPosX, texPosY,
+		//	texPosX + ITEM_ATLAS_TILE_SIZE,
+		//	texPosY + ITEM_ATLAS_TILE_SIZE
+		//});
+
+		ItemIcon* icon = new ItemIcon(&invItem);
 		icon->Init(pDevice);
-		icon->SetDimensions({ 50.f,50.f });
+		icon->SetDimensions({ 50.f, 50.f });
 		icon->SetAnchor({ .5f,.5f });
 		icon->SetPivot({ .5f,.5f });
-		icon->SetDepth(13.f);
-
-		Vector2Int uvPos = invItem.GetUVPos();
-		LONG texPosX = static_cast<LONG>(ITEM_ATLAS_TILE_SIZE * uvPos.x);
-		LONG texPosY = static_cast<LONG>(ITEM_ATLAS_TILE_SIZE * uvPos.y);
-
-		icon->SetTexRect({
-			texPosX, texPosY,
-			texPosX + ITEM_ATLAS_TILE_SIZE,
-			texPosY + ITEM_ATLAS_TILE_SIZE
-		});
 
 		icon->SetParent(invSlots[invItem.posX][invItem.posY]);
 
 		_spawnedIcons.push_back(icon);
 	}
-	__nop();
+	
 }
 
 void InventoryUI::Close() {
@@ -129,12 +149,8 @@ void InventoryUI::Close() {
 void InventoryUI::Update(const float dTime) {
 	if(Input::IsKeyPressed(VK_TAB) || Input::IsKeyPressed('I')) {
 		isOpen = !isOpen;
-		if(isOpen) {
-			Open();
-		}
-		else {
-			Close();
-		}
+		if(isOpen) Open();
+		else Close();
 	}
 }
 
@@ -145,5 +161,50 @@ void InventoryUI::Start() {
 void InventoryUI::Draw(SpriteBatch* spriteBatch) {
 	for(auto& itemIcon : _spawnedIcons) {
 		itemIcon->Draw(spriteBatch);
+	}
+
+	for(auto& itemIcon : _hotbarIcons) {
+		itemIcon->Draw(spriteBatch);
+	}
+}
+
+void InventoryUI::DrawHotbarIcons() {
+	for(ItemIcon*& icon : _hotbarIcons) {
+		delete icon;
+		icon = nullptr;
+	}
+	_hotbarIcons.clear();
+
+	for(auto& invItem : inventory->GetInventoryItems()) {
+		if(invItem.posY == 0) {
+			//const string& atlasName = (invItem.type == InventoryItem::Type::BLOCK) ? "atlas" : "item-atlas";
+			//UIRect* slotIcon = new UIRect(atlasName, {1.0f, 1.0f, 1.0f, 1.0f});
+			//slotIcon->Init(pDevice);
+			//slotIcon->SetDimensions({ 50.f, 50.f });
+			//slotIcon->SetPivot({ 0.5f, 0.5f });
+			//slotIcon->SetAnchor({ 0.5f, 0.5f });
+			//slotIcon->SetDepth(2.0f);
+
+
+			//Vector2Int uvPos = invItem.GetUVPos();
+			//LONG texPosX = static_cast<LONG>(ITEM_ATLAS_TILE_SIZE * uvPos.x);
+			//LONG texPosY = static_cast<LONG>(ITEM_ATLAS_TILE_SIZE * uvPos.y);
+
+			//slotIcon->SetTexRect({
+			//	texPosX, texPosY,
+			//	texPosX + ITEM_ATLAS_TILE_SIZE,
+			//	texPosY + ITEM_ATLAS_TILE_SIZE
+			//});
+
+			ItemIcon* icon = new ItemIcon(&invItem);
+			icon->Init(pDevice);
+			icon->SetDimensions({ 50.f, 50.f });
+			icon->SetAnchor({ .5f,.5f });
+			icon->SetPivot({ .5f,.5f });
+
+			icon->SetParent(hotbarSlots[invItem.posX]);
+
+			_hotbarIcons.push_back(icon);
+		}
 	}
 }

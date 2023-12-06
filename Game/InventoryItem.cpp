@@ -3,7 +3,7 @@
 #include "Blocks.h"
 
 
-Vector2Int InventoryItem::GetUVPos()
+Vector2Int InventoryItem::GetUVPos() const
 {
     if(type == ITEM) {
         const Item& def = ItemDef::Get((ItemID)ID);

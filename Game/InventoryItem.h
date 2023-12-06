@@ -10,18 +10,19 @@ public:
 private:
 
 public:
+	int amount = 1;
 	InventoryItem::Type type = ITEM;
 	unsigned short ID = 0; // Could be block or item
 	int posX, posY;
 
-	InventoryItem(InventoryItem::Type type, unsigned short ID, int posX, int posY) :
-		type(type), ID(ID), posX(posX), posY(posY) {}
+	InventoryItem(InventoryItem::Type type, unsigned short ID, int posX, int posY, int amount = 1) :
+		type(type), ID(ID), posX(posX), posY(posY), amount(amount) {}
 
-	InventoryItem(BlockID blockID, int posX, int posY) :
-		type(Type::BLOCK), ID(blockID), posX(posX), posY(posY) {}
+	InventoryItem(BlockID blockID, int posX, int posY, int amount = 1) :
+		type(Type::BLOCK), ID(blockID), posX(posX), posY(posY), amount(amount) {}
 
-	InventoryItem(ItemID itemID, int posX, int posY) :
-		type(Type::ITEM), ID(itemID), posX(posX), posY(posY) {}
+	InventoryItem(ItemID itemID, int posX, int posY, int amount = 1) :
+		type(Type::ITEM), ID(itemID), posX(posX), posY(posY), amount(amount) {}
 
-	Vector2Int GetUVPos();
+	Vector2Int GetUVPos() const;
 };

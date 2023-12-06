@@ -20,12 +20,14 @@ private:
 	string name;
 
 	int uvX, uvY;
+	int maxStack;
 public:
-	Item(string name, int uvX, int uvY) : name(name), uvX(uvX), uvY(uvY) {}
+	Item(string name, int uvX, int uvY, int maxStack=64) : name(name), uvX(uvX), uvY(uvY), maxStack(maxStack) {}
 
 	const string& GetName() const { return name; }
 	const int UVx() const { return uvX; }
 	const int UVy() const { return uvY; }
+	const int GetMaxStack() const { return maxStack; }
 };
 
 class ItemDef {
