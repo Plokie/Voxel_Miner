@@ -551,7 +551,7 @@ void Graphics::Render(Scene* scene) {
 
 	Sort2DObjects(sorted2Dobjects, 0, (int)(sorted2Dobjects.size() - 1));
 
-	this->spriteBatch->Begin();
+	this->spriteBatch->Begin(SpriteSortMode_Deferred, nullptr, samplerStatePoint);
 
 	//this->testSpriteFont->DrawString(spriteBatch, L"Hello, world!", XMFLOAT2(0, 0));
 

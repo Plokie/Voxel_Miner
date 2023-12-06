@@ -24,7 +24,6 @@ private:
 	UINT8 lightLevel[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};
 
 
-
 	void PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESHFLAG isTransparent = SOLID);
 	bool RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z);
 	void MakeVoxel(const BlockID blockID, const int x, const int y, const int z, vector<Vertex>& vertices, vector<DWORD>& indices);
@@ -32,6 +31,7 @@ private:
 	void CorrectIndexForNeighbours(const Vector3Int& index, Chunk** outChunk, Vector3Int* outIndex);
 	//Vector3Int LocalToWorld(const int x, const int y, const int z);
 public:
+	bool hasLoadedBlockData = false;
 	void GenerateBlockData();
 	void BuildMesh();
 

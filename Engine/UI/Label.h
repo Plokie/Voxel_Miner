@@ -6,7 +6,7 @@
 
 class Label : public Object2D {
 private:
-	wstring fontPath = L"Data\\Fonts\\algerian.spritefont";
+	wstring fontPath = L"Data\\Fonts\\Baloo2.spritefont";
 	SpriteFont* spriteFont = nullptr;
 	string text = "NO TEXT SET";
 	XMFLOAT4 color = XMFLOAT4(1.f, 1.f, 1.f, 1.f);

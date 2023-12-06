@@ -419,3 +419,107 @@ public:
 		return XMFLOAT2(x, y);
 	}
 };
+
+struct Vector2Int {
+public:
+	int x = 0, y = 0;
+
+	Vector2Int() : x(0), y(0) {}
+	Vector2Int(int X, int Y) : x(X), y(Y) {}
+
+	Vector2Int(const XMVECTOR& xmv) {
+		x = (int)XMVectorGetX(xmv);
+		y = (int)XMVectorGetY(xmv);
+	}
+
+	static const Vector2Int Zero() {
+		return Vector2Int(0, 0);
+	}
+
+	Vector2Int operator+(const Vector2Int& a) {
+		return Vector2Int(x + a.x, y + a.y);
+	}
+	Vector2Int& operator+=(const Vector2Int& a) {
+		this->x += a.x;
+		this->y += a.y;
+		return *this;
+	}
+
+	Vector2Int operator-(const Vector2Int& a) {
+		return Vector2Int(x - a.x, y - a.y);
+	}
+	Vector2Int& operator-=(const Vector2Int& a) {
+		this->x -= a.x;
+		this->y -= a.y;
+		return *this;
+	}
+
+	Vector2Int operator/(const int& a) {
+		return Vector2Int(x / a, y / a);
+	}
+	Vector2Int& operator/=(const int& a) {
+		this->x /= a;
+		this->y /= a;
+		return *this;
+	}
+
+	Vector2Int operator*(const int& a) {
+		return Vector2Int(x * a, y * a);
+	}
+	const Vector2Int& operator*(const int& a) const {
+		return Vector2Int(x * a, y * a);
+	}
+
+	Vector2Int& operator*=(const int& a) {
+		this->x *= a;
+		this->y *= a;
+		return *this;
+	}
+
+	Vector2Int operator^(const Vector2Int& a) { //Scale vector
+		return Vector2Int(x * a.x, y * a.y);
+	}
+	Vector2Int& operator^=(const Vector2Int& a) { //Scale vector
+		this->x *= a.x;
+		this->y *= a.y;
+		return *this;
+	}
+
+	//static float dot(const Vector2Int& lhs, const Vector2Int& rhs) {
+	//	return (lhs.x * rhs.x) + (lhs.y * rhs.y);
+	//};
+
+	//float sqrMagnitude() const {
+	//	return (x * x) + (y * y);
+	//}
+
+	//float magnitude() const {
+	//	return sqrtf(sqrMagnitude());
+	//}
+
+	//Vector2Int normalized() const {
+	//	float mag = magnitude();
+	//	if(mag == 0) return Vector2Int(0.f, 0.f);
+	//	return Vector2Int(x, y) / mag;
+	//}
+
+	bool operator==(const Vector2Int& a) {
+		return x == a.x && y == a.y;
+	}
+
+	bool operator!=(const Vector2Int& a) {
+		return x != a.x || y != a.y;
+	}
+
+	//const XMVECTOR& xmVec() {
+	//	return XMVectorSet(x, y, 0.0f, 0.0f);
+	//}
+
+	//explicit operator XMVECTOR() const {
+	//	return XMVectorSet(x, y, 0.0f, 0.0f);
+	//}
+
+	//operator XMFLOAT2() const {
+	//	return XMFLOAT2(x, y);
+	//}
+};

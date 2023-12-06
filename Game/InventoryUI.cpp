@@ -3,8 +3,29 @@
 #include "../Engine/UI/HorizontalLayoutRect.h"
 #include "../Engine/UI/Button.h"
 #include "../Engine/Engine.h"
+#include "Inventory.h"
+#include "InventoryItem.h"
+#include "Items.h"
+#include "Blocks.h"
 
 InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
+	inventory = gameScene->GetObject3D<Inventory>("Inventory");
+	this->SetDepth(15.f); // The item icons get drawn on the same draw call as the inventory, so make the depth ABOVE the other stuff
+
+
+	// TODO: TEMP TEST INVENTORY ITEMS
+	inventory->items.push_back(InventoryItem(ItemID::AMETHYST_PICKAXE, 0, 0));
+	inventory->items.push_back(InventoryItem(ItemID::RAW_GOLD, 1, 0));
+	inventory->items.push_back(InventoryItem(ItemID::RAW_COPPER, 3, 3));
+	inventory->items.push_back(InventoryItem(ItemID::TITANIUM_BAR, 6, 2));
+
+	inventory->items.push_back(InventoryItem(BlockID::GOLD_ORE, 2, 0));
+	inventory->items.push_back(InventoryItem(BlockID::GRASS, 3, 0));
+	inventory->items.push_back(InventoryItem(BlockID::OAK_LOG, 4, 0));
+	inventory->items.push_back(InventoryItem(BlockID::OAK_PLANKS, 5, 0));
+
+	//
+
 	hotbar = (HorizontalLayoutRect*)gameScene->CreateObject2D(new HorizontalLayoutRect({ 0.5f,0.5f,0.5f,0.7f }), "hotbar-parent");
 	//hotbar->SetPosition({ 0.0f, -10.0f });
 	hotbar->SetPosition({ 0.0f, 0.0f });
@@ -34,7 +55,7 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 
 
 	invBg = (UIRect*)gameScene->CreateObject2D(new UIRect("white", { 0.5f,0.5f,0.5f,1.0f }), "invBg");
-	invBg->SetDimensions({ 600.f, 450.f });
+	invBg->SetDimensions({ 570.f, 600.f });
 	invBg->SetPivot({ 0.5f, 0.5f });
 	invBg->SetAnchor({ 0.5f, 0.5f });
 	invBg->SetDepth(10.f);
@@ -43,8 +64,8 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 		HorizontalLayoutRect* rowRect = (HorizontalLayoutRect*)gameScene->CreateObject2D(new HorizontalLayoutRect({ 0.4f,0.4f,0.4f,1.0f }), "row" + to_string(row));
 		rowRect->SetDimensions({ 55.f * 10, 60.f   });
 		//rowRect->SetPosition({ 10.f, (row * 50.f) + 10.f });
-		rowRect->SetPosition({ 0.f, (row * 60.f)});
-		rowRect->SetAnchor({ 0.5f, 0.5f });
+		rowRect->SetPosition({ 0.f, -(row * 60.f) - 35.f - ((row > 0) ? 10.f : 0.f) });
+		rowRect->SetAnchor({ 0.5f, 1.0f });
 		rowRect->SetPivot({ 0.5f, 0.5f });
 		rowRect->SetParent(invBg);
 		rowRect->SetDepth(11.f);
@@ -67,7 +88,31 @@ void InventoryUI::Open() {
 	invBg->SetEnabled(true);
 	Input::SetMouseLocked(false);
 
+	for(InventoryItem& invItem : this->inventory->items) {
+		const string& atlasName = (invItem.type == InventoryItem::Type::BLOCK) ? "atlas" : "item-atlas";
 
+		UIRect* icon = new UIRect(atlasName, { 1.f,1.f,1.f,1.f });
+		icon->Init(pDevice);
+		icon->SetDimensions({ 50.f,50.f });
+		icon->SetAnchor({ .5f,.5f });
+		icon->SetPivot({ .5f,.5f });
+		icon->SetDepth(13.f);
+
+		Vector2Int uvPos = invItem.GetUVPos();
+		LONG texPosX = static_cast<LONG>(ITEM_ATLAS_TILE_SIZE * uvPos.x);
+		LONG texPosY = static_cast<LONG>(ITEM_ATLAS_TILE_SIZE * uvPos.y);
+
+		icon->SetTexRect({
+			texPosX, texPosY,
+			texPosX + ITEM_ATLAS_TILE_SIZE,
+			texPosY + ITEM_ATLAS_TILE_SIZE
+		});
+
+		icon->SetParent(invSlots[invItem.posX][invItem.posY]);
+
+		_spawnedIcons.push_back(icon);
+	}
+	__nop();
 }
 
 void InventoryUI::Close() {
@@ -95,4 +140,10 @@ void InventoryUI::Update(const float dTime) {
 
 void InventoryUI::Start() {
 	Close();
+}
+
+void InventoryUI::Draw(SpriteBatch* spriteBatch) {
+	for(auto& itemIcon : _spawnedIcons) {
+		itemIcon->Draw(spriteBatch);
+	}
 }

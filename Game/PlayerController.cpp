@@ -36,14 +36,14 @@ void PlayerController::Start()
 	chunkManager = engine->GetCurrentScene()->GetObject3D<ChunkManager>("AChunkManager");
 }
 
-#define AABB_RANGE Vector3Int(2,4,2)
+#define AABB_RANGE Vector3Int(1,2,1)
 
 vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager) {
 	vector<AABB> ret;
 
-	for(int z = 1 - AABB_RANGE.z; z < AABB_RANGE.z + 1; z++) {
-		for(int y = 1 - AABB_RANGE.y; y < AABB_RANGE.y + 1; y++) {
-			for(int x = 1 - AABB_RANGE.x; x < AABB_RANGE.x + 1; x++) {
+	for(int z =  - AABB_RANGE.z; z < AABB_RANGE.z + 1; z++) {
+		for(int y =  - AABB_RANGE.y; y < AABB_RANGE.y + 1; y++) {
+			for(int x =  - AABB_RANGE.x; x < AABB_RANGE.x + 1; x++) {
 				Vector3 offset = Vector3(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
 				Vector3Int playerBlockPos = Vector3Int::FloorToInt(transform.position);
 				Vector3Int blockPos = playerBlockPos + offset;

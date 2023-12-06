@@ -18,13 +18,13 @@ protected:
 	Vector2 dimensions = { 0.f, 0.f };
 	Vector2 rawPosition;
 
+	
+
 	bool enabled = true;
 	float depth = 0.0f;
 private:
 
 public:
-	float rotation;
-
 	void SetEnabled(const bool e);
 	const bool GetEnabled() const;
 

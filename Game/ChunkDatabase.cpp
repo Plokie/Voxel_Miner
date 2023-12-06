@@ -183,11 +183,15 @@ void ChunkDatabase::SaveChunks()
 void ChunkDatabase::UnloadChunk(const Vector3Int& chunkIndex)
 {
 	AcquireSRWLockExclusive(&chunkHashMutex);
-	if(chunkHash.count(chunkIndex)) {
-		if(chunkHash[chunkIndex] != nullptr) {
-			SaveChunkIntoFile(chunkIndex, chunkHash[chunkIndex]->blockData);
 
-			chunkHash[chunkIndex] = nullptr;
+	auto it = chunkHash.find(chunkIndex);
+	if(it != chunkHash.end()) {
+		Chunk*& chunk = it->second;
+		if(chunk != nullptr) {
+			unique_lock<std::mutex> lock(chunk->gAccessMutex);
+			SaveChunkIntoFile(chunkIndex, chunk->blockData);
+
+			chunk = nullptr;
 		}
 	}
 	ReleaseSRWLockExclusive(&chunkHashMutex);
@@ -232,6 +236,8 @@ void ChunkDatabase::Init(const string& worldName)
 
 	_Instance->TryLoadChunkHash();
 	_Instance->LoadWorldData();
+
+	Graphics::Get()->camera.transform.position = Engine::Get()->GetScene("game")->GetObject3D("PlayerController")->transform.position;
 }
 
 bool ChunkDatabase::DoesDataExistForChunk(const Vector3Int& chunkIndex)

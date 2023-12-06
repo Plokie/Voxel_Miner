@@ -39,7 +39,7 @@ void GetSubdirectories(vector<wstring>* outVec) {
 }
 
 Button* AddButton(Engine* engine, Scene* scene, const string& text, const float y, function<void()> onClick) {
-	Button* button = (Button*)scene->CreateObject2D(new Button(L"Data\\Fonts\\algerian.spritefont"), "button" + text);
+	Button* button = (Button*)scene->CreateObject2D(new Button(L"Data\\Fonts\\Baloo2.spritefont"), "button" + text);
 	button->SetAnchor(Vector2(0.5f, 0.5f));
 	button->SetDimensions(Vector2(500.f, 50.f));
 	button->SetPosition({ 0.f, y });
@@ -54,7 +54,7 @@ Button* AddButton(Engine* engine, Scene* scene, const string& text, const float 
 }
 
 TextInput* AddTextInput(Engine* engine, Scene* scene, const string& text, const float y, const string& name/*, function<void()> onClick*/) {
-	TextInput* txtIn = (TextInput*)scene->CreateObject2D(new TextInput(L"Data\\Fonts\\algerian.spritefont"), name);
+	TextInput* txtIn = (TextInput*)scene->CreateObject2D(new TextInput(L"Data\\Fonts\\Baloo2.spritefont"), name);
 	txtIn->SetAnchor(Vector2(0.5f, 0.5f));
 	txtIn->SetDimensions(Vector2(500.f, 50.f));
 	txtIn->SetPosition({ 0.f, y });

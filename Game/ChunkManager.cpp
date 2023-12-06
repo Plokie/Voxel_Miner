@@ -20,30 +20,16 @@ void ChunkManager::CreateChunk(const int x, const int y, const int z)
 
 		newChunkQueue.push(newChunk);
 
-		//if(y == CHUNKLOAD_FIXED_PY) this_thread::sleep_for(std::chrono::milliseconds(10));
-
-		//if(y == CHUNKLOAD_FIXED_PY) {
-		//	threadPool->Queue([&] {});
-		//}
-
 		threadPool->Queue([=] {
 			//unique_lock<std::mutex> lock(newChunk->gAccessMutex);
-			if(ChunkDatabase::Get()->DoesDataExistForChunk({ x,y,z })) {
+			if(ChunkDatabase::Get()->DoesDataExistForChunk({ x,y,z })) 
 				ChunkDatabase::Get()->LoadChunkDataInto({ x,y,z }, newChunk);
-			}
-			else {
-				newChunk->GenerateBlockData();
-			}
+			else newChunk->GenerateBlockData();
+			
+			newChunk->hasLoadedBlockData = true;
 			
 			newChunk->InitSkyLight();
-
-			/*if(y == CHUNKLOAD_FIXED_PY) {
-				this_thread::sleep_for(std::chrono::milliseconds(20));
-				threadPool->Queue([=] {
-					newChunk->InitSkyLight();
-				});
-			}*/
-		}, y == CHUNKLOAD_FIXED_PY); // If the chunk is at the TOP, the higher priority value means it will be completed last
+		}, y == CHUNKLOAD_FIXED_PY); // If the chunk is at the TOP, the higher priority value means it will be completed last (or it should be...)
 	}
 }
 
@@ -118,7 +104,7 @@ void ChunkManager::Thread() {
 				) { // Erase chunk from map (it is out of range)
 
 					{
-						unique_lock<std::mutex> lock(pair.second->gAccessMutex);
+						//unique_lock<std::mutex> lock(pair.second->gAccessMutex);
 						unique_lock<std::mutex> destroyLock(*Engine::Get()->GetDestroyObjectsMutex());
 
 						ChunkDatabase::Get()->UnloadChunk(indexPos);
@@ -141,7 +127,7 @@ void ChunkManager::Start()
 	ChunkDatabase::Init();
 
 	threadPool = new ThreadPool();
-	threadPool->thread_count = 8u;
+	threadPool->thread_count = 6u;
 	threadPool->namingScheme = "ChnkMgr Worker";
 	threadPool->Init();
 
@@ -198,7 +184,7 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 		//unique_lock<std::mutex> lock(this->gAccessMutex);
 		Chunk* chunk = chunkMap[chunkIndex];
 		if(!(chunk == nullptr || chunk->pendingDeletion)) {
-			if (!chunk->hasRanStartFunction) return WorldGen::GetBlockAt(x, y, z);
+			if (!chunk->hasLoadedBlockData) return WorldGen::GetBlockAt(x, y, z);
 			//TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
 
 			// Okay this might seem redundant, but i promise its not (i think)

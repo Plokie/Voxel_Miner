@@ -8,7 +8,14 @@ private:
 	//Vector2 dimensions; // Object dimensions (width and height)
 	ID3D11ShaderResourceView* tex = nullptr;
 
+	RECT texRect = { 0, 0, 0, 0 };
+	bool hasTexRect = false;
+
 public:
+	void SetTexRect(RECT r);
+
+	float rotation = 0.0f;
+
 	void SetTexture(const string& texName);
 	void SetTexture(ID3D11ShaderResourceView* tex);
 
