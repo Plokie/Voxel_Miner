@@ -1,5 +1,37 @@
 #include "Transform.h"
 
+Vector3 Transform::GetPosition() {
+	if(parent != nullptr) {
+		return parent->GetPosition() + parent->basis(position);
+	}
+	return position;
+}
+
+Vector3 Transform::GetRotation() {
+	if(parent != nullptr) {
+		//todo: to proper rotation, change transforms to use quaternions.... ughhhh.....
+		return parent->GetRotation();
+
+	}
+	return rotation;
+}
+
+Vector3 Transform::GetScale() {
+	if(parent != nullptr) {
+		return parent->GetScale() * scale;
+	}
+	return scale;
+}
+
+void Transform::SetParent(Transform* p) {
+	parent = p;
+}
+
+Transform* Transform::GetParent()
+{
+	return parent;
+}
+
 XMMATRIX Transform::mxView() {
 	XMMATRIX mx = XMMatrixIdentity();
 
@@ -15,6 +47,10 @@ XMMATRIX Transform::mxView() {
 
 XMMATRIX Transform::mx() {
 	XMMATRIX mx = XMMatrixIdentity();
+
+	Vector3 scale = GetScale();
+	Vector3 position = GetPosition();
+	Vector3 rotation = GetRotation();
 
 	mx *= XMMatrixScaling(scale.x, scale.y, scale.z);
 	mx *= XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);

@@ -13,6 +13,30 @@ Model* Object3D::AddModel(ID3D11Device* device) {
 	return newMesh;
 }
 
+const float Object3D::GetClosestDistance(const Vector3& otherPos)
+{
+	//todo: find closest distance to aabb
+	//return transform.GetPosition().sqrDistTo(otherPos);
+		return transform.GetPosition().sqrDistTo(otherPos);
+	//if(cullBox.GetHalfSize().magnitude() == 0.0f) { // if there is no aabb, return distance to position
+	//}
+	////else if(cullBox.IsPointWithin(otherPos)){
+	////	//cullBox.penetration_vector()
+	////	return 0.0f;
+	////}
+	//else {
+	//	Vector3 aabbMin, aabbMax;
+	//	cullBox.GetMinMax(&aabbMin, &aabbMax);
+
+	//	Vector3 closestPoint;
+	//	closestPoint.x = max(aabbMin.x, min(otherPos.x, aabbMax.x));
+	//	closestPoint.y = max(aabbMin.y, min(otherPos.y, aabbMax.y));
+	//	closestPoint.z = max(aabbMin.z, min(otherPos.z, aabbMax.z));
+
+	//	return closestPoint.sqrDistTo(otherPos);
+	//}
+}
+
 bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<tuple<Model*, XMMATRIX, Object3D*>>* transparentModels) {
 	//AcquireSRWLockExclusive(&this->gAccessMutex);
 	bool didDraw = false;

@@ -150,6 +150,8 @@
   <ItemGroup>
     <ClCompile Include="Audio\Audio.cpp" />
     <ClCompile Include="Engine\UI\Button.cpp" />
+    <ClCompile Include="Game\HeldItem.cpp" />
+    <ClCompile Include="Game\HeldItemMesh.cpp" />
     <ClCompile Include="Game\Inventory.cpp" />
     <ClCompile Include="Game\InventoryItem.cpp" />
     <ClCompile Include="Game\InventoryUI.cpp" />
@@ -194,6 +196,8 @@
   <ItemGroup>
     <ClInclude Include="Audio\Audio.h" />
     <ClInclude Include="Engine\UI\Button.h" />
+    <ClInclude Include="Game\HeldItem.h" />
+    <ClInclude Include="Game\HeldItemMesh.h" />
     <ClInclude Include="Game\Inventory.h" />
     <ClInclude Include="Game\InventoryItem.h" />
     <ClInclude Include="Game\InventoryUI.h" />

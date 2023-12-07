@@ -313,6 +313,7 @@ void Chunk::BuildMesh() {
 				if(def.IsOpaque()) {
 					this->MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
 
+#if 1
 					if(def.HasShell() && this->RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
 						//int light = chunkManager->GetBlockLightAtWorldPos(x, y + 1, z);
 						short rawLight = this->GetRawLightIncludingNeighbours(x, y + 1, z);
@@ -332,6 +333,7 @@ void Chunk::BuildMesh() {
 							);
 						}
 					}
+#endif
 				}
 				else if(blockid == BlockID::WATER || blockid == LAVA)
 				{

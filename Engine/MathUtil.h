@@ -162,6 +162,10 @@ public:
 		return XMVectorSet(x, y, z, 0.0f);
 	}
 
+	explicit operator XMFLOAT3() const{
+		return {x,y,z};
+	}
+
 	XMVECTOR AsXmVector() const {
 		return XMVectorSet(x, y, z, 0.0f);
 	}

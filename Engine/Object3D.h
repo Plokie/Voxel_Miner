@@ -28,6 +28,9 @@ public:
 	Object3D(){}
 	Object3D(ID3D11Device* device);
 
+	// Finds the closest distance to another position (takes into account AABB)
+	const float GetClosestDistance(const Vector3& otherPos);
+
 	bool Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<tuple<Model*, XMMATRIX, Object3D*>>* transparentModels);
 
 	Model* AddModel(ID3D11Device* device);

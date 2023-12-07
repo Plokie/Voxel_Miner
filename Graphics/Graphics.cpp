@@ -575,11 +575,11 @@ void Graphics::Sort3DObjects(vector<Object3D*>& objects, int start, int end) {
 
 	int p = 0;
 	{ // PARTITION
-		float pivot = objects[start]->transform.position.sqrDistTo(camera.transform.position);
+		float pivot = objects[start]->GetClosestDistance(camera.transform.position);
 
 		int count = 0;
 		for(int i = start + 1; i <= end; i++) {
-			if(objects[i]->transform.position.sqrDistTo(camera.transform.position) > pivot)
+			if(objects[i]->GetClosestDistance(camera.transform.position) > pivot)
 				count++;
 		}
 
@@ -589,10 +589,10 @@ void Graphics::Sort3DObjects(vector<Object3D*>& objects, int start, int end) {
 
 		int i = start, j = end;
 		while(i < pivotIndex && j > pivotIndex) {
-			while(objects[i]->transform.position.sqrDistTo(camera.transform.position) > pivot) {
+			while(objects[i]->GetClosestDistance(camera.transform.position) > pivot) {
 				i++;
 			}
-			while(objects[j]->transform.position.sqrDistTo(camera.transform.position) <= pivot) {
+			while(objects[j]->GetClosestDistance(camera.transform.position) <= pivot) {
 				j--;
 			}
 			if(i < pivotIndex && j > pivotIndex) {
