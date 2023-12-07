@@ -113,6 +113,11 @@ XMFLOAT2 Input::MousePosition() {
 	return _Instance->mousePos;
 }
 
+Vector2 Input::MousePositionVec() {
+	GetMouseInformation();
+	return { _Instance->mousePos.x, _Instance->mousePos.y };
+}
+
 void Input::SetMouseLocked(bool isLocked) {
 	_Instance->isMouseLocked = isLocked;
 	//ShowCursor(isLocked);

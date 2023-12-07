@@ -8,7 +8,7 @@
 #include "Items.h"
 
 #define INVSIZE_X 9
-#define INVSIZE_Y 4 // Includes hotbar
+#define INVSIZE_Y 5 // Includes hotbar
 
 class InventoryUI;
 
@@ -19,17 +19,17 @@ private:
 	map<tuple<int, int>, InventoryItem*> _itemPosMap;
 
 	// return {-1,-1} if no spots are free
-	const Vector2Int GetFreeSpot() const;
 	const bool DoesItemExistAtPos(int posX, int posY) const;
 
 	vector<function<void()>> _onChangeEvents;
 
 	void InvokeOnChange();
 public:
+	const Vector2Int GetFreeSpot() const;
 
 	void AddOnChangeEvent(function<void()> func);
 
-	const vector<InventoryItem>& GetInventoryItems() { return items; }
+	vector<InventoryItem>& GetInventoryItems() { return items; }
 
 	void AddItem(const InventoryItem& item);
 	void AddItem(const BlockID blockID, const int amount = 1);

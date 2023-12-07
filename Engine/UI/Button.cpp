@@ -119,9 +119,6 @@ void Button::Update(const float dTime) {
 	XMFLOAT2 mPos = Input::MousePosition();
 	Vector2 sPos = GetScreenPosition();
 
-	bool dbgKeyPress = Input::IsKeyPressed('L');
-
-
 	isHovering =
 		mPos.x < sPos.x + dimensions.x &&
 		mPos.x > sPos.x &&
@@ -137,6 +134,7 @@ void Button::Update(const float dTime) {
 
 void Button::Draw(SpriteBatch* spriteBatch) {
 	rect->Draw(spriteBatch);
+	if(label!=nullptr)
 	label->Draw(spriteBatch);
 }
 

@@ -4,8 +4,11 @@
 #include "../Engine/UI/UIRect.h"
 #include "InventoryItem.h"
 #include "../Engine/Engine.h"
+#include "InventoryUI.h"
 
-ItemIcon::ItemIcon(const InventoryItem* invItem) {
+ItemIcon::ItemIcon(InventoryItem* invItem, InventoryUI* invUI) {
+	this->invUI = invUI;
+	this->invItem = invItem;
 	const string& atlasName = (invItem->type == InventoryItem::Type::BLOCK) ? "atlas" : "item-atlas";
 
 	icon = new UIRect(atlasName, { 1.f,1.f,1.f,1.f });
@@ -37,6 +40,17 @@ ItemIcon::ItemIcon(const InventoryItem* invItem) {
 	amtLabel->SetDepth(14.f);
 	amtLabel->SetParent(icon);
 
+
+	nameLabel = new Label(L"Data\\Fonts\\Baloo2.spritefont", { 1.f,1.f,1.f,1.f });
+	nameLabel->Init(Graphics::Get()->GetDevice());
+	nameLabel->InitSelf();
+	nameLabel->SetText((invItem->type == InventoryItem::Type::BLOCK) ? (BlockDef::GetDef((BlockID)invItem->ID).GetName() ) : (ItemDef::Get((ItemID)invItem->ID).GetName()));
+	nameLabel->SetAnchor({ .5f, 0.f });
+	nameLabel->SetPivot({ .5f, .5f });
+	nameLabel->SetPosition({ .0f, 0.0f });
+	nameLabel->SetDepth(20.f);
+	nameLabel->SetParent(icon);
+	nameLabel->SetEnabled(false);
 }
 
 ItemIcon::~ItemIcon() {
@@ -48,6 +62,25 @@ ItemIcon::~ItemIcon() {
 	}
 }
 
+const bool ItemIcon::WasPressed() {
+	return isHovering && Input::IsMouseKeyPressed(MOUSE_L);
+}
+
+const Vector2& ItemIcon::GetScreenPosition()
+{
+	if(isHeld) {
+		XMFLOAT2 mPos = Input::MousePosition();
+		icon->SetDepth(15.f);
+		amtLabel->SetDepth(16.f);
+		return Vector2( mPos.x, mPos.y ) - (this->dimensions / 2.f);
+	}
+	else {
+		icon->SetDepth(13.f);
+		amtLabel->SetDepth(14.f);
+		return Object2D::GetScreenPosition();
+	}
+}
+
 void ItemIcon::Draw(SpriteBatch* spriteBatch) {
 	if(icon != nullptr) {
 		icon->Draw(spriteBatch);
@@ -55,11 +88,49 @@ void ItemIcon::Draw(SpriteBatch* spriteBatch) {
 	if(amtLabel != nullptr) {
 		amtLabel->Draw(spriteBatch);
 	}
+	if(nameLabel != nullptr && nameLabel->GetEnabled()) {
+		nameLabel->Draw(spriteBatch);
+	}
 }
 
 void ItemIcon::SetDimensions(const Vector2& dim) {
 	this->dimensions = dim;
 	if(icon != nullptr) {
 		icon->SetDimensions(dim);
+	}
+}
+
+void ItemIcon::Update(const float dTime) {
+	XMFLOAT2 mPos = Input::MousePosition();
+	Vector2 sPos = GetScreenPosition();
+
+	isHovering =
+		mPos.x < sPos.x + dimensions.x &&
+		mPos.x > sPos.x &&
+		mPos.y < sPos.y + dimensions.y &&
+		mPos.y > sPos.y;
+	
+	nameLabel->SetEnabled(isHovering);
+
+	if(WasPressed()) {
+		if(Input::IsKeyHeld(VK_SHIFT)) {
+			Vector2Int freeSpot = invUI->GetInventory()->GetFreeSpot();
+			invItem->posX = freeSpot.x;
+			invItem->posY = freeSpot.y;
+			SetParent((Object2D*)invUI->GetInvSlot(freeSpot.x, freeSpot.y));
+
+			invUI->DrawHotbarIcons();
+		}
+		else {
+			isHeld = !isHeld;
+
+			if(!isHeld) { // If released
+				invUI->ReleaseItem(this);
+			}
+			else { // If pressed
+
+			}
+		}
+
 	}
 }

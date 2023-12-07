@@ -42,9 +42,13 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 
 	for(int i = 0; i < INVSIZE_X; i++) {
 		string name = "hotbar-" + to_string(i);
-		UIRect* slot = (UIRect*)gameScene->CreateObject2D(new UIRect("white", { 0.3f, 0.3f, 0.3f, 0.7f }), name);
+		//UIRect* slot = (UIRect*)gameScene->CreateObject2D(new UIRect("white", { 0.3f, 0.3f, 0.3f, 0.7f }), name);
+		//slot->SetDimensions({ 60.f, 60.f });
+		//slot->SetDepth(1.0f);
+
+		Button* slot = (Button*)gameScene->CreateObject2D(new Button(XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f)), name);
 		slot->SetDimensions({ 60.f, 60.f });
-		slot->SetDepth(1.0f);
+		slot->SetDepth(1.f);
 
 		hotbar->AddChild(slot);
 		hotbarSlots[i] = slot;
@@ -72,9 +76,19 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 
 
 		for(int slot = 0; slot < INVSIZE_X; slot++) {
-			UIRect* slotRect = (UIRect*)gameScene->CreateObject2D(new UIRect("white", {0.3f, 0.3f, 0.3f, 1.0f}), "slot-" + to_string(row) + "-" + to_string(slot));
+			/*UIRect* slotRect = (UIRect*)gameScene->CreateObject2D(new UIRect("white", {0.3f, 0.3f, 0.3f, 1.0f}), "slot-" + to_string(row) + "-" + to_string(slot));
 			slotRect->SetDimensions({55.f, 55.f});
 			slotRect->SetDepth(12.f);
+
+			rowRect->AddChild(slotRect);*/
+
+			Button* slotRect = (Button*)gameScene->CreateObject2D(new Button(XMFLOAT4( 0.3f, 0.3f, 0.3f, 1.0f )), "slot-" + to_string(row) + "-" + to_string(slot));
+			slotRect->SetDimensions({ 55.f, 55.f });
+			slotRect->SetDepth(12.f);
+
+			slotRect->AddListener([this, slotRect] {
+				//this->SlotPressed(slotRect);
+			});
 
 			rowRect->AddChild(slotRect);
 
@@ -95,34 +109,41 @@ InventoryUI::~InventoryUI() {
 	}
 }
 
+//void InventoryUI::SetHeldItem(ItemIcon* invItem) {
+//	heldItem = invItem;
+//}
+//
+//void InventoryUI::SlotPressed(Button* slot) {
+//	if(heldItem != nullptr) {
+//		InventoryItem* invItem = heldItem->GetInvItem();
+//
+//
+//		heldItem->isHeld = false;
+//		heldItem = nullptr;
+//	}
+//}
 
+void InventoryUI::ReleaseItem(ItemIcon* invItem) {
+	for(int y = 0; y < INVSIZE_Y; y++) {
+		for(int x = 0; x < INVSIZE_X; x++) {
+			if(invSlots[x][y]->IsHovering()) {
+				invItem->GetInvItem()->posX = x;
+				invItem->GetInvItem()->posY = y;
+
+				invItem->SetParent(invSlots[x][y]);
+			}
+		}
+	}
+	DrawHotbarIcons();
+}
 
 void InventoryUI::Open() {
 	isOpen = true;
 	invBg->SetEnabled(true);
 	Input::SetMouseLocked(false);
 
-	for(const InventoryItem& invItem : this->inventory->GetInventoryItems()) {
-		//const string& atlasName = (invItem.type == InventoryItem::Type::BLOCK) ? "atlas" : "item-atlas";
-
-		//UIRect* icon = new UIRect(atlasName, { 1.f,1.f,1.f,1.f });
-		//icon->Init(pDevice);
-		//icon->SetDimensions({ 50.f,50.f });
-		//icon->SetAnchor({ .5f,.5f });
-		//icon->SetPivot({ .5f,.5f });
-		//icon->SetDepth(13.f);
-
-		//Vector2Int uvPos = invItem.GetUVPos();
-		//LONG texPosX = static_cast<LONG>(ITEM_ATLAS_TILE_SIZE * uvPos.x);
-		//LONG texPosY = static_cast<LONG>(ITEM_ATLAS_TILE_SIZE * uvPos.y);
-
-		//icon->SetTexRect({
-		//	texPosX, texPosY,
-		//	texPosX + ITEM_ATLAS_TILE_SIZE,
-		//	texPosY + ITEM_ATLAS_TILE_SIZE
-		//});
-
-		ItemIcon* icon = new ItemIcon(&invItem);
+	for(auto& invItem : this->inventory->GetInventoryItems()) {
+		ItemIcon* icon = new ItemIcon(&invItem, this);
 		icon->Init(pDevice);
 		icon->SetDimensions({ 50.f, 50.f });
 		icon->SetAnchor({ .5f,.5f });
@@ -152,6 +173,10 @@ void InventoryUI::Update(const float dTime) {
 		if(isOpen) Open();
 		else Close();
 	}
+
+	for(auto& icon : _spawnedIcons) {
+		icon->Update(dTime);
+	}
 }
 
 void InventoryUI::Start() {
@@ -177,26 +202,7 @@ void InventoryUI::DrawHotbarIcons() {
 
 	for(auto& invItem : inventory->GetInventoryItems()) {
 		if(invItem.posY == 0) {
-			//const string& atlasName = (invItem.type == InventoryItem::Type::BLOCK) ? "atlas" : "item-atlas";
-			//UIRect* slotIcon = new UIRect(atlasName, {1.0f, 1.0f, 1.0f, 1.0f});
-			//slotIcon->Init(pDevice);
-			//slotIcon->SetDimensions({ 50.f, 50.f });
-			//slotIcon->SetPivot({ 0.5f, 0.5f });
-			//slotIcon->SetAnchor({ 0.5f, 0.5f });
-			//slotIcon->SetDepth(2.0f);
-
-
-			//Vector2Int uvPos = invItem.GetUVPos();
-			//LONG texPosX = static_cast<LONG>(ITEM_ATLAS_TILE_SIZE * uvPos.x);
-			//LONG texPosY = static_cast<LONG>(ITEM_ATLAS_TILE_SIZE * uvPos.y);
-
-			//slotIcon->SetTexRect({
-			//	texPosX, texPosY,
-			//	texPosX + ITEM_ATLAS_TILE_SIZE,
-			//	texPosY + ITEM_ATLAS_TILE_SIZE
-			//});
-
-			ItemIcon* icon = new ItemIcon(&invItem);
+			ItemIcon* icon = new ItemIcon(&invItem, this);
 			icon->Init(pDevice);
 			icon->SetDimensions({ 50.f, 50.f });
 			icon->SetAnchor({ .5f,.5f });

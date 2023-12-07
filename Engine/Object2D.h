@@ -58,7 +58,7 @@ public:
 	void SetPosition(const float& x, const float& y);
 
 	// Calculate raw screen position pased on pivot and anchor
-	const Vector2& GetScreenPosition();
+	virtual const Vector2& GetScreenPosition();
 
 	void Init(ID3D11Device* pDevice);
 

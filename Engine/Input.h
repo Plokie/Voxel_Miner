@@ -123,6 +123,7 @@ public:
 	static XMFLOAT2 MouseDelta();
 
 	static XMFLOAT2 MousePosition();
+	static Vector2 MousePositionVec();
 
 	static void SetMouseLocked(bool isLocked);
 	

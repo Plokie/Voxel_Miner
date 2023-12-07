@@ -10,6 +10,7 @@ class HorizontalLayoutRect;
 class UIRect;
 class Inventory;
 class ItemIcon;
+class Button;
 
 class InventoryUI : public Object2D {
 private:
@@ -18,16 +19,25 @@ private:
 	Inventory* inventory = nullptr;
 
 	// pair of slot parent and slot icon
-	UIRect* invSlots[INVSIZE_X][INVSIZE_Y];
-	UIRect* hotbarSlots[INVSIZE_X];
+	Button* invSlots[INVSIZE_X][INVSIZE_Y];
+	Button* hotbarSlots[INVSIZE_X];
 	vector<ItemIcon*> _spawnedIcons = {};
 	vector<ItemIcon*> _hotbarIcons = {};
 
 	bool isOpen = false;
 
+	ItemIcon* heldItem = nullptr;
 public:
 	InventoryUI(Engine* engine, Scene* gameScene);
 	~InventoryUI();
+
+	Inventory* GetInventory() const { return inventory; }
+	Button* GetInvSlot(int x, int y) const { return invSlots[x][y]; }
+
+	//void SetHeldItem(ItemIcon* invItem);
+	//void SlotPressed(Button* slot);
+
+	void ReleaseItem(ItemIcon* invItem);
 
 	void Open();
 	void Close();
