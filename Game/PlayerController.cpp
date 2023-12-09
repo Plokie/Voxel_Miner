@@ -180,8 +180,13 @@ void PlayerController::Update(float dTime)
 	if(Input::IsKeyPressed('9')) inv->SetSlotNum(8);
 	if(Input::IsKeyPressed('0')) inv->SetSlotNum(9);
 
-
-
+	if(Input::GetMouseScrollDelta() > 0) {
+		inv->ChangeSlotNum(-1);
+	}
+	else if(Input::GetMouseScrollDelta() < 0) {
+		inv->ChangeSlotNum(1);
+	}
+	
 
 
 	// PLAYER RAYCAST

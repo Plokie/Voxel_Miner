@@ -174,6 +174,12 @@ void Inventory::SetSlotNum(const int num) {
 	InvokeOnSelect();
 }
 
+void Inventory::ChangeSlotNum(const int delta) {
+	selectedSlotNum += delta;
+	selectedSlotNum = FloorMod(selectedSlotNum, INVSIZE_X);
+	InvokeOnSelect();
+}
+
 void Inventory::AddOnChangeEvent(function<void()> func) {
 	_onChangeEvents.push_back(func);
 }

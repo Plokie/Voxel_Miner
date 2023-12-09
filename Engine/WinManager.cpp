@@ -31,6 +31,10 @@ LRESULT CALLBACK DefaultMsgHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lP
 		//int yPos = GET_Y_LPARAM(lParam);
 
 		return 0;
+	case WM_MOUSEWHEEL:
+		Input::HandleMouseWheel(wParam);
+
+		return 0;
 		// WM_SIZE is sent when the user resizes the window.  
 	case WM_SIZE:
 		winMgr->width = LOWORD(lParam);

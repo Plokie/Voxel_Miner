@@ -42,6 +42,7 @@ private:
 	bool prevmKeyBuffer[MKEYBUFF_SIZE];
 
 	bool isMouseLocked = false;
+	int scrollDelta = 0;
 
 	// Used for reading keyboard inputs as they come in (text input for example)
 	map<void*, function<void(unsigned short)>> inputStreams = {};
@@ -92,6 +93,8 @@ public:
 	
 	static void HandleCharInput(WPARAM key);
 
+	static void HandleMouseWheel(WPARAM wparam);
+
 	static bool IsKeyPressed(USHORT VKEY) {
 		return _Instance->keyBuffer[VKEY] && !_Instance->prevKeyBuffer[VKEY];
 	}
@@ -136,6 +139,8 @@ public:
 	//todo: make ways to create more input axes
 	// something akin to the new unity inputsystem?
 	static const float GetInputAxis(string axisName, int controllerIdx = 0);
+
+	static const int GetMouseScrollDelta();
 
 	static const Vector2 GetInputVector();
 

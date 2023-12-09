@@ -35,6 +35,7 @@ public:
 	bool GetHeldItem(InventoryItem** out);
 
 	void SetSlotNum(const int num);
+	void ChangeSlotNum(const int delta);
 	void AddOnChangeEvent(function<void()> func);
 	void AddOnSelectEvent(function<void(int)> func);
 	_NODISCARD InventoryItem& GetItemAt(const int x, const int y);

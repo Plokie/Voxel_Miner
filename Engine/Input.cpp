@@ -86,6 +86,11 @@ void Input::HandleCharInput(WPARAM key)
 	}
 }
 
+void Input::HandleMouseWheel(WPARAM wparam) {
+	int delta = GET_WHEEL_DELTA_WPARAM(wparam);
+	_Instance->scrollDelta = delta;
+}
+
 void Input::GetMouseInformation() {
 	if(_Instance->lastMouseGetAge == _Instance->inputAge)
 		return; // The current mouse information is up to date, so exit
@@ -164,6 +169,10 @@ const float Input::GetInputAxis(string axisName, int controllerIdx) {
 	}
 }
 
+const int Input::GetMouseScrollDelta() {
+	return _Instance->scrollDelta;
+}
+
 const Vector2 Input::GetInputVector() {
 	return Vector2(GetInputAxis("Horizontal"), GetInputAxis("Vertical"));
 }
@@ -184,6 +193,7 @@ void Input::EndUpdate() {
 	_Instance->inputAge++;
 
 	_Instance->mouseDelta = XMFLOAT2(0, 0);
+	_Instance->scrollDelta = 0;
 
 	UpdatePads();
 }
