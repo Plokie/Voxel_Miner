@@ -96,7 +96,6 @@ void PlayerController::Update(float dTime)
 		//velocity.x = moveAxis.x;
 		//velocity.z = moveAxis.z;
 
-
 		if(Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_A)) {
 			transform.position += Vector3(0, movementSpeed, 0);
 		}
@@ -142,10 +141,7 @@ void PlayerController::Update(float dTime)
 		transform.position += velocity * dTime;
 
 
-
-
 		// AABB COLLISION CHECK
-
 		aabb.SetPosition(transform.position - Vector3(0, 0.62f, 0));
 
 		for(const AABB& blockAABB : blocks) {
@@ -168,7 +164,7 @@ void PlayerController::Update(float dTime)
 	Vector3Int playerTopPos = Vector3Int::FloorToInt(transform.position);
 
 
-	// TEMP TODO:REMOVE AND PUT SOMEWHERE RELEVANT
+	// TEMP TODO:REMOVE AND PUT SOMEWHERE MORE RELEVANT
 	if(Input::IsKeyPressed('1')) inv->SetSlotNum(0);
 	if(Input::IsKeyPressed('2')) inv->SetSlotNum(1);
 	if(Input::IsKeyPressed('3')) inv->SetSlotNum(2);
@@ -186,14 +182,9 @@ void PlayerController::Update(float dTime)
 	else if(Input::GetMouseScrollDelta() < 0) {
 		inv->ChangeSlotNum(1);
 	}
-	
-
 
 	// PLAYER RAYCAST
-
 	VoxelRay ray(transform.position, transform.forward());
-
-	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.position = ray.origin + (ray.direction * 1.f);
 
 	Vector3Int lookHitPoint = Vector3Int(0, 0, 0);
 	Vector3Int lookHitNormal;
@@ -243,24 +234,9 @@ void PlayerController::Update(float dTime)
 	}
 
 
-
-
-
-
 	// DEBUG INFO
-
-	//engine->GetCurrentScene()->GetObject3D("cam_bounds")->transform.position = transform.position - Vector3(0, 0.62f, 0);
-
 	fpsCounter->SetText(to_string(static_cast<int>(roundf(1.f / dTime))));
 
-	//string debugChunkData = "";
-	//////AcquireSRWLockExclusive()
-	//if(ChunkDatabase::Get()!=nullptr)
-	//for(const pair<tuple<int,int,int>,Chunk*>& pair : ChunkDatabase::Get()->chunkHash) {
-	//	debugChunkData += ":"+Vector3Int(pair.first).ToString() + "\n";
-	//}
-
-	//AcquireSRWLockExclusive(&ChunkDatabase::Get()->chunkHashMutex);
 	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
 	Vector3Int footPos = camBlockPos - Vector3Int(0, 1, 0);
 	Vector3Int chunkIndex = ChunkManager::ToChunkIndexPositionTuple(footPos.x, footPos.y, footPos.z);
@@ -277,24 +253,7 @@ void PlayerController::Update(float dTime)
 		+ "T: " + to_string(temp) + "\n"
 		+ "M: " + to_string(moist) + "\n"
 		+ "B: " + Biome::Get(temp, moist).name + "\n"
-		//velocity.ToString() + "\n" + 
-		//to_string(isGrounded) + "\n" + "\n" +
-		//playerTopPos.ToString() + "\n" +
-		//playerBottomPos.ToString() + "\n" +
-		//lookHitPoint.ToString() + "\n" 
-		//+ debugChunkData
-		//+ to_string(ChunkDatabase::Get()->chunkHash.size())
 	);
-	//);
-	//ReleaseSRWLockExclusive(&ChunkDatabase::Get()->chunkHashMutex);
-	//engine->GetCurrentScene()->GetObject2D<Label>("chunkpos")->SetText(ChunkManager::ToChunkIndexPosition(camBlockPos.x, camBlockPos.y, camBlockPos.z).ToString());
-	//engine->GetCurrentScene()->GetObject2D<Label>("indexpos")->SetText(Vector3Int(FloorMod(camBlockPos.x, CHUNKSIZE_X), FloorMod(camBlockPos.y, CHUNKSIZE_Y), FloorMod(camBlockPos.z, CHUNKSIZE_Z)).ToString());
-
-
-	// TODO: REMOVE
-	// TEMP CROSSHAIR
-	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.position = transform.position + (transform.forward() * 0.1f);
-	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.rotation = transform.rotation;
 
 	// KEEP AT END
 	camera->transform = transform;
