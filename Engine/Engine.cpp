@@ -177,7 +177,7 @@ bool Engine::DestroyObject3D(Object3D* obj)
 	//todo: move procedure to scene class
 	for(pair<string, Object3D*> pair : *currentScene->GetSceneObjects3D()) {
 		if(pair.second == obj) {
-			obj->pendingDeletion = true;
+			//obj->pendingDeletion = true;
 			DestroyObject3D(pair.first);
 			return true;
 		}
@@ -199,7 +199,7 @@ bool Engine::DestroyObject3DImmediate(string name)
 	if(it != sceneObjects->end()) {
 
 	//if(currentScene->GetSceneObjects3D()->count(name)) {
-		Object3D*& objectToDelete = it->second;
+		Object3D* objectToDelete = it->second;
 		//Object3D* objectToDelete = currentScene->GetSceneObjects3D()->at(name);
 		//if(objectToDelete==nullptr || objectToDelete->pendingDeletion) return false;
 		if(objectToDelete == nullptr || objectToDelete->pendingDeletion) return false;
