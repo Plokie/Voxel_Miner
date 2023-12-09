@@ -77,13 +77,13 @@ void ChunkManager::Thread() {
 
 		{	unique_lock<std::mutex> lock(regenQueueMutex);
 			while(!regenQueue.empty()) {
-				Chunk* chunk = regenQueue.front();
-				threadPool->Queue([=] {
-					if(chunk == nullptr || chunk->pendingDeletion) return;
+				pair<Chunk*,int> queuePair = regenQueue.front();
+				threadPool->Queue([queuePair] {
+					if(queuePair.first == nullptr || queuePair.first->pendingDeletion) return;
 
-					unique_lock<std::mutex> lock(chunk->gAccessMutex);
-					chunk->BuildMesh();
-				});
+					unique_lock<std::mutex> lock(queuePair.first->gAccessMutex);
+					queuePair.first->BuildMesh();
+				}, queuePair.second);
 				regenQueue.pop();
 			}
 		}
@@ -260,7 +260,7 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 		//rebuildQueue.push(chunk);
 		//chunk->BuildMesh_PoolFunc(false);
 		//TryRegen(chunk, true);
-		QueueRegen(chunk);
+		QueueRegen(chunk, -1);
 
 
 		if(localVoxelPos.x == 0) { // Regen -x neighbour
@@ -292,20 +292,20 @@ void ChunkManager::SetBlockAtWorldPos(const Vector3Int& pos, const BlockID& id) 
 	SetBlockAtWorldPos(pos.x, pos.y, pos.z, id);
 }
 
-void ChunkManager::QueueRegen(Chunk* p)
+void ChunkManager::QueueRegen(Chunk* p, int priority)
 {
 	if(p == nullptr || p->pendingDeletion) return;
 	unique_lock<std::mutex> regenLock(regenQueueMutex);
-	regenQueue.push(p);
+	regenQueue.push({ p, priority });
 }
 
-void ChunkManager::QueueRegen(const Vector3Int& index)
+void ChunkManager::QueueRegen(const Vector3Int& index, int priority)
 {
 	unique_lock<std::mutex> regenLock(regenQueueMutex);
 	auto it = chunkMap.find(index);
 	if(it != chunkMap.end()) {
 		if(it->second == nullptr || it->second->pendingDeletion) return;
-		regenQueue.push(it->second);
+		regenQueue.push({ it->second, priority });
 	}
 }
 

@@ -31,7 +31,7 @@ private:
 	queue<Chunk*> newChunkQueue;
 
 	std::mutex regenQueueMutex;
-	queue<Chunk*> regenQueue;
+	queue<pair<Chunk*,int>> regenQueue;
 
 	vector<thread> chnkMgrThread;
 
@@ -85,8 +85,8 @@ public:
 
 	short GetRawLightAtWorldPos(const int& x, const int& y, const int& z);
 
-	void QueueRegen(Chunk*);
-	void QueueRegen(const Vector3Int&);
+	void QueueRegen(Chunk*, int priority=0);
+	void QueueRegen(const Vector3Int&, int priority=0);
 
 	void Update(float dTime) override;
 	void Start() override;
