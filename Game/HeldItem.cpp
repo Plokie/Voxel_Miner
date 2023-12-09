@@ -12,7 +12,7 @@ void HeldItem::Start() {
 	//AddModel()
 	AddModel(Graphics::Get()->GetDevice());
 	//models[0]->SetMesh("heldItemMesh");
-	SetItem(ItemID::AMETHYST_PICKAXE);
+	SetItem(ItemID::ITEMERR); //blanks held item
 }
 
 void HeldItem::SetItem(BlockID blockID) {
