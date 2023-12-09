@@ -49,4 +49,8 @@ public:
 	void SubItem(const BlockID blockID, const int amount = 1);
 	void SubItem(const ItemID itemID, const int amount = 1);
 	void SubItem(const unsigned int ID, const InventoryItem::Type type, const int amount = 1);
+
+	nlohmann::json Serialize();
+	void Deserialize(nlohmann::json jsonInv);
+	void LoadDefaultItems();
 };

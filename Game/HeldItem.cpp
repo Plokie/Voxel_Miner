@@ -26,6 +26,8 @@ void HeldItem::SetItem(ItemID itemID) {
 void HeldItem::SetItem(InventoryItem::Type type, unsigned short id) {
 	const string& atlasName = (type == InventoryItem::Type::BLOCK) ? "atlas" : "item-atlas";
 
+	if(models.size() == 0) return;
+
 	delete models[0]->GetMesh();
 	models[0]->SetTexture(0, atlasName);
 	

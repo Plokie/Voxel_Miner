@@ -126,6 +126,40 @@ void Inventory::SubItem(const unsigned int ID, const InventoryItem::Type type, c
 	}
 }
 
+nlohmann::json Inventory::Serialize()
+{
+	nlohmann::json json = {};
+	
+	vector<nlohmann::json> itemJsons = {};
+	for(auto& invItem : items) {
+		itemJsons.push_back(invItem.Serialize());
+	}
+	json["items"] = itemJsons;
+	//json[""]
+
+	return json;
+}
+
+void Inventory::Deserialize(nlohmann::json jsonInv) {
+	items.clear();
+	
+	vector<nlohmann::json> itemJsons = jsonInv["items"];
+	for(auto& itemJson : itemJsons) {
+		items.push_back(InventoryItem::Deserialize(itemJson));
+	}
+	InvokeOnChange();
+	InvokeOnSelect();
+}
+
+void Inventory::LoadDefaultItems() {
+	items.clear();
+	AddItem((ItemID)COPPER_PICKAXE);
+	AddItem((ItemID)COPPER_AXE);
+	AddItem((ItemID)COPPER_SHOVEL);
+	InvokeOnChange();
+	InvokeOnSelect();
+}
+
 InventoryItem& Inventory::GetItemAt(const int x, const int y) {
 	for(InventoryItem& invItem : items) {
 		if(invItem.posX == x && invItem.posY == y) {

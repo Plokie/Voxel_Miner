@@ -14,3 +14,29 @@ Vector2Int InventoryItem::GetUVPos() const
         return { def.GetTopUVidx(), def.GetTopUVidy() };
     }
 }
+
+nlohmann::json InventoryItem::Serialize()
+{
+    //string str = "";
+    nlohmann::json json = {};
+    json["type"] = type;
+    json["ID"] = ID;
+    json["amount"] = amount;
+    json["posX"] = posX;
+    json["posY"] = posY;
+
+    return json;
+    //return string();
+}
+
+InventoryItem InventoryItem::Deserialize(nlohmann::json json)
+{
+    InventoryItem item = {};
+    item.type = json["type"];
+    item.ID = json["ID"];
+    item.amount = json["amount"];
+    item.posX = json["posX"];
+    item.posY = json["posY"];
+
+    return item;
+}

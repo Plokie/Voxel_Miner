@@ -2,6 +2,7 @@
 
 #include "WorldGen.h"
 #include "../Engine/Engine.h"
+#include "Inventory.h"
 
 ChunkDatabase* ChunkDatabase::_Instance = nullptr;
 
@@ -83,34 +84,10 @@ void ChunkDatabase::LoadChunkFromFile(const Vector3Int& chunkIndex, BlockID chun
 		return;
 	}
 
-	//char byte;
-	//while(chunkFile.read(&byte, 1)) {
-	//	BlockID block = static_cast<BlockID>(byte);
-	//	if(block == ERR || block > 39u)
-	//		assert(false);
-
-	//	x = (index % CHUNKSIZE_X);
-	//	z = (index / (CHUNKSIZE_X * CHUNKSIZE_X));
-	//	y = (index % (CHUNKSIZE_X * CHUNKSIZE_X)) / CHUNKSIZE_X;
-
-	//	if(x >= CHUNKSIZE_X || y >= CHUNKSIZE_Y || z >= CHUNKSIZE_Z)
-	//		assert(false);
-
-	//	//chunk1D[index] = block;
-	//	chunkDataArray[x][y][z] = block; 
-	//	if(chunkDataArray[x][y][z] == ERR) { //?
-	//		assert(false);
-	//	}
-	//	index++;
-	//}
-
-
-	//if(x != (CHUNKSIZE_X - 1) || y != (CHUNKSIZE_Y - 1) || z != (CHUNKSIZE_Z - 1))
-	//	assert(false);
-
-	//chunkFile.close();
-
-	while(chunkFile.read(&currentChar, 1)) {
+	// Doing the 1D then to 3D array thing might be slower but its easier
+	// i couldnt get coordinate conversion working for some reason (im honestly not sure why)
+	// honestly it doesnt make THAT big of a difference
+	while(chunkFile.read(&currentChar, 1)) { 
 		chunk1D[index] = static_cast<BlockID>(currentChar);
 		index++;
 	}
@@ -177,12 +154,14 @@ void ChunkDatabase::SaveWorldData() {
 	}
 
 	Vector3 playerPos = Engine::Get()->GetScene("game")->GetObject3D("PlayerController")->transform.position;
+	Inventory* inv = Engine::Get()->GetScene("game")->GetObject3D<Inventory>("Inventory");
 
 	nlohmann::json newJson = {
 		{"seed", WorldGen::GetSeed()},
 		{"worldName", worldName.c_str()},
 		{"chunkHash", chunkHashVector},
-		{"playerPos", {playerPos.x, playerPos.y, playerPos.z}}
+		{"playerPos", {playerPos.x, playerPos.y, playerPos.z}},
+		{"inventory", inv->Serialize()}
 	};
 	file << newJson.dump(2);
 }
@@ -196,6 +175,8 @@ void ChunkDatabase::LoadWorldData()
 		return; // Error reading file
 	}
 
+	Inventory* inv = Engine::Get()->GetScene("game")->GetObject3D<Inventory>("Inventory");
+
 	if(f.good()) { // if file exists
 		ostringstream stringBuff;
 		stringBuff << f.rdbuf();
@@ -208,14 +189,11 @@ void ChunkDatabase::LoadWorldData()
 		WorldGen::SetSeed(json["seed"]);
 		this->worldName = json["worldName"];
 
-		//float arr[3] = json["playerPos"];
-		//float x = json["playerPos"][0];
-		//float y = json["playerPos"][1];
-		//float z = json["playerPos"][2];
-
 		Engine::Get()->GetScene("game")->GetObject3D("PlayerController")->transform.position = { json["playerPos"][0], json["playerPos"][1], json["playerPos"][2] };
+		inv->Deserialize(json["inventory"]);
 	}
 	else { // if file doesnt exist
+		inv->LoadDefaultItems();
 		SaveWorldData(); // create world data file
 	}
 	f.close();

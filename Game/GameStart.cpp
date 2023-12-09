@@ -61,10 +61,7 @@ void GameStart(Engine* engine) {
 
 	gameScene->CreateObject3D(new ChunkManager(), "AChunkManager");
 	Inventory* inventory = (Inventory*)gameScene->CreateObject3D(new Inventory(), "Inventory");
-
-	inventory->AddItem(ItemID::COPPER_PICKAXE, 1);
-	inventory->AddItem(ItemID::COPPER_AXE, 1);
-	inventory->AddItem(ItemID::COPPER_SHOVEL, 1);
+	inventory->LoadDefaultItems();
 	//inventory->AddItem(ItemID::RAW_GOLD, 32);
 	//inventory->AddItem(ItemID::RAW_COPPER, 12);
 	//inventory->AddItem(ItemID::TITANIUM_BAR, 5);

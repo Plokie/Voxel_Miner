@@ -3,6 +3,7 @@
 #include "../Engine/MathUtil.h"
 #include "Items.h"
 #include "Blocks.h"
+#include "../Engine/json.hpp"
 
 struct InventoryItem {
 public:
@@ -13,7 +14,7 @@ public:
 	int amount = 1;
 	InventoryItem::Type type = ITEM;
 	unsigned short ID = 0; // Could be block or item
-	int posX, posY;
+	int posX=0, posY=0;
 
 	InventoryItem() {}
 
@@ -27,4 +28,7 @@ public:
 		type(Type::ITEM), ID(itemID), posX(posX), posY(posY), amount(amount) {}
 
 	Vector2Int GetUVPos() const;
+
+	nlohmann::json Serialize();
+	static InventoryItem Deserialize(nlohmann::json json);
 };
