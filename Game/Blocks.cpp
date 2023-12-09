@@ -61,28 +61,33 @@ const map<BlockID, Block> BlockDef::def = {
 	{BlockID::SNOW_GRASS, Block("Snowy Grass", true, 0,
 		1, 9,
 		0, 9,
-		3, 0
+		3, 0,
+		false,
+		SHOVEL
 	)},
 
 	{BlockID::TAIGA_GRASS, Block("Taiga Grass", true, 0,
 		1, 5,
 		0, 5,
 		3, 0,
-		true
+		true,
+		SHOVEL
 	)},
 
 	{BlockID::MAPLE_GRASS, Block("Maple Grass", true, 0,
 		1, 8,
 		0, 8,
 		3, 0,
-		true
+		true,
+		SHOVEL
 	)},
 
 	{BlockID::CHERRY_GRASS, Block("Cherry Grass", true, 0,
 		1, 7,
 		0, 7,
 		3, 0,
-		true
+		true,
+		SHOVEL
 	)},
 
 	{BlockID::BIRCH_LOG,	Block("Birch Log", true, 0,
