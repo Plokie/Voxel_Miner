@@ -10,6 +10,7 @@
 #include <iostream>
 #include <map>
 #include <fstream>
+#include <mutex>
 #include "../Engine/json.hpp"
 
 using namespace std;
@@ -42,12 +43,17 @@ private:
 	bool hasLoadedChunkHash = false;
 
 	static ChunkDatabase* _Instance;
+
+	mutex fileAccessMutex = {};
+
 public:
 	SRWLOCK chunkHashMutex = {};
 	map<tuple<int, int, int>, Chunk*> chunkHash = {}; // todo: move back to private
 
 	ChunkDatabase();
 	~ChunkDatabase();
+
+	void Close();
 
 	static ChunkDatabase* Get();
 

@@ -15,6 +15,17 @@ const Vector2Int Inventory::GetFreeSpot() const {
 	return tryPos;
 }
 
+bool Inventory::GetHeldItem(InventoryItem** out)
+{
+	for(InventoryItem& invItem : items) {
+		if(invItem.posX == selectedSlotNum && invItem.posY == 0) {
+			*out = &invItem;
+			return true;
+		}
+	}
+	return false;
+}
+
 void Inventory::AddItem(const InventoryItem& item) {
 	if(item.type == InventoryItem::Type::BLOCK) {
 		AddItem((BlockID)item.ID, item.amount);
@@ -50,7 +61,11 @@ void Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, c
 				AddItem(ID, type, invItem.amount - amount);
 				invItem.amount = maxStack;
 			}
-			else InvokeOnChange();
+			else 
+			{
+				InvokeOnChange();
+				InvokeOnSelect();
+			}
 			return;
 		}
 	}
@@ -83,14 +98,64 @@ void Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, c
 	
 	
 	InvokeOnChange();
+	InvokeOnSelect();
+}
+
+void Inventory::SubItem(const BlockID blockID, const int amount) {
+	SubItem(blockID, InventoryItem::Type::BLOCK, amount);
+}
+
+void Inventory::SubItem(const ItemID itemID, const int amount) {
+	SubItem(itemID, InventoryItem::Type::ITEM, amount);
+}
+
+void Inventory::SubItem(const unsigned int ID, const InventoryItem::Type type, const int amount) {
+	for(auto it = items.begin(); it != items.end(); it++) {
+		InventoryItem& invItem = *it;
+		if(invItem.ID == ID && invItem.type == type) {
+
+			//todo: if sub more than a stack, sub remainder too
+			invItem.amount -= amount;
+			if(invItem.amount <= 0) {
+				items.erase(it);
+			}
+			InvokeOnChange();
+			InvokeOnSelect();
+			return;
+		}
+	}
+}
+
+InventoryItem& Inventory::GetItemAt(const int x, const int y) {
+	for(InventoryItem& invItem : items) {
+		if(invItem.posX == x && invItem.posY == y) {
+			return invItem;
+		}
+	}
+	return errorInvItem;
+}
+
+void Inventory::SetSlotNum(const int num) {
+	selectedSlotNum = num;
+	InvokeOnSelect();
 }
 
 void Inventory::AddOnChangeEvent(function<void()> func) {
 	_onChangeEvents.push_back(func);
 }
 
+void Inventory::AddOnSelectEvent(function<void(int)> func) {
+	_onSelectEvents.push_back(func);
+}
+
 void Inventory::InvokeOnChange() {
 	for(auto& func : _onChangeEvents) {
 		func();
+	}
+}
+
+void Inventory::InvokeOnSelect() {
+	for(auto& func : _onSelectEvents) {
+		func(selectedSlotNum);
 	}
 }

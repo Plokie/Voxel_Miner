@@ -192,16 +192,17 @@ bool Engine::DestroyObject3D(Object3D* obj)
 bool Engine::DestroyObject3DImmediate(string name)
 {
 	//todo: move procedure to scene class
-	//map<string, Object3D*>* sceneObjects = currentScene->GetSceneObjects3D();
+	map<string, Object3D*>* sceneObjects = currentScene->GetSceneObjects3D();
 
-	//auto it = sceneObjects->find(name);
+	auto it = sceneObjects->find(name);
 
-	//if(it != sceneObjects->end()) {
+	if(it != sceneObjects->end()) {
 
-	if(currentScene->GetSceneObjects3D()->count(name)) {
-		//Object3D*& objectToDelete = it->second;
-		Object3D* objectToDelete = currentScene->GetSceneObjects3D()->at(name);
+	//if(currentScene->GetSceneObjects3D()->count(name)) {
+		Object3D*& objectToDelete = it->second;
+		//Object3D* objectToDelete = currentScene->GetSceneObjects3D()->at(name);
 		//if(objectToDelete==nullptr || objectToDelete->pendingDeletion) return false;
+		if(objectToDelete == nullptr || objectToDelete->pendingDeletion) return false;
 
 		//sceneObjects->erase(name);
 		currentScene->GetSceneObjects3D()->erase(name);

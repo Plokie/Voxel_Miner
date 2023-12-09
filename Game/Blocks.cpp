@@ -16,16 +16,17 @@ const map<BlockID, Block> BlockDef::def = {
 		1, 0,
 		2, 0,
 		3, 0,
-		true // has shell texture
+		true, // has shell texture
+		SHOVEL
 	)},
 	{BlockID::DIRT,		Block("Dirt", true, 0,
-		3, 0
+		3, 0, false, SHOVEL
 	)},
 	{BlockID::STONE,	Block("Stone", true, 0,
-		5, 0
+		5, 0, false, PICKAXE
 	)},
 	{BlockID::BLACKSTONE,Block("Blackstone", true, 0,
-		5, 1
+		5, 1, false, PICKAXE
 	)},
 	{BlockID::SAND,		Block("Sand", true, 0,
 		4, 0
@@ -40,13 +41,17 @@ const map<BlockID, Block> BlockDef::def = {
 	{BlockID::OAK_LOG,	Block("Oak Log", true, 0,
 		1, 1,
 		0, 1,
-		1, 1
+		1, 1,
+		false,
+		AXE
 	)},
 	{BlockID::OAK_LEAVES,	Block("Oak Leaves", false, 0,
 		2, 1
 	)},
 	{BlockID::OAK_PLANKS,	Block("Oak Planks", true, 0,
-		3, 1
+		3, 1,
+		false,
+		AXE
 	)},
 
 	{BlockID::LAMP,	Block("Lamp", true, 15,
@@ -83,79 +88,91 @@ const map<BlockID, Block> BlockDef::def = {
 	{BlockID::BIRCH_LOG,	Block("Birch Log", true, 0,
 		1, 2,
 		0, 2,
-		1, 2
+		1, 2,
+		false,
+		AXE
 	)},
 	{BlockID::BIRCH_LEAVES,	Block("Birch Leaves", false, 0,
 		2, 2
 	)},
 	{BlockID::BIRCH_PLANKS,	Block("Birch Planks", true, 0,
-		3, 2
+		3, 2,
+		false,
+		AXE
 	)},
 
 	{BlockID::CHERRY_LOG,	Block("Cherry Log", true, 0,
 		1, 4,
 		0, 4,
-		1, 4
+		1, 4,
+		false,
+		AXE
 	)},
 	{BlockID::CHERRY_LEAVES,	Block("Cherry Leaves", false, 0,
 		2, 4
 	)},
 	{BlockID::CHERRY_PLANKS,	Block("Cherry Planks", true, 0,
-		3, 4
+		3, 4,
+		false,
+		AXE
 	)},
 
 	{BlockID::SPRUCE_LOG,	Block("Spruce Log", true, 0,
 		1, 3,
 		0, 3,
-		1, 3
+		1, 3,
+		false,
+		AXE
 	)},
 	{BlockID::SPRUCE_LEAVES,	Block("Spruce Leaves", false, 0,
 		2, 3
 	)},
 	{BlockID::SPRUCE_PLANKS,	Block("Spruce Planks", true, 0,
-		3, 3
+		3, 3,
+		false,
+		AXE
 	)},
 
 	{ BlockID::COAL_ORE,	Block("Coal Ore", true, 0,
-		6, 0
+		6, 0, false, PICKAXE
 	) },
 	{ BlockID::COPPER_ORE,	Block("Copper Ore", true, 0,
-		7, 0
+		7, 0, false, PICKAXE
 	) },
 	{ BlockID::GOLD_ORE,	Block("Gold Ore", true, 0,
-		8, 0
+		8, 0, false, PICKAXE
 	) },
 	{ BlockID::AMETHYST_ORE,Block("Amethyst Ore", true, 0,
-		9, 0
+		9, 0, false, PICKAXE
 	) },
 	{ BlockID::TITANIUM_ORE,Block("Titanium Ore", true, 0,
-		10, 0
+		10, 0, false, PICKAXE
 	) },
 	{ BlockID::BLACK_COBBLESTONE,Block("Cobblestone", true, 0,
-		11, 0
+		11, 0, false, PICKAXE
 	) },
 
 	{ BlockID::BLACK_COAL_ORE,	Block("Blackstone Coal Ore", true, 0,
-		6, 1
+		6, 1, false, PICKAXE
 	) },
 	{ BlockID::BLACK_COPPER_ORE,	Block("Blackstone Copper Ore", true, 0,
-		7, 1
+		7, 1, false, PICKAXE
 	) },
 	{ BlockID::BLACK_GOLD_ORE,	Block("Blackstone Gold Ore", true, 0,
-		8, 1
+		8, 1, false, PICKAXE
 	) },
 	{ BlockID::BLACK_AMETHYST_ORE,Block("Blackstone Amethyst Ore", true, 0,
-		9, 1
+		9, 1, false, PICKAXE
 	) },
 	{ BlockID::BLACK_TITANIUM_ORE,Block("Blackstone Titanium Ore", true, 0,
-		10, 1
+		10, 1, false, PICKAXE
 	) },
 	{ BlockID::BLACK_COBBLESTONE,Block("Cobbled Blackstone", true, 0,
-		11, 1
+		11, 1, false, PICKAXE
 	) },
 
 	{ BlockID::GRAVEL,Block("Gravel", true, 0,
-		4, 2
+		4, 2, false, SHOVEL
 	) },
 
 	{ BlockID::LAVA, Block("Lava", false, 13,

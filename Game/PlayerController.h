@@ -6,6 +6,7 @@
 
 class Label;
 class ChunkManager;
+class Inventory;
 
 class PlayerController : public Object3D {
 	//const float gravity = -9.81f;
@@ -17,6 +18,7 @@ class PlayerController : public Object3D {
 	Object3D* blockSelectRef = nullptr;
 	Label* fpsCounter = nullptr;
 	Label* worldPosLabel = nullptr;
+	Inventory* inv = nullptr;
 
 	ChunkManager* chunkManager = nullptr;
 
@@ -24,8 +26,6 @@ class PlayerController : public Object3D {
 
 
 	bool freeCam = true;
-
-	BlockID TEMPcurrentBlockID = GRASS;
 
 	const Vector3 groundCheckPoints[4] = {
 		Vector3((playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f,  (playerHalfExtents.z - COLLISION_CHECK_INSET)),

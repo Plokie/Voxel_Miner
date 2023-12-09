@@ -68,7 +68,7 @@ public:
 	void Start() override;
 	void Update(float dTime) override;
 
-	Chunk(Vector3Int ChunkIndexPos, ChunkManager* chnkMgr) : indexPosition(ChunkIndexPos), chunkManager(chnkMgr) {}
+	Chunk(Vector3Int ChunkIndexPos, ChunkManager* chnkMgr) : Object3D(), indexPosition(ChunkIndexPos), chunkManager(chnkMgr) {}
 	~Chunk() {
 		for(Model*& model : models) {
 			//model->~Model();

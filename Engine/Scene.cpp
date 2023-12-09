@@ -11,6 +11,7 @@ void Scene::Init(Graphics* gfx, Engine* engine)
 
 Object3D* Scene::CreateObject3D(Object3D* object3D, const string& name)
 {
+	//unique_lock<mutex> lock(createObjectMutex);
 	if (sceneObjects3D.find(name) != sceneObjects3D.end()) return object3D;
 
 	sceneObjects3D[name] = object3D;
@@ -92,7 +93,9 @@ map<string, Object2D*>* Scene::GetSceneObjects2D()
 
 Scene::~Scene()
 {
+	printf("Begin Delete scene");
 	for(pair<const string, Object3D*>& pair : sceneObjects3D) {
+		printf("Delete %s", pair.first.c_str());
 		delete pair.second;
 		pair.second = nullptr;
 	}

@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include "ItemTypes.h"
 
 using namespace std;
 
@@ -49,13 +50,15 @@ private:
 	int sideUvIdX, sideUvIdY;
 
 	bool hasShell = false;
+	ItemType mineType = ItemType::BASICITEM;
 public:
 
 	Block(string _Name,
 		bool _isOpaque,
 		int _lightValue,
 		int UvIdX, int UvIdY,
-		bool hasShell = false
+		bool hasShell = false,
+		ItemType mineType = ItemType::BASICITEM
 	) :
 		name(_Name),
 		isOpaque(_isOpaque),
@@ -63,7 +66,8 @@ public:
 		topUvIdX(UvIdX), topUvIdY(UvIdY),
 		bottUvIdX(UvIdX), bottUvIdY(UvIdY),
 		sideUvIdX(UvIdX), sideUvIdY(UvIdY),
-		hasShell(hasShell)
+		hasShell(hasShell),
+		mineType(mineType)
 	{}
 
 	Block(string _Name,
@@ -72,7 +76,8 @@ public:
 		int TopUvIdX, int TopUvIdY,
 		int SideUvIdX, int SideUvIdY,
 		int BottUvIdX, int BottUvIdY,
-		bool hasShell = false
+		bool hasShell = false,
+		ItemType mineType = ItemType::BASICITEM
 	) :
 		name(_Name),
 		isOpaque(_isOpaque),
@@ -80,13 +85,15 @@ public:
 		topUvIdX(TopUvIdX), topUvIdY(TopUvIdY),
 		sideUvIdX(SideUvIdX), sideUvIdY(SideUvIdY),
 		bottUvIdX(BottUvIdX), bottUvIdY(BottUvIdY),
-		hasShell(hasShell)
+		hasShell(hasShell),
+		mineType(mineType)
 	{}
 
 	const string GetName() const;
 	const bool IsOpaque() const;
 	const int LightValue() const;
 	const bool HasShell() const { return hasShell; }
+	const ItemType GetMineType() const { return mineType; }
 
 	const int GetTopUVidx() const;
 	const int GetTopUVidy() const;

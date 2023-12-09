@@ -60,8 +60,22 @@ void GameStart(Engine* engine) {
 	Scene* gameScene = new Scene(Graphics::Get());
 
 	gameScene->CreateObject3D(new ChunkManager(), "AChunkManager");
+	Inventory* inventory = (Inventory*)gameScene->CreateObject3D(new Inventory(), "Inventory");
+
+	inventory->AddItem(ItemID::COPPER_PICKAXE, 1);
+	inventory->AddItem(ItemID::COPPER_AXE, 1);
+	inventory->AddItem(ItemID::COPPER_SHOVEL, 1);
+	//inventory->AddItem(ItemID::RAW_GOLD, 32);
+	//inventory->AddItem(ItemID::RAW_COPPER, 12);
+	//inventory->AddItem(ItemID::TITANIUM_BAR, 5);
+
+	//inventory->AddItem(BlockID::GOLD_ORE);
+	//inventory->AddItem(BlockID::GRASS, 14);
+	//inventory->AddItem(BlockID::OAK_LOG, 10);
+	//inventory->AddItem(BlockID::OAK_PLANKS, 93);
+
+
 	PlayerController* pc = (PlayerController*)gameScene->CreateObject3D(new PlayerController(), "PlayerController");
-	gameScene->CreateObject3D(new Inventory(), "Inventory");
 	HeldItem* heldItem = (HeldItem*)gameScene->CreateObject3D(new HeldItem(), "HeldItem");
 	heldItem->transform.SetParent(&pc->transform);
 	heldItem->transform.position = {.7f, -0.3f, 0.5f};

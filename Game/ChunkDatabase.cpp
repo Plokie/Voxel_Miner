@@ -36,16 +36,26 @@ void ChunkDatabase::SaveChunkIntoFile(const Vector3Int& chunkIndex, BlockID chun
 
 	CreateDirectory(L"Worlds", NULL);
 	CreateDirectory(convert("Worlds/" + worldName).c_str(), NULL);
+	unique_lock<mutex> lock(fileAccessMutex); // you can only read/write one file at a time
+	int debugIndex = 0;
 
-	ofstream fileStream(filePath);
+	ofstream fileStream(filePath, std::ios::binary);
 	if(fileStream.is_open()) {
 		for(int x = 0; x < CHUNKSIZE_X; x++) {
 			for(int y = 0; y < CHUNKSIZE_Y; y++) {
 				for(int z = 0; z < CHUNKSIZE_Z; z++) {
+					if(chunkDataArray[x][y][z] == ERR) {
+						assert(false);
+					}
+
 					fileStream << (char)chunkDataArray[x][y][z];
+					debugIndex++;
 				}
 			}
 		}
+
+		if(debugIndex < CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z)
+			assert(false);
 
 		fileStream.close();
 	}
@@ -57,11 +67,50 @@ void ChunkDatabase::SaveChunkIntoFile(const Vector3Int& chunkIndex, BlockID chun
 
 void ChunkDatabase::LoadChunkFromFile(const Vector3Int& chunkIndex, BlockID chunkDataArray[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z]) {
 	BlockID chunk1D[CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z] = {};
+	//BlockID* chunk1D = new BlockID(CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z);
+
+	unique_lock<mutex> lock(fileAccessMutex); // Okay so you can only read one file at a time
+
 	char currentChar;
 	const string& filePath = "Worlds/" + worldName + "/" + GetChunkFileName(chunkIndex);
-	fstream chunkFile(filePath, fstream::in);
+	ifstream chunkFile(filePath, std::ios::binary);
 	int index = 0;
-	while(chunkFile >> noskipws >> currentChar) {
+
+	int x=0, y=0, z=0;
+
+	if(!chunkFile.is_open()) {
+		assert(false);
+		return;
+	}
+
+	//char byte;
+	//while(chunkFile.read(&byte, 1)) {
+	//	BlockID block = static_cast<BlockID>(byte);
+	//	if(block == ERR || block > 39u)
+	//		assert(false);
+
+	//	x = (index % CHUNKSIZE_X);
+	//	z = (index / (CHUNKSIZE_X * CHUNKSIZE_X));
+	//	y = (index % (CHUNKSIZE_X * CHUNKSIZE_X)) / CHUNKSIZE_X;
+
+	//	if(x >= CHUNKSIZE_X || y >= CHUNKSIZE_Y || z >= CHUNKSIZE_Z)
+	//		assert(false);
+
+	//	//chunk1D[index] = block;
+	//	chunkDataArray[x][y][z] = block; 
+	//	if(chunkDataArray[x][y][z] == ERR) { //?
+	//		assert(false);
+	//	}
+	//	index++;
+	//}
+
+
+	//if(x != (CHUNKSIZE_X - 1) || y != (CHUNKSIZE_Y - 1) || z != (CHUNKSIZE_Z - 1))
+	//	assert(false);
+
+	//chunkFile.close();
+
+	while(chunkFile.read(&currentChar, 1)) {
 		chunk1D[index] = static_cast<BlockID>(currentChar);
 		index++;
 	}
@@ -70,6 +119,10 @@ void ChunkDatabase::LoadChunkFromFile(const Vector3Int& chunkIndex, BlockID chun
 	for(int x = 0; x < CHUNKSIZE_X; x++) {
 		for(int y = 0; y < CHUNKSIZE_Y; y++) {
 			for(int z = 0; z < CHUNKSIZE_Z; z++) {
+				if(chunk1D[index] == ERR) {
+					assert(false);
+				}
+
 				chunkDataArray[x][y][z] = chunk1D[index];
 				index++;
 			}
@@ -156,9 +209,9 @@ void ChunkDatabase::LoadWorldData()
 		this->worldName = json["worldName"];
 
 		//float arr[3] = json["playerPos"];
-		float x = json["playerPos"][0];
-		float y = json["playerPos"][1];
-		float z = json["playerPos"][2];
+		//float x = json["playerPos"][0];
+		//float y = json["playerPos"][1];
+		//float z = json["playerPos"][2];
 
 		Engine::Get()->GetScene("game")->GetObject3D("PlayerController")->transform.position = { json["playerPos"][0], json["playerPos"][1], json["playerPos"][2] };
 	}
@@ -204,6 +257,11 @@ ChunkDatabase::ChunkDatabase()
 ChunkDatabase::~ChunkDatabase()
 {
 	
+}
+
+void ChunkDatabase::Close() {
+	SaveChunks();
+	SaveWorldData();
 }
 
 ChunkDatabase* ChunkDatabase::Get()

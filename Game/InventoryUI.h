@@ -23,9 +23,11 @@ private:
 	Button* hotbarSlots[INVSIZE_X];
 	vector<ItemIcon*> _spawnedIcons = {};
 	vector<ItemIcon*> _hotbarIcons = {};
+	UIRect* hotbarSelect = nullptr;
 
 	bool isOpen = false;
 
+	// held item by the mouse when in inventory ui
 	ItemIcon* heldItem = nullptr;
 public:
 	InventoryUI(Engine* engine, Scene* gameScene);
@@ -33,6 +35,7 @@ public:
 
 	Inventory* GetInventory() const { return inventory; }
 	Button* GetInvSlot(int x, int y) const { return invSlots[x][y]; }
+	
 
 	//void SetHeldItem(ItemIcon* invItem);
 	//void SlotPressed(Button* slot);

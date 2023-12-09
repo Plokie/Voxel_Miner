@@ -5,6 +5,9 @@
 #include "ChunkManager.h"
 #include "WorldGen.h"
 #include "Chunk.h"
+#include "InventoryUI.h"
+#include "InventoryItem.h"
+#include "Inventory.h"
 //#include "ChunkDatabase.h"
 
 #include "../Audio/Audio.h"
@@ -22,6 +25,8 @@ void PlayerController::Start()
 
 	this->fpsCounter = engine->GetCurrentScene()->GetObject2D<Label>("fps-counter");
 	this->worldPosLabel = engine->GetCurrentScene()->GetObject2D<Label>("worldpos");
+
+	this->inv = engine->GetCurrentScene()->GetObject3D<Inventory>("Inventory");
 
 	//engine->GetCurrentScene()->CreateObject3D(new Object3D(), "a_debug_look", "cube", "err");
 	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->models[0]->SetTransparent(true);
@@ -164,16 +169,16 @@ void PlayerController::Update(float dTime)
 
 
 	// TEMP TODO:REMOVE AND PUT SOMEWHERE RELEVANT
-	if(Input::IsKeyPressed('1')) this->TEMPcurrentBlockID = GRASS;
-	if(Input::IsKeyPressed('2')) this->TEMPcurrentBlockID = DIRT;
-	if(Input::IsKeyPressed('3')) this->TEMPcurrentBlockID = STONE;
-	if(Input::IsKeyPressed('4')) this->TEMPcurrentBlockID = BLACKSTONE;
-	if(Input::IsKeyPressed('5')) this->TEMPcurrentBlockID = SAND;
-	if(Input::IsKeyPressed('6')) this->TEMPcurrentBlockID = CLAY;
-	if(Input::IsKeyPressed('7')) this->TEMPcurrentBlockID = WATER;
-	if(Input::IsKeyPressed('8')) this->TEMPcurrentBlockID = OAK_LOG;
-	if(Input::IsKeyPressed('9')) this->TEMPcurrentBlockID = OAK_PLANKS;
-	if(Input::IsKeyPressed('0')) this->TEMPcurrentBlockID = LAMP;
+	if(Input::IsKeyPressed('1')) inv->SetSlotNum(0);
+	if(Input::IsKeyPressed('2')) inv->SetSlotNum(1);
+	if(Input::IsKeyPressed('3')) inv->SetSlotNum(2);
+	if(Input::IsKeyPressed('4')) inv->SetSlotNum(3);
+	if(Input::IsKeyPressed('5')) inv->SetSlotNum(4);
+	if(Input::IsKeyPressed('6')) inv->SetSlotNum(5);
+	if(Input::IsKeyPressed('7')) inv->SetSlotNum(6);
+	if(Input::IsKeyPressed('8')) inv->SetSlotNum(7);
+	if(Input::IsKeyPressed('9')) inv->SetSlotNum(8);
+	if(Input::IsKeyPressed('0')) inv->SetSlotNum(9);
 
 
 
@@ -196,15 +201,35 @@ void PlayerController::Update(float dTime)
 		// INPUT MODIFY
 		if(Input::IsMouseLocked()) {
 			if(Input::IsMouseKeyPressed(MOUSE_L)) {
-				Audio::Play("hit", 1.f);
-				chunkManager->SetBlockAtWorldPos(lookHitPoint, AIR);
+				InventoryItem* invItem;
+				
+				if(inv->GetHeldItem(&invItem)) {
+					BlockID targetBlock = chunkManager->GetBlockAtWorldPos(lookHitPoint);
+					Block blockDef = BlockDef::GetDef(targetBlock);
+					Item itemDef = (invItem->type == InventoryItem::Type::BLOCK)?ItemDef::Get((ItemID)0):ItemDef::Get((ItemID)invItem->ID);
+
+					if(itemDef.GetItemType() == blockDef.GetMineType() || blockDef.GetMineType() == BASICITEM) {
+						Audio::Play("hit", 1.f);
+						chunkManager->SetBlockAtWorldPos(lookHitPoint, AIR);
+						inv->AddItem(targetBlock);
+					}
+
+				}
+
 			}
 
 			if(Input::IsMouseKeyPressed(MOUSE_R)) {
-				AABB targetBlockAABB = AABB(lookHitPoint + lookHitNormal + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
-				if(!targetBlockAABB.Intersects(aabb)) {
-					chunkManager->SetBlockAtWorldPos(lookHitPoint + lookHitNormal, TEMPcurrentBlockID);
+				//inv->GetItemAt()
+				InventoryItem* invItem;
+				if(inv->GetHeldItem(&invItem) && invItem->type==InventoryItem::Type::BLOCK) {
+
+					AABB targetBlockAABB = AABB(lookHitPoint + lookHitNormal + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
+					if(!targetBlockAABB.Intersects(aabb)) {
+						chunkManager->SetBlockAtWorldPos(lookHitPoint + lookHitNormal, (BlockID)invItem->ID);
+						inv->SubItem((BlockID)invItem->ID);
+					}
 				}
+
 			}
 		}
 	}

@@ -28,7 +28,10 @@ void HeldItem::SetItem(InventoryItem::Type type, unsigned short id) {
 
 	delete models[0]->GetMesh();
 	models[0]->SetTexture(0, atlasName);
-	models[0]->SetTransparent(true);
+	
+
+	if(id == 0) models[0]->alpha = 0.0f;
+	else models[0]->SetTransparent(true);
 
 	Vector2 uvPos;
 	if(type == InventoryItem::Type::ITEM) {

@@ -15,6 +15,7 @@ class InventoryUI;
 // Does not exist in space, just holds data
 class Inventory : public Object3D {
 private:
+	InventoryItem errorInvItem = InventoryItem(InventoryItem::Type::BLOCK, 0, -1, -1, 0);
 	vector<InventoryItem> items;
 	map<tuple<int, int>, InventoryItem*> _itemPosMap;
 
@@ -22,12 +23,21 @@ private:
 	const bool DoesItemExistAtPos(int posX, int posY) const;
 
 	vector<function<void()>> _onChangeEvents;
+	vector<function<void(int)>> _onSelectEvents;
+
+	int selectedSlotNum = 0;
 
 	void InvokeOnChange();
+	void InvokeOnSelect();
 public:
 	const Vector2Int GetFreeSpot() const;
 
+	bool GetHeldItem(InventoryItem** out);
+
+	void SetSlotNum(const int num);
 	void AddOnChangeEvent(function<void()> func);
+	void AddOnSelectEvent(function<void(int)> func);
+	_NODISCARD InventoryItem& GetItemAt(const int x, const int y);
 
 	vector<InventoryItem>& GetInventoryItems() { return items; }
 
@@ -35,4 +45,8 @@ public:
 	void AddItem(const BlockID blockID, const int amount = 1);
 	void AddItem(const ItemID itemID, const int amount = 1);
 	void AddItem(const unsigned int ID, const InventoryItem::Type type, const int amount = 1);
+
+	void SubItem(const BlockID blockID, const int amount = 1);
+	void SubItem(const ItemID itemID, const int amount = 1);
+	void SubItem(const unsigned int ID, const InventoryItem::Type type, const int amount = 1);
 };

@@ -15,6 +15,8 @@ public:
 	unsigned short ID = 0; // Could be block or item
 	int posX, posY;
 
+	InventoryItem() {}
+
 	InventoryItem(InventoryItem::Type type, unsigned short ID, int posX, int posY, int amount = 1) :
 		type(type), ID(ID), posX(posX), posY(posY), amount(amount) {}
 

@@ -8,44 +8,24 @@
 #include "InventoryItem.h"
 #include "Items.h"
 #include "Blocks.h"
+#include "HeldItem.h"
 
 InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 	inventory = gameScene->GetObject3D<Inventory>("Inventory");
 	this->SetDepth(15.f); // The item icons get drawn on the same draw call as the inventory, so make the depth ABOVE the other stuff
-
-
-	// TODO: TEMP TEST INVENTORY ITEMS
-	inventory->AddItem(ItemID::AMETHYST_PICKAXE, 2);
-	inventory->AddItem(ItemID::RAW_GOLD, 32);
-	inventory->AddItem(ItemID::RAW_COPPER, 12);
-	inventory->AddItem(ItemID::TITANIUM_BAR, 5);
-
-	inventory->AddItem(BlockID::GOLD_ORE);
-	inventory->AddItem(BlockID::GRASS, 14);
-	inventory->AddItem(BlockID::OAK_LOG, 10);
-	inventory->AddItem(BlockID::OAK_PLANKS, 93);
 
 	inventory->AddOnChangeEvent([&] {DrawHotbarIcons(); });
 
 	//
 
 	hotbar = (HorizontalLayoutRect*)gameScene->CreateObject2D(new HorizontalLayoutRect({ 0.5f,0.5f,0.5f,0.7f }), "hotbar-parent");
-	//hotbar->SetPosition({ 0.0f, -10.0f });
 	hotbar->SetPosition({ 0.0f, 0.0f });
 	hotbar->SetDimensions({ (60.f * (INVSIZE_X + 1)) - 10.f, 70.f });
-
-	//hotbar->SetAnchor({ 0.5f, 1.0f });
-	//hotbar->SetPivot({0.5f, 1.0f});
-
 	hotbar->SetAnchor({ 0.0f, 0.0f });
 	hotbar->SetPivot({ 0.0f, 0.0f });
 
 	for(int i = 0; i < INVSIZE_X; i++) {
 		string name = "hotbar-" + to_string(i);
-		//UIRect* slot = (UIRect*)gameScene->CreateObject2D(new UIRect("white", { 0.3f, 0.3f, 0.3f, 0.7f }), name);
-		//slot->SetDimensions({ 60.f, 60.f });
-		//slot->SetDepth(1.0f);
-
 		Button* slot = (Button*)gameScene->CreateObject2D(new Button(XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f)), name);
 		slot->SetDimensions({ 60.f, 60.f });
 		slot->SetDepth(1.f);
@@ -53,6 +33,25 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 		hotbar->AddChild(slot);
 		hotbarSlots[i] = slot;
 	}
+
+	hotbarSelect = (UIRect*)gameScene->CreateObject2D(new UIRect("white"), "hotbarSelect");
+	hotbarSelect->SetParent(hotbar);
+	hotbarSelect->SetDimensions({ 70.f,70.f });
+	hotbarSelect->SetAnchor({ 0.f, 0.5f });
+	hotbarSelect->SetPivot({ 0.f, 0.5f });
+	hotbarSelect->SetDepth(0.5f);
+
+	inventory->AddOnSelectEvent([this, gameScene](int slotNum) {
+		hotbarSelect->SetPosition({ slotNum * 65.f, 0.f });
+		InventoryItem& invItem = inventory->GetItemAt(slotNum, 0);
+		HeldItem* heldItemModel = gameScene->GetObject3D<HeldItem>("HeldItem");
+		if(invItem.ID == 0) {
+			heldItemModel->SetItem((BlockID)0);
+		}
+		else {
+			heldItemModel->SetItem(invItem.type, invItem.ID);
+		}
+	});
 
 	DrawHotbarIcons();
 
@@ -76,12 +75,6 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 
 
 		for(int slot = 0; slot < INVSIZE_X; slot++) {
-			/*UIRect* slotRect = (UIRect*)gameScene->CreateObject2D(new UIRect("white", {0.3f, 0.3f, 0.3f, 1.0f}), "slot-" + to_string(row) + "-" + to_string(slot));
-			slotRect->SetDimensions({55.f, 55.f});
-			slotRect->SetDepth(12.f);
-
-			rowRect->AddChild(slotRect);*/
-
 			Button* slotRect = (Button*)gameScene->CreateObject2D(new Button(XMFLOAT4( 0.3f, 0.3f, 0.3f, 1.0f )), "slot-" + to_string(row) + "-" + to_string(slot));
 			slotRect->SetDimensions({ 55.f, 55.f });
 			slotRect->SetDepth(12.f);
@@ -95,6 +88,10 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 			invSlots[slot][row] = slotRect;
 		}
 	}
+
+
+	
+
 }
 
 InventoryUI::~InventoryUI() {
@@ -123,7 +120,7 @@ InventoryUI::~InventoryUI() {
 //	}
 //}
 
-void InventoryUI::ReleaseItem(ItemIcon* invItem) {
+	void InventoryUI::ReleaseItem(ItemIcon* invItem) {
 	for(int y = 0; y < INVSIZE_Y; y++) {
 		for(int x = 0; x < INVSIZE_X; x++) {
 			if(invSlots[x][y]->IsHovering()) {

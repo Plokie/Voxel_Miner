@@ -16,6 +16,7 @@ void ChunkManager::CreateChunk(const int x, const int y, const int z)
 		{	unique_lock<std::mutex> lock(gAccessMutex);
 			chunkMap[pos] = newChunk;
 		}
+
 		newChunk->transform.position = Vector3(static_cast<float>(CHUNKSIZE_X * x), static_cast<float>(CHUNKSIZE_Y * y), static_cast<float>(CHUNKSIZE_Z * z));
 
 		newChunkQueue.push(newChunk);
@@ -43,8 +44,7 @@ Vector3Int ChunkManager::ChunkFloorPosForPositionCalculation(Vector3 worldPositi
 
 void ChunkManager::Update(float dTime) {
 	if(Input::IsKeyPressed('I')) {
-		ChunkDatabase::Get()->SaveChunks();
-		ChunkDatabase::Get()->SaveWorldData();
+		ChunkDatabase::Get()->Close(); // doenst actually close but saves loaded chunk data to disk
 	}
 }
 
@@ -147,8 +147,9 @@ void ChunkManager::Start()
 
 ChunkManager::~ChunkManager()
 {
-	ChunkDatabase::Get()->SaveChunks();
-	ChunkDatabase::Get()->SaveWorldData();
+	//ChunkDatabase::Get()->SaveChunks();
+	//ChunkDatabase::Get()->SaveWorldData();
+	ChunkDatabase::Get()->Close();
 
 	isRunning = false;
 	for(auto& thread : chnkMgrThread) {

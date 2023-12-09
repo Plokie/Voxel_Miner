@@ -243,6 +243,7 @@
     <ClInclude Include="Engine\UI\UIRect.h" />
     <ClInclude Include="Game\Items.h" />
     <ClInclude Include="Game\ItemIcon.h" />
+    <ClInclude Include="Game\ItemTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="pixelshader.hlsl">
