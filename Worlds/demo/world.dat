@@ -59,6 +59,21 @@
       -2,
       0,
       -1
+    ],
+    [
+      -1,
+      4,
+      -15
+    ],
+    [
+      -1,
+      4,
+      -14
+    ],
+    [
+      0,
+      4,
+      -15
     ]
   ],
   "inventory": {
@@ -86,44 +101,44 @@
       },
       {
         "ID": 17,
-        "amount": 15,
-        "posX": 3,
-        "posY": 0,
+        "amount": 11,
+        "posX": 8,
+        "posY": 2,
         "type": 1
       },
       {
         "ID": 18,
         "amount": 16,
-        "posX": 4,
-        "posY": 0,
+        "posX": 1,
+        "posY": 4,
         "type": 1
       },
       {
         "ID": 9,
-        "amount": 10,
-        "posX": 5,
-        "posY": 0,
+        "amount": 5,
+        "posX": 8,
+        "posY": 4,
         "type": 1
       },
       {
         "ID": 4,
         "amount": 30,
         "posX": 6,
-        "posY": 0,
+        "posY": 1,
         "type": 1
       },
       {
         "ID": 26,
         "amount": 9,
         "posX": 7,
-        "posY": 0,
+        "posY": 1,
         "type": 1
       },
       {
         "ID": 28,
         "amount": 8,
         "posX": 8,
-        "posY": 0,
+        "posY": 1,
         "type": 1
       },
       {
@@ -139,13 +154,48 @@
         "posX": 1,
         "posY": 1,
         "type": 1
+      },
+      {
+        "ID": 11,
+        "amount": 12,
+        "posX": 7,
+        "posY": 3,
+        "type": 1
+      },
+      {
+        "ID": 21,
+        "amount": 2,
+        "posX": 7,
+        "posY": 2,
+        "type": 0
+      },
+      {
+        "ID": 21,
+        "amount": 58,
+        "posX": 0,
+        "posY": 4,
+        "type": 1
+      },
+      {
+        "ID": 22,
+        "amount": 13,
+        "posX": 8,
+        "posY": 3,
+        "type": 1
+      },
+      {
+        "ID": 19,
+        "amount": 9,
+        "posX": 7,
+        "posY": 4,
+        "type": 1
       }
     ]
   },
   "playerPos": [
-    -12.580583572387695,
-    56.52000045776367,
-    -252.77212524414063
+    -3.2140073776245117,
+    68.52000427246094,
+    -226.57275390625
   ],
   "seed": 1243144104,
   "worldName": "demo"

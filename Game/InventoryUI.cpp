@@ -9,6 +9,7 @@
 #include "Items.h"
 #include "Blocks.h"
 #include "HeldItem.h"
+#include "CraftingUI.h"
 
 InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 	inventory = gameScene->GetObject3D<Inventory>("Inventory");
@@ -67,7 +68,7 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 		HorizontalLayoutRect* rowRect = (HorizontalLayoutRect*)gameScene->CreateObject2D(new HorizontalLayoutRect({ 0.4f,0.4f,0.4f,1.0f }), "row" + to_string(row));
 		rowRect->SetDimensions({ 55.f * 10, 60.f   });
 		//rowRect->SetPosition({ 10.f, (row * 50.f) + 10.f });
-		rowRect->SetPosition({ 0.f, -(row * 60.f) - 35.f - ((row > 0) ? 10.f : 0.f) });
+		rowRect->SetPosition({ 0.f, -(row * 60.f) - 35.f - ((row > 0) ? 10.f : 0.f) }); // the ternary operator makes it so theres a gap after the first row
 		rowRect->SetAnchor({ 0.5f, 1.0f });
 		rowRect->SetPivot({ 0.5f, 0.5f });
 		rowRect->SetParent(invBg);
@@ -79,9 +80,9 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 			slotRect->SetDimensions({ 55.f, 55.f });
 			slotRect->SetDepth(12.f);
 
-			slotRect->AddListener([this, slotRect] {
-				//this->SlotPressed(slotRect);
-			});
+			//slotRect->AddListener([this, slotRect] {
+			//	//this->SlotPressed(slotRect);
+			//});
 
 			rowRect->AddChild(slotRect);
 
@@ -89,8 +90,14 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 		}
 	}
 
-
-	
+	CraftingUI* invCraftingUI = (CraftingUI*)gameScene->CreateObject2D(new CraftingUI(), "invCrafting");
+	invCraftingUI->SetParent(invBg);
+	invCraftingUI->SetPivot(0.5f, 0.0f);
+	invCraftingUI->SetAnchor(0.5f, 0.f);
+	invCraftingUI->SetDimensions({ 550.f, 265.f });
+	invCraftingUI->SetPosition(0.f, 10.f);
+	invCraftingUI->SetDepth(11.f);
+	invCraftingUI->Create();
 
 }
 

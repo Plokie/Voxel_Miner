@@ -1,5 +1,7 @@
 #include "Inventory.h"
 
+#include "Crafting.h"
+
 const Vector2Int Inventory::GetFreeSpot() const {
 	Vector2Int tryPos = { 0, 0 };
 
@@ -124,6 +126,50 @@ void Inventory::SubItem(const unsigned int ID, const InventoryItem::Type type, c
 			return;
 		}
 	}
+}
+
+int Inventory::GetItemCount(const BlockID blockID)
+{
+	return GetItemCount(blockID, InventoryItem::Type::BLOCK);
+}
+
+int Inventory::GetItemCount(const ItemID itemID)
+{
+	return GetItemCount(itemID, InventoryItem::Type::ITEM);
+}
+
+int Inventory::GetItemCount(const unsigned int ID, const InventoryItem::Type type)
+{
+	int count = 0;
+	for(const InventoryItem& item : items) {
+		if(item.ID == ID && item.type == type) count += item.amount;
+	}
+
+	return count;
+}
+
+bool Inventory::CanCraft(const Recipe& recipe) {
+	for(const RecipeComponent& component : recipe.input) {
+		if(GetItemCount(component.ID, component.type) < component.amount) return false;
+	}
+
+	return true;
+}
+
+bool Inventory::TryCraft(const Recipe& recipe) {
+	if(CanCraft(recipe)) {
+		for(const RecipeComponent& component : recipe.input) {
+			SubItem(component.ID, component.type, component.amount);
+		}
+
+		AddItem(recipe.result.ID, recipe.result.type, recipe.result.amount);
+		InvokeOnChange();
+		InvokeOnSelect();
+		
+		return true;
+	}
+
+	return false;
 }
 
 nlohmann::json Inventory::Serialize()

@@ -12,6 +12,7 @@ private:
 	float spacing = 5.f;
 
 public:
+	HorizontalLayoutRect();
 	HorizontalLayoutRect(const XMFLOAT4& col);
 
 	void SetChildAnchor(const Vector2& a);

@@ -35,6 +35,8 @@ const map<ItemID, Item> ItemDef::defs = {
 	{GOLD_SHOVEL, Item("Gold Shovel", 2, 4, 1, SHOVEL)},
 	{AMETHYST_SHOVEL, Item("Amethyst Shovel", 3, 4, 1, SHOVEL)},
 	{TITANIUM_SHOVEL, Item("Titanium Shovel", 4, 4, 1, SHOVEL)},
+
+	{STICK, Item("Stick", 0, 2)},
 };
 
 const Item& ItemDef::Get(ItemID id)

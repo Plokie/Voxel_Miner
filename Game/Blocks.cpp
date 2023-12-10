@@ -153,7 +153,7 @@ const map<BlockID, Block> BlockDef::def = {
 	{ BlockID::TITANIUM_ORE,Block("Titanium Ore", true, 0,
 		10, 0, false, PICKAXE
 	) },
-	{ BlockID::BLACK_COBBLESTONE,Block("Cobblestone", true, 0,
+	{ BlockID::COBBLESTONE,Block("Cobblestone", true, 0,
 		11, 0, false, PICKAXE
 	) },
 

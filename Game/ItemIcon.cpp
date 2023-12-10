@@ -2,14 +2,15 @@
 
 #include "../Engine/UI/Label.h"
 #include "../Engine/UI/UIRect.h"
-#include "InventoryItem.h"
 #include "../Engine/Engine.h"
 #include "InventoryUI.h"
+#include "Crafting.h"
 
 ItemIcon::ItemIcon(InventoryItem* invItem, InventoryUI* invUI) {
 	this->invUI = invUI;
 	this->invItem = invItem;
-	const string& atlasName = (invItem->type == InventoryItem::Type::BLOCK) ? "atlas" : "item-atlas";
+	Display(invItem->ID, invItem->type, invItem->amount, invItem->GetUVPos());
+	/*const string& atlasName = (invItem->type == InventoryItem::Type::BLOCK) ? "atlas" : "item-atlas";
 
 	icon = new UIRect(atlasName, { 1.f,1.f,1.f,1.f });
 	icon->Init(Graphics::Get()->GetDevice());
@@ -50,7 +51,11 @@ ItemIcon::ItemIcon(InventoryItem* invItem, InventoryUI* invUI) {
 	nameLabel->SetPosition({ .0f, 0.0f });
 	nameLabel->SetDepth(20.f);
 	nameLabel->SetParent(icon);
-	nameLabel->SetEnabled(false);
+	nameLabel->SetEnabled(false);*/
+}
+
+ItemIcon::ItemIcon(const RecipeComponent& recipeComponent) {
+	Display(recipeComponent.ID, recipeComponent.type, recipeComponent.amount, recipeComponent.GetUVPos(), false);
 }
 
 ItemIcon::~ItemIcon() {
@@ -60,6 +65,51 @@ ItemIcon::~ItemIcon() {
 	if(amtLabel != nullptr) {
 		delete amtLabel;
 	}
+}
+
+void ItemIcon::Display(const unsigned short ID, const InventoryItem::Type type, const int amount, const Vector2Int& uvPos, const bool hideOne) {
+	const string& atlasName = (type == InventoryItem::Type::BLOCK) ? "atlas" : "item-atlas";
+
+	icon = new UIRect(atlasName, { 1.f,1.f,1.f,1.f });
+	icon->Init(Graphics::Get()->GetDevice());
+	icon->SetDimensions({ 50.f,50.f });
+	icon->SetAnchor({ .5f,.5f });
+	icon->SetPivot({ .5f,.5f });
+	icon->SetDepth(13.f);
+	icon->SetParent(this);
+
+	//Vector2Int uvPos = invItem->GetUVPos();
+	LONG texPosX = static_cast<LONG>(ITEM_ATLAS_TILE_SIZE * uvPos.x);
+	LONG texPosY = static_cast<LONG>(ITEM_ATLAS_TILE_SIZE * uvPos.y);
+
+	icon->SetTexRect({
+		texPosX, texPosY,
+		texPosX + ITEM_ATLAS_TILE_SIZE,
+		texPosY + ITEM_ATLAS_TILE_SIZE
+		});
+
+
+	amtLabel = new Label(L"Data\\Fonts\\Baloo2.spritefont", { 1.f,1.f,1.f,1.f });
+	amtLabel->Init(Graphics::Get()->GetDevice());
+	amtLabel->InitSelf();
+	amtLabel->SetText((amount == 1 && hideOne) ? "" : to_string(amount));
+	amtLabel->SetAnchor({ 1.f,1.f });
+	amtLabel->SetPivot({ 1.f,1.f });
+	amtLabel->SetPosition({ .0f, 12.0f });
+	amtLabel->SetDepth(14.f);
+	amtLabel->SetParent(icon);
+
+
+	nameLabel = new Label(L"Data\\Fonts\\Baloo2.spritefont", { 1.f,1.f,1.f,1.f });
+	nameLabel->Init(Graphics::Get()->GetDevice());
+	nameLabel->InitSelf();
+	nameLabel->SetText((type == InventoryItem::Type::BLOCK) ? (BlockDef::GetDef((BlockID)ID).GetName()) : (ItemDef::Get((ItemID)ID).GetName()));
+	nameLabel->SetAnchor({ .5f, 0.f });
+	nameLabel->SetPivot({ .5f, .5f });
+	nameLabel->SetPosition({ .0f, 0.0f });
+	nameLabel->SetDepth(20.f);
+	nameLabel->SetParent(icon);
+	nameLabel->SetEnabled(false);
 }
 
 const bool ItemIcon::WasPressed() {
@@ -101,6 +151,7 @@ void ItemIcon::SetDimensions(const Vector2& dim) {
 }
 
 void ItemIcon::Update(const float dTime) {
+	if(invUI == nullptr) return;
 	XMFLOAT2 mPos = Input::MousePosition();
 	Vector2 sPos = GetScreenPosition();
 

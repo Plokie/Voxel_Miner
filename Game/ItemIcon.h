@@ -1,11 +1,12 @@
 #pragma once
 
 #include "../Engine/Object2D.h"
+#include "InventoryItem.h"
 
 class UIRect;
 class Label;
-struct InventoryItem;
 class InventoryUI;
+class RecipeComponent;
 
 class ItemIcon : public Object2D {
 private:
@@ -21,8 +22,11 @@ public:
 	InventoryItem* GetInvItem() const { return invItem; }
 
 	ItemIcon(InventoryItem* invItem, InventoryUI* invUI);
+	ItemIcon(const RecipeComponent& recipeComponent);
 	~ItemIcon();
 	
+	void Display(const unsigned short ID, const InventoryItem::Type type, const int amount, const Vector2Int& uvPos, const bool hideOne = true);
+
 	const bool WasPressed();
 
 	const Vector2& GetScreenPosition() override;

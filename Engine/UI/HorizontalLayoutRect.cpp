@@ -1,5 +1,10 @@
 #include "HorizontalLayoutRect.h"
 
+HorizontalLayoutRect::HorizontalLayoutRect()
+{
+	this->SetColour(1.f,1.f,1.f,1.f);
+}
+
 HorizontalLayoutRect::HorizontalLayoutRect(const XMFLOAT4& col)
 {
 	this->SetColour(col.x, col.y, col.z, col.w);

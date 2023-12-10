@@ -149,6 +149,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio\Audio.cpp" />
+    <ClCompile Include="Game\Crafting.cpp" />
+    <ClCompile Include="Game\CraftingUI.cpp" />
     <ClCompile Include="Engine\UI\Button.cpp" />
     <ClCompile Include="Game\HeldItem.cpp" />
     <ClCompile Include="Game\HeldItemMesh.cpp" />
@@ -195,6 +197,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio\Audio.h" />
+    <ClInclude Include="Game\Crafting.h" />
+    <ClInclude Include="Game\CraftingUI.h" />
     <ClInclude Include="Engine\UI\Button.h" />
     <ClInclude Include="Game\HeldItem.h" />
     <ClInclude Include="Game\HeldItemMesh.h" />

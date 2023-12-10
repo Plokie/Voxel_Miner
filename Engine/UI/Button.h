@@ -37,7 +37,7 @@ public:
 
 	//Button();
 	//Button(const string& text, const wstring& fontPath, const XMFLOAT4& col = { 0.f,0.f,0.f,1.f });
-	Button(const wstring& fontPath, const XMFLOAT4& col = { 0.f,0.f,0.f,1.f });
+	Button(const wstring& fontPath, const XMFLOAT4& txtCol = { 0.f,0.f,0.f,1.f });
 	Button(const XMFLOAT4& bgCol);
 	//Button(const XMFLOAT4& txtCol, const XMFLOAT4& bgCol);
 	Button(const string& text, const wstring& fontPath, const XMFLOAT4& txtCol, const XMFLOAT4& bgCol);

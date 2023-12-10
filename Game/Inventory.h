@@ -11,6 +11,7 @@
 #define INVSIZE_Y 5 // Includes hotbar
 
 class InventoryUI;
+class Recipe;
 
 // Does not exist in space, just holds data
 class Inventory : public Object3D {
@@ -50,6 +51,13 @@ public:
 	void SubItem(const BlockID blockID, const int amount = 1);
 	void SubItem(const ItemID itemID, const int amount = 1);
 	void SubItem(const unsigned int ID, const InventoryItem::Type type, const int amount = 1);
+
+	int GetItemCount(const BlockID blockID);
+	int GetItemCount(const ItemID itemID);
+	int GetItemCount(const unsigned int ID, const InventoryItem::Type type);
+
+	bool CanCraft(const Recipe& recipe);
+	bool TryCraft(const Recipe& recipe);
 
 	nlohmann::json Serialize();
 	void Deserialize(nlohmann::json jsonInv);
