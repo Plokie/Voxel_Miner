@@ -51,6 +51,7 @@ private:
 
 	bool hasShell = false;
 	ItemType mineType = ItemType::BASICITEM;
+	string lootTable = "";
 public:
 
 	Block(string _Name,
@@ -58,7 +59,8 @@ public:
 		int _lightValue,
 		int UvIdX, int UvIdY,
 		bool hasShell = false,
-		ItemType mineType = ItemType::BASICITEM
+		ItemType mineType = ItemType::BASICITEM,
+		const string& lootTable = ""
 	) :
 		name(_Name),
 		isOpaque(_isOpaque),
@@ -67,7 +69,8 @@ public:
 		bottUvIdX(UvIdX), bottUvIdY(UvIdY),
 		sideUvIdX(UvIdX), sideUvIdY(UvIdY),
 		hasShell(hasShell),
-		mineType(mineType)
+		mineType(mineType),
+		lootTable(lootTable)
 	{}
 
 	Block(string _Name,
@@ -77,7 +80,8 @@ public:
 		int SideUvIdX, int SideUvIdY,
 		int BottUvIdX, int BottUvIdY,
 		bool hasShell = false,
-		ItemType mineType = ItemType::BASICITEM
+		ItemType mineType = ItemType::BASICITEM,
+		const string& lootTable = ""
 	) :
 		name(_Name),
 		isOpaque(_isOpaque),
@@ -86,14 +90,16 @@ public:
 		sideUvIdX(SideUvIdX), sideUvIdY(SideUvIdY),
 		bottUvIdX(BottUvIdX), bottUvIdY(BottUvIdY),
 		hasShell(hasShell),
-		mineType(mineType)
+		mineType(mineType),
+		lootTable(lootTable)
 	{}
 
-	const string GetName() const;
+	const string& GetName() const { return name; }
 	const bool IsOpaque() const;
 	const int LightValue() const;
 	const bool HasShell() const { return hasShell; }
 	const ItemType GetMineType() const { return mineType; }
+	const string& GetLootTableName() const { return lootTable; }
 
 	const int GetTopUVidx() const;
 	const int GetTopUVidy() const;

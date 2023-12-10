@@ -8,6 +8,7 @@
 #include "InventoryUI.h"
 #include "InventoryItem.h"
 #include "Inventory.h"
+#include "LootTables.h"
 //#include "ChunkDatabase.h"
 
 #include "../Audio/Audio.h"
@@ -207,7 +208,14 @@ void PlayerController::Update(float dTime)
 					if(itemDef.GetItemType() == blockDef.GetMineType() || blockDef.GetMineType() == BASICITEM) {
 						Audio::Play("hit", 1.f);
 						chunkManager->SetBlockAtWorldPos(lookHitPoint, AIR);
-						inv->AddItem(targetBlock);
+						
+
+						if(blockDef.GetLootTableName() != "") {
+							const InventoryItem loot = LootTable::Choose(blockDef.GetLootTableName());
+							inv->AddItem(loot.ID, loot.type, loot.amount);
+						}
+						else inv->AddItem(targetBlock);
+
 					}
 
 				}

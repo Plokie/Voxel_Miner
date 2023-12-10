@@ -192,6 +192,7 @@
     <ClCompile Include="Graphics\Shaders.cpp" />
     <ClCompile Include="Game\Items.cpp" />
     <ClCompile Include="Game\ItemIcon.cpp" />
+    <ClCompile Include="Game\LootTables.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\UI\UIRect.cpp" />
   </ItemGroup>
@@ -248,6 +249,7 @@
     <ClInclude Include="Game\Items.h" />
     <ClInclude Include="Game\ItemIcon.h" />
     <ClInclude Include="Game\ItemTypes.h" />
+    <ClInclude Include="Game\LootTables.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="pixelshader.hlsl">

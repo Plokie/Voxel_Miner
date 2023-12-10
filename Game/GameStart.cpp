@@ -53,6 +53,9 @@ void GameStart(Engine* engine) {
 	Resources::LoadMesh(chunkBorderVertices, ARRAYSIZE(chunkBorderVertices), exampleCubeIndices, ARRAYSIZE(exampleCubeIndices), "chunkborder");
 	Resources::LoadMesh(exampleInverseCubeVertices, ARRAYSIZE(exampleInverseCubeVertices), exampleInverseCubeIndices, ARRAYSIZE(exampleInverseCubeIndices), "inverse-cube");
 
+	//todo: better randomness. Maybe random singleton for World / Block / Entity randomness
+	srand((unsigned)time(NULL));
+
 	//todo: scene serialzation to disc. So its not always in memory
 
 	TitleScreen::Setup(engine);
