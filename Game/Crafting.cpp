@@ -17,11 +17,13 @@ vector<Category> Crafting::categories = {
 		{"OAK_PLANKS", "SPRUCE_PLANKS", "BIRCH_PLANKS", "CHERRY_PLANKS"},
 		{"STONE_COBBLE", "BLACKSTONE_COBBLE"},
 	}},
-	{"Items", {
+	{"Tools", {
 		{"OAK_STICKS","CHERRY_STICKS","SPRUCE_STICKS","BIRCH_STICKS"},
+		{"COPPER_PICKAXE","GOLD_PICKAXE","AMETHYST_PICKAXE","TITANIUM_PICKAXE"},
+		{"COPPER_AXE","GOLD_AXE","AMETHYST_AXE","TITANIUM_AXE"},
 	}},
-	{"Food", {
-		{},
+	{"Minerals", {
+		{"COPPER_BAR", "GOLD_BAR", "TITANIUM_BAR"},
 	}},
 	{"Misc", {
 		{},
@@ -89,6 +91,87 @@ map<string, Recipe> Recipe::recipes = {
 		{STICK, 2}, // Result (single RecipeComponent)
 		{ // Input (vector)
 			{BIRCH_PLANKS,1}
+		}
+	}},
+
+	{"COPPER_BAR",{
+		{COPPER_BAR},
+		{
+			{RAW_COPPER, 5},
+			{COAL, 2}
+		}
+	}},
+	{"GOLD_BAR",{
+		{GOLD_BAR},
+		{
+			{RAW_GOLD, 5},
+			{COAL, 2}
+		}
+	}},
+	{"TITANIUM_BAR",{
+		{TITANIUM_BAR},
+		{
+			{RAW_TITANIUM, 5},
+			{COAL, 2}
+		}
+	}},
+
+
+	{"COPPER_PICKAXE",{
+		{COPPER_PICKAXE}, 
+		{ 
+			{STICK,2},
+			{COPPER_BAR, 3}
+		}
+	}},
+	{"GOLD_PICKAXE",{
+		{GOLD_PICKAXE}, 
+		{ 
+			{STICK,2},
+			{GOLD_BAR, 3}
+		}
+	}},
+	{"AMETHYST_PICKAXE",{
+		{AMETHYST_PICKAXE}, 
+		{ 
+			{STICK,2},
+			{AMETHYST, 10}
+		}
+	}},
+	{"TITANIUM_PICKAXE",{
+		{TITANIUM_PICKAXE}, 
+		{ 
+			{STICK,2},
+			{TITANIUM_BAR, 3}
+		}
+	}},
+
+	{"COPPER_AXE",{
+		{COPPER_AXE},
+		{
+			{STICK,2},
+			{COPPER_BAR, 3}
+		}
+	}},
+	{"GOLD_AXE",{
+		{GOLD_AXE},
+		{
+			{STICK,2},
+			{GOLD_BAR, 3}
+		}
+	}},
+	{"AMETHYST_AXE",{
+		{AMETHYST_AXE},
+		{
+			{STICK,2},
+			{AMETHYST, 10}
+		}
+	}},
+	{"TITANIUM_AXE",{
+		{TITANIUM_AXE},
+		{
+			{STICK,2},
+			{TITANIUM_BAR, 3}
 		}
 	}},
 };

@@ -159,21 +159,21 @@
         "ID": 4,
         "amount": 30,
         "posX": 6,
-        "posY": 1,
+        "posY": 4,
         "type": 1
       },
       {
         "ID": 26,
         "amount": 9,
-        "posX": 7,
-        "posY": 1,
+        "posX": 6,
+        "posY": 3,
         "type": 1
       },
       {
         "ID": 28,
         "amount": 8,
-        "posX": 8,
-        "posY": 1,
+        "posX": 4,
+        "posY": 4,
         "type": 1
       },
       {
@@ -228,15 +228,15 @@
       {
         "ID": 31,
         "amount": 1,
-        "posX": 4,
-        "posY": 1,
+        "posX": 5,
+        "posY": 3,
         "type": 1
       },
       {
         "ID": 1,
         "amount": 43,
         "posX": 5,
-        "posY": 1,
+        "posY": 4,
         "type": 0
       },
       {
