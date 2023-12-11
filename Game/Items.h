@@ -24,15 +24,17 @@ private:
 
 	int uvX, uvY;
 	int maxStack;
+	int tier;
 	ItemType itemType = ItemType::BASICITEM;
 public:
-	Item(string name, int uvX, int uvY, int maxStack=64, ItemType itemType = ItemType::BASICITEM) : name(name), uvX(uvX), uvY(uvY), maxStack(maxStack), itemType(itemType) {}
+	Item(string name, int uvX, int uvY, int maxStack=64, ItemType itemType = ItemType::BASICITEM, int tier = 0) : name(name), uvX(uvX), uvY(uvY), maxStack(maxStack), itemType(itemType), tier(tier) {}
 
 	const string& GetName() const { return name; }
 	const int UVx() const { return uvX; }
 	const int UVy() const { return uvY; }
 	const int GetMaxStack() const { return maxStack; }
 	const ItemType GetItemType() const { return itemType; }
+	const int GetTier() const { return tier; }
 };
 
 class ItemDef {

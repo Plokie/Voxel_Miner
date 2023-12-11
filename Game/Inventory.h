@@ -30,7 +30,23 @@ private:
 
 	void InvokeOnChange();
 	void InvokeOnSelect();
+	
+	int score = 0; // Gonna remove this later, just need it for competencies
+	vector<function<void(int)>> _onScoreChangeEvents;
+	void InvokeOnScoreChange() {
+		for(auto& func : _onScoreChangeEvents) {
+			func(score);
+		}
+	}
 public:
+	// Gonna be removing these later
+	void SetScore(int amt) { score = amt; InvokeOnScoreChange(); }
+	const int GetSore() const { return score; }
+	void ChangeScore(int amt) { score += amt; InvokeOnScoreChange(); }
+	void AddOnScoreChangeEvent(function<void(int)> func) {
+		_onScoreChangeEvents.emplace_back(func);
+	}
+
 	const Vector2Int GetFreeSpot() const;
 
 	bool GetHeldItem(InventoryItem** out);

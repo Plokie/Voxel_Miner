@@ -23,11 +23,11 @@ const map<BlockID, Block> BlockDef::def = {
 		3, 0, false, SHOVEL
 	)},
 	{BlockID::STONE,	Block("Stone", true, 0,
-		5, 0, false, PICKAXE, 
+		5, 0, false, PICKAXE, 1,
 		"STONE" //loot table name
 	)},
 	{BlockID::BLACKSTONE,Block("Blackstone", true, 0,
-		5, 1, false, PICKAXE, "BLACKSTONE"
+		5, 1, false, PICKAXE, 1, "BLACKSTONE"
 	)},
 	{BlockID::SAND,		Block("Sand", true, 0,
 		4, 0
@@ -140,38 +140,38 @@ const map<BlockID, Block> BlockDef::def = {
 	)},
 
 	{ BlockID::COAL_ORE,	Block("Coal Ore", true, 0,
-		6, 0, false, PICKAXE, "COAL"
+		6, 0, false, PICKAXE, 1, "COAL"
 	) },
 	{ BlockID::COPPER_ORE,	Block("Copper Ore", true, 0,
-		7, 0, false, PICKAXE, "COPPER"
+		7, 0, false, PICKAXE, 1, "COPPER"
 	) },
 	{ BlockID::GOLD_ORE,	Block("Gold Ore", true, 0,
-		8, 0, false, PICKAXE, "GOLD"
+		8, 0, false, PICKAXE, 1, "GOLD"
 	) },
 	{ BlockID::AMETHYST_ORE,Block("Amethyst Ore", true, 0,
-		9, 0, false, PICKAXE, "AMETHYST"
+		9, 0, false, PICKAXE, 2, "AMETHYST"
 	) },
 	{ BlockID::TITANIUM_ORE,Block("Titanium Ore", true, 0,
-		10, 0, false, PICKAXE, "TITANIUM"
+		10, 0, false, PICKAXE, 3, "TITANIUM"
 	) },
 	{ BlockID::COBBLESTONE,Block("Cobblestone", true, 0,
 		11, 0, false, PICKAXE
 	) },
 
 	{ BlockID::BLACK_COAL_ORE,	Block("Blackstone Coal Ore", true, 0,
-		6, 1, false, PICKAXE, "COAL"
+		6, 1, false, PICKAXE, 1, "COAL"
 	) },
 	{ BlockID::BLACK_COPPER_ORE,	Block("Blackstone Copper Ore", true, 0,
-		7, 1, false, PICKAXE, "COPPER"
+		7, 1, false, PICKAXE, 1, "COPPER"
 	) },
 	{ BlockID::BLACK_GOLD_ORE,	Block("Blackstone Gold Ore", true, 0,
-		8, 1, false, PICKAXE, "GOLD"
+		8, 1, false, PICKAXE, 1, "GOLD"
 	) },
 	{ BlockID::BLACK_AMETHYST_ORE,Block("Blackstone Amethyst Ore", true, 0,
-		9, 1, false, PICKAXE, "AMETHYST"
+		9, 1, false, PICKAXE, 2, "AMETHYST"
 	) },
 	{ BlockID::BLACK_TITANIUM_ORE,Block("Blackstone Titanium Ore", true, 0,
-		10, 1, false, PICKAXE, "TITANIUM"
+		10, 1, false, PICKAXE, 3, "TITANIUM"
 	) },
 	{ BlockID::BLACK_COBBLESTONE,Block("Cobbled Blackstone", true, 0,
 		11, 1, false, PICKAXE

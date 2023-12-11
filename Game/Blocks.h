@@ -48,6 +48,7 @@ private:
 	int topUvIdX, topUvIdY;
 	int bottUvIdX, bottUvIdY;
 	int sideUvIdX, sideUvIdY;
+	int tier;
 
 	bool hasShell = false;
 	ItemType mineType = ItemType::BASICITEM;
@@ -60,6 +61,7 @@ public:
 		int UvIdX, int UvIdY,
 		bool hasShell = false,
 		ItemType mineType = ItemType::BASICITEM,
+		int tier=0,
 		const string& lootTable = ""
 	) :
 		name(_Name),
@@ -70,6 +72,7 @@ public:
 		sideUvIdX(UvIdX), sideUvIdY(UvIdY),
 		hasShell(hasShell),
 		mineType(mineType),
+		tier(tier),
 		lootTable(lootTable)
 	{}
 
@@ -81,6 +84,7 @@ public:
 		int BottUvIdX, int BottUvIdY,
 		bool hasShell = false,
 		ItemType mineType = ItemType::BASICITEM,
+		int tier = 0,
 		const string& lootTable = ""
 	) :
 		name(_Name),
@@ -91,6 +95,7 @@ public:
 		bottUvIdX(BottUvIdX), bottUvIdY(BottUvIdY),
 		hasShell(hasShell),
 		mineType(mineType),
+		tier(tier),
 		lootTable(lootTable)
 	{}
 
@@ -100,6 +105,7 @@ public:
 	const bool HasShell() const { return hasShell; }
 	const ItemType GetMineType() const { return mineType; }
 	const string& GetLootTableName() const { return lootTable; }
+	const int GetTier() const { return tier; }
 
 	const int GetTopUVidx() const;
 	const int GetTopUVidy() const;

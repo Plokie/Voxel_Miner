@@ -181,6 +181,7 @@ nlohmann::json Inventory::Serialize()
 		itemJsons.push_back(invItem.Serialize());
 	}
 	json["items"] = itemJsons;
+	json["score"] = score;
 	//json[""]
 
 	return json;
@@ -193,8 +194,14 @@ void Inventory::Deserialize(nlohmann::json jsonInv) {
 	for(auto& itemJson : itemJsons) {
 		items.push_back(InventoryItem::Deserialize(itemJson));
 	}
+
+
+	if(jsonInv.find("score")!=jsonInv.end())
+		score = jsonInv["score"];
+
 	InvokeOnChange();
 	InvokeOnSelect();
+	InvokeOnScoreChange();
 }
 
 void Inventory::LoadDefaultItems() {

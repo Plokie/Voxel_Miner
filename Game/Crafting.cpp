@@ -31,16 +31,19 @@ vector<Category> Crafting::categories = {
 };
 
 map<string, Recipe> Recipe::recipes = {
+	//todo: furnaces
 	{"STONE_COBBLE", {
-		{STONE}, // Result (single RecipeComponent)
+		{STONE,5}, // Result (single RecipeComponent)
 		{ // Input (vector of RecipeComponents)
-			{COBBLESTONE,2}
+			{COBBLESTONE,5},
+			{COAL,1},
 		}
 	}},
 	{"BLACKSTONE_COBBLE",{
-		{BLACKSTONE}, // Result (single RecipeComponent)
+		{BLACKSTONE,5}, // Result (single RecipeComponent)
 		{ // Input (vector)
-			{BLACK_COBBLESTONE,2}
+			{BLACK_COBBLESTONE,5},
+			{COAL,1},
 		}
 	}},
 

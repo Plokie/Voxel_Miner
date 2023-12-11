@@ -21,20 +21,20 @@ const map<ItemID, Item> ItemDef::defs = {
 	{GOLD_BAR, Item("Gold Bar", 2, 1)},
 	{TITANIUM_BAR, Item("Titanium Bar", 4, 1)},
 
-	{COPPER_PICKAXE, Item("Copper Pickaxe", 1, 2, 1, PICKAXE)},
-	{GOLD_PICKAXE, Item("Gold Pickaxe", 2, 2, 1, PICKAXE)},
-	{AMETHYST_PICKAXE, Item("Amethyst Pickaxe", 3, 2, 1, PICKAXE)},
-	{TITANIUM_PICKAXE, Item("Titanium Pickaxe", 4, 2, 1, PICKAXE)},
+	{COPPER_PICKAXE, Item("Copper Pickaxe", 1, 2, 1, PICKAXE, 1)},
+	{GOLD_PICKAXE, Item("Gold Pickaxe", 2, 2, 1, PICKAXE, 2)},
+	{AMETHYST_PICKAXE, Item("Amethyst Pickaxe", 3, 2, 1, PICKAXE, 3)},
+	{TITANIUM_PICKAXE, Item("Titanium Pickaxe", 4, 2, 1, PICKAXE, 4)},
 
-	{COPPER_AXE, Item("Copper Axe", 1, 3, 1, AXE)},
-	{GOLD_AXE, Item("Gold Axe", 2, 3, 1, AXE)},
-	{AMETHYST_AXE, Item("Amethyst Axe", 3, 3, 1, AXE)},
-	{TITANIUM_AXE, Item("Titanium Axe", 4, 3, 1, AXE)},
+	{COPPER_AXE, Item("Copper Axe", 1, 3, 1, AXE, 1)},
+	{GOLD_AXE, Item("Gold Axe", 2, 3, 1, AXE, 2)},
+	{AMETHYST_AXE, Item("Amethyst Axe", 3, 3, 1, AXE, 3)},
+	{TITANIUM_AXE, Item("Titanium Axe", 4, 3, 1, AXE, 4)},
 
-	{COPPER_SHOVEL, Item("Copper Shovel", 1, 4, 1, SHOVEL)},
-	{GOLD_SHOVEL, Item("Gold Shovel", 2, 4, 1, SHOVEL)},
-	{AMETHYST_SHOVEL, Item("Amethyst Shovel", 3, 4, 1, SHOVEL)},
-	{TITANIUM_SHOVEL, Item("Titanium Shovel", 4, 4, 1, SHOVEL)},
+	{COPPER_SHOVEL, Item("Copper Shovel", 1, 4, 1, SHOVEL, 1)},
+	{GOLD_SHOVEL, Item("Gold Shovel", 2, 4, 1, SHOVEL, 2)},
+	{AMETHYST_SHOVEL, Item("Amethyst Shovel", 3, 4, 1, SHOVEL, 3)},
+	{TITANIUM_SHOVEL, Item("Titanium Shovel", 4, 4, 1, SHOVEL, 4)},
 
 	{STICK, Item("Stick", 0, 2)},
 };

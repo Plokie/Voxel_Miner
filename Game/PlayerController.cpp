@@ -205,10 +205,11 @@ void PlayerController::Update(float dTime)
 					Block blockDef = BlockDef::GetDef(targetBlock);
 					Item itemDef = (invItem->type == InventoryItem::Type::BLOCK)?ItemDef::Get((ItemID)0):ItemDef::Get((ItemID)invItem->ID);
 
-					if(itemDef.GetItemType() == blockDef.GetMineType() || blockDef.GetMineType() == BASICITEM) {
+					if((itemDef.GetItemType() == blockDef.GetMineType() && itemDef.GetTier() >= blockDef.GetTier() ) || blockDef.GetMineType() == BASICITEM) {
 						Audio::Play("hit", 1.f);
 						chunkManager->SetBlockAtWorldPos(lookHitPoint, AIR);
 						
+						inv->ChangeScore(blockDef.GetTier());
 
 						if(blockDef.GetLootTableName() != "") {
 							const InventoryItem loot = LootTable::Choose(blockDef.GetLootTableName());

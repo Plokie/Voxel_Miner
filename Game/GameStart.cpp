@@ -100,6 +100,10 @@ void GameStart(Engine* engine) {
 	scoreLabel->SetPosition({ -20.f, 0.f });
 	scoreLabel->SetText("Score: 0");
 	scoreLabel->SetColour(1.0f, 1.0f, 1.0f, 1.0f);
+	inventory->AddOnScoreChangeEvent([scoreLabel](int score) {
+		scoreLabel->SetText("Score: " + to_string(score));
+	});
+
 
 	UIRect* crosshair = (UIRect*)gameScene->CreateObject2D(new UIRect("crosshair", {1.f,1.f,1.f,.7f}), "crosshair");
 	crosshair->SetAnchor({ 0.5f, 0.5f });
