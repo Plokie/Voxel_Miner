@@ -12,6 +12,15 @@ private:
 	AABB aabb;
 	ChunkManager* chunkManager = nullptr;
 
+
+
+	/*const Vector3 groundCheckPoints[4] = {
+		Vector3((playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f,  (playerHalfExtents.z - COLLISION_CHECK_INSET)),
+		Vector3(-(playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f,  (playerHalfExtents.z - COLLISION_CHECK_INSET)),
+		Vector3((playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f, -(playerHalfExtents.z - COLLISION_CHECK_INSET)),
+		Vector3(-(playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f, -(playerHalfExtents.z - COLLISION_CHECK_INSET)),
+	};*/
+
 	vector<AABB> GetNearbyAABBs(ChunkManager* chunkManager);
 public:
 
