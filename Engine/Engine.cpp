@@ -195,17 +195,12 @@ bool Engine::DestroyObject3DImmediate(string name)
 	map<string, Object3D*>* sceneObjects = currentScene->GetSceneObjects3D();
 
 	auto it = sceneObjects->find(name);
-
 	if(it != sceneObjects->end()) {
-
-	//if(currentScene->GetSceneObjects3D()->count(name)) {
 		Object3D* objectToDelete = it->second;
-		//Object3D* objectToDelete = currentScene->GetSceneObjects3D()->at(name);
-		//if(objectToDelete==nullptr || objectToDelete->pendingDeletion) return false;
+
 		if(objectToDelete == nullptr || objectToDelete->pendingDeletion) return false;
 
-		//sceneObjects->erase(name);
-		currentScene->GetSceneObjects3D()->erase(name);
+		currentScene->GetSceneObjects3D()->erase(it);
 
 
 		objectToDelete->pendingDeletion = true;
@@ -213,14 +208,11 @@ bool Engine::DestroyObject3DImmediate(string name)
 		// Immediately acquire and release to hopefully make sure we dont destroy it while another thread is using it
 		objectToDelete->gAccessMutex.lock();
 		objectToDelete->gAccessMutex.unlock();
-		
-		//dbg_deletedObjects[objectToDelete] = true;
 
 		delete objectToDelete;
 		objectToDelete = nullptr;
 
-		//currentScene->GetSceneObjects3D()->at(name) = nullptr;
-		//ReleaseSRWLockShared(&objectToDelete->gAccessMutex);
+
 
 		return true;
 	}
