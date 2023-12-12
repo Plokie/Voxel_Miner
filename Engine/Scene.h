@@ -10,6 +10,7 @@ using namespace std;
 class Graphics;
 class Engine;
 
+//todo: scene serialzation to disc. So its not always in memory
 class Scene {
 private:
 	Graphics* gfx = nullptr;

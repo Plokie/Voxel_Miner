@@ -17,13 +17,12 @@
 #include "InventoryUI.h"
 #include "Inventory.h"
 #include "HeldItem.h"
-#include "HeldItemMesh.h"
+#include "Meshes/HeldItemMesh.h"
+#include "Meshes/DroppedItemMesh.h"
 // ---------------------------------------
 
 
-// Call game-related initialisation stuff from here
-void GameStart(Engine* engine) {
-
+void LoadResources() {
 	// todo: move resource loading to a separate thread, so the main thread can display a loading screen
 	Resources::LoadTexture(L"Data\\Textures\\img.dds", "head");
 	Resources::LoadTexture(L"Data\\Textures\\crosshair.dds", "crosshair");
@@ -48,15 +47,22 @@ void GameStart(Engine* engine) {
 	Audio::Play("MusicBg", 1.f);
 
 	Resources::LoadMesh("cube");
-	Resources::LoadMesh(heldItemVertices, ARRAYSIZE(heldItemVertices), heldItemIndices, ARRAYSIZE(heldItemIndices), "heldItemMesh");
 	Resources::LoadMesh(exampleFloorVertices, ARRAYSIZE(exampleFloorVertices), exampleCubeIndices, ARRAYSIZE(exampleCubeIndices), "floorMesh");
 	Resources::LoadMesh(chunkBorderVertices, ARRAYSIZE(chunkBorderVertices), exampleCubeIndices, ARRAYSIZE(exampleCubeIndices), "chunkborder");
 	Resources::LoadMesh(exampleInverseCubeVertices, ARRAYSIZE(exampleInverseCubeVertices), exampleInverseCubeIndices, ARRAYSIZE(exampleInverseCubeIndices), "inverse-cube");
 
+	Resources::LoadMesh(heldItemVertices, ARRAYSIZE(heldItemVertices), heldItemIndices, ARRAYSIZE(heldItemIndices), "heldItemMesh");
+	Resources::LoadMesh(droppedItemVertices, ARRAYSIZE(droppedItemVertices), droppedItemIndices, ARRAYSIZE(droppedItemIndices), "droppedItemMesh");
+}
+
+
+// Call game-related initialisation stuff from here
+void GameStart(Engine* engine) {
+
+	LoadResources();
+
 	//todo: better randomness. Maybe random singleton for World / Block / Entity randomness
 	srand((unsigned)time(NULL));
-
-	//todo: scene serialzation to disc. So its not always in memory
 
 	TitleScreen::Setup(engine);
 
@@ -65,25 +71,12 @@ void GameStart(Engine* engine) {
 	gameScene->CreateObject3D(new ChunkManager(), "AChunkManager");
 	Inventory* inventory = (Inventory*)gameScene->CreateObject3D(new Inventory(), "Inventory");
 	inventory->LoadDefaultItems();
-	//inventory->AddItem(ItemID::RAW_GOLD, 32);
-	//inventory->AddItem(ItemID::RAW_COPPER, 12);
-	//inventory->AddItem(ItemID::TITANIUM_BAR, 5);
-
-	//inventory->AddItem(BlockID::GOLD_ORE);
-	//inventory->AddItem(BlockID::GRASS, 14);
-	//inventory->AddItem(BlockID::OAK_LOG, 10);
-	//inventory->AddItem(BlockID::OAK_PLANKS, 93);
-
 
 	PlayerController* pc = (PlayerController*)gameScene->CreateObject3D(new PlayerController(), "PlayerController");
 	HeldItem* heldItem = (HeldItem*)gameScene->CreateObject3D(new HeldItem(), "HeldItem");
 	heldItem->transform.SetParent(&pc->transform);
 	heldItem->transform.position = {.7f, -0.3f, 0.5f};
 
-	
-	//heldItem->transform.rotation = {0.f, 3.141592654f/4.f, 0.f};
-
-	//gameScene->CreateObject3D(ChunkManager::Create(&Graphics::Get()->camera.transform), "ChunkManager");
 	gameScene->GetObject3D("PlayerController")->transform.position = Vector3(0, 10, 0);
 
 	gameScene->CreateObject2D(new Label(L"Data\\Fonts\\Baloo2.spritefont", XMFLOAT4(0, 0, 0, 1.0f)), "fps-counter");
@@ -112,11 +105,8 @@ void GameStart(Engine* engine) {
 
 	gameScene->CreateObject2D(new InventoryUI(engine, gameScene), "invUI");
 
-	//Setup(engine, gameScene);
-
 	Audio::SetListener(&Graphics::Get()->camera.transform);
 
-	
 	engine->AddScene(gameScene, "game");
 
 }

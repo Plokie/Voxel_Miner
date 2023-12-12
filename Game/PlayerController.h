@@ -22,7 +22,7 @@ class PlayerController : public Object3D {
 
 	ChunkManager* chunkManager = nullptr;
 
-#define COLLISION_CHECK_INSET 0.05f
+#define COLLISION_CHECK_INSET 0.08f
 
 
 	bool freeCam = true;
@@ -41,4 +41,7 @@ class PlayerController : public Object3D {
 
 	void Start() override;
 	void Update(float dTime) override;
+public:
+
+	const AABB& GetAABB() { return aabb; }
 };

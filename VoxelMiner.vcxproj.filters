@@ -165,7 +165,7 @@
     <ClCompile Include="Game\HeldItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game\HeldItemMesh.cpp">
+    <ClCompile Include="Game\Meshes\HeldItemMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game\CraftingUI.cpp">
@@ -178,6 +178,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game\Entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\Meshes\DroppedItemMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -326,7 +329,7 @@
     <ClInclude Include="Game\HeldItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game\HeldItemMesh.h">
+    <ClInclude Include="Game\Meshes\HeldItemMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\ItemTypes.h">
@@ -342,6 +345,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\Entity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\Meshes\DroppedItemMesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

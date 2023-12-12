@@ -3,25 +3,20 @@
 #include "../Engine/Object3D.h"
 
 class ChunkManager;
+class PlayerController;
 
 class Entity : public Object3D {
 private:
 	const float gravity = -32.f;
 	const float terminalVelocity = -78.4f;
-	Vector3 velocity;
+	Vector3 velocity = Vector3(0.f,0.f,0.f);
 	AABB aabb;
 	ChunkManager* chunkManager = nullptr;
-
-
-
-	/*const Vector3 groundCheckPoints[4] = {
-		Vector3((playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f,  (playerHalfExtents.z - COLLISION_CHECK_INSET)),
-		Vector3(-(playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f,  (playerHalfExtents.z - COLLISION_CHECK_INSET)),
-		Vector3((playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f, -(playerHalfExtents.z - COLLISION_CHECK_INSET)),
-		Vector3(-(playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f, -(playerHalfExtents.z - COLLISION_CHECK_INSET)),
-	};*/
+	Vector3 groundCheckPoints[4];
+	PlayerController* playerController = nullptr;
 
 	vector<AABB> GetNearbyAABBs(ChunkManager* chunkManager);
+	void RecalculateGroundCheck();
 public:
 
 	Entity();

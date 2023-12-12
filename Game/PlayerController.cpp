@@ -9,6 +9,7 @@
 #include "InventoryItem.h"
 #include "Inventory.h"
 #include "LootTables.h"
+#include "Entity.h"
 //#include "ChunkDatabase.h"
 
 #include "../Audio/Audio.h"
@@ -22,7 +23,7 @@ void PlayerController::Start()
 	engine->GetCurrentScene()->CreateObject3D(new Object3D(), "block_select", "cube", "block-select");
 	this->blockSelectRef = engine->GetCurrentScene()->GetObject3D("block_select");
 	blockSelectRef->models[0]->SetTransparent(true);
-	blockSelectRef->transform.scale = Vector3(0.51f, 0.51f, 0.51f);
+	blockSelectRef->transform.scale = Vector3(1.01f, 1.01f, 1.01f);
 
 	this->fpsCounter = engine->GetCurrentScene()->GetObject2D<Label>("fps-counter");
 	this->worldPosLabel = engine->GetCurrentScene()->GetObject2D<Label>("worldpos");
@@ -74,6 +75,11 @@ void PlayerController::Update(float dTime)
 
 	if(Input::IsKeyPressed('P')) {
 		freeCam = !freeCam;
+	}
+
+	//todo: remove // debug spawn entity
+	if(Input::IsKeyPressed('M')) {
+		engine->GetCurrentScene()->CreateObject3D(new Entity(), "test-entity-"+to_string(rand()), "cube")->transform.position = transform.position;
 	}
 
 	if(Input::IsMouseLocked()) {

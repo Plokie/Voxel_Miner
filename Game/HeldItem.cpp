@@ -3,7 +3,7 @@
 #include "../Engine/Engine.h"
 #include "../Graphics/Graphics.h"
 
-#include "HeldItemMesh.h"
+#include "Meshes/HeldItemMesh.h"
 
 HeldItem::HeldItem() {
 }
