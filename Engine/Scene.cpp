@@ -19,8 +19,8 @@ Object3D* Scene::CreateObject3D(Object3D* object3D, const string& name)
 	//InitializeSRWLock(&object3D->gAccessMutex);
 	//InitializeSRWLock(&object3D->modelsMutex);
 	
-	if(engine)
-	engine->OverwriteDeletedPtr(object3D);
+	//if(engine)
+	//engine->OverwriteDeletedPtr(object3D);
 
 	return object3D;
 }
@@ -34,8 +34,8 @@ Object3D* Scene::CreateObject3D(Object3D* object3D, const string& name, const st
 	//InitializeSRWLock(&object3D->gAccessMutex);
 	//InitializeSRWLock(&object3D->modelsMutex);
 
-	if(engine)
-	engine->OverwriteDeletedPtr(object3D);
+	//if(engine)
+	//engine->OverwriteDeletedPtr(object3D);
 
 	return object3D;
 }
@@ -50,8 +50,8 @@ Object3D* Scene::CreateObject3D(Object3D* object3D, const string& name, const st
 	//InitializeSRWLock(&object3D->gAccessMutex);
 	//InitializeSRWLock(&object3D->modelsMutex);
 
-	if(engine)
-	engine->OverwriteDeletedPtr(object3D);
+	//if(engine)
+	//engine->OverwriteDeletedPtr(object3D);
 	
 
 	return object3D;

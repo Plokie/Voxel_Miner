@@ -6,22 +6,22 @@
 
 Engine* Engine::_Instance;
 
-void Engine::OverwriteDeletedPtr(void* ptr)
-{
-	auto it = dbg_deletedObjects.find(ptr);
-	if(it != dbg_deletedObjects.end()) {
-		it->second = false;
-	}
-}
-
-bool Engine::IsObjDeleted(void* objPtr)
-{
-	auto it = dbg_deletedObjects.find(objPtr);
-	if(it != dbg_deletedObjects.end()) {
-		return it->second;
-	}
-	return false;
-}
+//void Engine::OverwriteDeletedPtr(void* ptr)
+//{
+//	auto it = dbg_deletedObjects.find(ptr);
+//	if(it != dbg_deletedObjects.end()) {
+//		it->second = false;
+//	}
+//}
+//
+//bool Engine::IsObjDeleted(void* objPtr)
+//{
+//	auto it = dbg_deletedObjects.find(objPtr);
+//	if(it != dbg_deletedObjects.end()) {
+//		return it->second;
+//	}
+//	return false;
+//}
 
 void Engine::Init(_In_ HINSTANCE hInstance) {
 	if (_Instance != nullptr) delete _Instance;
@@ -214,7 +214,7 @@ bool Engine::DestroyObject3DImmediate(string name)
 		objectToDelete->gAccessMutex.lock();
 		objectToDelete->gAccessMutex.unlock();
 		
-		dbg_deletedObjects[objectToDelete] = true;
+		//dbg_deletedObjects[objectToDelete] = true;
 
 		delete objectToDelete;
 		objectToDelete = nullptr;
