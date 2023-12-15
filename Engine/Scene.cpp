@@ -3,10 +3,26 @@
 #include "../Graphics/Graphics.h"
 #include "Engine.h"
 
+void Scene::ProcessCreateQueue() {
+	unique_lock<mutex> lock(createObjectQueueMutex);
+	while(!createObjectQueue.empty()) {
+		pair<Object3D*,string> front = createObjectQueue.front();
+
+		CreateObject3D(front.first, front.second);
+
+		createObjectQueue.pop();
+	}
+}
+
 void Scene::Init(Graphics* gfx, Engine* engine)
 {
 	this->gfx = gfx;
 	this->engine = engine;
+}
+
+void Scene::QueueCreateObject3D(Object3D* object3D, const string& name) {
+	unique_lock<mutex> lock(createObjectQueueMutex);
+	createObjectQueue.emplace(object3D, name);
 }
 
 Object3D* Scene::CreateObject3D(Object3D* object3D, const string& name)
@@ -65,6 +81,16 @@ Object2D* Scene::CreateObject2D(Object2D* object2D, const string& name)
 	object2D->InitSelf(); //overriden func to init child-specific features
 
 	return object2D;
+}
+
+void Scene::StartUpdate()
+{
+	ProcessCreateQueue();
+}
+
+void Scene::EndUpdate()
+{
+	//ProcessDestroyQueue();
 }
 
 Object3D* Scene::GetObject3D(string name)

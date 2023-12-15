@@ -9,6 +9,8 @@ using namespace std;
 #define ATLAS_SIZE 256
 #define ATLAS_TILE_SIZE 16
 
+enum DRAW_TYPE : unsigned char { B_OPAQUE, B_TRANSPARENT, B_CLIP };
+
 enum BlockID : unsigned short {
 	ERR,
 	AIR,
@@ -42,7 +44,7 @@ class Block {
 private:
 	string name;
 
-	bool isOpaque; // Is the block see-through
+	DRAW_TYPE draw_type; // Is the block opaque, transparent, or clip
 	int lightValue = 0;
 
 	int topUvIdX, topUvIdY;
@@ -56,7 +58,7 @@ private:
 public:
 
 	Block(string _Name,
-		bool _isOpaque,
+		DRAW_TYPE draw_type,
 		int _lightValue,
 		int UvIdX, int UvIdY,
 		bool hasShell = false,
@@ -65,7 +67,7 @@ public:
 		const string& lootTable = ""
 	) :
 		name(_Name),
-		isOpaque(_isOpaque),
+		draw_type(draw_type),
 		lightValue(_lightValue),
 		topUvIdX(UvIdX), topUvIdY(UvIdY),
 		bottUvIdX(UvIdX), bottUvIdY(UvIdY),
@@ -77,7 +79,7 @@ public:
 	{}
 
 	Block(string _Name,
-		bool _isOpaque,
+		DRAW_TYPE draw_type,
 		int _lightValue,
 		int TopUvIdX, int TopUvIdY,
 		int SideUvIdX, int SideUvIdY,
@@ -88,7 +90,7 @@ public:
 		const string& lootTable = ""
 	) :
 		name(_Name),
-		isOpaque(_isOpaque),
+		draw_type(draw_type),
 		lightValue(_lightValue),
 		topUvIdX(TopUvIdX), topUvIdY(TopUvIdY),
 		sideUvIdX(SideUvIdX), sideUvIdY(SideUvIdY),
@@ -100,7 +102,7 @@ public:
 	{}
 
 	const string& GetName() const { return name; }
-	const bool IsOpaque() const;
+	const DRAW_TYPE GetDrawType() const { return draw_type; }
 	const int LightValue() const;
 	const bool HasShell() const { return hasShell; }
 	const ItemType GetMineType() const { return mineType; }

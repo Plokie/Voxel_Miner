@@ -18,6 +18,8 @@ SamplerState samplerState : SAMPLER : register(s0);
 float4 main(PS_INPUT input) : SV_TARGET
 {
     float4 pixCol = tex.Sample(samplerState, input.texCoord + input.texOffset);
+    if (pixCol.a < 0.5f)
+        discard;
     
     //todo: make cbuffer input
     //float3 tempLightDir = normalize(-float3(-1.0f, -1.0f, 0.0f));

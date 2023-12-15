@@ -10,7 +10,7 @@ void Label::SetColour(const float& r, const float& g, const float& b, const floa
 	this->color = XMFLOAT4(r, g, b, a);
 }
 
-const XMFLOAT4 Label::GetColour()
+const XMFLOAT4& Label::GetColour()
 {
 	return this->color;
 }

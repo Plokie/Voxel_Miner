@@ -3,9 +3,9 @@
 #include "ChunkManager.h"
 
 bool Chunk::RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z) {
-	const bool isCurrentBlockSolid = BlockDef::GetDef(currentBlock).IsOpaque();
+	const bool isCurrentBlockSolid = BlockDef::GetDef(currentBlock).GetDrawType() == B_OPAQUE;
 	BlockID neighborBlock = GetBlockIncludingNeighbours(x, y, z);
-	bool isNeighborSolid = BlockDef::GetDef(neighborBlock).IsOpaque();
+	bool isNeighborSolid = BlockDef::GetDef(neighborBlock).GetDrawType() == B_OPAQUE;
 	return (isCurrentBlockSolid && !isNeighborSolid) || (!isCurrentBlockSolid && neighborBlock == AIR);
 }
 
@@ -310,7 +310,7 @@ void Chunk::BuildMesh() {
 				if(blockid == BlockID::AIR) continue;
 				const Block& def = BlockDef::GetDef(blockid);
 
-				if(def.IsOpaque()) {
+				if(def.GetDrawType() == B_OPAQUE || def.GetDrawType() == B_CLIP) {
 					this->MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
 
 #if 1

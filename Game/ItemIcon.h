@@ -29,7 +29,7 @@ public:
 
 	const bool WasPressed();
 
-	const Vector2& GetScreenPosition() override;
+	const Vector2 GetScreenPosition() override;
 	void Draw(SpriteBatch* spriteBatch) override;
 	void SetDimensions(const Vector2& dim) override;
 	void Update(const float dTime) override;

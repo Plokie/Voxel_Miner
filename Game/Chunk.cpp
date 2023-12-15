@@ -19,7 +19,7 @@ void Chunk::Finalize() {
 
 	{
 		unique_lock<std::mutex> lock(Engine::Get()->GetCurrentScene()->createObjectMutex);
-		Engine::Get()->GetCurrentScene()->CreateObject3D(this, "c_" + indexPosition.ToString());
+		Engine::Get()->GetCurrentScene()->QueueCreateObject3D(this, "c_" + indexPosition.ToString());
 	}
 }
 

@@ -85,7 +85,7 @@ void Object2D::SetPosition(const float& x, const float& y)
     SetPosition({ x,y });
 }
 
-const Vector2& Object2D::GetScreenPosition()
+const Vector2 Object2D::GetScreenPosition()
 {
     Vector2 res = { (float)winMgr->width, (float)winMgr->height};
 

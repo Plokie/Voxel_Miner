@@ -128,6 +128,8 @@ void Engine::SetScene(string name)
 void Engine::Update(float dTime) {
 	totalElapsedTime += dTime;
 
+	currentScene->StartUpdate();
+
 	unique_lock<std::mutex> lock(currentScene->createObjectMutex);
 	//int debug = 0;
 	for (pair<string, Object3D*> pair : *currentScene->GetSceneObjects3D()) {
@@ -158,6 +160,7 @@ void Engine::Update(float dTime) {
 	// Keep at end
 	Input::EndUpdate();
 	audio->Update();
+	currentScene->EndUpdate();
 	
 }
 

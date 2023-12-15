@@ -5,61 +5,61 @@
 //todo: database?
 // json parser perhaps
 const map<BlockID, Block> BlockDef::def = {
-	{BlockID::ERR,	Block("ERROR", false, 0,
+	{BlockID::ERR,	Block("ERROR", B_CLIP, 0,
 		0, 0
 	) },
-	{BlockID::AIR,		Block("Air", false, 0,
+	{BlockID::AIR,		Block("Air", B_CLIP, 0,
 		0 ,0
 	)},
 
-	{BlockID::GRASS,	Block("Grass", true, 0,
+	{BlockID::GRASS,	Block("Grass", B_OPAQUE, 0,
 		1, 0,
 		2, 0,
 		3, 0,
 		true, // has shell texture
 		SHOVEL
 	)},
-	{BlockID::DIRT,		Block("Dirt", true, 0,
+	{BlockID::DIRT,		Block("Dirt", B_OPAQUE, 0,
 		3, 0, false, SHOVEL
 	)},
-	{BlockID::STONE,	Block("Stone", true, 0,
+	{BlockID::STONE,	Block("Stone", B_OPAQUE, 0,
 		5, 0, false, PICKAXE, 1,
 		"STONE" //loot table name
 	)},
-	{BlockID::BLACKSTONE,Block("Blackstone", true, 0,
+	{BlockID::BLACKSTONE,Block("Blackstone", B_OPAQUE, 0,
 		5, 1, false, PICKAXE, 1, "BLACKSTONE"
 	)},
-	{BlockID::SAND,		Block("Sand", true, 0,
+	{BlockID::SAND,		Block("Sand", B_OPAQUE, 0,
 		4, 0
 	)},
-	{BlockID::CLAY,		Block("Clay", true, 0,
+	{BlockID::CLAY,		Block("Clay", B_OPAQUE, 0,
 		4, 3
 	)},
-	{BlockID::WATER,	Block("Water", false, 0,
+	{BlockID::WATER,	Block("Water", B_TRANSPARENT, 0,
 		4, 1
 	)},
 
-	{BlockID::OAK_LOG,	Block("Oak Log", true, 0,
+	{BlockID::OAK_LOG,	Block("Oak Log", B_OPAQUE, 0,
 		1, 1,
 		0, 1,
 		1, 1,
 		false,
 		AXE
 	)},
-	{BlockID::OAK_LEAVES,	Block("Oak Leaves", false, 0,
+	{BlockID::OAK_LEAVES,	Block("Oak Leaves", B_CLIP, 0,
 		2, 1
 	)},
-	{BlockID::OAK_PLANKS,	Block("Oak Planks", true, 0,
+	{BlockID::OAK_PLANKS,	Block("Oak Planks", B_OPAQUE, 0,
 		3, 1,
 		false,
 		AXE
 	)},
 
-	{BlockID::LAMP,	Block("Lamp", true, 15,
+	{BlockID::LAMP,	Block("Lamp", B_CLIP, 15,
 		3, 1
 	)},
 
-	{BlockID::SNOW_GRASS, Block("Snowy Grass", true, 0,
+	{BlockID::SNOW_GRASS, Block("Snowy Grass", B_OPAQUE, 0,
 		1, 9,
 		0, 9,
 		3, 0,
@@ -67,7 +67,7 @@ const map<BlockID, Block> BlockDef::def = {
 		SHOVEL
 	)},
 
-	{BlockID::TAIGA_GRASS, Block("Taiga Grass", true, 0,
+	{BlockID::TAIGA_GRASS, Block("Taiga Grass", B_OPAQUE, 0,
 		1, 5,
 		0, 5,
 		3, 0,
@@ -75,7 +75,7 @@ const map<BlockID, Block> BlockDef::def = {
 		SHOVEL
 	)},
 
-	{BlockID::MAPLE_GRASS, Block("Maple Grass", true, 0,
+	{BlockID::MAPLE_GRASS, Block("Maple Grass", B_OPAQUE, 0,
 		1, 8,
 		0, 8,
 		3, 0,
@@ -83,7 +83,7 @@ const map<BlockID, Block> BlockDef::def = {
 		SHOVEL
 	)},
 
-	{BlockID::CHERRY_GRASS, Block("Cherry Grass", true, 0,
+	{BlockID::CHERRY_GRASS, Block("Cherry Grass", B_OPAQUE, 0,
 		1, 7,
 		0, 7,
 		3, 0,
@@ -91,103 +91,100 @@ const map<BlockID, Block> BlockDef::def = {
 		SHOVEL
 	)},
 
-	{BlockID::BIRCH_LOG,	Block("Birch Log", true, 0,
+	{BlockID::BIRCH_LOG,	Block("Birch Log", B_OPAQUE, 0,
 		1, 2,
 		0, 2,
 		1, 2,
 		false,
 		AXE
 	)},
-	{BlockID::BIRCH_LEAVES,	Block("Birch Leaves", false, 0,
+	{BlockID::BIRCH_LEAVES,	Block("Birch Leaves", B_CLIP, 0,
 		2, 2
 	)},
-	{BlockID::BIRCH_PLANKS,	Block("Birch Planks", true, 0,
+	{BlockID::BIRCH_PLANKS,	Block("Birch Planks", B_OPAQUE, 0,
 		3, 2,
 		false,
 		AXE
 	)},
 
-	{BlockID::CHERRY_LOG,	Block("Cherry Log", true, 0,
+	{BlockID::CHERRY_LOG,	Block("Cherry Log", B_OPAQUE, 0,
 		1, 4,
 		0, 4,
 		1, 4,
 		false,
 		AXE
 	)},
-	{BlockID::CHERRY_LEAVES,	Block("Cherry Leaves", false, 0,
+	{BlockID::CHERRY_LEAVES,	Block("Cherry Leaves", B_CLIP, 0,
 		2, 4
 	)},
-	{BlockID::CHERRY_PLANKS,	Block("Cherry Planks", true, 0,
+	{BlockID::CHERRY_PLANKS,	Block("Cherry Planks", B_OPAQUE, 0,
 		3, 4,
 		false,
 		AXE
 	)},
 
-	{BlockID::SPRUCE_LOG,	Block("Spruce Log", true, 0,
+	{BlockID::SPRUCE_LOG,	Block("Spruce Log", B_OPAQUE, 0,
 		1, 3,
 		0, 3,
 		1, 3,
 		false,
 		AXE
 	)},
-	{BlockID::SPRUCE_LEAVES,	Block("Spruce Leaves", false, 0,
+	{BlockID::SPRUCE_LEAVES,	Block("Spruce Leaves", B_CLIP, 0,
 		2, 3
 	)},
-	{BlockID::SPRUCE_PLANKS,	Block("Spruce Planks", true, 0,
+	{BlockID::SPRUCE_PLANKS,	Block("Spruce Planks", B_OPAQUE, 0,
 		3, 3,
 		false,
 		AXE
 	)},
 
-	{ BlockID::COAL_ORE,	Block("Coal Ore", true, 0,
+	{ BlockID::COAL_ORE,	Block("Coal Ore", B_OPAQUE, 0,
 		6, 0, false, PICKAXE, 1, "COAL"
 	) },
-	{ BlockID::COPPER_ORE,	Block("Copper Ore", true, 0,
+	{ BlockID::COPPER_ORE,	Block("Copper Ore", B_OPAQUE, 0,
 		7, 0, false, PICKAXE, 1, "COPPER"
 	) },
-	{ BlockID::GOLD_ORE,	Block("Gold Ore", true, 0,
+	{ BlockID::GOLD_ORE,	Block("Gold Ore", B_OPAQUE, 0,
 		8, 0, false, PICKAXE, 1, "GOLD"
 	) },
-	{ BlockID::AMETHYST_ORE,Block("Amethyst Ore", true, 0,
+	{ BlockID::AMETHYST_ORE,Block("Amethyst Ore", B_OPAQUE, 0,
 		9, 0, false, PICKAXE, 2, "AMETHYST"
 	) },
-	{ BlockID::TITANIUM_ORE,Block("Titanium Ore", true, 0,
+	{ BlockID::TITANIUM_ORE,Block("Titanium Ore", B_OPAQUE, 0,
 		10, 0, false, PICKAXE, 3, "TITANIUM"
 	) },
-	{ BlockID::COBBLESTONE,Block("Cobblestone", true, 0,
+	{ BlockID::COBBLESTONE,Block("Cobblestone", B_OPAQUE, 0,
 		11, 0, false, PICKAXE
 	) },
 
-	{ BlockID::BLACK_COAL_ORE,	Block("Blackstone Coal Ore", true, 0,
+	{ BlockID::BLACK_COAL_ORE,	Block("Blackstone Coal Ore", B_OPAQUE, 0,
 		6, 1, false, PICKAXE, 1, "COAL"
 	) },
-	{ BlockID::BLACK_COPPER_ORE,	Block("Blackstone Copper Ore", true, 0,
+	{ BlockID::BLACK_COPPER_ORE,	Block("Blackstone Copper Ore", B_OPAQUE, 0,
 		7, 1, false, PICKAXE, 1, "COPPER"
 	) },
-	{ BlockID::BLACK_GOLD_ORE,	Block("Blackstone Gold Ore", true, 0,
+	{ BlockID::BLACK_GOLD_ORE,	Block("Blackstone Gold Ore", B_OPAQUE, 0,
 		8, 1, false, PICKAXE, 1, "GOLD"
 	) },
-	{ BlockID::BLACK_AMETHYST_ORE,Block("Blackstone Amethyst Ore", true, 0,
+	{ BlockID::BLACK_AMETHYST_ORE,Block("Blackstone Amethyst Ore", B_OPAQUE, 0,
 		9, 1, false, PICKAXE, 2, "AMETHYST"
 	) },
-	{ BlockID::BLACK_TITANIUM_ORE,Block("Blackstone Titanium Ore", true, 0,
+	{ BlockID::BLACK_TITANIUM_ORE,Block("Blackstone Titanium Ore", B_OPAQUE, 0,
 		10, 1, false, PICKAXE, 3, "TITANIUM"
 	) },
-	{ BlockID::BLACK_COBBLESTONE,Block("Cobbled Blackstone", true, 0,
+	{ BlockID::BLACK_COBBLESTONE,Block("Cobbled Blackstone", B_OPAQUE, 0,
 		11, 1, false, PICKAXE
 	) },
 
-	{ BlockID::GRAVEL,Block("Gravel", true, 0,
+	{ BlockID::GRAVEL,Block("Gravel", B_OPAQUE, 0,
 		4, 2, false, SHOVEL
 	) },
 
-	{ BlockID::LAVA, Block("Lava", false, 13,
-		4, 5
+	{ BlockID::LAVA, Block("Lava", B_CLIP, 13,
+	4, 5
 	) },
 };
-const bool Block::IsOpaque() const {
-	return this->isOpaque;
-}
 
 const int Block::LightValue() const {
 	return this->lightValue;

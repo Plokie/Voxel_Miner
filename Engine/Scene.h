@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <queue>
 #include "Object3D.h"
 #include "Object2D.h"
 //#include "../Graphics/Graphics.h"
@@ -18,6 +19,8 @@ private:
 	map<string, Object3D*> sceneObjects3D = {};
 	map<string, Object2D*> sceneObjects2D = {};
 
+	void ProcessCreateQueue();
+
 public:
 	XMFLOAT4 clearColor = { 145.f / 255.f, 217.f / 255.f, 1.0f, 1.0f };
 
@@ -27,6 +30,10 @@ public:
 
 	std::mutex createObjectMutex = {};
 
+	std::mutex createObjectQueueMutex;
+	queue<pair<Object3D*,string>> createObjectQueue = {};
+
+	void QueueCreateObject3D(Object3D* object3D, const string& name);
 	Object3D* CreateObject3D(Object3D* object3D, const string& name);
 	Object3D* CreateObject3D(Object3D* object3D, const string& name, const string& meshName);
 	Object3D* CreateObject3D(Object3D* object3D, const string& name, const string& meshName, const string& texName);
@@ -36,17 +43,22 @@ public:
 	Object3D* GetObject3D(string name);
 	Object2D* GetObject2D(string name);
 
+	void StartUpdate();
+	void EndUpdate();
+
 	template <typename T>
 	T* GetObject3D(string name) {
-		if(sceneObjects3D.count(name))
-			return static_cast<T*>(sceneObjects3D[name]);
+		auto it = sceneObjects3D.find(name);
+		if(it != sceneObjects3D.end())
+			return static_cast<T*>(it->second);
 		else return nullptr;
 	}
 
 	template <typename T>
 	T* GetObject2D(string name) {
-		if(sceneObjects2D.count(name))
-			return static_cast<T*>(sceneObjects2D[name]);
+		auto it = sceneObjects2D.find(name);
+		if(it != sceneObjects2D.end())
+			return static_cast<T*>(it->second);
 		else return nullptr;
 	}
 

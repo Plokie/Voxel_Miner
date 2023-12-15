@@ -116,7 +116,7 @@ const bool ItemIcon::WasPressed() {
 	return isHovering && Input::IsMouseKeyPressed(MOUSE_L);
 }
 
-const Vector2& ItemIcon::GetScreenPosition()
+const Vector2 ItemIcon::GetScreenPosition()
 {
 	if(isHeld) {
 		XMFLOAT2 mPos = Input::MousePosition();

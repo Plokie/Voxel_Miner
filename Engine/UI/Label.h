@@ -13,7 +13,7 @@ private:
 public:
 
 	void SetColour(const float& r, const float& g, const float& b, const float& a);
-	const XMFLOAT4 GetColour();
+	const XMFLOAT4& GetColour();
 
 	void SetText(const string& text);
 	const string& GetText();
