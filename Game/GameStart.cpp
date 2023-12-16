@@ -40,6 +40,7 @@ void LoadResources() {
 	Resources::LoadVertexShader(L"vertexshader.cso", "vertexshader");
 	Resources::LoadVertexShader(L"watervertexshader.cso", "watervertexshader");
 	Resources::LoadVertexShader(L"vertexshellgrass.cso", "vertexshellgrass");
+	Resources::LoadVertexShader(L"vertexshaderleaves.cso", "vertexshaderleaves");
 
 	Audio::LoadClipStream("Data\\Music\\UndercoverVampirePoliceman.ogg", "MusicBg");
 	Audio::LoadClip("Data\\Sounds\\hit.wav", "hit");

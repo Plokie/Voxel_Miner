@@ -237,9 +237,12 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 			newModel->SetVertexShader(0, "watervertexshader");
 			break;
 		case SHELL:
-			newModel->SetTransparent(true);
+			//newModel->SetTransparent(true);
 			newModel->SetVertexShader(0, "vertexshellgrass");
 			newModel->SetPixelShader(0, "pixelshellgrass");
+			break;
+		case LEAVES:
+			newModel->SetVertexShader(0, "vertexshaderleaves");
 			break;
 		default: break;
 		}
@@ -287,20 +290,15 @@ void Chunk::BuildMesh() {
 	waterVertices.reserve((CHUNKSIZE_X * CHUNKSIZE_Z) / 2);
 	waterIndices.reserve((CHUNKSIZE_X * CHUNKSIZE_Z) / 2);
 
+	vector<Vertex> leavesVertices = {};
+	vector<DWORD> leavesIndices = {};
+
 	const int shellCount = 5;
 	const float shellPixelHeight = 2.f;
 	const float shellSeperation = ((1.f / 16.f) * shellPixelHeight) / static_cast<float>(shellCount);
 
-	vector<vector<Vertex>> grassShellsVertices = {};
-	vector<vector<DWORD>> grassShellsIndices = {};
-
-	for(int i = 0; i < shellCount; i++) {
-		grassShellsVertices.push_back({});
-		grassShellsIndices.push_back({});
-
-		grassShellsVertices[i].reserve(reserveSizeShellLayer);
-		grassShellsIndices[i].reserve(reserveSizeShellLayer);
-	}
+	vector<Vertex> grassShellVertices = {};
+	vector<DWORD> grassShellIndices = {};
 
 	//todo: optimised chunk building (not looping through every single block, most of them are invisible)
 	for(int y = 0; y < CHUNKSIZE_Y; y++) {
@@ -311,18 +309,23 @@ void Chunk::BuildMesh() {
 				const Block& def = BlockDef::GetDef(blockid);
 
 				if(def.GetDrawType() == B_OPAQUE || def.GetDrawType() == B_CLIP) {
-					this->MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
+					if(blockid == BlockID::OAK_LEAVES || blockid == BlockID::BIRCH_LEAVES || blockid == BlockID::SPRUCE_LEAVES || blockid == BlockID::CHERRY_LEAVES) 
+						this->MakeVoxel(blockid, x, y, z, leavesVertices, leavesIndices);
+					else
+						this->MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
 
 #if 1
 					if(def.HasShell() && this->RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
 						//int light = chunkManager->GetBlockLightAtWorldPos(x, y + 1, z);
 						short rawLight = this->GetRawLightIncludingNeighbours(x, y + 1, z);
-						int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
+						int light = max(
+							static_cast<int>(((rawLight & 0xF0) >> 4) * 1.0f), //sky light todo: replace *1.0f with sunlight strength / time of day
+							rawLight & 0x0F //block light
+						);
 
 						for(int i = 1; i < shellCount + 1; i++) {
-							int index = i - 1; // get compiler to shut up about "sub expression overflow" false positive
-							PushIndices(grassShellsVertices[index].size(), grassShellsIndices[index]);
-							PushFace(grassShellsVertices[index], blockid,
+							PushIndices(grassShellVertices.size(), grassShellIndices);
+							PushFace(grassShellVertices, blockid,
 								(float)x, (float)y + ((float)shellSeperation * i), (float)z,
 								0, 1, 0,
 								0, 1, 1,
@@ -348,10 +351,9 @@ void Chunk::BuildMesh() {
 
 	this->PushChunkMesh(solidVertices, solidIndices);
 
-	for(int i = 0; i < shellCount; i++) {
-		this->PushChunkMesh(grassShellsVertices[i], grassShellsIndices[i], Chunk::MESHFLAG::SHELL);
-	}
+	this->PushChunkMesh(grassShellVertices, grassShellIndices, Chunk::MESHFLAG::SHELL);
 
 	this->PushChunkMesh(transVertices, transIndices, Chunk::MESHFLAG::TRANS);
 	this->PushChunkMesh(waterVertices, waterIndices, Chunk::MESHFLAG::LIQUID);
+	this->PushChunkMesh(leavesVertices, leavesIndices, Chunk::MESHFLAG::LEAVES);
 }

@@ -6,6 +6,7 @@
 
 #define ITEM_ATLAS_SIZE 256
 #define ITEM_ATLAS_TILE_SIZE 16
+#define MAX_STACK 100
 
 using namespace std;
 
@@ -27,7 +28,7 @@ private:
 	int tier;
 	ItemType itemType = ItemType::BASICITEM;
 public:
-	Item(string name, int uvX, int uvY, int maxStack=64, ItemType itemType = ItemType::BASICITEM, int tier = 0) : name(name), uvX(uvX), uvY(uvY), maxStack(maxStack), itemType(itemType), tier(tier) {}
+	Item(string name, int uvX, int uvY, int maxStack=MAX_STACK, ItemType itemType = ItemType::BASICITEM, int tier = 0) : name(name), uvX(uvX), uvY(uvY), maxStack(maxStack), itemType(itemType), tier(tier) {}
 
 	const string& GetName() const { return name; }
 	const int UVx() const { return uvX; }

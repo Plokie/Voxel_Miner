@@ -73,11 +73,13 @@ void PlayerController::Update(float dTime)
 
 	float movementSpeed = 4.317f;
 
+	if(Input::IsMouseLocked())
 	if(Input::IsKeyPressed('P')) {
 		freeCam = !freeCam;
 	}
 
 	//todo: remove // debug spawn entity
+	if(Input::IsMouseLocked())
 	if(Input::IsKeyPressed('M')) {
 		engine->GetCurrentScene()->CreateObject3D(new Entity(), "test-entity-"+to_string(rand()), "cube")->transform.position = transform.position;
 	}
@@ -142,7 +144,7 @@ void PlayerController::Update(float dTime)
 		}
 		else {
 			velocity.y = -3.0f * dTime; //Small nudge to ground level, nothing noticable
-			if(Input::IsKeyHeld(VK_SPACE)) velocity.y = jumpVelocity;
+			if(Input::IsKeyHeld(VK_SPACE) && Input::IsMouseLocked()) velocity.y = jumpVelocity;
 		}
 
 		transform.position += velocity * dTime;
@@ -159,10 +161,10 @@ void PlayerController::Update(float dTime)
 		}
 	}
 	else {
-		if(Input::IsKeyHeld(VK_SPACE)) {
+		if(Input::IsKeyHeld(VK_SPACE) && Input::IsMouseLocked()) {
 			transform.position.y += movementSpeed * dTime;
 		}
-		if(Input::IsKeyHeld(VK_SHIFT)) {
+		if(Input::IsKeyHeld(VK_SHIFT) && Input::IsMouseLocked()) {
 			transform.position.y -= movementSpeed * dTime;
 		}
 	}

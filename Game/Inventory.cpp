@@ -55,7 +55,7 @@ void Inventory::AddItem(const ItemID itemID, const int amount) {
 
 void Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, const int amount) {
 	for(auto& invItem : items) {
-		int maxStack = (invItem.type == InventoryItem::Type::ITEM) ? ItemDef::Get((ItemID)invItem.ID).GetMaxStack() : 64;
+		int maxStack = (invItem.type == InventoryItem::Type::ITEM) ? ItemDef::Get((ItemID)invItem.ID).GetMaxStack() : MAX_STACK;
 		if(invItem.ID == ID && invItem.type == type && invItem.amount < maxStack) {
 			invItem.amount += amount;
 
@@ -75,7 +75,7 @@ void Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, c
 
 
 	// need to split stack here
-	int maxStack = (type == InventoryItem::Type::ITEM) ? ItemDef::Get((ItemID)ID).GetMaxStack() : 64;
+	int maxStack = (type == InventoryItem::Type::ITEM) ? ItemDef::Get((ItemID)ID).GetMaxStack() : MAX_STACK;
 
 	if(amount <= maxStack) {
 		Vector2Int newPos = GetFreeSpot();
@@ -146,6 +146,17 @@ int Inventory::GetItemCount(const unsigned int ID, const InventoryItem::Type typ
 	}
 
 	return count;
+}
+
+void Inventory::ClearEmptyItems() {
+	/*for(auto it = items.begin(); it != items.end();) {
+		if(it->amount <= 0) {
+			items.erase(it);
+		}
+		else {
+			it++;
+		}
+	}*/
 }
 
 bool Inventory::CanCraft(const Recipe& recipe) {

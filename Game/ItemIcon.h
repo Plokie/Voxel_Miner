@@ -28,6 +28,7 @@ public:
 	void Display(const unsigned short ID, const InventoryItem::Type type, const int amount, const Vector2Int& uvPos, const bool hideOne = true);
 
 	const bool WasPressed();
+	const bool WasRightClicked();
 
 	const Vector2 GetScreenPosition() override;
 	void Draw(SpriteBatch* spriteBatch) override;

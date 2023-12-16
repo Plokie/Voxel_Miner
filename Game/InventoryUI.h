@@ -28,14 +28,17 @@ private:
 	bool isOpen = false;
 
 	// held item by the mouse when in inventory ui
-	ItemIcon* heldItem = nullptr;
 public:
+	ItemIcon* heldItem = nullptr;
 	InventoryUI(Engine* engine, Scene* gameScene);
 	~InventoryUI();
 
 	Inventory* GetInventory() const { return inventory; }
 	Button* GetInvSlot(int x, int y) const { return invSlots[x][y]; }
 	
+	void AddNewIcon(ItemIcon* itemIcon) {
+		_spawnedIcons.push_back(itemIcon);
+	}
 
 	//void SetHeldItem(ItemIcon* invItem);
 	//void SlotPressed(Button* slot);

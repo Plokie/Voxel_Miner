@@ -33,18 +33,19 @@ float4 main(PS_INPUT input) : SV_TARGET
     float2 normalUV = input.texCoord / pixelSize;
     
     float height = frac(input.worldPos.y);
-    // relative height 0.0f = base, 1.0f = top
-    float relHeight = (height / (pixelSize * (shell_pix_height + pixelSize)));
-    float adjHeight = ((relHeight - 1.0f) / 0.8f) + 1.0f;
+    float heightRatio = height / (pixelSize * (shell_pix_height + pixelSize)); // 0.0f = -1 ground shell (doesnt exist), 1.0f = top shell
+    
     
     float2 pixelIndex = floor(normalUV * 16.0f);
-    float r = saturate(rand(pixelIndex + floor(input.worldPos.xz)) - adjHeight);
-    if (r > 0.0f) {
-        r = 1.0f;
-    }
-    else
+    float randomPixelSample = rand(pixelIndex /*+ floor(input.worldPos.xz)*/);
+    
+    if(randomPixelSample < heightRatio)
         discard;
     
-    //return float4(relHeight, relHeight, relHeight, 1.0f);
-    return float4(pixCol.rgb * length(input.normal) * ((saturate(relHeight) * 0.5f) + 1.0f), r);
+    float brightness = ((heightRatio * 0.5f) + 1.0f);
+
+    //todo: implement frosty grass in areas
+    //return pixCol + (heightRatio * 0.25f); // this actually looks really cool for frosty grass
+    
+    return pixCol * brightness;
 }

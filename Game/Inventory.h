@@ -72,6 +72,8 @@ public:
 	int GetItemCount(const ItemID itemID);
 	int GetItemCount(const unsigned int ID, const InventoryItem::Type type);
 
+	void ClearEmptyItems();
+
 	bool CanCraft(const Recipe& recipe);
 	bool TryCraft(const Recipe& recipe);
 

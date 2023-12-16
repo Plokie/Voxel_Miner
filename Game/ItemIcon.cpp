@@ -4,6 +4,7 @@
 #include "../Engine/UI/UIRect.h"
 #include "../Engine/Engine.h"
 #include "InventoryUI.h"
+#include "Inventory.h"
 #include "Crafting.h"
 
 ItemIcon::ItemIcon(InventoryItem* invItem, InventoryUI* invUI) {
@@ -116,6 +117,11 @@ const bool ItemIcon::WasPressed() {
 	return isHovering && Input::IsMouseKeyPressed(MOUSE_L);
 }
 
+const bool ItemIcon::WasRightClicked()
+{
+	return isHovering && Input::IsMouseKeyPressed(MOUSE_R);
+}
+
 const Vector2 ItemIcon::GetScreenPosition()
 {
 	if(isHeld) {
@@ -178,10 +184,47 @@ void ItemIcon::Update(const float dTime) {
 			if(!isHeld) { // If released
 				invUI->ReleaseItem(this);
 			}
-			else { // If pressed
-
+			else { // If begin held
+				invUI->heldItem = this;
 			}
 		}
 
+	}
+
+	if(WasRightClicked() && invUI->heldItem!=this) {
+		Inventory* inv = Engine::Get()->GetCurrentScene()->GetObject3D<Inventory>("Inventory");
+		
+		int splitAmount = 1;
+		if(Input::IsKeyHeld(VK_SHIFT)) splitAmount = invItem->amount / 2;
+
+		invItem->amount -= splitAmount;
+		amtLabel->SetText((invItem->amount == 1 /*&& hideOne*/) ? "" : to_string(invItem->amount));
+
+		if(invItem->amount <= 0) {
+			inv->ClearEmptyItems();
+		}
+		
+		if(invUI->heldItem != nullptr) {
+			if(invUI->heldItem->invItem->ID == invItem->ID && invUI->heldItem->invItem->type == invItem->type) {
+				invUI->heldItem->invItem->amount += splitAmount;
+				invUI->heldItem->amtLabel->SetText((invUI->heldItem->invItem->amount == 1 /*&& hideOne*/) ? "" : to_string(invUI->heldItem->invItem->amount));
+			}
+		}
+		else {
+			InventoryItem* tempInvItem = new InventoryItem(invItem->type, invItem->ID, -1, -1, splitAmount); //-1, -1 flags that its a temp object and to-be deleted when icon released (ig this is unsafe but aghhh idk)
+			//inv->AddItem(invItem->ID, invItem->type, splitAmount);
+			//InventoryItem* invItemTarget
+			//inv->AddItem()
+
+			ItemIcon* newIcon = new ItemIcon(tempInvItem, invUI);
+			newIcon->Init(pDevice);
+			newIcon->SetDimensions({ 50.f, 50.f });
+			newIcon->SetAnchor({ .5f,.5f });
+			newIcon->SetPivot({ .5f,.5f });
+			newIcon->isHeld = true;
+			invUI->heldItem = newIcon;
+
+			invUI->AddNewIcon(newIcon);
+		}
 	}
 }

@@ -127,7 +127,7 @@ InventoryUI::~InventoryUI() {
 //	}
 //}
 
-	void InventoryUI::ReleaseItem(ItemIcon* invItem) {
+void InventoryUI::ReleaseItem(ItemIcon* invItem) {
 	for(int y = 0; y < INVSIZE_Y; y++) {
 		for(int x = 0; x < INVSIZE_X; x++) {
 			if(invSlots[x][y]->IsHovering()) {
@@ -135,6 +135,7 @@ InventoryUI::~InventoryUI() {
 				invItem->GetInvItem()->posY = y;
 
 				invItem->SetParent(invSlots[x][y]);
+				heldItem = nullptr;
 			}
 		}
 	}
@@ -172,7 +173,7 @@ void InventoryUI::Close() {
 }
 
 void InventoryUI::Update(const float dTime) {
-	if(Input::IsKeyPressed(VK_TAB) || Input::IsKeyPressed('I')) {
+	if((Input::IsKeyPressed(VK_TAB) || Input::IsKeyPressed('I')) && (Input::IsMouseLocked() || isOpen)) {
 		isOpen = !isOpen;
 		if(isOpen) Open();
 		else Close();

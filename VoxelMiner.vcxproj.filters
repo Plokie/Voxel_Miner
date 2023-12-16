@@ -367,5 +367,8 @@
     <FxCompile Include="vertexshellgrass.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="vertexshaderleaves.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

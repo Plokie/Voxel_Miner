@@ -221,6 +221,9 @@ bool Graphics::SetupRasterizer() {
 	//rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
 	//rasterizerDesc.CullMode = D3D11_CULL_NONE;
 	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	//rasterizerDesc.AntialiasedLineEnable = TRUE;
+	//rasterizerDesc.MultisampleEnable = TRUE;
+	//rasterizerDesc.
 	HRESULT hr = device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
 	if(FAILED(hr)) {
 		exit(17); return false; //Failed to create rasterizer state

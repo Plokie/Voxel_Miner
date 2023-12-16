@@ -15,7 +15,8 @@ public:
 		SOLID,
 		TRANS,
 		LIQUID,
-		SHELL
+		SHELL,
+		LEAVES
 	};
 
 private:
