@@ -15,6 +15,16 @@ Vector2Int InventoryItem::GetUVPos() const
     }
 }
 
+const int InventoryItem::GetMaxStack()
+{
+    if(type == ITEM) {
+        const Item& def = ItemDef::Get((ItemID)ID);
+        return def.GetMaxStack();
+    }
+    return MAX_STACK;
+    //const Block& def= BlockDef::GetDef((BlockID)ID);
+}
+
 nlohmann::json InventoryItem::Serialize()
 {
     //string str = "";

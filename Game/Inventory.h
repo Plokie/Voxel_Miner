@@ -50,6 +50,7 @@ public:
 	const Vector2Int GetFreeSpot() const;
 
 	bool GetHeldItem(InventoryItem** out);
+	bool GetItemAt(int x, int y, InventoryItem** out);
 
 	void SetSlotNum(const int num);
 	void ChangeSlotNum(const int delta);
@@ -63,6 +64,8 @@ public:
 	void AddItem(const BlockID blockID, const int amount = 1);
 	void AddItem(const ItemID itemID, const int amount = 1);
 	void AddItem(const unsigned int ID, const InventoryItem::Type type, const int amount = 1);
+
+	void PushItem(const InventoryItem& item);
 
 	void SubItem(const BlockID blockID, const int amount = 1);
 	void SubItem(const ItemID itemID, const int amount = 1);

@@ -10,6 +10,7 @@
 ItemIcon::ItemIcon(InventoryItem* invItem, InventoryUI* invUI) {
 	this->invUI = invUI;
 	this->invItem = invItem;
+	this->inv = Engine::Get()->GetCurrentScene()->GetObject3D<Inventory>("Inventory");
 	Display(invItem->ID, invItem->type, invItem->amount, invItem->GetUVPos());
 	/*const string& atlasName = (invItem->type == InventoryItem::Type::BLOCK) ? "atlas" : "item-atlas";
 
@@ -183,16 +184,50 @@ void ItemIcon::Update(const float dTime) {
 
 			if(!isHeld) { // If released
 				invUI->ReleaseItem(this);
+
+				
 			}
 			else { // If begin held
-				invUI->heldItem = this;
+				if(invUI->heldItem) {
+					if(invUI->heldItem->GetInvItem()->ID != invItem->ID || invUI->heldItem->GetInvItem()->type != invItem->type)
+						assert(false);
+					
+					// combine held item and this item
+					int remainder = (invUI->heldItem->GetInvItem()->amount + invItem->amount) - invItem->GetMaxStack();
+					remainder = max(remainder, 0); 
+
+					invItem->amount += invUI->heldItem->GetInvItem()->amount - remainder;
+					amtLabel->SetText((invItem->amount == 1 /*&& hideOne*/) ? "" : to_string(invItem->amount));
+
+					isHeld = false;
+
+					
+
+					
+					// if there is a remainder after combining, create a new itemicon of remainder and hold that
+					if(remainder) {
+						//invUI->heldItem->isHeld = true;
+						invUI->DeleteIcon(invUI->heldItem);
+						invUI->heldItem = nullptr;
+					}
+					else {
+						// destroy invUI->heldItem
+						invUI->DeleteIcon(invUI->heldItem);
+						invUI->heldItem = nullptr;
+					}
+				}
+				else {
+
+					invUI->heldItem = this;
+				}
+
 			}
 		}
 
 	}
 
 	if(WasRightClicked() && invUI->heldItem!=this) {
-		Inventory* inv = Engine::Get()->GetCurrentScene()->GetObject3D<Inventory>("Inventory");
+		
 		
 		int splitAmount = 1;
 		if(Input::IsKeyHeld(VK_SHIFT)) splitAmount = invItem->amount / 2;
@@ -200,9 +235,6 @@ void ItemIcon::Update(const float dTime) {
 		invItem->amount -= splitAmount;
 		amtLabel->SetText((invItem->amount == 1 /*&& hideOne*/) ? "" : to_string(invItem->amount));
 
-		if(invItem->amount <= 0) {
-			inv->ClearEmptyItems();
-		}
 		
 		if(invUI->heldItem != nullptr) {
 			if(invUI->heldItem->invItem->ID == invItem->ID && invUI->heldItem->invItem->type == invItem->type) {
@@ -225,6 +257,12 @@ void ItemIcon::Update(const float dTime) {
 			invUI->heldItem = newIcon;
 
 			invUI->AddNewIcon(newIcon);
+		}
+
+		if(invItem->amount <= 0) {
+			InventoryUI* invUiCopy = invUI;
+			inv->ClearEmptyItems();
+			invUiCopy->ReloadIcons();
 		}
 	}
 }

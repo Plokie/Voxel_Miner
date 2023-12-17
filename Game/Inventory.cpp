@@ -1,6 +1,8 @@
 #include "Inventory.h"
 
 #include "Crafting.h"
+#include "InventoryUI.h"
+#include "../Engine/Engine.h"
 
 const Vector2Int Inventory::GetFreeSpot() const {
 	Vector2Int tryPos = { 0, 0 };
@@ -28,6 +30,18 @@ bool Inventory::GetHeldItem(InventoryItem** out)
 	return false;
 }
 
+bool Inventory::GetItemAt(int x, int y, InventoryItem** out)
+{
+	for(InventoryItem invItem : items) {
+		if(invItem.posX == x && invItem.posY == y) {
+			*out = &invItem;
+			return true;
+		}
+	}
+	*out = nullptr;
+	return false;
+}
+
 void Inventory::AddItem(const InventoryItem& item) {
 	if(item.type == InventoryItem::Type::BLOCK) {
 		AddItem((BlockID)item.ID, item.amount);
@@ -36,6 +50,8 @@ void Inventory::AddItem(const InventoryItem& item) {
 		AddItem((ItemID)item.ID, item.amount);
 	}
 }
+
+
 
 void Inventory::AddItem(const BlockID blockID, const int amount) {
 	AddItem(blockID, InventoryItem::Type::BLOCK, amount);
@@ -103,6 +119,10 @@ void Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, c
 	InvokeOnSelect();
 }
 
+void Inventory::PushItem(const InventoryItem& item) {
+	items.emplace_back(item);
+}
+
 void Inventory::SubItem(const BlockID blockID, const int amount) {
 	SubItem(blockID, InventoryItem::Type::BLOCK, amount);
 }
@@ -149,14 +169,19 @@ int Inventory::GetItemCount(const unsigned int ID, const InventoryItem::Type typ
 }
 
 void Inventory::ClearEmptyItems() {
-	/*for(auto it = items.begin(); it != items.end();) {
+
+
+	for(vector<InventoryItem>::iterator it = items.begin(); it != items.end();) {
 		if(it->amount <= 0) {
-			items.erase(it);
+			it = items.erase(it);
 		}
 		else {
-			it++;
+			++it;
 		}
-	}*/
+	}
+
+	//InventoryUI* inv = Engine::Get()->GetCurrentScene()->GetObject2D<InventoryUI>("invUI");
+	//inv->ReloadIcons();
 }
 
 bool Inventory::CanCraft(const Recipe& recipe) {

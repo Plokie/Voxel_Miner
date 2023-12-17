@@ -39,6 +39,7 @@ public:
 	void AddNewIcon(ItemIcon* itemIcon) {
 		_spawnedIcons.push_back(itemIcon);
 	}
+	void DeleteIcon(ItemIcon* itemIcon);
 
 	//void SetHeldItem(ItemIcon* invItem);
 	//void SlotPressed(Button* slot);
@@ -47,6 +48,7 @@ public:
 
 	void Open();
 	void Close();
+	void ReloadIcons();
 	void Update(const float dTime) override;
 	void Start() override;
 	void Draw(SpriteBatch* spriteBatch) override;

@@ -127,19 +127,67 @@ InventoryUI::~InventoryUI() {
 //	}
 //}
 
+void InventoryUI::DeleteIcon(ItemIcon* itemIcon) {
+	for(auto it = _spawnedIcons.begin(); it != _spawnedIcons.end(); it++) {
+		if(*it == itemIcon) {
+			delete *it;
+			*it = nullptr;
+			_spawnedIcons.erase(it);
+			return;
+		}
+	}
+}
+
 void InventoryUI::ReleaseItem(ItemIcon* invItem) {
 	for(int y = 0; y < INVSIZE_Y; y++) {
 		for(int x = 0; x < INVSIZE_X; x++) {
 			if(invSlots[x][y]->IsHovering()) {
+				bool isTempInvItem = invItem->GetInvItem()->posX == -1 && invItem->GetInvItem()->posY == -1;
+
+				if(isTempInvItem) {
+					// convert temp invItem->GetInvItem() to permanent one as part of inventory
+					//invItem->GetInvItem()
+
+					InventoryItem* tempInvItem = invItem->GetInvItem();
+					inventory->PushItem({tempInvItem->type, tempInvItem->ID, x, y, tempInvItem->amount});
+					//invItem->SetInvItemDangerous()
+					//invItem->set
+				}
+
+
 				invItem->GetInvItem()->posX = x;
 				invItem->GetInvItem()->posY = y;
 
 				invItem->SetParent(invSlots[x][y]);
-				heldItem = nullptr;
+				//heldItem = nullptr;
+
+				InventoryItem* prexistingInvItem = nullptr;
+				if(inventory->GetItemAt(x, y, &prexistingInvItem)) {
+					if(prexistingInvItem->ID != invItem->GetInvItem()->ID || prexistingInvItem->type != invItem->GetInvItem()->type) {
+						// Only set heldItem to nullptr if we're not dropping this item on top of another item (of same type)
+						heldItem = nullptr;
+						// That way when we attempt to "pick up" the item below this one, we intercept the message
+						// and instead combine the two stacks
+					}
+				}
+				else {
+					heldItem = nullptr;
+				}
+
+				if(isTempInvItem) {
+					delete invItem->GetInvItem();
+					DeleteIcon(invItem);
+
+					Close();
+					Open();
+				}
+
+
+				DrawHotbarIcons();
+				return;
 			}
 		}
 	}
-	DrawHotbarIcons();
 }
 
 void InventoryUI::Open() {
@@ -172,6 +220,17 @@ void InventoryUI::Close() {
 	_spawnedIcons.clear();
 }
 
+void InventoryUI::ReloadIcons()
+{
+	if(isOpen) {
+		//todo: reload permanent icons
+		// dont reload held item icon(s)
+		
+		//Close();
+		//Open();
+	}
+}
+
 void InventoryUI::Update(const float dTime) {
 	if((Input::IsKeyPressed(VK_TAB) || Input::IsKeyPressed('I')) && (Input::IsMouseLocked() || isOpen)) {
 		isOpen = !isOpen;
@@ -180,6 +239,8 @@ void InventoryUI::Update(const float dTime) {
 	}
 
 	for(auto& icon : _spawnedIcons) {
+		if(icon == nullptr) 
+			continue;
 		icon->Update(dTime);
 	}
 }

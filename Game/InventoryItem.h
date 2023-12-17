@@ -29,6 +29,8 @@ public:
 
 	Vector2Int GetUVPos() const;
 
+	const int GetMaxStack();
+
 	nlohmann::json Serialize();
 	static InventoryItem Deserialize(nlohmann::json json);
 };

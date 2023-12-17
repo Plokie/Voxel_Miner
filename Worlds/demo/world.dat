@@ -413,15 +413,8 @@
         "type": 1
       },
       {
-        "ID": 31,
-        "amount": 1,
-        "posX": 4,
-        "posY": 3,
-        "type": 1
-      },
-      {
         "ID": 1,
-        "amount": 64,
+        "amount": 63,
         "posX": 3,
         "posY": 4,
         "type": 0
@@ -476,13 +469,6 @@
         "type": 0
       },
       {
-        "ID": 31,
-        "amount": 64,
-        "posX": 7,
-        "posY": 2,
-        "type": 1
-      },
-      {
         "ID": 2,
         "amount": 1,
         "posX": 7,
@@ -491,21 +477,14 @@
       },
       {
         "ID": 31,
-        "amount": 64,
-        "posX": 5,
+        "amount": 100,
+        "posX": 7,
         "posY": 0,
         "type": 1
       },
       {
-        "ID": 31,
-        "amount": 64,
-        "posX": 5,
-        "posY": 2,
-        "type": 1
-      },
-      {
         "ID": 1,
-        "amount": 36,
+        "amount": 35,
         "posX": 4,
         "posY": 4,
         "type": 0
@@ -519,9 +498,9 @@
       },
       {
         "ID": 31,
-        "amount": 64,
+        "amount": 61,
         "posX": 7,
-        "posY": 0,
+        "posY": 1,
         "type": 1
       },
       {
@@ -547,18 +526,32 @@
       },
       {
         "ID": 31,
-        "amount": 30,
-        "posX": 6,
+        "amount": 1,
+        "posX": 5,
         "posY": 2,
+        "type": 1
+      },
+      {
+        "ID": 31,
+        "amount": 100,
+        "posX": 4,
+        "posY": 2,
+        "type": 1
+      },
+      {
+        "ID": 31,
+        "amount": 20,
+        "posX": 4,
+        "posY": 1,
         "type": 1
       }
     ],
     "score": 21
   },
   "playerPos": [
-    -1.0793991088867188,
+    2.122568368911743,
     68.52000427246094,
-    -218.53741455078125
+    -226.0013885498047
   ],
   "seed": 1243144104,
   "worldName": "demo"
