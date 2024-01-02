@@ -23,9 +23,6 @@ public:
 	bool isHeld = false;
 	InventoryItem* GetInvItem() const { return invItem; }
 
-	//try not to use, but there is a specific use case in which i need this (converting temp invItems to permanent ones)
-	void SetInvItemDangerous(InventoryItem* newInvItem) { invItem = newInvItem; }
-
 	ItemIcon(InventoryItem* invItem, InventoryUI* invUI);
 	ItemIcon(const RecipeComponent& recipeComponent);
 	~ItemIcon();

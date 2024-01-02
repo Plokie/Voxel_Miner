@@ -25,6 +25,9 @@ ItemIcon::~ItemIcon() {
 	if(amtLabel != nullptr) {
 		delete amtLabel;
 	}
+	if(nameLabel != nullptr) {
+		delete nameLabel;
+	}
 }
 
 void ItemIcon::Display(const unsigned short ID, const InventoryItem::Type type, const int amount, const Vector2Int& uvPos, const bool hideOne) {
@@ -83,6 +86,7 @@ const bool ItemIcon::WasRightClicked()
 
 void ItemIcon::Reload() {
 	if(invItem != nullptr) {
+		// hmm smells like one or more of these delete functions dont properly delete everythign
 		if(icon) delete icon;
 		if(amtLabel) delete amtLabel;
 		if(nameLabel) delete nameLabel;

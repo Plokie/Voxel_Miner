@@ -47,6 +47,11 @@ Label::Label(const wstring& fontPath, const XMFLOAT4& color)
 	this->color = color;
 }
 
+Label::~Label()
+{
+	if(spriteFont) delete spriteFont; //todo: spriteFont be part of Resources class
+}
+
 void Label::Start()
 {
 }
