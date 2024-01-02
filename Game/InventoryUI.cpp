@@ -43,10 +43,11 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 	hotbarSelect->SetDepth(0.5f);
 
 	inventory->AddOnSelectEvent([this, gameScene](int slotNum) {
+
 		hotbarSelect->SetPosition({ slotNum * 65.f, 0.f });
 		InventoryItem* invItem = inventory->GetItemAt(slotNum, 0);
 		HeldItem* heldItemModel = gameScene->GetObject3D<HeldItem>("HeldItem");
-		if(invItem->ID == 0) {
+		if(invItem == nullptr || invItem->ID == 0) {
 			heldItemModel->SetItem((BlockID)0);
 		}
 		else {
