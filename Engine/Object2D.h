@@ -10,8 +10,8 @@ class WinManager;
 class Object2D {
 protected:
 	Object2D* parent = nullptr;
-	ID3D11Device* pDevice;
-	WinManager* winMgr;
+	ID3D11Device* pDevice = nullptr;
+	WinManager* winMgr = nullptr;
 	// the pivot in pixels
 	Vector2 pivot = { 0.0f, 0.0f };
 	Vector2 anchor = { 0.0f, 0.0f };

@@ -31,6 +31,9 @@ public:
 
 	const int GetMaxStack();
 
+	bool IsSameItemAs(const InventoryItem& other);
+	bool IsSameItemAs(const InventoryItem* other);
+
 	nlohmann::json Serialize();
-	static InventoryItem Deserialize(nlohmann::json json);
+	static InventoryItem* Deserialize(nlohmann::json json);
 };

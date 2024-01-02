@@ -17,7 +17,7 @@ class Recipe;
 class Inventory : public Object3D {
 private:
 	InventoryItem errorInvItem = InventoryItem(InventoryItem::Type::BLOCK, 0, -1, -1, 0);
-	vector<InventoryItem> items;
+	vector<InventoryItem*> items;
 	map<tuple<int, int>, InventoryItem*> _itemPosMap;
 
 	// return {-1,-1} if no spots are free
@@ -56,16 +56,16 @@ public:
 	void ChangeSlotNum(const int delta);
 	void AddOnChangeEvent(function<void()> func);
 	void AddOnSelectEvent(function<void(int)> func);
-	_NODISCARD InventoryItem& GetItemAt(const int x, const int y);
+	_NODISCARD InventoryItem* GetItemAt(const int x, const int y);
 
-	vector<InventoryItem>& GetInventoryItems() { return items; }
+	vector<InventoryItem*>& GetInventoryItems() { return items; } // bad
 
-	void AddItem(const InventoryItem& item);
+	void AddItem(const InventoryItem* item);
 	void AddItem(const BlockID blockID, const int amount = 1);
 	void AddItem(const ItemID itemID, const int amount = 1);
 	void AddItem(const unsigned int ID, const InventoryItem::Type type, const int amount = 1);
 
-	void PushItem(const InventoryItem& item);
+	void PushItem(InventoryItem* item);
 
 	void SubItem(const BlockID blockID, const int amount = 1);
 	void SubItem(const ItemID itemID, const int amount = 1);

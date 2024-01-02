@@ -44,13 +44,13 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 
 	inventory->AddOnSelectEvent([this, gameScene](int slotNum) {
 		hotbarSelect->SetPosition({ slotNum * 65.f, 0.f });
-		InventoryItem& invItem = inventory->GetItemAt(slotNum, 0);
+		InventoryItem* invItem = inventory->GetItemAt(slotNum, 0);
 		HeldItem* heldItemModel = gameScene->GetObject3D<HeldItem>("HeldItem");
-		if(invItem.ID == 0) {
+		if(invItem->ID == 0) {
 			heldItemModel->SetItem((BlockID)0);
 		}
 		else {
-			heldItemModel->SetItem(invItem.type, invItem.ID);
+			heldItemModel->SetItem(invItem->type, invItem->ID);
 		}
 	});
 
@@ -142,47 +142,86 @@ void InventoryUI::ReleaseItem(ItemIcon* invItem) {
 	for(int y = 0; y < INVSIZE_Y; y++) {
 		for(int x = 0; x < INVSIZE_X; x++) {
 			if(invSlots[x][y]->IsHovering()) {
-				bool isTempInvItem = invItem->GetInvItem()->posX == -1 && invItem->GetInvItem()->posY == -1;
-
-				if(isTempInvItem) {
-					// convert temp invItem->GetInvItem() to permanent one as part of inventory
-					//invItem->GetInvItem()
-
-					InventoryItem* tempInvItem = invItem->GetInvItem();
-					inventory->PushItem({tempInvItem->type, tempInvItem->ID, x, y, tempInvItem->amount});
-					//invItem->SetInvItemDangerous()
-					//invItem->set
-				}
-
-
-				invItem->GetInvItem()->posX = x;
-				invItem->GetInvItem()->posY = y;
-
-				invItem->SetParent(invSlots[x][y]);
-				//heldItem = nullptr;
 
 				InventoryItem* prexistingInvItem = nullptr;
-				if(inventory->GetItemAt(x, y, &prexistingInvItem)) {
-					if(prexistingInvItem->ID != invItem->GetInvItem()->ID || prexistingInvItem->type != invItem->GetInvItem()->type) {
-						// Only set heldItem to nullptr if we're not dropping this item on top of another item (of same type)
+				if(inventory->GetItemAt(x, y, &prexistingInvItem)) { // If an item already exists in the slot we're dropping on
+					if(prexistingInvItem == invItem->GetInvItem()) {
+						invItem->GetInvItem()->posX = x;
+						invItem->GetInvItem()->posY = y;
+
+						invItem->SetParent(invSlots[x][y]);
+						invItem->isHeld = false;
+
 						heldItem = nullptr;
-						// That way when we attempt to "pick up" the item below this one, we intercept the message
-						// and instead combine the two stacks
 					}
+					else {
+						if(prexistingInvItem->IsSameItemAs(invItem->GetInvItem())) {
+							// If same item type, stack and make currently held item the remainder
+
+							int sum = prexistingInvItem->amount + invItem->GetInvItem()->amount;
+							int remainder = max(0, sum - prexistingInvItem->GetMaxStack());
+
+							prexistingInvItem->amount = min(sum, prexistingInvItem->GetMaxStack());
+
+							// delete if the remainder is <0
+							if(remainder <= 0) {
+							
+								for(auto it = inventory->GetInventoryItems().begin(); it != inventory->GetInventoryItems().end(); ++it) {
+									if(*it == invItem->GetInvItem()) {
+										inventory->GetInventoryItems().erase(it);
+										break;
+									}
+								}
+
+								delete invItem->GetInvItem();
+
+
+								EraseIcon(invItem);
+								delete invItem;// need to erase from _spawnedIcons
+
+								heldItem = nullptr;
+
+								ReloadIcons();
+							}
+							else { // set currently held amount to remainder
+								invItem->GetInvItem()->amount = remainder;
+							}
+						}
+						else { // Swap them
+							// just swap type, id and amount
+							// its much less tedious than swapping the icon (which we dont have for prexisting item)
+						
+							InventoryItem::Type tempType = prexistingInvItem->type;
+							unsigned short tempId = prexistingInvItem->ID;
+							int tempAmount = prexistingInvItem->amount;
+
+							prexistingInvItem->type = invItem->GetInvItem()->type;
+							prexistingInvItem->ID = invItem->GetInvItem()->ID;
+							prexistingInvItem->amount = invItem->GetInvItem()->amount;
+
+							invItem->GetInvItem()->type = tempType;
+							invItem->GetInvItem()->ID = tempId;
+							invItem->GetInvItem()->amount = tempAmount;
+
+							ReloadIcons();
+						}
+
+
+					}
+
+
 				}
-				else {
+				else { //simply put item in empty slot and stop isHeld
+					invItem->GetInvItem()->posX = x;
+					invItem->GetInvItem()->posY = y;
+
+					invItem->SetParent(invSlots[x][y]);
+					invItem->isHeld = false;
+
 					heldItem = nullptr;
 				}
 
-				if(isTempInvItem) {
-					delete invItem->GetInvItem();
-					DeleteIcon(invItem);
-
-					Close();
-					Open();
-				}
-
-
+				ReloadIcons();
 				DrawHotbarIcons();
 				return;
 			}
@@ -196,13 +235,13 @@ void InventoryUI::Open() {
 	Input::SetMouseLocked(false);
 
 	for(auto& invItem : this->inventory->GetInventoryItems()) {
-		ItemIcon* icon = new ItemIcon(&invItem, this);
+		ItemIcon* icon = new ItemIcon(invItem, this);
 		icon->Init(pDevice);
 		icon->SetDimensions({ 50.f, 50.f });
 		icon->SetAnchor({ .5f,.5f });
 		icon->SetPivot({ .5f,.5f });
 
-		icon->SetParent(invSlots[invItem.posX][invItem.posY]);
+		icon->SetParent(invSlots[invItem->posX][invItem->posY]);
 
 		_spawnedIcons.push_back(icon);
 	}
@@ -213,6 +252,12 @@ void InventoryUI::Close() {
 	isOpen = false;
 	invBg->SetEnabled(false);
 	Input::SetMouseLocked(true);
+
+	//todo: throw held item to floor
+	if(heldItem) {
+
+	}
+	heldItem = nullptr;
 
 	for(auto& icon : _spawnedIcons) {
 		delete icon;
@@ -226,6 +271,14 @@ void InventoryUI::ReloadIcons()
 		//todo: reload permanent icons
 		// dont reload held item icon(s)
 		
+		for(auto& icon : _spawnedIcons) {
+			icon->Reload();
+		}
+
+		if(heldItem) {
+			heldItem->Reload();
+		}
+
 		//Close();
 		//Open();
 	}
@@ -259,6 +312,16 @@ void InventoryUI::Draw(SpriteBatch* spriteBatch) {
 	}
 }
 
+void InventoryUI::EraseIcon(ItemIcon* icon)
+{
+	for(auto it = _spawnedIcons.begin(); it != _spawnedIcons.end(); ++it) {
+		if(*it == icon) {
+			_spawnedIcons.erase(it);
+			break;
+		}
+	}
+}
+
 void InventoryUI::DrawHotbarIcons() {
 	for(ItemIcon*& icon : _hotbarIcons) {
 		delete icon;
@@ -267,14 +330,14 @@ void InventoryUI::DrawHotbarIcons() {
 	_hotbarIcons.clear();
 
 	for(auto& invItem : inventory->GetInventoryItems()) {
-		if(invItem.posY == 0) {
-			ItemIcon* icon = new ItemIcon(&invItem, this);
+		if(invItem->posY == 0) {
+			ItemIcon* icon = new ItemIcon(invItem, this);
 			icon->Init(pDevice);
 			icon->SetDimensions({ 50.f, 50.f });
 			icon->SetAnchor({ .5f,.5f });
 			icon->SetPivot({ .5f,.5f });
 
-			icon->SetParent(hotbarSlots[invItem.posX]);
+			icon->SetParent(hotbarSlots[invItem->posX]);
 
 			_hotbarIcons.push_back(icon);
 		}

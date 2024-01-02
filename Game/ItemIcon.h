@@ -34,6 +34,7 @@ public:
 
 	const bool WasPressed();
 	const bool WasRightClicked();
+	void Reload();
 
 	const Vector2 GetScreenPosition() override;
 	void Draw(SpriteBatch* spriteBatch) override;

@@ -53,5 +53,7 @@ public:
 	void Start() override;
 	void Draw(SpriteBatch* spriteBatch) override;
 
+	void EraseIcon(ItemIcon* icon);
+
 	void DrawHotbarIcons();
 };

@@ -25,6 +25,17 @@ const int InventoryItem::GetMaxStack()
     //const Block& def= BlockDef::GetDef((BlockID)ID);
 }
 
+bool InventoryItem::IsSameItemAs(const InventoryItem& other)
+{
+    return this->type == other.type && this->ID == other.ID;
+}
+
+bool InventoryItem::IsSameItemAs(const InventoryItem* other)
+{
+    return this->type == other->type && this->ID == other->ID;
+}
+
+
 nlohmann::json InventoryItem::Serialize()
 {
     //string str = "";
@@ -39,14 +50,14 @@ nlohmann::json InventoryItem::Serialize()
     //return string();
 }
 
-InventoryItem InventoryItem::Deserialize(nlohmann::json json)
+InventoryItem* InventoryItem::Deserialize(nlohmann::json json)
 {
-    InventoryItem item = {};
-    item.type = json["type"];
-    item.ID = json["ID"];
-    item.amount = json["amount"];
-    item.posX = json["posX"];
-    item.posY = json["posY"];
+    InventoryItem* item = new InventoryItem();
+    item->type = json["type"];
+    item->ID = json["ID"];
+    item->amount = json["amount"];
+    item->posX = json["posX"];
+    item->posY = json["posY"];
 
     return item;
 }

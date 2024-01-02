@@ -21,9 +21,9 @@ const Vector2Int Inventory::GetFreeSpot() const {
 
 bool Inventory::GetHeldItem(InventoryItem** out)
 {
-	for(InventoryItem& invItem : items) {
-		if(invItem.posX == selectedSlotNum && invItem.posY == 0) {
-			*out = &invItem;
+	for(InventoryItem*& invItem : items) {
+		if(invItem->posX == selectedSlotNum && invItem->posY == 0) {
+			*out = invItem;
 			return true;
 		}
 	}
@@ -32,9 +32,9 @@ bool Inventory::GetHeldItem(InventoryItem** out)
 
 bool Inventory::GetItemAt(int x, int y, InventoryItem** out)
 {
-	for(InventoryItem invItem : items) {
-		if(invItem.posX == x && invItem.posY == y) {
-			*out = &invItem;
+	for(InventoryItem* invItem : items) {
+		if(invItem->posX == x && invItem->posY == y) {
+			*out = invItem;
 			return true;
 		}
 	}
@@ -42,12 +42,12 @@ bool Inventory::GetItemAt(int x, int y, InventoryItem** out)
 	return false;
 }
 
-void Inventory::AddItem(const InventoryItem& item) {
-	if(item.type == InventoryItem::Type::BLOCK) {
-		AddItem((BlockID)item.ID, item.amount);
+void Inventory::AddItem(const InventoryItem* item) {
+	if(item->type == InventoryItem::Type::BLOCK) {
+		AddItem((BlockID)item->ID, item->amount);
 	}
 	else {
-		AddItem((ItemID)item.ID, item.amount);
+		AddItem((ItemID)item->ID, item->amount);
 	}
 }
 
@@ -60,7 +60,7 @@ void Inventory::AddItem(const BlockID blockID, const int amount) {
 const bool Inventory::DoesItemExistAtPos(int posX, int posY) const
 {
 	for(const auto& invItem : items) {
-		if(invItem.posX == posX && invItem.posY == posY) return true;
+		if(invItem->posX == posX && invItem->posY == posY) return true;
 	}
 	return false;
 }
@@ -71,13 +71,13 @@ void Inventory::AddItem(const ItemID itemID, const int amount) {
 
 void Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, const int amount) {
 	for(auto& invItem : items) {
-		int maxStack = (invItem.type == InventoryItem::Type::ITEM) ? ItemDef::Get((ItemID)invItem.ID).GetMaxStack() : MAX_STACK;
-		if(invItem.ID == ID && invItem.type == type && invItem.amount < maxStack) {
-			invItem.amount += amount;
+		int maxStack = (invItem->type == InventoryItem::Type::ITEM) ? ItemDef::Get((ItemID)invItem->ID).GetMaxStack() : MAX_STACK;
+		if(invItem->ID == ID && invItem->type == type && invItem->amount < maxStack) {
+			invItem->amount += amount;
 
-			if(invItem.amount > maxStack) {
-				AddItem(ID, type, invItem.amount - amount);
-				invItem.amount = maxStack;
+			if(invItem->amount > maxStack) {
+				AddItem(ID, type, invItem->amount - amount);
+				invItem->amount = maxStack;
 			}
 			else 
 			{
@@ -95,7 +95,8 @@ void Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, c
 
 	if(amount <= maxStack) {
 		Vector2Int newPos = GetFreeSpot();
-		items.emplace_back(type, ID, newPos.x, newPos.y, amount);
+		//items.emplace_back(type, ID, newPos.x, newPos.y, amount);
+		items.push_back(new InventoryItem(type, ID, newPos.x, newPos.y, amount));
 	}
 	else {
 		int fullstacks = amount / maxStack;
@@ -103,12 +104,14 @@ void Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, c
 
 		for(int i = 0; i < fullstacks; i++) {
 			Vector2Int newPos = GetFreeSpot();
-			items.emplace_back(type, ID, newPos.x, newPos.y, maxStack);
+			//items.emplace_back(type, ID, newPos.x, newPos.y, maxStack);
+			items.push_back(new InventoryItem(type, ID, newPos.x, newPos.y, maxStack));
 		}
 
 		if(remainder > 0) {
 			Vector2Int newPos = GetFreeSpot();
-			items.emplace_back(type, ID, newPos.x, newPos.y, remainder);
+			//items.emplace_back(type, ID, newPos.x, newPos.y, remainder);
+			items.push_back(new InventoryItem(type, ID, newPos.x, newPos.y, remainder));
 		}
 	}
 
@@ -119,8 +122,8 @@ void Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, c
 	InvokeOnSelect();
 }
 
-void Inventory::PushItem(const InventoryItem& item) {
-	items.emplace_back(item);
+void Inventory::PushItem(InventoryItem* item) {
+	items.push_back(item);
 }
 
 void Inventory::SubItem(const BlockID blockID, const int amount) {
@@ -133,12 +136,12 @@ void Inventory::SubItem(const ItemID itemID, const int amount) {
 
 void Inventory::SubItem(const unsigned int ID, const InventoryItem::Type type, const int amount) {
 	for(auto it = items.begin(); it != items.end(); it++) {
-		InventoryItem& invItem = *it;
-		if(invItem.ID == ID && invItem.type == type) {
+		InventoryItem*& invItem = *it;
+		if(invItem->ID == ID && invItem->type == type) {
 
 			//todo: if sub more than a stack, sub remainder too
-			invItem.amount -= amount;
-			if(invItem.amount <= 0) {
+			invItem->amount -= amount;
+			if(invItem->amount <= 0) {
 				items.erase(it);
 			}
 			InvokeOnChange();
@@ -161,8 +164,8 @@ int Inventory::GetItemCount(const ItemID itemID)
 int Inventory::GetItemCount(const unsigned int ID, const InventoryItem::Type type)
 {
 	int count = 0;
-	for(const InventoryItem& item : items) {
-		if(item.ID == ID && item.type == type) count += item.amount;
+	for(const InventoryItem* item : items) {
+		if(item->ID == ID && item->type == type) count += item->amount;
 	}
 
 	return count;
@@ -171,8 +174,8 @@ int Inventory::GetItemCount(const unsigned int ID, const InventoryItem::Type typ
 void Inventory::ClearEmptyItems() {
 
 
-	for(vector<InventoryItem>::iterator it = items.begin(); it != items.end();) {
-		if(it->amount <= 0) {
+	for(vector<InventoryItem*>::iterator it = items.begin(); it != items.end();) {
+		if((*it)->amount <= 0) {
 			it = items.erase(it);
 		}
 		else {
@@ -214,7 +217,7 @@ nlohmann::json Inventory::Serialize()
 	
 	vector<nlohmann::json> itemJsons = {};
 	for(auto& invItem : items) {
-		itemJsons.push_back(invItem.Serialize());
+		itemJsons.push_back(invItem->Serialize());
 	}
 	json["items"] = itemJsons;
 	json["score"] = score;
@@ -249,13 +252,13 @@ void Inventory::LoadDefaultItems() {
 	InvokeOnSelect();
 }
 
-InventoryItem& Inventory::GetItemAt(const int x, const int y) {
-	for(InventoryItem& invItem : items) {
-		if(invItem.posX == x && invItem.posY == y) {
+InventoryItem* Inventory::GetItemAt(const int x, const int y) {
+	for(InventoryItem* invItem : items) {
+		if(invItem->posX == x && invItem->posY == y) {
 			return invItem;
 		}
 	}
-	return errorInvItem;
+	return nullptr;
 }
 
 void Inventory::SetSlotNum(const int num) {
