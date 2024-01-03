@@ -183,6 +183,9 @@
     <ClCompile Include="Game\Meshes\DroppedItemMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Game\DroppedItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\AABB.h">
@@ -348,6 +351,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\Meshes\DroppedItemMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\DroppedItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

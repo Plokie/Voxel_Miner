@@ -13,6 +13,7 @@ Vector2Int RecipeComponent::GetUVPos() const
 }
 
 vector<Category> Crafting::categories = {
+	{"Crafting", {}},
 	{"Blocks", {
 		{"OAK_PLANKS", "SPRUCE_PLANKS", "BIRCH_PLANKS", "CHERRY_PLANKS"},
 		{"STONE_COBBLE", "BLACKSTONE_COBBLE"},

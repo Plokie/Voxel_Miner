@@ -37,6 +37,8 @@ void Entity::RecalculateGroundCheck() {
 Entity::Entity() {
 }
 
+void Entity::OnCollide(PlayerController* pc){}
+
 void Entity::Start() {
 	chunkManager = Engine::Get()->GetScene("game")->GetObject3D<ChunkManager>("AChunkManager");
 	aabb = AABB(Vector3(0.f,0.f,0.f), Vector3(.5f, .5f, .5f));
@@ -77,6 +79,8 @@ void Entity::Update(float dTime) {
 	if (aabb.Intersects(playerController->GetAABB())) {
 		transform.position += AABB::penetration_vector(AABB::minkowski_difference(playerController->GetAABB(), aabb));
 		aabb.SetPosition(transform.position);
+
+		OnCollide(playerController);
 	}
 
 	// Block collision check

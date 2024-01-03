@@ -6,7 +6,7 @@ class ChunkManager;
 class PlayerController;
 
 class Entity : public Object3D {
-private:
+protected:
 	const float gravity = -32.f;
 	const float terminalVelocity = -78.4f;
 	Vector3 velocity = Vector3(0.f,0.f,0.f);
@@ -21,6 +21,8 @@ public:
 
 	Entity();
 
+	//todo: base entity class for player to handle collisions as generic events
+	virtual void OnCollide(PlayerController* pc);
 
 	void Start() override;
 	void Update(float dt) override;
