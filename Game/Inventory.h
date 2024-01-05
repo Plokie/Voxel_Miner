@@ -60,6 +60,7 @@ public:
 
 	vector<InventoryItem*>& GetInventoryItems() { return items; } // bad
 
+	// Dont forget to delete InventoryItem* instance if desired
 	void AddItem(const InventoryItem* item);
 	void AddItem(const BlockID blockID, const int amount = 1);
 	void AddItem(const ItemID itemID, const int amount = 1);
@@ -70,6 +71,8 @@ public:
 	void SubItem(const BlockID blockID, const int amount = 1);
 	void SubItem(const ItemID itemID, const int amount = 1);
 	void SubItem(const unsigned int ID, const InventoryItem::Type type, const int amount = 1);
+
+	void SubHeldItem(int amount = 1, InventoryItem* precalculatedInvItem = nullptr);
 
 	int GetItemCount(const BlockID blockID);
 	int GetItemCount(const ItemID itemID);

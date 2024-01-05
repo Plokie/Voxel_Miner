@@ -27,7 +27,7 @@ public:
 	InventoryItem(ItemID itemID, int posX, int posY, int amount = 1) :
 		type(Type::ITEM), ID(itemID), posX(posX), posY(posY), amount(amount) {}
 
-	Vector2Int GetUVPos() const;
+	Vector2Int GetUVPos(BLOCK_FACE_TEX face_tex = BLOCK_FACE_TEX::FT_SIDE) const;
 
 	const int GetMaxStack();
 

@@ -10,6 +10,7 @@
 #include "Inventory.h"
 #include "LootTables.h"
 #include "Entity.h"
+#include "DroppedItem.h"
 //#include "ChunkDatabase.h"
 
 #include "../Audio/Audio.h"
@@ -68,6 +69,16 @@ vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager) {
 
 void PlayerController::Update(float dTime)
 {
+	if(!enabled) {
+		if(chunkManager->HasLoadedMinArea()) {
+			enabled = true;
+			Input::SetMouseLocked(true);
+		}
+		
+		return;
+	}
+
+
 	Engine* engine = Engine::Get();
 	Camera* camera = &engine->GetGraphics()->camera;
 
@@ -80,8 +91,22 @@ void PlayerController::Update(float dTime)
 
 	//todo: remove // debug spawn entity
 	if(Input::IsMouseLocked())
-	if(Input::IsKeyPressed('M')) {
-		engine->GetCurrentScene()->CreateObject3D(new Entity(), "test-entity-"+to_string(rand()), "cube")->transform.position = transform.position;
+	//if(Input::IsKeyPressed('M')) {
+	//	//engine->GetCurrentScene()->CreateObject3D(new Entity(), "test-entity-"+to_string(rand()), "cube")->transform.position = transform.position;
+	//	DroppedItem::Create(new InventoryItem(COBBLESTONE, -1, -1, 1), transform.position + (transform.forward() * 1.46f));
+	//}
+
+	if(Input::IsKeyPressed('Q')) {
+		//engine->GetCurrentScene()->CreateObject3D(new Entity(), "test-entity-"+to_string(rand()), "cube")->transform.position = transform.position;
+		InventoryItem* heldItem;
+		if(inv->GetHeldItem(&heldItem)) {
+
+			InventoryItem* newDroppedItem = new InventoryItem(heldItem->type, heldItem->ID, -1, -1, 1);
+
+			DroppedItem::Create(newDroppedItem, transform.position + (transform.forward() * 1.46f));
+			inv->SubHeldItem(1, heldItem); 
+		}
+		
 	}
 
 	if(Input::IsMouseLocked()) {
@@ -221,9 +246,20 @@ void PlayerController::Update(float dTime)
 
 						if(blockDef.GetLootTableName() != "") {
 							const InventoryItem loot = LootTable::Choose(blockDef.GetLootTableName());
-							inv->AddItem(loot.ID, loot.type, loot.amount);
+
+
+							//inv->AddItem(loot.ID, loot.type, loot.amount);
+
+							InventoryItem* newDroppedItem = new InventoryItem(loot.type, loot.ID, -1, -1, loot.amount);
+							DroppedItem::Create(newDroppedItem, lookHitPoint);
 						}
-						else inv->AddItem(targetBlock);
+						else 
+						{
+							//inv->AddItem(targetBlock);
+
+							InventoryItem* newDroppedItem = new InventoryItem(targetBlock, -1, -1, 1);
+							DroppedItem::Create(newDroppedItem, lookHitPoint);
+						}
 
 					}
 
@@ -239,7 +275,10 @@ void PlayerController::Update(float dTime)
 					AABB targetBlockAABB = AABB(lookHitPoint + lookHitNormal + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
 					if(!targetBlockAABB.Intersects(aabb)) {
 						chunkManager->SetBlockAtWorldPos(lookHitPoint + lookHitNormal, (BlockID)invItem->ID);
-						inv->SubItem((BlockID)invItem->ID);
+						//inv->SubItem((BlockID)invItem->ID);
+						/*invItem->amount -= 1;
+						if(invItem->amount<=0) inv->ClearEmptyItems();*/
+						inv->SubHeldItem(1, invItem);
 					}
 				}
 

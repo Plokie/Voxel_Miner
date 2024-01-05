@@ -11,6 +11,8 @@ using namespace std;
 
 enum DRAW_TYPE : unsigned char { B_OPAQUE, B_TRANSPARENT, B_CLIP };
 
+enum BLOCK_FACE_TEX : unsigned char { FT_TOP, FT_SIDE, FT_BOTTOM };
+
 enum BlockID : unsigned short {
 	ERR,
 	AIR,

@@ -179,12 +179,13 @@ void ItemIcon::Update(const float dTime) {
 					invItem->amount -= subAmt;
 
 					if(invItem->amount <= 0) {
-						for(auto it = inv->GetInventoryItems().begin(); it != inv->GetInventoryItems().end(); ++it) {
+						/*for(auto it = inv->GetInventoryItems().begin(); it != inv->GetInventoryItems().end(); ++it) {
 							if(*it == invItem) {
 								inv->GetInventoryItems().erase(it);
 								break;
 							}
-						}
+						}*/
+						inv->ClearEmptyItems();
 
 						delete invItem;
 

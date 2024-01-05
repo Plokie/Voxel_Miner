@@ -307,8 +307,12 @@ void Chunk::BuildMesh() {
 				BlockID blockid = (BlockID)this->blockData[x][y][z];
 				if(blockid == BlockID::AIR) continue;
 				const Block& def = BlockDef::GetDef(blockid);
-
-				if(def.GetDrawType() == B_OPAQUE || def.GetDrawType() == B_CLIP) {
+				
+				if(blockid == BlockID::WATER || blockid == LAVA)
+				{
+					this->MakeVoxel(blockid, x, y, z, waterVertices, waterIndices);
+				}
+				else if(def.GetDrawType() == B_OPAQUE || def.GetDrawType() == B_CLIP) {
 					if(blockid == BlockID::OAK_LEAVES || blockid == BlockID::BIRCH_LEAVES || blockid == BlockID::SPRUCE_LEAVES || blockid == BlockID::CHERRY_LEAVES) 
 						this->MakeVoxel(blockid, x, y, z, leavesVertices, leavesIndices);
 					else
@@ -337,10 +341,6 @@ void Chunk::BuildMesh() {
 						}
 					}
 #endif
-				}
-				else if(blockid == BlockID::WATER || blockid == LAVA)
-				{
-					this->MakeVoxel(blockid, x, y, z, waterVertices, waterIndices);
 				}
 				else {
 					this->MakeVoxel(blockid, x, y, z, transVertices, transIndices);

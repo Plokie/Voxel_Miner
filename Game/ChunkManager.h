@@ -37,10 +37,13 @@ private:
 	vector<thread> chnkMgrThread;
 
 	bool isRunning = true; //well then you better go catch it
+	int _numChunksLoaded = 0;
 public:
 	void CreateChunk(const int x, const int y, const int z);
 
 	void Thread();
+
+	const bool HasLoadedMinArea() const { return _numChunksLoaded> CHUNKLOAD_AREA_X * CHUNKLOAD_AREA_Z * (CHUNKLOAD_FIXED_PY + CHUNKLOAD_FIXED_NY); }
 
 	//Lighting* GetLighting() const {
 	//	return this->lighting;

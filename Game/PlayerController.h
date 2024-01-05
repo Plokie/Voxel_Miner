@@ -9,6 +9,8 @@ class ChunkManager;
 class Inventory;
 
 class PlayerController : public Object3D {
+	bool enabled = false;
+
 	//const float gravity = -9.81f;
 	const float gravity = -32.f;
 	const float terminalVelocity = -78.4f;
@@ -25,7 +27,7 @@ class PlayerController : public Object3D {
 #define COLLISION_CHECK_INSET 0.08f
 
 
-	bool freeCam = true;
+	bool freeCam = false;
 
 	const Vector3 groundCheckPoints[4] = {
 		Vector3((playerHalfExtents.x - COLLISION_CHECK_INSET), 1.62f,  (playerHalfExtents.z - COLLISION_CHECK_INSET)),

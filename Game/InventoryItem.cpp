@@ -3,7 +3,7 @@
 #include "Blocks.h"
 
 
-Vector2Int InventoryItem::GetUVPos() const
+Vector2Int InventoryItem::GetUVPos(BLOCK_FACE_TEX face_tex) const
 {
     if(type == ITEM) {
         const Item& def = ItemDef::Get((ItemID)ID);
@@ -11,7 +11,12 @@ Vector2Int InventoryItem::GetUVPos() const
     }
     else {
         const Block& def = BlockDef::GetDef((BlockID)ID);
-        return { def.GetTopUVidx(), def.GetTopUVidy() };
+
+        switch(face_tex) {
+        case FT_TOP: return { def.GetTopUVidx(), def.GetTopUVidy() };
+        case FT_SIDE: return { def.GetSideUVidx(), def.GetSideUVidy() };
+        case FT_BOTTOM: return { def.GetBottUVidx(), def.GetBottUVidy() };
+        }
     }
 }
 

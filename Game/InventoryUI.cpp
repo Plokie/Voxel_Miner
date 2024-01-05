@@ -167,12 +167,13 @@ void InventoryUI::ReleaseItem(ItemIcon* invItem) {
 							// delete if the remainder is <0
 							if(remainder <= 0) {
 							
-								for(auto it = inventory->GetInventoryItems().begin(); it != inventory->GetInventoryItems().end(); ++it) {
+								/*for(auto it = inventory->GetInventoryItems().begin(); it != inventory->GetInventoryItems().end(); ++it) {
 									if(*it == invItem->GetInvItem()) {
 										inventory->GetInventoryItems().erase(it);
 										break;
 									}
-								}
+								}*/
+								inventory->ClearEmptyItems();
 
 								delete invItem->GetInvItem();
 

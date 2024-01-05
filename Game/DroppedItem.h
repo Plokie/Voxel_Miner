@@ -2,7 +2,7 @@
 
 #include "Entity.h"
 //#include "InventoryItem.h"
-class InventoryItem;
+struct InventoryItem;
 
 class DroppedItem : public Entity {
 private:
@@ -16,6 +16,8 @@ public:
 	void Annihilate(); // Needed something more descriptively final. ANNIHILATE sounds cool
 
 	DroppedItem(InventoryItem* invItem);
+
+	static DroppedItem* Create(InventoryItem* invItem, Vector3 worldPosition);
 
 	void Start() override;
 	void Update(float dt) override;

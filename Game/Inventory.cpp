@@ -142,6 +142,7 @@ void Inventory::SubItem(const unsigned int ID, const InventoryItem::Type type, c
 			//todo: if sub more than a stack, sub remainder too
 			invItem->amount -= amount;
 			if(invItem->amount <= 0) {
+				delete *it;
 				items.erase(it);
 			}
 			InvokeOnChange();
@@ -149,6 +150,22 @@ void Inventory::SubItem(const unsigned int ID, const InventoryItem::Type type, c
 			return;
 		}
 	}
+}
+
+void Inventory::SubHeldItem(int amount, InventoryItem* heldInvItem)
+{
+	if(heldInvItem == nullptr) {
+		if(!GetHeldItem(&heldInvItem)) return;
+	}
+
+	heldInvItem->amount -= amount;
+	if(heldInvItem->amount <= 0) {
+		//items.erase(it);
+		ClearEmptyItems();
+	}
+	InvokeOnChange();
+	InvokeOnSelect();
+
 }
 
 int Inventory::GetItemCount(const BlockID blockID)
@@ -176,6 +193,7 @@ void Inventory::ClearEmptyItems() {
 
 	for(vector<InventoryItem*>::iterator it = items.begin(); it != items.end();) {
 		if((*it)->amount <= 0) {
+			delete *it;
 			it = items.erase(it);
 		}
 		else {

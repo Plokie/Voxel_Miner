@@ -69,8 +69,9 @@ void ChunkManager::Thread() {
 
 					chunk->Finalize();
 					//chunk->InitSkyLight();
+					//_numChunksLoaded++;
 				});
-
+				_numChunksLoaded++;
 				newChunkQueue.pop();
 			}
 		}
@@ -119,6 +120,8 @@ void ChunkManager::Thread() {
 				++it;
 			}
 		}
+
+		
 	}
 }
 
