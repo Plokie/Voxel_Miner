@@ -336,6 +336,21 @@
       -15
     ],
     [
+      5,
+      0,
+      -12
+    ],
+    [
+      5,
+      0,
+      -11
+    ],
+    [
+      6,
+      0,
+      -11
+    ],
+    [
       6,
       0,
       -9
@@ -360,13 +375,6 @@
         "type": 0
       },
       {
-        "ID": 17,
-        "amount": 1,
-        "posX": 2,
-        "posY": 0,
-        "type": 0
-      },
-      {
         "ID": 19,
         "amount": 9,
         "posX": 8,
@@ -375,7 +383,7 @@
       },
       {
         "ID": 18,
-        "amount": 16,
+        "amount": 15,
         "posX": 1,
         "posY": 4,
         "type": 1
@@ -396,7 +404,7 @@
       },
       {
         "ID": 21,
-        "amount": 61,
+        "amount": 60,
         "posX": 0,
         "posY": 4,
         "type": 1
@@ -406,13 +414,6 @@
         "amount": 13,
         "posX": 8,
         "posY": 3,
-        "type": 1
-      },
-      {
-        "ID": 2,
-        "amount": 1,
-        "posX": 7,
-        "posY": 4,
         "type": 1
       },
       {
@@ -459,7 +460,7 @@
       },
       {
         "ID": 31,
-        "amount": 100,
+        "amount": 88,
         "posX": 7,
         "posY": 2,
         "type": 1
@@ -481,23 +482,9 @@
       {
         "ID": 31,
         "amount": 100,
-        "posX": 6,
+        "posX": 4,
         "posY": 2,
         "type": 1
-      },
-      {
-        "ID": 39,
-        "amount": 3,
-        "posX": 1,
-        "posY": 2,
-        "type": 1
-      },
-      {
-        "ID": 12,
-        "amount": 1,
-        "posX": 0,
-        "posY": 0,
-        "type": 0
       },
       {
         "ID": 26,
@@ -543,7 +530,7 @@
       },
       {
         "ID": 1,
-        "amount": 26,
+        "amount": 24,
         "posX": 7,
         "posY": 0,
         "type": 0
@@ -551,20 +538,20 @@
       {
         "ID": 4,
         "amount": 42,
-        "posX": 6,
+        "posX": 5,
         "posY": 1,
         "type": 1
       },
       {
         "ID": 23,
-        "amount": 62,
+        "amount": 66,
         "posX": 8,
         "posY": 0,
         "type": 0
       },
       {
         "ID": 31,
-        "amount": 2,
+        "amount": 10,
         "posX": 3,
         "posY": 3,
         "type": 0
@@ -591,20 +578,48 @@
         "type": 0
       },
       {
-        "ID": 22,
-        "amount": 6,
+        "ID": 17,
+        "amount": 1,
+        "posX": 2,
+        "posY": 0,
+        "type": 0
+      },
+      {
+        "ID": 16,
+        "amount": 13,
         "posX": 1,
         "posY": 3,
+        "type": 1
+      },
+      {
+        "ID": 23,
+        "amount": 13,
+        "posX": 6,
+        "posY": 2,
+        "type": 1
+      },
+      {
+        "ID": 24,
+        "amount": 59,
+        "posX": 7,
+        "posY": 4,
+        "type": 1
+      },
+      {
+        "ID": 12,
+        "amount": 1,
+        "posX": 0,
+        "posY": 0,
         "type": 0
       }
     ],
     "saturation": 6,
-    "score": 99
+    "score": 100
   },
   "playerPos": [
-    -1.907030701637268,
-    69.57014465332031,
-    -224.15695190429688
+    -3.3837735652923584,
+    69.52000427246094,
+    -223.51231384277344
   ],
   "seed": 1243144104,
   "worldName": "demo"

@@ -317,7 +317,7 @@ void Inventory::Update(float dt) {
 
 	hungerDecrementer += dt * currentExhaustion;
 
-	if(hungerDecrementer > 10.f) {
+	if(hungerDecrementer > 25.f) {
 		hungerDecrementer = 0.f;
 
 		if(saturation > 0) {

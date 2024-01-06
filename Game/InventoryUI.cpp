@@ -283,6 +283,18 @@ void InventoryUI::Open() {
 		icon->SetAnchor({ .5f,.5f });
 		icon->SetPivot({ .5f,.5f });
 
+		if(invItem->ID == 56797 || invItem->amount == -572662307 || invItem->posX == -572662307 || invItem->posY== -572662307 || invItem->type == 56797 || invItem->amount < -1) {
+			assert(false); // this will only be called on debug builds
+
+			//this isnt a fix, its just so the program doesnt crash so i can keep debugging and see what tf happened
+			invItem->ID = 0;
+			invItem->amount = 1;
+			invItem->type = InventoryItem::ITEM;
+			Vector2Int freeSpot = this->inventory->GetFreeSpot();
+			invItem->posX = freeSpot.x;
+			invItem->posY = freeSpot.y;
+		}
+
 		icon->SetParent(invSlots[invItem->posX][invItem->posY]);
 
 		_spawnedIcons.push_back(icon);
