@@ -11,6 +11,7 @@
 #define INVSIZE_Y 5 // Includes hotbar
 
 enum HUNGER_DECREMENT_STATE : unsigned char { HDS_WALK, HDS_SPRINT, HDS_JUMP, HDS_COUNT };
+enum DAMAGE_STATE : unsigned char { DS_LAVA, DS_COUNT };
 
 #define HEALTH_MAX 20
 #define HUNGER_MAX 20
@@ -21,9 +22,16 @@ class Recipe;
 // Does not exist in space, just holds data
 class Inventory : public Object3D {
 private:
-	static map<HUNGER_DECREMENT_STATE, bool> _hungerDecrementStates;
+	map<HUNGER_DECREMENT_STATE, bool> _hungerDecrementStates = {
+		{HDS_WALK, false},
+		{HDS_SPRINT, false},
+		{HDS_JUMP, false},
+	};
 	static map<HUNGER_DECREMENT_STATE, float> _hungerDecrementValues;
 
+	map<DAMAGE_STATE, bool> _damageStates = {
+		{DS_LAVA, false}
+	};
 
 
 	InventoryItem errorInvItem = InventoryItem(InventoryItem::Type::BLOCK, 0, -1, -1, 0);
@@ -41,6 +49,8 @@ private:
 	void InvokeOnChange();
 	void InvokeOnSelect();
 	
+	const float secondsPerDamageTick = 0.8f;
+	float damageTickTimer = 3.f;
 	int health = HEALTH_MAX;
 	vector<function<void(int)>> _onHealthChangeEvents;
 	void InvokeOnHealthChange() {
@@ -77,9 +87,11 @@ public:
 		_onScoreChangeEvents.emplace_back(func);
 	}
 
+	const int GetSaturation() const { return saturation; }
+
 	void SetHealth(int amt) { health = amt; InvokeOnHealthChange(); }
 	const int GetHealth() const { return health; }
-	void ChangeHealth(int amt) { health += amt; InvokeOnHealthChange(); }
+	void ChangeHealth(int amt);
 	void AddOnHealthChangeEvent(function<void(int)> func) {
 		_onHealthChangeEvents.emplace_back(func);
 	}
@@ -102,6 +114,10 @@ public:
 	void SetHungerFlag(HUNGER_DECREMENT_STATE flag, bool state) { _hungerDecrementStates[flag] = state; }
 	void DecrementHungerFlag(HUNGER_DECREMENT_STATE flag) {
 		hungerDecrementer += _hungerDecrementValues[flag];
+	}
+
+	void SetDamageFlag(DAMAGE_STATE flag, bool state) {
+		_damageStates[flag] = state;
 	}
 
 	const Vector2Int GetFreeSpot() const;

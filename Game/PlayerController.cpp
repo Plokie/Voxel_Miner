@@ -46,8 +46,9 @@ void PlayerController::Start()
 
 #define AABB_RANGE Vector3Int(1,2,1)
 
-vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager) {
+vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager, vector<AABB>* outDamageAABBs, vector<AABB>* outLiquidAABBs) {
 	vector<AABB> ret;
+	//vector<AABB> statusAABBs; //for now only used for damaging
 
 	for(int z =  - AABB_RANGE.z; z < AABB_RANGE.z + 1; z++) {
 		for(int y =  - AABB_RANGE.y; y < AABB_RANGE.y + 1; y++) {
@@ -56,8 +57,14 @@ vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager) {
 				Vector3Int playerBlockPos = Vector3Int::FloorToInt(transform.position);
 				Vector3Int blockPos = playerBlockPos + offset;
 				BlockID block = chunkManager->GetBlockAtWorldPos(blockPos);
+				AABB blockAABB = AABB(Vector3(static_cast<float>(blockPos.x), static_cast<float>(blockPos.y), static_cast<float>(blockPos.z)) + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
+
 				if(BlockDef::GetDef(block).GetDrawType() == B_OPAQUE) {
-					ret.push_back(AABB(Vector3(static_cast<float>(blockPos.x), static_cast<float>(blockPos.y), static_cast<float>(blockPos.z)) + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f)));
+					ret.push_back(blockAABB);
+				}
+
+				if(outDamageAABBs && block == LAVA) {
+					outDamageAABBs->push_back(blockAABB);
 				}
 			}
 		}
@@ -65,6 +72,10 @@ vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager) {
 
 	return ret;
 }
+
+//vector<AABB> PlayerController::GetHarmfulAABBs(ChunkManager* chunkManager) {
+//	vector<AABB>
+//}
 
 
 void PlayerController::Update(float dTime)
@@ -163,8 +174,18 @@ void PlayerController::Update(float dTime)
 
 	if(!freeCam) {
 		// GRAVITY PHYSICS
-		vector<AABB> blocks = GetNearbyAABBs(chunkManager);
+		vector<AABB> damageAABBs;
+		vector<AABB> blocks = GetNearbyAABBs(chunkManager, &damageAABBs);
 
+		bool takingDamage = false;
+		for(const AABB& damageAABB : damageAABBs) {
+			if(aabb.Intersects(damageAABB)) {
+				takingDamage = true;
+				break;
+			}
+		}
+		inv->SetDamageFlag(DS_LAVA, takingDamage);
+		
 
 		bool isGrounded = false;
 		for(const AABB& blockAABB : blocks) {

@@ -39,7 +39,7 @@ class PlayerController : public Object3D {
 	Vector3 velocity;
 	AABB aabb;
 
-	vector<AABB> GetNearbyAABBs(ChunkManager* chunkManager);
+	vector<AABB> GetNearbyAABBs(ChunkManager* chunkManager, vector<AABB>* outDamageAABBs = nullptr, vector<AABB>* outLiquidAABBs = nullptr);
 
 	void Start() override;
 	void Update(float dTime) override;

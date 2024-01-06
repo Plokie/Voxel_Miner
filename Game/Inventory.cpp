@@ -3,12 +3,9 @@
 #include "Crafting.h"
 #include "InventoryUI.h"
 #include "../Engine/Engine.h"
+#include "../Audio/Audio.h"
 
-map<HUNGER_DECREMENT_STATE, bool> Inventory::_hungerDecrementStates = {
-	{HDS_WALK, false},
-	{HDS_SPRINT, false},
-	{HDS_JUMP, false},
-};
+//map<HUNGER_DECREMENT_STATE, bool> Inventory::_hungerDecrementStates 
 
 map<HUNGER_DECREMENT_STATE, float> Inventory::_hungerDecrementValues = {
 	{HDS_WALK, 0.000001f},
@@ -16,6 +13,19 @@ map<HUNGER_DECREMENT_STATE, float> Inventory::_hungerDecrementValues = {
 	{HDS_JUMP, 0.1f},
 };
 
+//map<HUNGER_DECREMENT_STATE, bool> Inventory::_hungerDecrementStates = {
+//	{HDS_WALK, false},
+//	{HDS_SPRINT, false},
+//	{HDS_JUMP, false},
+//};
+
+void Inventory::ChangeHealth(int amt) {
+	health += amt;
+	InvokeOnHealthChange();
+	if(amt < 0) {
+		Audio::Play("hurt", 1.f);
+	}
+}
 
 const Vector2Int Inventory::GetFreeSpot() const {
 	Vector2Int tryPos = { 0, 0 };
@@ -326,6 +336,30 @@ void Inventory::Update(float dt) {
 		else {
 			hunger--;
 			InvokeOnHungerChange();
+		}
+	}
+
+
+	damageTickTimer -= dt;
+	if(damageTickTimer <= 0.0f) {
+		damageTickTimer = secondsPerDamageTick;
+
+		// check damage state and hurt
+		bool isDamaging = false;
+		for(int i = 0; i < DS_COUNT; i++) {
+			if(_damageStates[(DAMAGE_STATE)i]) {
+				isDamaging = true;
+				break;
+			}
+		}
+
+		if(isDamaging) {
+			ChangeHealth(-2);
+		}
+
+		if(health < HEALTH_MAX && saturation > 0) {
+			saturation--;
+			ChangeHealth(1);
 		}
 	}
 }

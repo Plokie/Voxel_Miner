@@ -67,7 +67,7 @@ const Item& ItemDef::Get(ItemID id)
 
 bool Item::CallItemAction(ItemID itemID, PlayerController* playerController, Inventory* inv, ChunkManager* chunkManager, Vector3Int targetBlockPos) {
 	const Item& def = ItemDef::Get(itemID);
-	if(def.itemType == FOOD && inv->GetHunger() < HUNGER_MAX) {
+	if(def.itemType == FOOD && (inv->GetHunger() < HUNGER_MAX || (inv->GetHealth() < HEALTH_MAX && inv->GetSaturation()<=0 ))) {
 		inv->ChangeHunger(def.tier);
 		inv->SubHeldItem(); // this could cause logic errors when using an item that isnt held. But i dont see that happening
 	}
