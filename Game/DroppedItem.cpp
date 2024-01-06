@@ -6,8 +6,7 @@
 //Vector2 
 
 
-void DroppedItem::SetupModel()
-{
+void DroppedItem::SetupModel() {
 	if(invItem != nullptr) {
 		if(models.size() == 0) {
 			AddModel(Graphics::Get()->GetDevice());
@@ -91,12 +90,17 @@ void DroppedItem::SetupModel()
 void DroppedItem::OnCollide(PlayerController* pc) {
 	if(invItem) {
 		Inventory* inv = Engine::Get()->GetCurrentScene()->GetObject3D<Inventory>("Inventory");
-		inv->AddItem(invItem);
-
-		// after its added, its merged with other inv items handled by inventory
-		// delete this free instance
-		delete invItem;
-		invItem = nullptr;
+		int outRemainder;
+		if(inv->AddItem(invItem, &outRemainder)) {
+			// after its added, its merged with other inv items handled by inventory
+			// delete this free instance
+			delete invItem;
+			invItem = nullptr;
+		}
+		else {
+			//// something to do with handling remainders
+			invItem->amount = outRemainder;
+		}
 	}
 
 	Engine::Get()->DestroyObject3D(this);
@@ -116,8 +120,7 @@ DroppedItem::DroppedItem(InventoryItem* invItem) {
 	SetupModel();
 }
 
-DroppedItem* DroppedItem::Create(InventoryItem* invItem, Vector3 worldPosition)
-{
+DroppedItem* DroppedItem::Create(InventoryItem* invItem, Vector3 worldPosition) {
 	DroppedItem* dropped = new DroppedItem(invItem);
 	dropped->transform.position = worldPosition;
 
@@ -127,8 +130,7 @@ DroppedItem* DroppedItem::Create(InventoryItem* invItem, Vector3 worldPosition)
 	return dropped;
 }
 
-void DroppedItem::Start()
-{
+void DroppedItem::Start() {
 	Entity::Start();
 
 	aabb = AABB(Vector3(0.f, 0.f, 0.f), Vector3(.25f, .25f, .25f));
@@ -138,7 +140,8 @@ void DroppedItem::Start()
 	RecalculateGroundCheck();
 }
 
-void DroppedItem::Update(float dt)
-{
+void DroppedItem::Update(float dt) {
 	Entity::Update(dt);
+
+	transform.rotation.y += 2.f*dt;
 }

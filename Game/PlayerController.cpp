@@ -70,6 +70,8 @@ vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager) {
 void PlayerController::Update(float dTime)
 {
 	if(!enabled) {
+		worldPosLabel->SetText(to_string(chunkManager->LoadMinAreaProgress()*100.f) + "%");
+
 		if(chunkManager->HasLoadedMinArea()) {
 			enabled = true;
 			Input::SetMouseLocked(true);
@@ -91,10 +93,10 @@ void PlayerController::Update(float dTime)
 
 	//todo: remove // debug spawn entity
 	if(Input::IsMouseLocked())
-	//if(Input::IsKeyPressed('M')) {
-	//	//engine->GetCurrentScene()->CreateObject3D(new Entity(), "test-entity-"+to_string(rand()), "cube")->transform.position = transform.position;
-	//	DroppedItem::Create(new InventoryItem(COBBLESTONE, -1, -1, 1), transform.position + (transform.forward() * 1.46f));
-	//}
+	if(Input::IsKeyPressed('M')) {
+		engine->GetCurrentScene()->CreateObject3D(new Entity(), "test-entity-"+to_string(rand()), "cube")->transform.position = transform.position;
+		//DroppedItem::Create(new InventoryItem(COBBLESTONE, -1, -1, 1), transform.position + (transform.forward() * 1.46f));
+	}
 
 	if(Input::IsKeyPressed('Q')) {
 		//engine->GetCurrentScene()->CreateObject3D(new Entity(), "test-entity-"+to_string(rand()), "cube")->transform.position = transform.position;
@@ -102,8 +104,10 @@ void PlayerController::Update(float dTime)
 		if(inv->GetHeldItem(&heldItem)) {
 
 			InventoryItem* newDroppedItem = new InventoryItem(heldItem->type, heldItem->ID, -1, -1, 1);
+			
+			DroppedItem* droppedItemEntity = DroppedItem::Create(newDroppedItem, transform.position + (transform.forward() * 1.46f));
+			//droppedItemEntity->SetVelocity(transform.forward());
 
-			DroppedItem::Create(newDroppedItem, transform.position + (transform.forward() * 1.46f));
 			inv->SubHeldItem(1, heldItem); 
 		}
 		

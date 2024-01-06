@@ -13,6 +13,8 @@
 #define CHUNKLOAD_FIXED_NY 6
 #define CHUNKLOAD_FIXED_PY 4
 
+constexpr int minLoadCount = CHUNKLOAD_AREA_X * CHUNKLOAD_AREA_Z * (CHUNKLOAD_FIXED_PY + CHUNKLOAD_FIXED_NY);
+
 class Chunk;
 class VoxelLighting;
 
@@ -37,13 +39,17 @@ private:
 	vector<thread> chnkMgrThread;
 
 	bool isRunning = true; //well then you better go catch it
+
+	mutex _numChunksLoadedMutex;
 	int _numChunksLoaded = 0;
 public:
 	void CreateChunk(const int x, const int y, const int z);
 
 	void Thread();
 
-	const bool HasLoadedMinArea() const { return _numChunksLoaded> CHUNKLOAD_AREA_X * CHUNKLOAD_AREA_Z * (CHUNKLOAD_FIXED_PY + CHUNKLOAD_FIXED_NY); }
+	const float LoadMinAreaProgress() const { return _numChunksLoaded / (float)minLoadCount; }
+	const bool HasLoadedMinArea() const { return _numChunksLoaded > minLoadCount; }
+	const int TotalChunksLoaded() const { return _numChunksLoaded; }
 
 	//Lighting* GetLighting() const {
 	//	return this->lighting;

@@ -37,14 +37,6 @@ void HeldItem::SetItem(InventoryItem::Type type, unsigned short id) {
 
 	Vector2Int uvPosInt = InventoryItem(type, id, -1, -1, 1).GetUVPos();
 	Vector2 uvPos = { (float)uvPosInt.x, (float)uvPosInt.y };
-	/*if(type == InventoryItem::Type::ITEM) {
-		const Item& def = ItemDef::Get((ItemID)id);
-		uvPos = { (float)def.UVx(), (float)def.UVy() };
-	}
-	else {
-		const Block& def = BlockDef::GetDef((BlockID)id);
-		uvPos = { (float)def.GetTopUVidx(), (float)def.GetTopUVidy() };
-	}*/
 	uvPos *= ATLAS_TILE_SIZE;
 	uvPos /= (float)ATLAS_SIZE;
 

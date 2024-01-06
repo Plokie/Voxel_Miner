@@ -24,6 +24,13 @@ public:
 	//todo: base entity class for player to handle collisions as generic events
 	virtual void OnCollide(PlayerController* pc);
 
+	//void SetVelocity(float x, float y, float z) {
+	//	velocity.x = x;
+	//	velocity.y = y;
+	//	velocity.z = z;
+	//}
+	//void SetVelocity(Vector3 vel) { SetVelocity(vel.x, vel.y, vel.z); }
+
 	void Start() override;
 	void Update(float dt) override;
 };

@@ -70,8 +70,10 @@ void ChunkManager::Thread() {
 					chunk->Finalize();
 					//chunk->InitSkyLight();
 					//_numChunksLoaded++;
+					unique_lock<mutex> lock(this->_numChunksLoadedMutex);
+					this->_numChunksLoaded++;
 				});
-				_numChunksLoaded++;
+				//_numChunksLoaded++;
 				newChunkQueue.pop();
 			}
 		}
