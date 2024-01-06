@@ -1,6 +1,7 @@
 #include "Items.h"
 
 #include "Inventory.h"
+#include "../Audio/Audio.h"
 
 map<ItemID, BlockAction> Item::itemActions = {
 	
@@ -70,6 +71,7 @@ bool Item::CallItemAction(ItemID itemID, PlayerController* playerController, Inv
 	if(def.itemType == FOOD && (inv->GetHunger() < HUNGER_MAX || (inv->GetHealth() < HEALTH_MAX && inv->GetSaturation()<=0 ))) {
 		inv->ChangeHunger(def.tier);
 		inv->SubHeldItem(); // this could cause logic errors when using an item that isnt held. But i dont see that happening
+		Audio::Play("eat", 1.f);
 	}
 
 	auto it = itemActions.find(itemID);

@@ -47,6 +47,7 @@ void LoadResources() {
 	Audio::LoadClipStream("Data\\Music\\UndercoverVampirePoliceman.ogg", "MusicBg");
 	Audio::LoadClip("Data\\Sounds\\hit.wav", "hit");
 	Audio::LoadClip("Data\\Sounds\\hurt.wav", "hurt");
+	Audio::LoadClip("Data\\Sounds\\eat.wav", "eat");
 
 	Audio::Play("MusicBg", 1.f);
 
