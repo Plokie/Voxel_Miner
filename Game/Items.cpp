@@ -37,6 +37,21 @@ const map<ItemID, Item> ItemDef::defs = {
 	{TITANIUM_SHOVEL, Item("Titanium Shovel", 4, 4, 1, SHOVEL, 4)},
 
 	{STICK, Item("Stick", 0, 2)},
+
+	{RAW_STEAK, Item("Raw Steak", 5, 0, MAX_STACK, FOOD, 3)},
+	{COOKED_STEAK, Item("Cooked Steak", 5, 1, MAX_STACK, FOOD, 6)},
+
+	{RAW_CHICKEN, Item("Raw Chicken", 6, 0, MAX_STACK, FOOD, 2)},
+	{COOKED_CHICKEN, Item("Cooked Chicken", 6, 1, MAX_STACK, FOOD, 7)},
+
+	{CARROT, Item("Carrot", 7, 0, MAX_STACK, FOOD, 2)},
+	{ROASTED_CARROT, Item("Roasted Carrot", 7, 1, MAX_STACK, FOOD, 4)},
+
+	{EGG, Item("Egg", 8, 0)},
+	{FRIED_EGG, Item("Fried Egg", 8, 1, MAX_STACK, FOOD, 4)},
+
+	{APPLE, Item("Apple", 9, 0, MAX_STACK, FOOD, 2)},
+	{ROASTED_APPLE, Item("Roasted Apple", 9, 1, MAX_STACK, FOOD, 4)},
 };
 
 const Item& ItemDef::Get(ItemID id)
@@ -45,5 +60,5 @@ const Item& ItemDef::Get(ItemID id)
 	if(it != defs.end()) {
 		return it->second;
 	}
-	return Item("ERR", 0, 0);
+	return defs.at(ITEMERR);
 }

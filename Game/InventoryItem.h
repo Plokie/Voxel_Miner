@@ -33,6 +33,8 @@ public:
 
 	bool IsSameItemAs(const InventoryItem& other);
 	bool IsSameItemAs(const InventoryItem* other);
+	bool Is(BlockID blockID);
+	bool Is(ItemID itemID);
 
 	nlohmann::json Serialize();
 	static InventoryItem* Deserialize(nlohmann::json json);

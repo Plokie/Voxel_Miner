@@ -14,6 +14,7 @@
 #include "../Engine/UI/UIRect.h"
 #include "../Engine/UI/Button.h"
 #include "../Engine/UI/HorizontalLayoutRect.h"
+#include "../Engine/UI/ProgressBar.h"
 #include "InventoryUI.h"
 #include "Inventory.h"
 #include "HeldItem.h"
@@ -29,6 +30,7 @@ void LoadResources() {
 	Resources::LoadTexture(L"Data\\Textures\\pfp.dds", "pfp");
 	Resources::LoadTexture(L"Data\\Textures\\block-select.dds", "block-select");
 	Resources::LoadTexture(L"Data\\Textures\\chunkborder.dds", "chunkborder");
+	Resources::LoadTexture(L"Data\\Textures\\bar-split.dds", "bar-split");
 	//Resources::LoadTexture(L"Data\\Textures\\grass2.dds", "grass");
 	Resources::LoadTexture(L"Data\\Textures\\atlas.dds", "atlas");
 	Resources::LoadTexture(L"Data\\Textures\\item-atlas.dds", "item-atlas");

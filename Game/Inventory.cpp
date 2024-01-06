@@ -4,6 +4,19 @@
 #include "InventoryUI.h"
 #include "../Engine/Engine.h"
 
+map<HUNGER_DECREMENT_STATE, bool> Inventory::_hungerDecrementStates = {
+	{HDS_WALK, false},
+	{HDS_SPRINT, false},
+	{HDS_JUMP, false},
+};
+
+map<HUNGER_DECREMENT_STATE, float> Inventory::_hungerDecrementValues = {
+	{HDS_WALK, 0.000001f},
+	{HDS_SPRINT, 0.000001f},
+	{HDS_JUMP, 0.1f},
+};
+
+
 const Vector2Int Inventory::GetFreeSpot() const {
 	Vector2Int tryPos = { 0, 0 };
 
@@ -126,6 +139,7 @@ bool Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, c
 	
 	InvokeOnChange();
 	InvokeOnSelect();
+	return true;
 }
 
 void Inventory::PushItem(InventoryItem* item) {
@@ -244,7 +258,12 @@ nlohmann::json Inventory::Serialize()
 		itemJsons.push_back(invItem->Serialize());
 	}
 	json["items"] = itemJsons;
+
+	//todo: move to PlayerData class
 	json["score"] = score;
+	json["health"] = health;
+	json["hunger"] = hunger;
+	json["saturation"] = saturation;
 	//json[""]
 
 	return json;
@@ -262,9 +281,20 @@ void Inventory::Deserialize(nlohmann::json jsonInv) {
 	if(jsonInv.find("score")!=jsonInv.end())
 		score = jsonInv["score"];
 
+	if(jsonInv.find("health") != jsonInv.end())
+		health = jsonInv["health"];
+
+	if(jsonInv.find("hunger") != jsonInv.end())
+		hunger = jsonInv["hunger"];
+
+	if(jsonInv.find("saturation") != jsonInv.end())
+		saturation = jsonInv["saturation"];
+
 	InvokeOnChange();
 	InvokeOnSelect();
 	InvokeOnScoreChange();
+	InvokeOnHungerChange();
+	InvokeOnHealthChange();
 }
 
 void Inventory::LoadDefaultItems() {
@@ -274,6 +304,25 @@ void Inventory::LoadDefaultItems() {
 	AddItem((ItemID)COPPER_SHOVEL);
 	InvokeOnChange();
 	InvokeOnSelect();
+}
+
+void Inventory::Update(float dt) {
+	float currentExhaustion = 0.0f;
+
+	for(int i = 0; i < HDS_COUNT; i++) {
+		currentExhaustion += (float)_hungerDecrementStates[(HUNGER_DECREMENT_STATE)i] * _hungerDecrementStates[(HUNGER_DECREMENT_STATE)i];
+	}
+
+
+
+	hungerDecrementer += dt * currentExhaustion;
+
+	if(hungerDecrementer > 10.f) {
+		hungerDecrementer = 0.f;
+
+		hunger--;
+		InvokeOnHungerChange();
+	}
 }
 
 InventoryItem* Inventory::GetItemAt(const int x, const int y) {

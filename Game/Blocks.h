@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include "ItemTypes.h"
+#include "BlockAction.h"
 
 using namespace std;
 
@@ -40,6 +41,8 @@ enum BlockID : unsigned short {
 	BLACK_COBBLESTONE,
 
 	GRAVEL, LAVA,
+
+	FURNACE, LIT_FURNACE
 };
 
 class Block {
@@ -117,6 +120,9 @@ public:
 	const int GetSideUVidy() const;
 	const int GetBottUVidx() const;
 	const int GetBottUVidy() const;
+
+	static map<BlockID, BlockAction> blockActions;
+	static bool CallBlockAction(BlockID blockID, PlayerController* playerController, Inventory* inv, ChunkManager* chunkManager, Vector3Int blockPos);
 };
 
 class BlockDef {

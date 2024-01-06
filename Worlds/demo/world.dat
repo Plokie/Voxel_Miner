@@ -342,6 +342,8 @@
     ]
   ],
   "inventory": {
+    "health": 20,
+    "hunger": 3,
     "items": [
       {
         "ID": 9,
@@ -386,22 +388,15 @@
         "type": 1
       },
       {
-        "ID": 4,
-        "amount": 40,
-        "posX": 6,
-        "posY": 4,
-        "type": 1
-      },
-      {
         "ID": 31,
-        "amount": 100,
+        "amount": 76,
         "posX": 1,
         "posY": 3,
         "type": 1
       },
       {
         "ID": 1,
-        "amount": 100,
+        "amount": 99,
         "posX": 2,
         "posY": 3,
         "type": 0
@@ -498,13 +493,6 @@
         "type": 1
       },
       {
-        "ID": 31,
-        "amount": 100,
-        "posX": 8,
-        "posY": 0,
-        "type": 1
-      },
-      {
         "ID": 39,
         "amount": 3,
         "posX": 1,
@@ -548,7 +536,7 @@
       },
       {
         "ID": 31,
-        "amount": 28,
+        "amount": 100,
         "posX": 7,
         "posY": 0,
         "type": 1
@@ -562,18 +550,40 @@
       },
       {
         "ID": 1,
-        "amount": 47,
+        "amount": 37,
         "posX": 3,
         "posY": 0,
         "type": 0
+      },
+      {
+        "ID": 4,
+        "amount": 42,
+        "posX": 5,
+        "posY": 0,
+        "type": 1
+      },
+      {
+        "ID": 23,
+        "amount": 10,
+        "posX": 4,
+        "posY": 0,
+        "type": 0
+      },
+      {
+        "ID": 40,
+        "amount": 5,
+        "posX": 6,
+        "posY": 0,
+        "type": 1
       }
     ],
-    "score": 95
+    "saturation": 0,
+    "score": 99
   },
   "playerPos": [
-    -0.872986376285553,
-    69.60189819335938,
-    -228.61537170410156
+    -1.2682743072509766,
+    68.56922912597656,
+    -221.05686950683594
   ],
   "seed": 1243144104,
   "worldName": "demo"

@@ -1,6 +1,7 @@
 #include "InventoryUI.h"
 #include "../Engine/Object2D.h"
 #include "../Engine/UI/HorizontalLayoutRect.h"
+#include "../Engine/UI/ProgressBar.h"
 #include "../Engine/UI/Button.h"
 #include "../Engine/Engine.h"
 #include "ItemIcon.h"
@@ -56,6 +57,45 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 	});
 
 	DrawHotbarIcons();
+
+
+	ProgressBar* healthBar = (ProgressBar*)gameScene->CreateObject2D(new ProgressBar(), "healthBar");
+	healthBar->SetAnchor({ 1.f, 0.f });
+	healthBar->SetPivot({ 1.f, 0.f });
+	healthBar->SetDimensions({ 340.f, 30.f });
+	healthBar->SetPosition(-10.f, 10.f);
+	healthBar->SetProgressCol({ 245.f/255.f, 66.f/255.f, 90.f/255.f, 1.f });
+	healthBar->SetDirection(RIGHT_TO_LEFT);
+	inventory->AddOnHealthChangeEvent([healthBar](int health) { //health out of 100
+		healthBar->SetValue(health / (float)HEALTH_MAX);
+	});
+
+	UIRect* healthBarOverlay = (UIRect*)gameScene->CreateObject2D(new UIRect("bar-split"), "healthBarOverlay");
+	healthBarOverlay->SetAnchor(0.f, 0.f);
+	healthBarOverlay->SetPivot(0.f, 0.f);
+	healthBarOverlay->SetDimensions({ 340.f, 30.f });
+	healthBarOverlay->SetDepth(1.f);
+	healthBarOverlay->SetParent(healthBar);
+
+	ProgressBar* hungerBar = (ProgressBar*)gameScene->CreateObject2D(new ProgressBar(), "hungerBar");
+	hungerBar->SetAnchor({ 1.f, 0.f });
+	hungerBar->SetPivot({ 1.f, 0.f });
+	hungerBar->SetDimensions({ 340.f, 30.f });
+	hungerBar->SetPosition(-10.f, 50.f);
+	hungerBar->SetProgressCol({ 143.f/255.f, 87.f/255.f, 24.f/255.f, 1.f });
+	hungerBar->SetDirection(RIGHT_TO_LEFT);
+	inventory->AddOnHungerChangeEvent([hungerBar](int hunger) { //hunger out of 100
+		hungerBar->SetValue(hunger / (float)HUNGER_MAX);
+	});
+
+	UIRect* hungerBarOverlay = (UIRect*)gameScene->CreateObject2D(new UIRect("bar-split"), "hungerBarOverlay");
+	hungerBarOverlay->SetAnchor(0.f, 0.f);
+	hungerBarOverlay->SetPivot(0.f, 0.f);
+	hungerBarOverlay->SetDimensions({ 340.f, 30.f });
+	hungerBarOverlay->SetDepth(1.f);
+	hungerBarOverlay->SetParent(hungerBar);
+
+
 
 
 	invBg = (UIRect*)gameScene->CreateObject2D(new UIRect("white", { 0.5f,0.5f,0.5f,1.0f }), "invBg");

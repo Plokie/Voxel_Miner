@@ -14,8 +14,8 @@ Vector2Int InventoryItem::GetUVPos(BLOCK_FACE_TEX face_tex) const
 
         switch(face_tex) {
         case FT_TOP: return { def.GetTopUVidx(), def.GetTopUVidy() };
-        case FT_SIDE: return { def.GetSideUVidx(), def.GetSideUVidy() };
         case FT_BOTTOM: return { def.GetBottUVidx(), def.GetBottUVidy() };
+        default: return { def.GetSideUVidx(), def.GetSideUVidy() };
         }
     }
 }
@@ -38,6 +38,16 @@ bool InventoryItem::IsSameItemAs(const InventoryItem& other)
 bool InventoryItem::IsSameItemAs(const InventoryItem* other)
 {
     return this->type == other->type && this->ID == other->ID;
+}
+
+bool InventoryItem::Is(BlockID blockID)
+{
+    return blockID==ID && type==BLOCK;
+}
+
+bool InventoryItem::Is(ItemID itemID)
+{
+    return itemID==ID && type==ITEM;
 }
 
 

@@ -10,12 +10,22 @@
 #define INVSIZE_X 9
 #define INVSIZE_Y 5 // Includes hotbar
 
+enum HUNGER_DECREMENT_STATE : unsigned char { HDS_WALK, HDS_SPRINT, HDS_JUMP, HDS_COUNT };
+
+#define HEALTH_MAX 20
+#define HUNGER_MAX 20
+
 class InventoryUI;
 class Recipe;
 
 // Does not exist in space, just holds data
 class Inventory : public Object3D {
 private:
+	static map<HUNGER_DECREMENT_STATE, bool> _hungerDecrementStates;
+	static map<HUNGER_DECREMENT_STATE, float> _hungerDecrementValues;
+
+
+
 	InventoryItem errorInvItem = InventoryItem(InventoryItem::Type::BLOCK, 0, -1, -1, 0);
 	vector<InventoryItem*> items;
 	map<tuple<int, int>, InventoryItem*> _itemPosMap;
@@ -31,6 +41,24 @@ private:
 	void InvokeOnChange();
 	void InvokeOnSelect();
 	
+	int health = HEALTH_MAX;
+	vector<function<void(int)>> _onHealthChangeEvents;
+	void InvokeOnHealthChange() {
+		for(auto& func : _onHealthChangeEvents) {
+			func(health);
+		}
+	}
+
+	int hunger = HUNGER_MAX;
+	int saturation = 0;
+	vector<function<void(int)>> _onHungerChangeEvents;
+	void InvokeOnHungerChange() {
+		for(auto& func : _onHungerChangeEvents) {
+			func(hunger);
+		}
+	}
+
+
 	int score = 0; // Gonna remove this later, just need it for competencies
 	vector<function<void(int)>> _onScoreChangeEvents;
 	void InvokeOnScoreChange() {
@@ -38,13 +66,34 @@ private:
 			func(score);
 		}
 	}
+
+	float hungerDecrementer = 0.f;
 public:
 	// Gonna be removing these later
 	void SetScore(int amt) { score = amt; InvokeOnScoreChange(); }
-	const int GetSore() const { return score; }
+	const int GetScore() const { return score; }
 	void ChangeScore(int amt) { score += amt; InvokeOnScoreChange(); }
 	void AddOnScoreChangeEvent(function<void(int)> func) {
 		_onScoreChangeEvents.emplace_back(func);
+	}
+
+	void SetHealth(int amt) { health = amt; InvokeOnScoreChange(); }
+	const int GetHealth() const { return health; }
+	void ChangeHealth(int amt) { health += amt; InvokeOnScoreChange(); }
+	void AddOnHealthChangeEvent(function<void(int)> func) {
+		_onHealthChangeEvents.emplace_back(func);
+	}
+
+	void SetHunger(int amt) { hunger = amt; InvokeOnScoreChange(); }
+	const int GetHunger() const { return hunger; }
+	void ChangeHunger(int amt) { hunger += amt; InvokeOnScoreChange(); }
+	void AddOnHungerChangeEvent(function<void(int)> func) {
+		_onHungerChangeEvents.emplace_back(func);
+	}
+
+	void SetHungerFlag(HUNGER_DECREMENT_STATE flag, bool state) { _hungerDecrementStates[flag] = state; }
+	void DecrementHungerFlag(HUNGER_DECREMENT_STATE flag) {
+		hungerDecrementer += _hungerDecrementValues[flag];
 	}
 
 	const Vector2Int GetFreeSpot() const;
@@ -86,4 +135,6 @@ public:
 	nlohmann::json Serialize();
 	void Deserialize(nlohmann::json jsonInv);
 	void LoadDefaultItems();
+
+	void Update(float dt) override;
 };

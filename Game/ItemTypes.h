@@ -4,5 +4,6 @@ enum ItemType : unsigned short {
 	BASICITEM,
 	PICKAXE,
 	AXE,
-	SHOVEL
+	SHOVEL,
+	FOOD
 };

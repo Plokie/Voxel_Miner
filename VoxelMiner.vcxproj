@@ -149,6 +149,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio\Audio.cpp" />
+    <ClCompile Include="Game\BlockAction.cpp" />
     <ClCompile Include="Game\Crafting.cpp" />
     <ClCompile Include="Game\CraftingUI.cpp" />
     <ClCompile Include="Engine\UI\Button.cpp" />
@@ -198,9 +199,11 @@
     <ClCompile Include="Game\LootTables.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\UI\UIRect.cpp" />
+    <ClCompile Include="Engine\UI\ProgressBar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio\Audio.h" />
+    <ClInclude Include="Game\BlockAction.h" />
     <ClInclude Include="Game\DroppedItem.h" />
     <ClInclude Include="Game\Crafting.h" />
     <ClInclude Include="Game\CraftingUI.h" />
@@ -256,6 +259,7 @@
     <ClInclude Include="Game\ItemIcon.h" />
     <ClInclude Include="Game\ItemTypes.h" />
     <ClInclude Include="Game\LootTables.h" />
+    <ClInclude Include="Engine\UI\ProgressBar.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="pixelshader.hlsl">

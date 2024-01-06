@@ -186,6 +186,12 @@
     <ClCompile Include="Game\DroppedItem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\UI\ProgressBar.cpp">
+      <Filter>Engine\Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Game\BlockAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\AABB.h">
@@ -354,6 +360,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Game\DroppedItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\UI\ProgressBar.h">
+      <Filter>Engine\Headers\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\BlockAction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

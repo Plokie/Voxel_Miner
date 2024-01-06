@@ -8,7 +8,7 @@ Vector2Int RecipeComponent::GetUVPos() const
 	}
 	else {
 		const Block& def = BlockDef::GetDef((BlockID)ID);
-		return { def.GetTopUVidx(), def.GetTopUVidy() };
+		return { def.GetSideUVidx(), def.GetSideUVidy() };
 	}
 }
 
@@ -27,7 +27,7 @@ vector<Category> Crafting::categories = {
 		{"COPPER_BAR", "GOLD_BAR", "TITANIUM_BAR"},
 	}},
 	{"Misc", {
-		{},
+		{"FURNACE","FURNACE_BLACKSTONE"},
 	}},
 };
 
@@ -176,6 +176,18 @@ map<string, Recipe> Recipe::recipes = {
 		{
 			{STICK,2},
 			{TITANIUM_BAR, 3}
+		}
+	}},
+	{ "FURNACE",{
+		{FURNACE},
+		{
+			{COBBLESTONE,12}
+		}
+	}},
+	{ "FURNACE_BLACKSTONE",{
+		{FURNACE},
+		{
+			{BLACK_COBBLESTONE,12}
 		}
 	}},
 };

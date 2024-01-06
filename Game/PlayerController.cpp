@@ -114,9 +114,11 @@ void PlayerController::Update(float dTime)
 	}
 
 	if(Input::IsMouseLocked()) {
+		bool isSprinting = false;
 		if(Input::IsKeyHeld(VK_SHIFT)) {
 			//transform.position -= Vector3(0, camSpeed, 0);
 			movementSpeed = 5.612f;
+			isSprinting = true;
 		}
 		if(Input::IsKeyHeld(VK_CONTROL)) {
 			movementSpeed = 1.0f;
@@ -131,6 +133,14 @@ void PlayerController::Update(float dTime)
 		moveAxis = moveAxis.normalized();
 		moveAxis *= movementSpeed * dTime;
 
+		if(input.sqrMagnitude() > 0.5f) {
+			inv->SetHungerFlag(HDS_WALK, true);
+			inv->SetHungerFlag(HDS_SPRINT, isSprinting);
+		}
+		else {
+			inv->SetHungerFlag(HDS_WALK, false);
+			inv->SetHungerFlag(HDS_SPRINT, false);
+		}
 		//velocity.x = moveAxis.x;
 		//velocity.z = moveAxis.z;
 
@@ -140,7 +150,6 @@ void PlayerController::Update(float dTime)
 
 		XMFLOAT2 mouseDelta = Input::MouseDelta();
 		float lookSpeed = 0.0025f; // The polling of the mouse is already tied to the framerate, so no dt
-
 
 
 		transform.position += moveAxis;
@@ -173,7 +182,11 @@ void PlayerController::Update(float dTime)
 		}
 		else {
 			velocity.y = -3.0f * dTime; //Small nudge to ground level, nothing noticable
-			if(Input::IsKeyHeld(VK_SPACE) && Input::IsMouseLocked()) velocity.y = jumpVelocity;
+			if(Input::IsKeyHeld(VK_SPACE) && Input::IsMouseLocked()) 
+			{
+				inv->DecrementHungerFlag(HDS_JUMP);
+				velocity.y = jumpVelocity;
+			}
 		}
 
 		transform.position += velocity * dTime;
@@ -273,18 +286,26 @@ void PlayerController::Update(float dTime)
 
 			if(Input::IsMouseKeyPressed(MOUSE_R)) {
 				//inv->GetItemAt()
-				InventoryItem* invItem;
-				if(inv->GetHeldItem(&invItem) && invItem->type==InventoryItem::Type::BLOCK) {
 
-					AABB targetBlockAABB = AABB(lookHitPoint + lookHitNormal + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
-					if(!targetBlockAABB.Intersects(aabb)) {
-						chunkManager->SetBlockAtWorldPos(lookHitPoint + lookHitNormal, (BlockID)invItem->ID);
-						//inv->SubItem((BlockID)invItem->ID);
-						/*invItem->amount -= 1;
-						if(invItem->amount<=0) inv->ClearEmptyItems();*/
-						inv->SubHeldItem(1, invItem);
+				if(Block::CallBlockAction(lookHitBlock, this, inv, chunkManager, lookHitPoint)) {
+
+				}
+				else {
+					InventoryItem* invItem;
+					if(inv->GetHeldItem(&invItem) && invItem->type==InventoryItem::Type::BLOCK) {
+
+						AABB targetBlockAABB = AABB(lookHitPoint + lookHitNormal + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
+						if(!targetBlockAABB.Intersects(aabb)) {
+							chunkManager->SetBlockAtWorldPos(lookHitPoint + lookHitNormal, (BlockID)invItem->ID);
+							//inv->SubItem((BlockID)invItem->ID);
+							/*invItem->amount -= 1;
+							if(invItem->amount<=0) inv->ClearEmptyItems();*/
+							inv->SubHeldItem(1, invItem);
+						}
 					}
 				}
+
+
 
 			}
 		}

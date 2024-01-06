@@ -22,6 +22,9 @@ map<string, LootTable> LootTable::map = {
 	{"TITANIUM", {{
 		{RAW_TITANIUM, 1}
 	}}},
+	{"LIT_FURNACE", {{
+		{FURNACE, 1}
+	}}},
 
 	//{"STONE", LootTable({
 	//	TableElement(COBBLESTONE, 1)
