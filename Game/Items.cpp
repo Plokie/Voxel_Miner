@@ -1,8 +1,10 @@
 #include "Items.h"
 
+#include "Inventory.h"
 
-
-
+map<ItemID, BlockAction> Item::itemActions = {
+	
+};
 
 
 
@@ -61,4 +63,19 @@ const Item& ItemDef::Get(ItemID id)
 		return it->second;
 	}
 	return defs.at(ITEMERR);
+}
+
+bool Item::CallItemAction(ItemID itemID, PlayerController* playerController, Inventory* inv, ChunkManager* chunkManager, Vector3Int targetBlockPos) {
+	const Item& def = ItemDef::Get(itemID);
+	if(def.itemType == FOOD && inv->GetHunger() < HUNGER_MAX) {
+		inv->ChangeHunger(def.tier);
+		inv->SubHeldItem(); // this could cause logic errors when using an item that isnt held. But i dont see that happening
+	}
+
+	auto it = itemActions.find(itemID);
+	if(it != itemActions.end()) {
+		it->second.Invoke({ playerController, inv, chunkManager, targetBlockPos });
+		return true;
+	}
+	return false;
 }

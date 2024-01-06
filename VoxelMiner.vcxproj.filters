@@ -192,6 +192,9 @@
     <ClCompile Include="Game\BlockAction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Game\ItemAction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\AABB.h">
@@ -366,6 +369,9 @@
       <Filter>Engine\Headers\UI</Filter>
     </ClInclude>
     <ClInclude Include="Game\BlockAction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game\ItemAction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

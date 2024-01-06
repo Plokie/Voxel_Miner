@@ -320,8 +320,13 @@ void Inventory::Update(float dt) {
 	if(hungerDecrementer > 10.f) {
 		hungerDecrementer = 0.f;
 
-		hunger--;
-		InvokeOnHungerChange();
+		if(saturation > 0) {
+			saturation--;
+		}
+		else {
+			hunger--;
+			InvokeOnHungerChange();
+		}
 	}
 }
 

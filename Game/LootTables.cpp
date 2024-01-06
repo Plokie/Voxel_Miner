@@ -26,6 +26,23 @@ map<string, LootTable> LootTable::map = {
 		{FURNACE, 1}
 	}}},
 
+	{"OAK_LEAVES", {{
+		{OAK_LEAVES, 10},
+		{APPLE, 1},
+	}}},
+	{"BIRCH_LEAVES", {{
+		{BIRCH_LEAVES, 10},
+		{APPLE, 1},
+	}}},
+	{"SPRUCE_LEAVES", {{
+		{SPRUCE_LEAVES, 10},
+		{APPLE, 1},
+	}}},
+	{"CHERRY_LEAVES", {{
+		{CHERRY_LEAVES, 10},
+		{APPLE, 1},
+	}}},
+
 	//{"STONE", LootTable({
 	//	TableElement(COBBLESTONE, 1)
 	//})}

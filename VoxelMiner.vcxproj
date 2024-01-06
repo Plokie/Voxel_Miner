@@ -156,6 +156,7 @@
     <ClCompile Include="Game\DroppedItem.cpp" />
     <ClCompile Include="Game\Entity.cpp" />
     <ClCompile Include="Game\HeldItem.cpp" />
+    <ClCompile Include="Game\ItemAction.cpp" />
     <ClCompile Include="Game\Meshes\DroppedItemMesh.cpp" />
     <ClCompile Include="Game\Meshes\HeldItemMesh.cpp" />
     <ClCompile Include="Game\Inventory.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="Engine\UI\Button.h" />
     <ClInclude Include="Game\Entity.h" />
     <ClInclude Include="Game\HeldItem.h" />
+    <ClInclude Include="Game\ItemAction.h" />
     <ClInclude Include="Game\Meshes\DroppedItemMesh.h" />
     <ClInclude Include="Game\Meshes\HeldItemMesh.h" />
     <ClInclude Include="Game\Inventory.h" />

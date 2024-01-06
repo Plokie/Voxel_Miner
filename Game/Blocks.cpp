@@ -6,6 +6,42 @@
 #include "Inventory.h"
 #include "ChunkManager.h"
 
+
+
+//todo: move to recipes
+static map<ItemID, ItemID> cookables = {
+	{RAW_STEAK, COOKED_STEAK},
+	{RAW_CHICKEN, COOKED_CHICKEN},
+	{CARROT, ROASTED_CARROT},
+	{EGG, FRIED_EGG},
+	{APPLE, ROASTED_APPLE},
+
+	{RAW_COPPER, COPPER_BAR},
+	{RAW_GOLD, GOLD_BAR},
+	{RAW_TITANIUM, TITANIUM_BAR},
+};
+
+
+bool LitFurnaceFunc(BlockActionContext ctx) {
+	InventoryItem* heldItem = nullptr;
+	if(ctx.inventory->GetHeldItem(&heldItem)) {
+		if(heldItem->type == InventoryItem::ITEM) {
+			auto it = cookables.find((ItemID)heldItem->ID);
+			if(it != cookables.end()) {
+
+				//if(heldItem->Is(RAW_STEAK)) {
+				ctx.inventory->SubHeldItem();
+				ctx.inventory->AddItem(it->second);
+				return true;
+				//}
+			}
+
+		}
+	}
+	return false;
+}
+
+//todo: move to BlockAction.h/cpp
 map<BlockID, BlockAction> Block::blockActions = {
 	{FURNACE, {[](BlockActionContext ctx) {
 		// code here is called when the block is clicked
@@ -14,23 +50,37 @@ map<BlockID, BlockAction> Block::blockActions = {
 		if(ctx.inventory->GetHeldItem(&heldItem)) {
 			if(heldItem->Is(COAL)) {
 				ctx.inventory->SubHeldItem();
-				ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, LIT_FURNACE);
+				ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, LIT_FURNACE_1);
 			}
 		}
 
 		
 
 	}}},
-	{LIT_FURNACE, {[](BlockActionContext ctx) {
-		// code here is called when the block is clicked
-		InventoryItem* heldItem = nullptr;
-		if(ctx.inventory->GetHeldItem(&heldItem)) {
-			if(heldItem->Is(RAW_STEAK)) {
-				ctx.inventory->SubHeldItem();
-				ctx.inventory->AddItem(COOKED_STEAK);
-			}
+	{LIT_FURNACE_1, {[](BlockActionContext ctx) {
+		if(LitFurnaceFunc(ctx)) {
+			ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, LIT_FURNACE_2);
 		}
-
+	}}},
+	{LIT_FURNACE_2, {[](BlockActionContext ctx) {
+		if(LitFurnaceFunc(ctx)) {
+			ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, LIT_FURNACE_3);
+		}
+	}}},
+	{LIT_FURNACE_3, {[](BlockActionContext ctx) {
+		if(LitFurnaceFunc(ctx)) {
+			ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, LIT_FURNACE_4);
+		}
+	}}},
+	{LIT_FURNACE_4, {[](BlockActionContext ctx) {
+		if(LitFurnaceFunc(ctx)) {
+			ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, LIT_FURNACE_5);
+		}
+	}}},
+	{LIT_FURNACE_5, {[](BlockActionContext ctx) {
+		if(LitFurnaceFunc(ctx)) {
+			ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, FURNACE);
+		}
 	}}}
 };
 
@@ -80,7 +130,7 @@ const map<BlockID, Block> BlockDef::def = {
 		AXE
 	)},
 	{BlockID::OAK_LEAVES,	Block("Oak Leaves", B_CLIP, 0,
-		2, 1
+		2, 1, false, BASICITEM, 0, "OAK_LEAVES"
 	)},
 	{BlockID::OAK_PLANKS,	Block("Oak Planks", B_OPAQUE, 0,
 		3, 1,
@@ -132,7 +182,7 @@ const map<BlockID, Block> BlockDef::def = {
 		AXE
 	)},
 	{BlockID::BIRCH_LEAVES,	Block("Birch Leaves", B_CLIP, 0,
-		2, 2
+		2, 2, false, BASICITEM, 0, "BIRCH_LEAVES"
 	)},
 	{BlockID::BIRCH_PLANKS,	Block("Birch Planks", B_OPAQUE, 0,
 		3, 2,
@@ -148,7 +198,7 @@ const map<BlockID, Block> BlockDef::def = {
 		AXE
 	)},
 	{BlockID::CHERRY_LEAVES,	Block("Cherry Leaves", B_CLIP, 0,
-		2, 4
+		2, 4, false, BASICITEM, 0, "CHERRY_LEAVES"
 	)},
 	{BlockID::CHERRY_PLANKS,	Block("Cherry Planks", B_OPAQUE, 0,
 		3, 4,
@@ -164,7 +214,7 @@ const map<BlockID, Block> BlockDef::def = {
 		AXE
 	)},
 	{BlockID::SPRUCE_LEAVES,	Block("Spruce Leaves", B_CLIP, 0,
-		2, 3
+		2, 3, false, BASICITEM, 0, "SPRUCE_LEAVES"
 	)},
 	{BlockID::SPRUCE_PLANKS,	Block("Spruce Planks", B_OPAQUE, 0,
 		3, 3,
@@ -224,7 +274,31 @@ const map<BlockID, Block> BlockDef::def = {
 		3, 6,
 		false, PICKAXE, 0
 	) },
-	{ BlockID::LIT_FURNACE, Block("Lit Furnace", B_CLIP, 13,
+	{ BlockID::LIT_FURNACE_1, Block("Lit Furnace 1", B_OPAQUE, 13,
+		3, 6,
+		2, 6,
+		3, 6,
+		false, PICKAXE, 0, "LIT_FURNACE"
+	) },
+	{ BlockID::LIT_FURNACE_2, Block("Lit Furnace 2", B_OPAQUE, 13,
+		3, 6,
+		2, 6,
+		3, 6,
+		false, PICKAXE, 0, "LIT_FURNACE"
+	) },
+	{ BlockID::LIT_FURNACE_3, Block("Lit Furnace 3", B_OPAQUE, 13,
+		3, 6,
+		2, 6,
+		3, 6,
+		false, PICKAXE, 0, "LIT_FURNACE"
+	) },
+	{ BlockID::LIT_FURNACE_4, Block("Lit Furnace 4", B_OPAQUE, 13,
+		3, 6,
+		2, 6,
+		3, 6,
+		false, PICKAXE, 0, "LIT_FURNACE"
+	) },
+	{ BlockID::LIT_FURNACE_5, Block("Lit Furnace 5", B_OPAQUE, 13,
 		3, 6,
 		2, 6,
 		3, 6,

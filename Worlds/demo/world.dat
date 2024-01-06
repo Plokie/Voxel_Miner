@@ -343,7 +343,7 @@
   ],
   "inventory": {
     "health": 20,
-    "hunger": 3,
+    "hunger": 20,
     "items": [
       {
         "ID": 9,
@@ -388,13 +388,6 @@
         "type": 1
       },
       {
-        "ID": 31,
-        "amount": 76,
-        "posX": 1,
-        "posY": 3,
-        "type": 1
-      },
-      {
         "ID": 1,
         "amount": 99,
         "posX": 2,
@@ -403,7 +396,7 @@
       },
       {
         "ID": 21,
-        "amount": 62,
+        "amount": 61,
         "posX": 0,
         "posY": 4,
         "type": 1
@@ -537,8 +530,8 @@
       {
         "ID": 31,
         "amount": 100,
-        "posX": 7,
-        "posY": 0,
+        "posX": 8,
+        "posY": 1,
         "type": 1
       },
       {
@@ -550,40 +543,68 @@
       },
       {
         "ID": 1,
-        "amount": 37,
-        "posX": 3,
+        "amount": 26,
+        "posX": 7,
         "posY": 0,
         "type": 0
       },
       {
         "ID": 4,
         "amount": 42,
-        "posX": 5,
-        "posY": 0,
+        "posX": 6,
+        "posY": 1,
         "type": 1
       },
       {
         "ID": 23,
-        "amount": 10,
-        "posX": 4,
+        "amount": 62,
+        "posX": 8,
         "posY": 0,
         "type": 0
       },
       {
-        "ID": 40,
+        "ID": 31,
+        "amount": 2,
+        "posX": 3,
+        "posY": 3,
+        "type": 0
+      },
+      {
+        "ID": 25,
         "amount": 5,
         "posX": 6,
-        "posY": 0,
-        "type": 1
+        "posY": 4,
+        "type": 0
+      },
+      {
+        "ID": 29,
+        "amount": 3,
+        "posX": 5,
+        "posY": 4,
+        "type": 0
+      },
+      {
+        "ID": 27,
+        "amount": 4,
+        "posX": 3,
+        "posY": 2,
+        "type": 0
+      },
+      {
+        "ID": 22,
+        "amount": 6,
+        "posX": 1,
+        "posY": 3,
+        "type": 0
       }
     ],
-    "saturation": 0,
+    "saturation": 6,
     "score": 99
   },
   "playerPos": [
-    -1.2682743072509766,
-    68.56922912597656,
-    -221.05686950683594
+    -1.907030701637268,
+    69.57014465332031,
+    -224.15695190429688
   ],
   "seed": 1243144104,
   "worldName": "demo"

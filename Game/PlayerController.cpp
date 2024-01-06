@@ -292,8 +292,7 @@ void PlayerController::Update(float dTime)
 				}
 				else {
 					InventoryItem* invItem;
-					if(inv->GetHeldItem(&invItem) && invItem->type==InventoryItem::Type::BLOCK) {
-
+					if(inv->GetHeldItem(&invItem) && invItem->type == InventoryItem::Type::BLOCK) {
 						AABB targetBlockAABB = AABB(lookHitPoint + lookHitNormal + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
 						if(!targetBlockAABB.Intersects(aabb)) {
 							chunkManager->SetBlockAtWorldPos(lookHitPoint + lookHitNormal, (BlockID)invItem->ID);
@@ -314,6 +313,12 @@ void PlayerController::Update(float dTime)
 		blockSelectRef->models[0]->alpha = 0.0f;
 	}
 
+	if(Input::IsMouseKeyPressed(MOUSE_R)) {
+		InventoryItem* invItem; // should get it again here since actions are called before this. Item in hand COULD disappear
+		if(inv->GetHeldItem(&invItem) && invItem->type == InventoryItem::ITEM) {
+			Item::CallItemAction((ItemID)invItem->ID, this, inv, chunkManager, lookHitPoint);
+		}
+	}
 
 	// DEBUG INFO
 	fpsCounter->SetText(to_string(static_cast<int>(roundf(1.f / dTime))));

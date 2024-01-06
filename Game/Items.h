@@ -3,6 +3,12 @@
 #include <map>
 #include <string>
 #include "ItemTypes.h"
+#include "../Engine/MathUtil.h"
+
+class BlockAction;
+class PlayerController;
+class Inventory;
+class ChunkManager;
 
 #define ITEM_ATLAS_SIZE 256
 #define ITEM_ATLAS_TILE_SIZE 16
@@ -33,6 +39,8 @@ private:
 	int maxStack;
 	int tier;
 	ItemType itemType = ItemType::BASICITEM;
+
+	static map<ItemID, BlockAction> itemActions;
 public:
 	Item(string name, int uvX, int uvY, int maxStack=MAX_STACK, ItemType itemType = ItemType::BASICITEM, int tier = 0) : name(name), uvX(uvX), uvY(uvY), maxStack(maxStack), itemType(itemType), tier(tier) {}
 
@@ -42,6 +50,8 @@ public:
 	const int GetMaxStack() const { return maxStack; }
 	const ItemType GetItemType() const { return itemType; }
 	const int GetTier() const { return tier; }
+
+	static bool CallItemAction(ItemID itemID, PlayerController* playerController, Inventory* inv, ChunkManager* chunkManager, Vector3Int targetBlockPos);
 };
 
 class ItemDef {

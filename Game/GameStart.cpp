@@ -93,7 +93,7 @@ void GameStart(Engine* engine) {
 	Label* scoreLabel = (Label*)gameScene->CreateObject2D(new Label(L"Data\\Fonts\\Baloo2.spritefont", XMFLOAT4(0, 0, 0, 1.0f)), "score");
 	scoreLabel->SetAnchor({ 1.f, 0.f });
 	scoreLabel->SetPivot(1.f, 0.f);
-	scoreLabel->SetPosition({ -20.f, 0.f });
+	scoreLabel->SetPosition({ -20.f, 90.f });
 	scoreLabel->SetText("Score: 0");
 	scoreLabel->SetColour(1.0f, 1.0f, 1.0f, 1.0f);
 	inventory->AddOnScoreChangeEvent([scoreLabel](int score) {

@@ -77,16 +77,24 @@ public:
 		_onScoreChangeEvents.emplace_back(func);
 	}
 
-	void SetHealth(int amt) { health = amt; InvokeOnScoreChange(); }
+	void SetHealth(int amt) { health = amt; InvokeOnHealthChange(); }
 	const int GetHealth() const { return health; }
-	void ChangeHealth(int amt) { health += amt; InvokeOnScoreChange(); }
+	void ChangeHealth(int amt) { health += amt; InvokeOnHealthChange(); }
 	void AddOnHealthChangeEvent(function<void(int)> func) {
 		_onHealthChangeEvents.emplace_back(func);
 	}
 
-	void SetHunger(int amt) { hunger = amt; InvokeOnScoreChange(); }
+	void SetHunger(int amt) { hunger = amt; InvokeOnHungerChange(); }
 	const int GetHunger() const { return hunger; }
-	void ChangeHunger(int amt) { hunger += amt; InvokeOnScoreChange(); }
+	void ChangeHunger(int amt, bool saturate=true) { 
+		hunger += amt; 
+		hunger = min(hunger, HUNGER_MAX);
+		if(saturate) {
+			saturation += amt;
+			saturation = min(saturation, HUNGER_MAX/2);
+		}
+		InvokeOnHungerChange();
+	}
 	void AddOnHungerChangeEvent(function<void(int)> func) {
 		_onHungerChangeEvents.emplace_back(func);
 	}

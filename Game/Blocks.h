@@ -42,7 +42,8 @@ enum BlockID : unsigned short {
 
 	GRAVEL, LAVA,
 
-	FURNACE, LIT_FURNACE
+	FURNACE,
+	LIT_FURNACE_1, LIT_FURNACE_2, LIT_FURNACE_3, LIT_FURNACE_4, LIT_FURNACE_5,
 };
 
 class Block {
@@ -60,6 +61,8 @@ private:
 	bool hasShell = false;
 	ItemType mineType = ItemType::BASICITEM;
 	string lootTable = "";
+
+	static map<BlockID, BlockAction> blockActions;
 public:
 
 	Block(string _Name,
@@ -121,7 +124,7 @@ public:
 	const int GetBottUVidx() const;
 	const int GetBottUVidy() const;
 
-	static map<BlockID, BlockAction> blockActions;
+	
 	static bool CallBlockAction(BlockID blockID, PlayerController* playerController, Inventory* inv, ChunkManager* chunkManager, Vector3Int blockPos);
 };
 

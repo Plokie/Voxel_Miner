@@ -28,11 +28,42 @@ vector<Category> Crafting::categories = {
 	}},
 	{"Misc", {
 		{"FURNACE","FURNACE_BLACKSTONE"},
+		{"DEBUG_RECIPE_1","DEBUG_RECIPE_2","DEBUG_RECIPE_3","DEBUG_RECIPE_4","DEBUG_RECIPE_5"}
 	}},
 };
 
 map<string, Recipe> Recipe::recipes = {
-	//todo: furnaces
+	{"DEBUG_RECIPE_1", {
+		{RAW_STEAK,1}, // Result (single RecipeComponent)
+		{ // Input (vector of RecipeComponents)
+			{COBBLESTONE,1}
+		}
+	}},
+	{"DEBUG_RECIPE_2", {
+		{RAW_CHICKEN,1}, // Result (single RecipeComponent)
+		{ // Input (vector of RecipeComponents)
+			{COBBLESTONE,1}
+		}
+	}},
+	{"DEBUG_RECIPE_3", {
+		{EGG,1}, // Result (single RecipeComponent)
+		{ // Input (vector of RecipeComponents)
+			{COBBLESTONE,1}
+		}
+	}},
+	{"DEBUG_RECIPE_4", {
+		{CARROT,1}, // Result (single RecipeComponent)
+		{ // Input (vector of RecipeComponents)
+			{COBBLESTONE,1}
+		}
+	}},
+	{"DEBUG_RECIPE_5", {
+		{APPLE,1}, // Result (single RecipeComponent)
+		{ // Input (vector of RecipeComponents)
+			{COBBLESTONE,1}
+		}
+	}},
+
 	{"STONE_COBBLE", {
 		{STONE,5}, // Result (single RecipeComponent)
 		{ // Input (vector of RecipeComponents)
