@@ -10,7 +10,8 @@
 #include "Items.h"
 #include "Blocks.h"
 #include "HeldItem.h"
-#include "CraftingUI.h"
+//#include "CraftingUI.h"
+#include "TableInterface.h"
 
 InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 	inventory = gameScene->GetObject3D<Inventory>("Inventory");
@@ -131,15 +132,16 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 		}
 	}
 
-	CraftingUI* invCraftingUI = (CraftingUI*)gameScene->CreateObject2D(new CraftingUI(), "invCrafting");
+	/*CraftingUI* invCraftingUI = (CraftingUI*)gameScene->CreateObject2D(new CraftingUI(), "invCrafting");
 	invCraftingUI->SetParent(invBg);
 	invCraftingUI->SetPivot(0.5f, 0.0f);
 	invCraftingUI->SetAnchor(0.5f, 0.f);
 	invCraftingUI->SetDimensions({ 550.f, 265.f });
 	invCraftingUI->SetPosition(0.f, 10.f);
 	invCraftingUI->SetDepth(11.f);
-	invCraftingUI->Create();
-
+	invCraftingUI->Create();*/
+	//CraftingUI* invCraftingUI = (CraftingUI*)gameScene->CreateObject2D(new CraftingUI(), "invCrafting");
+	//invCraftingUI->SetP
 }
 
 InventoryUI::~InventoryUI() {
@@ -281,6 +283,8 @@ void InventoryUI::ReleaseItem(ItemIcon* invItem) {
 	}
 }
 
+
+
 void InventoryUI::Open() {
 	isOpen = true;
 	invBg->SetEnabled(true);
@@ -312,13 +316,26 @@ void InventoryUI::Open() {
 
 		_spawnedIcons.push_back(icon);
 	}
-	
+}
+
+void InventoryUI::Open(TableInterface* tableInterface, InterfaceContext ctx) {
+	Open();
+
+	currentInterface = tableInterface;
+	tableInterface->Open(ctx);
+	tableInterface->SetParent(invBg);
 }
 
 void InventoryUI::Close() {
 	isOpen = false;
 	invBg->SetEnabled(false);
 	Input::SetMouseLocked(true);
+
+	if(currentInterface) {
+		currentInterface->Close();
+		delete currentInterface;
+		currentInterface = nullptr;
+	}
 
 	//todo: throw held item to floor
 	if(heldItem) {
@@ -363,6 +380,10 @@ void InventoryUI::Update(const float dTime) {
 			continue;
 		icon->Update(dTime);
 	}
+
+	if(currentInterface) {
+		currentInterface->Update(dTime);
+	}
 }
 
 void InventoryUI::Start() {
@@ -376,6 +397,10 @@ void InventoryUI::Draw(SpriteBatch* spriteBatch) {
 
 	for(auto& itemIcon : _hotbarIcons) {
 		itemIcon->Draw(spriteBatch);
+	}
+
+	if(currentInterface) {
+		currentInterface->Draw(spriteBatch);
 	}
 }
 

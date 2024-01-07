@@ -3,6 +3,7 @@
 #include <vector>
 #include "../Engine/Object2D.h"
 #include "Inventory.h"
+#include "TableInterface.h"
 
 class Engine;
 class Scene;
@@ -27,6 +28,8 @@ private:
 
 	bool isOpen = false;
 
+	TableInterface* currentInterface = nullptr;
+
 	// held item by the mouse when in inventory ui
 public:
 	ItemIcon* heldItem = nullptr;
@@ -47,6 +50,7 @@ public:
 	void ReleaseItem(ItemIcon* invItem);
 
 	void Open();
+	void Open(TableInterface* tableInterface, InterfaceContext ctx);
 	void Close();
 	void ReloadIcons();
 	void Update(const float dTime) override;

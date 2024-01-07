@@ -1,11 +1,10 @@
 #include "CraftingUI.h"
 
-#include "../Engine/Engine.h"
 #include "Crafting.h"
-#include "ItemIcon.h"
+#include "../Engine/Engine.h"
 #include "../Graphics/Graphics.h"
+#include "ItemIcon.h"
 #include "Inventory.h"
-#include "../Engine/UI/Button.h"
 #include "InventoryUI.h"
 
 void CraftingUI::DeleteCategoryObjects() {
@@ -33,74 +32,15 @@ void CraftingUI::DeleteRecipeObjects()
 	if(craftButton) delete craftButton;
 }
 
-CraftingUI::CraftingUI() {
-	SetTexture("white");
-	SetColour(0.5f, 0.5f, 0.5f, 1.f); // debug colour
-	//tabs = HorizontalLayoutRect({ 1.f,1.f,1.f,1.f });
-
+void CraftingUI::Start()
+{
 }
 
-CraftingUI::~CraftingUI(){
-	for(auto& buttonPtr : _spawnedTabs) {
-		delete buttonPtr;
-		buttonPtr = nullptr;
-	}
-	_spawnedTabs.clear();
-
-	DeleteCategoryObjects();
-	DeleteRecipeObjects();
-}
-
-void CraftingUI::Create() {
-	//tabs.Init(Graphics::Get()->GetDevice());
-	//tabs.SetDimensions({550.f, 50.f});
-	//tabs.SetAnchor(0.5f, 0.f);
-	//tabs.SetPivot(0.5f, 0.f);
-	//tabs.SetParent(this);
-	//tabs.SetDepth(12.f);
-
-	for(const Category& category : Crafting::categories) {
-		int index = static_cast<int>(_spawnedTabs.size());
-
-		Button* tab = new Button("Baloo");
-		tab->Init(Graphics::Get()->GetDevice());
-		tab->SetDimensions({ 100.f, 30.f });
-		tab->SetDepth(13.f);
-		tab->SetParent(this);
-		tab->SetPivot(0.0f, 0.f);
-		tab->SetAnchor(0.0f, 0.0f);
-		tab->SetText(category.name);
-		tab->SetPosition(110.f * index, 0.f);
-		tab->SetBgColour(0.4f, 0.4f, 0.4f, 1.0f);
-		tab->SetTextColour(1.f, 1.f, 1.f, 1.f);
-
-		_spawnedTabs.push_back(tab);
-		//_spawnedTabs[tab] = &category;
-
-		tab->AddListener([this, &category] {
-			this->LoadCategory(&category);
-		});
-	}
-
-	recipeDisplayBg = new UIRect("white", {0.4f, 0.4f, 0.4f, 1.0f});
-	recipeDisplayBg->Init(Graphics::Get()->GetDevice());
-	recipeDisplayBg->SetAnchor(1.f, 0.f);
-	recipeDisplayBg->SetPivot(0.5f, 0.5f);
-	recipeDisplayBg->SetParent(this);
-	recipeDisplayBg->SetPosition(-100.f, 150.f);
-	recipeDisplayBg->SetDimensions({ 200.f, 200.f });
-	recipeDisplayBg->SetDepth(12.f);
-
-	for(auto& tab : _spawnedTabs) {
-		tab->SetText(tab->GetText());
-	}
-}
-
-void CraftingUI::LoadCategory(const Category* category) {
+void CraftingUI::LoadCategory(const Category& category) {
 	DeleteCategoryObjects();
 
 	int index = 0;
-	for(const auto& recipeArray : category->recipes) {
+	for(const auto& recipeArray : category.recipes) {
 		//todo: make other recipes within array (scroll up/down thing to variations)
 		//if(recipeArray.size() == 0) continue;
 		//for(int i = 0; i < ; i++) {
@@ -149,8 +89,8 @@ void CraftingUI::LoadCategory(const Category* category) {
 void CraftingUI::SelectRecipe(const Recipe& recipe) {
 	DeleteRecipeObjects();
 
-	if(inventory == nullptr) {
-		inventory = (Inventory*)Engine::Get()->GetScene("game")->GetObject3D("Inventory");
+	if(playerInv == nullptr) {
+		playerInv = (Inventory*)Engine::Get()->GetScene("game")->GetObject3D("Inventory");
 	}
 
 	craftButton = new Button("Baloo");
@@ -163,15 +103,17 @@ void CraftingUI::SelectRecipe(const Recipe& recipe) {
 	craftButton->SetPosition(0.f, -30.f);
 	craftButton->SetText("Craft");
 
-	if(inventory->CanCraft(recipe)) {
+	if(playerInv->CanCraft(recipe)) {
 		craftButton->SetTextColour(1.f,1.f,1.f,1.f);
 		craftButton->SetBgColour(0.5f,.5f,.5f,1.f );
 
 		craftButton->AddListener([recipe] {
 			((Inventory*)Engine::Get()->GetScene("game")->GetObject3D("Inventory"))->TryCraft(recipe);
 			InventoryUI* invUI = (InventoryUI*)Engine::Get()->GetScene("game")->GetObject2D("invUI");
-			invUI->Close();
-			invUI->Open();
+
+			/*invUI->Close();
+			invUI->Open();*/
+			invUI->ReloadIcons();
 		});
 	}
 	else {
@@ -198,6 +140,46 @@ void CraftingUI::SelectRecipe(const Recipe& recipe) {
 	}
 }
 
+void CraftingUI::Open(InterfaceContext ctx) {
+	TableInterface::Start();
+
+	for(const Category& category : Crafting::categories) {
+		int index = static_cast<int>(_spawnedTabs.size());
+	
+		Button* tab = new Button("Baloo");
+		tab->Init(Graphics::Get()->GetDevice());
+		tab->SetDimensions({ 100.f, 30.f });
+		tab->SetDepth(13.f);
+		tab->SetParent(this);
+		tab->SetPivot(0.0f, 0.f);
+		tab->SetAnchor(0.0f, 0.0f);
+		tab->SetText(category.name);
+		tab->SetPosition(110.f * index, 0.f);
+		tab->SetBgColour(0.4f, 0.4f, 0.4f, 1.0f);
+		tab->SetTextColour(1.f, 1.f, 1.f, 1.f);
+	
+		_spawnedTabs.push_back(tab);
+		//_spawnedTabs[tab] = &category;
+	
+		tab->AddListener([this, category] {
+			this->LoadCategory(category);
+		});
+	}
+	
+	recipeDisplayBg = new UIRect("white", {0.4f, 0.4f, 0.4f, 1.0f});
+	recipeDisplayBg->Init(Graphics::Get()->GetDevice());
+	recipeDisplayBg->SetAnchor(1.f, 0.f);
+	recipeDisplayBg->SetPivot(0.5f, 0.5f);
+	recipeDisplayBg->SetParent(this);
+	recipeDisplayBg->SetPosition(-100.f, 150.f);
+	recipeDisplayBg->SetDimensions({ 200.f, 200.f });
+	recipeDisplayBg->SetDepth(12.f);
+	
+	for(auto& tab : _spawnedTabs) {
+		tab->SetText(tab->GetText());
+	}
+}
+
 void CraftingUI::Update(const float dt) {
 	for(auto& btn : _spawnedTabs) {
 		btn->Update(dt);
@@ -218,8 +200,22 @@ void CraftingUI::Update(const float dt) {
 	if(craftButton) craftButton->Update(dt);
 }
 
+void CraftingUI::Close()
+{
+	TableInterface::Close();
+
+	for(auto& buttonPtr : _spawnedTabs) {
+		delete buttonPtr;
+		buttonPtr = nullptr;
+	}
+	_spawnedTabs.clear();
+		
+	DeleteCategoryObjects();
+	DeleteRecipeObjects();
+}
+
 void CraftingUI::Draw(SpriteBatch* spriteBatch) {
-	UIRect::Draw(spriteBatch);
+	//UIRect::Draw(spriteBatch);
 	recipeDisplayBg->Draw(spriteBatch);
 	for(auto& ptr : _spawnedRecipeIcons) {
 		ptr->Draw(spriteBatch);
@@ -240,6 +236,4 @@ void CraftingUI::Draw(SpriteBatch* spriteBatch) {
 	for(auto& ptr : _spawnedItemIcons) {
 		ptr->Draw(spriteBatch);
 	}
-
 }
-

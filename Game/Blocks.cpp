@@ -8,82 +8,27 @@
 
 
 
-//todo: move to recipes
-static map<ItemID, ItemID> cookables = {
-	{RAW_STEAK, COOKED_STEAK},
-	{RAW_CHICKEN, COOKED_CHICKEN},
-	{CARROT, ROASTED_CARROT},
-	{EGG, FRIED_EGG},
-	{APPLE, ROASTED_APPLE},
-
-	{RAW_COPPER, COPPER_BAR},
-	{RAW_GOLD, GOLD_BAR},
-	{RAW_TITANIUM, TITANIUM_BAR},
-};
 
 
-bool LitFurnaceFunc(BlockActionContext ctx) {
-	InventoryItem* heldItem = nullptr;
-	if(ctx.inventory->GetHeldItem(&heldItem)) {
-		if(heldItem->type == InventoryItem::ITEM) {
-			auto it = cookables.find((ItemID)heldItem->ID);
-			if(it != cookables.end()) {
 
-				//if(heldItem->Is(RAW_STEAK)) {
-				ctx.inventory->SubHeldItem();
-				ctx.inventory->AddItem(it->second);
-				return true;
-				//}
-			}
-
-		}
-	}
-	return false;
-}
-
-//todo: move to BlockAction.h/cpp
-map<BlockID, BlockAction> Block::blockActions = {
-	{FURNACE, {[](BlockActionContext ctx) {
-		// code here is called when the block is clicked
-
-		InventoryItem* heldItem = nullptr;
-		if(ctx.inventory->GetHeldItem(&heldItem)) {
-			if(heldItem->Is(COAL)) {
-				ctx.inventory->SubHeldItem();
-				ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, LIT_FURNACE_1);
-			}
-		}
-
-		
-
-	}}},
-	{LIT_FURNACE_1, {[](BlockActionContext ctx) {
-		if(LitFurnaceFunc(ctx)) {
-			ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, LIT_FURNACE_2);
-		}
-	}}},
-	{LIT_FURNACE_2, {[](BlockActionContext ctx) {
-		if(LitFurnaceFunc(ctx)) {
-			ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, LIT_FURNACE_3);
-		}
-	}}},
-	{LIT_FURNACE_3, {[](BlockActionContext ctx) {
-		if(LitFurnaceFunc(ctx)) {
-			ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, LIT_FURNACE_4);
-		}
-	}}},
-	{LIT_FURNACE_4, {[](BlockActionContext ctx) {
-		if(LitFurnaceFunc(ctx)) {
-			ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, LIT_FURNACE_5);
-		}
-	}}},
-	{LIT_FURNACE_5, {[](BlockActionContext ctx) {
-		if(LitFurnaceFunc(ctx)) {
-			ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, FURNACE);
-		}
-	}}}
-};
-
+//bool LitFurnaceFunc(BlockActionContext ctx) {
+//	InventoryItem* heldItem = nullptr;
+//	if(ctx.inventory->GetHeldItem(&heldItem)) {
+//		if(heldItem->type == InventoryItem::ITEM) {
+//			auto it = cookables.find((ItemID)heldItem->ID);
+//			if(it != cookables.end()) {
+//
+//				//if(heldItem->Is(RAW_STEAK)) {
+//				ctx.inventory->SubHeldItem();
+//				ctx.inventory->AddItem(it->second);
+//				return true;
+//				//}
+//			}
+//
+//		}
+//	}
+//	return false;
+//}
 
 //todo: database?
 // json parser perhaps
@@ -274,36 +219,36 @@ const map<BlockID, Block> BlockDef::def = {
 		3, 6,
 		false, PICKAXE, 0
 	) },
-	{ BlockID::LIT_FURNACE_1, Block("Lit Furnace 1", B_OPAQUE, 13,
+	{ BlockID::LIT_FURNACE, Block("Lit Furnace", B_OPAQUE, 13,
 		3, 6,
 		2, 6,
 		3, 6,
 		false, PICKAXE, 0, "LIT_FURNACE"
 	) },
-	{ BlockID::LIT_FURNACE_2, Block("Lit Furnace 2", B_OPAQUE, 13,
-		3, 6,
-		2, 6,
-		3, 6,
-		false, PICKAXE, 0, "LIT_FURNACE"
-	) },
-	{ BlockID::LIT_FURNACE_3, Block("Lit Furnace 3", B_OPAQUE, 13,
-		3, 6,
-		2, 6,
-		3, 6,
-		false, PICKAXE, 0, "LIT_FURNACE"
-	) },
-	{ BlockID::LIT_FURNACE_4, Block("Lit Furnace 4", B_OPAQUE, 13,
-		3, 6,
-		2, 6,
-		3, 6,
-		false, PICKAXE, 0, "LIT_FURNACE"
-	) },
-	{ BlockID::LIT_FURNACE_5, Block("Lit Furnace 5", B_OPAQUE, 13,
-		3, 6,
-		2, 6,
-		3, 6,
-		false, PICKAXE, 0, "LIT_FURNACE"
-	) },
+	//{ BlockID::LIT_FURNACE_2, Block("Lit Furnace 2", B_OPAQUE, 13,
+	//	3, 6,
+	//	2, 6,
+	//	3, 6,
+	//	false, PICKAXE, 0, "LIT_FURNACE"
+	//) },
+	//{ BlockID::LIT_FURNACE_3, Block("Lit Furnace 3", B_OPAQUE, 13,
+	//	3, 6,
+	//	2, 6,
+	//	3, 6,
+	//	false, PICKAXE, 0, "LIT_FURNACE"
+	//) },
+	//{ BlockID::LIT_FURNACE_4, Block("Lit Furnace 4", B_OPAQUE, 13,
+	//	3, 6,
+	//	2, 6,
+	//	3, 6,
+	//	false, PICKAXE, 0, "LIT_FURNACE"
+	//) },
+	//{ BlockID::LIT_FURNACE_5, Block("Lit Furnace 5", B_OPAQUE, 13,
+	//	3, 6,
+	//	2, 6,
+	//	3, 6,
+	//	false, PICKAXE, 0, "LIT_FURNACE"
+	//) },
 };
 
 const int Block::LightValue() const {
@@ -327,15 +272,6 @@ const int Block::GetBottUVidx() const {
 }
 const int Block::GetBottUVidy() const {
 	return this->bottUvIdY;
-}
-
-bool Block::CallBlockAction(BlockID blockID, PlayerController* playerController, Inventory* inv, ChunkManager* chunkManager, Vector3Int blockPos) {
-	auto it = blockActions.find(blockID);
-	if(it != blockActions.end()) {
-		it->second.Invoke({ playerController, inv, chunkManager, blockPos });
-		return true;
-	}
-	return false;
 }
 
 const Block& BlockDef::GetDef(BlockID id)

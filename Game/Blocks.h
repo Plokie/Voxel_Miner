@@ -3,7 +3,6 @@
 #include <map>
 #include <string>
 #include "ItemTypes.h"
-#include "BlockAction.h"
 
 using namespace std;
 
@@ -42,8 +41,7 @@ enum BlockID : unsigned short {
 
 	GRAVEL, LAVA,
 
-	FURNACE,
-	LIT_FURNACE_1, LIT_FURNACE_2, LIT_FURNACE_3, LIT_FURNACE_4, LIT_FURNACE_5,
+	FURNACE, LIT_FURNACE
 };
 
 class Block {
@@ -62,7 +60,7 @@ private:
 	ItemType mineType = ItemType::BASICITEM;
 	string lootTable = "";
 
-	static map<BlockID, BlockAction> blockActions;
+	
 public:
 
 	Block(string _Name,
@@ -122,10 +120,7 @@ public:
 	const int GetSideUVidx() const;
 	const int GetSideUVidy() const;
 	const int GetBottUVidx() const;
-	const int GetBottUVidy() const;
-
-	
-	static bool CallBlockAction(BlockID blockID, PlayerController* playerController, Inventory* inv, ChunkManager* chunkManager, Vector3Int blockPos);
+	const int GetBottUVidy() const;	
 };
 
 class BlockDef {

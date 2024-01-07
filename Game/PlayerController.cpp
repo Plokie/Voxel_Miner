@@ -11,6 +11,7 @@
 #include "LootTables.h"
 #include "Entity.h"
 #include "DroppedItem.h"
+#include "BlockAction.h"
 //#include "ChunkDatabase.h"
 
 #include "../Audio/Audio.h"
@@ -308,7 +309,7 @@ void PlayerController::Update(float dTime)
 			if(Input::IsMouseKeyPressed(MOUSE_R)) {
 				//inv->GetItemAt()
 
-				if(Block::CallBlockAction(lookHitBlock, this, inv, chunkManager, lookHitPoint)) {
+				if(BlockAction::CallBlockAction(lookHitBlock, this, inv, chunkManager, lookHitPoint)) {
 
 				}
 				else {

@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include "ItemTypes.h"
+#include "BlockAction.h"
 #include "../Engine/MathUtil.h"
 
 class BlockAction;
