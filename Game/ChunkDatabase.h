@@ -17,6 +17,7 @@ using namespace std;
 
 //fwd dec
 class Chunk;
+class BlockData;
 
 class WorldData {
 	string name;
@@ -38,6 +39,9 @@ private:
 	void SaveChunkIntoFile(const Vector3Int& chunkIndex, BlockID chunkDataArray[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z]);
 	void LoadChunkFromFile(const Vector3Int& chunkIndex, BlockID chunkDataArray[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z]);
 
+	void SaveChunkBlockDataDataIntoFile(const Vector3Int& chunkIndex, map<tuple<int, int, int>, BlockData*>& blockDataData);
+	void LoadChunkBlockDataDataFromFile(const Vector3Int& chunkIndex, map<tuple<int, int, int>, BlockData*>& blockDataData);
+
 	void TryLoadChunkHash();
 
 	bool hasLoadedChunkHash = false;
@@ -49,6 +53,7 @@ private:
 public:
 	SRWLOCK chunkHashMutex = {};
 	map<tuple<int, int, int>, Chunk*> chunkHash = {}; // todo: move back to private
+	map<tuple<int, int, int>, Chunk*> chunksWithBlockData = {};
 
 	ChunkDatabase();
 	~ChunkDatabase();

@@ -141,7 +141,7 @@ void CraftingUI::SelectRecipe(const Recipe& recipe) {
 }
 
 void CraftingUI::Open(InterfaceContext ctx) {
-	TableInterface::Start();
+	TableInterface::Open(ctx);
 
 	vector<Category>* categoriesTarget = &Crafting::workbenchCategories;
 	if(ctx.blockID == FURNACE || ctx.blockID == LIT_FURNACE)

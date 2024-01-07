@@ -30,6 +30,8 @@ private:
 
 	TableInterface* currentInterface = nullptr;
 
+	void AttemptMoveFromStorage(ItemIcon* itemIcon);
+
 	// held item by the mouse when in inventory ui
 public:
 	ItemIcon* heldItem = nullptr;
@@ -57,7 +59,7 @@ public:
 	void Start() override;
 	void Draw(SpriteBatch* spriteBatch) override;
 
-	void EraseIcon(ItemIcon* icon);
+	bool EraseIcon(ItemIcon* icon);
 
 	void DrawHotbarIcons();
 };

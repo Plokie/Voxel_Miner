@@ -33,6 +33,9 @@ public:
 	const bool WasRightClicked();
 	void Reload();
 
+	void SetInventoryParent(Inventory* inv);
+	Inventory* GetInventoryParent() { return inv; }
+
 	const Vector2 GetScreenPosition() override;
 	void Draw(SpriteBatch* spriteBatch) override;
 	void SetDimensions(const Vector2& dim) override;

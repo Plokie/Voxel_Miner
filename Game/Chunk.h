@@ -2,12 +2,14 @@
 
 #include "../Engine/Engine.h"
 #include "Blocks.h"
+//#include "BlockData.h"
 
 #define CHUNKSIZE_X 16
 #define CHUNKSIZE_Y 16
 #define CHUNKSIZE_Z 16
 
 class ChunkManager;
+class BlockData;
 
 class Chunk : public Object3D {
 public:
@@ -41,6 +43,7 @@ public:
 
 	Vector3Int indexPosition = { 0,0,0 };
 	BlockID blockData[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};
+	map<tuple<int, int, int>, BlockData*> blockDataData; // bad name
 
 	// Lighting
 	int GetBlockLight(const int& x, const int& y, const int& z);
@@ -70,12 +73,5 @@ public:
 	void Update(float dTime) override;
 
 	Chunk(Vector3Int ChunkIndexPos, ChunkManager* chnkMgr) : Object3D(), indexPosition(ChunkIndexPos), chunkManager(chnkMgr) {}
-	~Chunk() {
-		for(Model*& model : models) {
-			//model->~Model();
-			delete model;
-			model = nullptr;
-		}
-		models.clear();
-	}
+	~Chunk();
 };

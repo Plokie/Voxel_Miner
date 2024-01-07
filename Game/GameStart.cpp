@@ -34,6 +34,7 @@ void LoadResources() {
 	//Resources::LoadTexture(L"Data\\Textures\\grass2.dds", "grass");
 	Resources::LoadTexture(L"Data\\Textures\\atlas.dds", "atlas");
 	Resources::LoadTexture(L"Data\\Textures\\item-atlas.dds", "item-atlas");
+	Resources::LoadTexture(L"Data\\Textures\\coal-goes-here.dds", "coal-goes-here");
 
 	Resources::LoadFont(L"Data\\Fonts\\Baloo2.spritefont", "Baloo");
 

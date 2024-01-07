@@ -181,7 +181,39 @@ void InventoryUI::DeleteIcon(ItemIcon* itemIcon) {
 	}
 }
 
+void InventoryUI::AttemptMoveFromStorage(ItemIcon* itemIcon) {
+
+	if(itemIcon->GetInventoryParent() != inventory) {
+		// erase icon from other ui
+		// push to here
+
+		// erase item from other inventory
+		// push to here
+
+		currentInterface->EraseIcon(itemIcon);
+		_spawnedIcons.push_back(itemIcon);
+
+		Inventory* otherInventory = itemIcon->GetInventoryParent();
+		auto it = otherInventory->GetInventoryItems().begin(); // erase invitem from other inventory
+		while(it != otherInventory->GetInventoryItems().end()) {
+			if(*it == heldItem->GetInvItem()) {
+				otherInventory->GetInventoryItems().erase(it);
+				break;
+			}
+			++it;
+		}
+
+		inventory->PushItem(itemIcon->GetInvItem());
+
+		itemIcon->SetInventoryParent(inventory);
+	}
+}
+
 void InventoryUI::ReleaseItem(ItemIcon* invItem) {
+	if(currentInterface) {
+		currentInterface->ReleaseHeldItem();
+	}
+
 	for(int y = 0; y < INVSIZE_Y; y++) {
 		for(int x = 0; x < INVSIZE_X; x++) {
 			if(invSlots[x][y]->IsHovering()) {
@@ -194,6 +226,7 @@ void InventoryUI::ReleaseItem(ItemIcon* invItem) {
 
 						invItem->SetParent(invSlots[x][y]);
 						invItem->isHeld = false;
+						AttemptMoveFromStorage(invItem);
 
 						heldItem = nullptr;
 					}
@@ -271,6 +304,7 @@ void InventoryUI::ReleaseItem(ItemIcon* invItem) {
 
 					invItem->SetParent(invSlots[x][y]);
 					invItem->isHeld = false;
+					AttemptMoveFromStorage(invItem);
 
 					heldItem = nullptr;
 				}
@@ -302,13 +336,13 @@ void InventoryUI::Open() {
 		if(invItem->ID == 56797 || invItem->amount == -572662307 || invItem->posX == -572662307 || invItem->posY== -572662307 || invItem->type == 56797 || invItem->amount < -1) {
 			//assert(false); // this will only be called on debug builds
 
-			//this isnt a fix, its just so the program doesnt crash so i can keep debugging and see what tf happened
 			/*invItem->ID = 0;
 			invItem->amount = 1;
 			invItem->type = InventoryItem::ITEM;
 			Vector2Int freeSpot = this->inventory->GetFreeSpot();
 			invItem->posX = freeSpot.x;
 			invItem->posY = freeSpot.y;*/
+			//this isnt a fix, its just so the program doesnt crash so i can keep debugging and see what tf happened
 			continue;
 		}
 
@@ -375,15 +409,16 @@ void InventoryUI::Update(const float dTime) {
 		else Close();
 	}
 
+	if(currentInterface) {
+		currentInterface->Update(dTime);
+	}
+
 	for(auto& icon : _spawnedIcons) {
 		if(icon == nullptr) 
 			continue;
 		icon->Update(dTime);
 	}
 
-	if(currentInterface) {
-		currentInterface->Update(dTime);
-	}
 }
 
 void InventoryUI::Start() {
@@ -391,6 +426,10 @@ void InventoryUI::Start() {
 }
 
 void InventoryUI::Draw(SpriteBatch* spriteBatch) {
+	if(currentInterface) {
+		currentInterface->Draw(spriteBatch);
+	}
+
 	for(auto& itemIcon : _spawnedIcons) {
 		itemIcon->Draw(spriteBatch);
 	}
@@ -398,20 +437,17 @@ void InventoryUI::Draw(SpriteBatch* spriteBatch) {
 	for(auto& itemIcon : _hotbarIcons) {
 		itemIcon->Draw(spriteBatch);
 	}
-
-	if(currentInterface) {
-		currentInterface->Draw(spriteBatch);
-	}
 }
 
-void InventoryUI::EraseIcon(ItemIcon* icon)
+bool InventoryUI::EraseIcon(ItemIcon* icon)
 {
 	for(auto it = _spawnedIcons.begin(); it != _spawnedIcons.end(); ++it) {
 		if(*it == icon) {
 			_spawnedIcons.erase(it);
-			break;
+			return true;
 		}
 	}
+	return false;
 }
 
 void InventoryUI::DrawHotbarIcons() {

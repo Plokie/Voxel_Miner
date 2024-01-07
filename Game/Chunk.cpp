@@ -3,7 +3,7 @@
 #include "WorldGen.h"
 #include "ChunkManager.h"
 #include "ChunkDatabase.h"
-
+#include "BlockData.h"
 
 void Chunk::Generate()
 {
@@ -28,6 +28,20 @@ void Chunk::Start() {
 }
 
 void Chunk::Update(float dTime) {}
+
+Chunk::~Chunk() {
+	for(Model*& model : models) {
+		//model->~Model();
+		delete model;
+		model = nullptr;
+	}
+	models.clear();
+
+	for(const auto& kvp : blockDataData) {
+		delete kvp.second;
+	}
+	blockDataData.clear();
+}
 
 void Chunk::GenerateBlockData()
 {

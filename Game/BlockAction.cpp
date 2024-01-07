@@ -5,6 +5,11 @@
 #include "Blocks.h"
 #include "ChunkManager.h"
 #include "CraftingUI.h"
+#include "FurnaceUI.h"
+#include "ChestUI.h"
+#include "Chunk.h"
+#include "BlockData.h"
+#include "ChunkDatabase.h"
 
 //todo: move to recipes
 static map<ItemID, ItemID> cookables = {
@@ -26,7 +31,41 @@ map<BlockID, BlockAction> BlockAction::blockActions = {
 	}}},
 	{FURNACE, {[](BlockActionContext ctx) {
 		// code here is called when the block is clicked
-		ctx.invUI->Open(new CraftingUI(), InterfaceContext(ctx.inventory, nullptr, ctx.blockPosition, FURNACE));
+
+		BlockData* blockData = nullptr;
+		Chunk* chunk = ctx.GetChunk();
+		tuple<int, int, int> chunkIndex = ctx.chunkManager->ToChunkIndexPositionTuple(ctx.blockPosition.x, ctx.blockPosition.y, ctx.blockPosition.z);
+		if(chunk) {
+			auto findIt = chunk->blockDataData.find(ctx.blockPosition);
+			if(findIt != chunk->blockDataData.end()) {
+				blockData = findIt->second;
+			}
+
+			if(blockData == nullptr) {
+				chunk->blockDataData[ctx.blockPosition] = new BlockData(new Inventory());
+				ChunkDatabase::Get()->SaveChunkData(chunkIndex, chunk);
+			}
+			ctx.invUI->Open(new FurnaceUI(), InterfaceContext(ctx.inventory, blockData, ctx.blockPosition, FURNACE));
+		}
+	}}},
+	{CHEST, {[](BlockActionContext ctx) {
+		// code here is called when the block is clicked
+
+		BlockData* blockData = nullptr;
+		Chunk* chunk = ctx.GetChunk();
+		tuple<int, int, int> chunkIndex = ctx.chunkManager->ToChunkIndexPositionTuple(ctx.blockPosition.x, ctx.blockPosition.y, ctx.blockPosition.z);
+		if(chunk) {
+			auto findIt = chunk->blockDataData.find(ctx.blockPosition);
+			if(findIt != chunk->blockDataData.end()) {
+				blockData = findIt->second;
+			}
+
+			if(blockData == nullptr) {
+				chunk->blockDataData[ctx.blockPosition] = new BlockData(new Inventory());
+				ChunkDatabase::Get()->SaveChunkData(chunkIndex, chunk);
+			}
+			ctx.invUI->Open(new ChestUI(), InterfaceContext(ctx.inventory, blockData, ctx.blockPosition, CHEST));
+		}
 	}}},
 };
 
@@ -46,4 +85,9 @@ void BlockAction::Invoke(BlockActionContext ctx) {
 
 BlockAction::BlockAction(function<void(BlockActionContext)> func) {
 	this->func = func;
+}
+
+Chunk* BlockActionContext::GetChunk() {
+	tuple<int, int, int> chunkIndex = this->chunkManager->ToChunkIndexPositionTuple(blockPosition.x, blockPosition.y, blockPosition.z);
+	return chunkManager->GetChunk(chunkIndex);
 }

@@ -42,7 +42,8 @@ enum BlockID : unsigned short {
 	GRAVEL, LAVA,
 
 	FURNACE, LIT_FURNACE,
-	WORKBENCH
+	WORKBENCH,
+	CHEST
 };
 
 class Block {

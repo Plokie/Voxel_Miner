@@ -10,24 +10,26 @@ class HorizontalLayoutRect;
 class Button;
 class UIRect;
 class Inventory;
+class InventoryUI;
 class ItemIcon;
+class BlockData;
 
 struct InterfaceContext {
 	Inventory* playerInventory;
-	Inventory* tableInventory;
+	BlockData* blockData;
 	Vector3Int tablePosition;
 	BlockID blockID = BlockID::AIR;
 
-	InterfaceContext(Inventory* playerInventory, Inventory* tableInventory, Vector3Int tablePosition, BlockID blockID) {
+	InterfaceContext(Inventory* playerInventory, BlockData* blockData, Vector3Int tablePosition, BlockID blockID) {
 		this->playerInventory = playerInventory;
-		this->tableInventory = tableInventory;
+		this->blockData = blockData;
 		this->tablePosition = tablePosition;
 		this->blockID = blockID;
 	}
 
 	InterfaceContext(Inventory* playerInventory, BlockID blockID) {
 		this->playerInventory = playerInventory;
-		this->tableInventory = nullptr;
+		this->blockData = nullptr;
 		this->tablePosition = Vector3Int(0,0,0);
 		this->blockID = blockID;
 	}
@@ -35,14 +37,22 @@ struct InterfaceContext {
 
 class TableInterface : public Object2D {
 protected:
-	vector<Button*> slots;
+	vector<Button*> _spawnedSlots;
 	vector<ItemIcon*> _spawnedItemIcons;
-public:
+	BlockData* blockData;
+	InventoryUI* invUI;
 
-	virtual void Open(InterfaceContext ctx) = 0;
+	map<tuple<int, int>, Button*> _indexedSlots;
+
+	Button* MakeSlot(int idx, int idy);
+public:
+	void ReleaseHeldItem();
+	bool EraseIcon(ItemIcon* icon);
+
+	virtual void Open(InterfaceContext ctx);
 	virtual void Close();
 
-	void Start() override;
-	void Update(const float dt) override = 0;
-	void Draw(SpriteBatch* sb) override = 0;
+	void Start() override = 0;
+	void Update(const float dt) override;
+	void Draw(SpriteBatch* sb) override;
 };

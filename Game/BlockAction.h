@@ -10,6 +10,7 @@ class PlayerController;
 class Inventory;
 class ChunkManager;
 class InventoryUI;
+class Chunk;
 
 struct BlockActionContext {
 	PlayerController* playerController;
@@ -17,6 +18,8 @@ struct BlockActionContext {
 	ChunkManager* chunkManager;
 	Vector3Int blockPosition;
 	InventoryUI* invUI = nullptr;
+
+	Chunk* GetChunk();
 };
 
 class BlockAction {

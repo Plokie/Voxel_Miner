@@ -112,8 +112,8 @@ const map<BlockID, Block> BlockDef::def = {
 	)},
 
 	{BlockID::CHERRY_GRASS, Block("Cherry Grass", B_OPAQUE, 0,
-		1, 7,
-		0, 7,
+		1, 6,
+		0, 6,
 		3, 0,
 		true,
 		SHOVEL
@@ -225,10 +225,16 @@ const map<BlockID, Block> BlockDef::def = {
 		3, 6,
 		false, PICKAXE, 0, "LIT_FURNACE"
 	) },
-	{ BlockID::WORKBENCH, Block("Workbench", B_OPAQUE, 13,
+	{ BlockID::WORKBENCH, Block("Workbench", B_OPAQUE, 0,
 		3, 7,
 		2, 7,
 		3, 1,
+		false, AXE, 0
+	) },
+	{ BlockID::CHEST, Block("Chest", B_OPAQUE, 0,
+		3, 8,
+		2, 9,
+		3, 8,
 		false, AXE, 0
 	) },
 };

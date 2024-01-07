@@ -13,10 +13,13 @@ Vector2Int RecipeComponent::GetUVPos() const
 }
 
 vector<Category> Crafting::workbenchCategories = {
-	{"Workbench", {}},
+	//{"Workbench", {}},
 	{"Blocks", {
 		{"OAK_PLANKS", "SPRUCE_PLANKS", "BIRCH_PLANKS", "CHERRY_PLANKS"},
 		{"STONE_COBBLE", "BLACKSTONE_COBBLE"},
+		{"FURNACE","FURNACE_BLACKSTONE"},
+		{"WORKBENCH_OAK", "WORKBENCH_BIRCH", "WORKBENCH_SPRUCE", "WORKBENCH_CHERRY"},
+		{"CHEST_OAK", "CHEST_BIRCH", "CHEST_SPRUCE", "CHEST_CHERRY"},
 	}},
 	{"Tools", {
 		{"OAK_STICKS","CHERRY_STICKS","SPRUCE_STICKS","BIRCH_STICKS"},
@@ -27,14 +30,12 @@ vector<Category> Crafting::workbenchCategories = {
 	//	{"COPPER_BAR", "GOLD_BAR", "TITANIUM_BAR"},
 	//}},
 	{"Misc", {
-		{"FURNACE","FURNACE_BLACKSTONE"},
-		{"WORKBENCH_OAK", "WORKBENCH_BIRCH", "WORKBENCH_SPRUCE", "WORKBENCH_CHERRY"},
 		{"DEBUG_RECIPE_1","DEBUG_RECIPE_2","DEBUG_RECIPE_3","DEBUG_RECIPE_4"}
 	}},
 };
 
 vector<Category> Crafting::furnaceCategories = {
-	{"Furnace", {}},
+	//{"Furnace", {}},
 	//{"Blocks", {
 	//	{"OAK_PLANKS", "SPRUCE_PLANKS", "BIRCH_PLANKS", "CHERRY_PLANKS"},
 	//	{"STONE_COBBLE", "BLACKSTONE_COBBLE"},
@@ -267,11 +268,29 @@ map<string, Recipe> Recipe::recipes = {
 			{CHERRY_PLANKS,8}
 		}
 	}},
-
-	/*{ "WORKBENCH_CHERRY",{
-		{WORKBENCH},
+		//
+	{ "CHEST_OAK",{
+		{CHEST},
 		{
-			{CHERRY_PLANKS,8}
+			{OAK_PLANKS,12}
 		}
-	} },*/
+	} },
+	{ "CHEST_BIRCH",{
+		{CHEST},
+		{
+			{BIRCH_PLANKS,12}
+		}
+	} },
+	{ "CHEST_SPRUCE",{
+		{CHEST},
+		{
+			{SPRUCE_PLANKS,12}
+		}
+	} },
+	{ "CHEST_CHERRY",{
+		{CHEST},
+		{
+			{CHERRY_PLANKS,12}
+		}
+	} },
 };

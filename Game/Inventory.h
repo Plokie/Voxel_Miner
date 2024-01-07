@@ -160,5 +160,7 @@ public:
 	void Deserialize(nlohmann::json jsonInv);
 	void LoadDefaultItems();
 
+	void DropAllItems(Vector3 position);
+
 	void Update(float dt) override;
 };

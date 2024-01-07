@@ -10,7 +10,7 @@
 ItemIcon::ItemIcon(InventoryItem* invItem, InventoryUI* invUI) {
 	this->invUI = invUI;
 	this->invItem = invItem;
-	this->inv = Engine::Get()->GetCurrentScene()->GetObject3D<Inventory>("Inventory");
+	this->inv = Engine::Get()->GetCurrentScene()->GetObject3D<Inventory>("Inventory"); // todo: change this to point to correct inventory
 	Display(invItem->ID, invItem->type, invItem->amount, invItem->GetUVPos());
 }
 
@@ -92,6 +92,10 @@ void ItemIcon::Reload() {
 
 		Display(invItem->ID, invItem->type, invItem->amount, invItem->GetUVPos());
 	}
+}
+
+void ItemIcon::SetInventoryParent(Inventory* inv) {
+	this->inv = inv;
 }
 
 const Vector2 ItemIcon::GetScreenPosition()

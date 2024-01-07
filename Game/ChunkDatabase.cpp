@@ -3,6 +3,7 @@
 #include "WorldGen.h"
 #include "../Engine/Engine.h"
 #include "Inventory.h"
+#include "BlockData.h"
 
 ChunkDatabase* ChunkDatabase::_Instance = nullptr;
 
@@ -107,6 +108,68 @@ void ChunkDatabase::LoadChunkFromFile(const Vector3Int& chunkIndex, BlockID chun
 	}
 }
 
+void ChunkDatabase::SaveChunkBlockDataDataIntoFile(const Vector3Int& chunkIndex, map<tuple<int, int, int>, BlockData*>& blockDataData) {
+	const string& filePath = "Worlds/" + worldName + "/blockData_" + GetChunkFileName(chunkIndex);
+
+	nlohmann::json json = {};
+
+	for(const auto& kvp : blockDataData) {
+		int arr[3] = { get<0>(kvp.first), get<1>(kvp.first), get<2>(kvp.first) };
+		nlohmann::json arrJson = nlohmann::json::array({arr[0], arr[1], arr[2]});
+		string key = arrJson.dump();
+
+		if(kvp.second == nullptr) {
+			json[key] = 0;
+		}
+		else {
+			json[key] = kvp.second->Serialize();
+		}
+	}
+
+	ofstream file(filePath);
+	file << json.dump(2);
+	file.close();
+}
+
+void ChunkDatabase::LoadChunkBlockDataDataFromFile(const Vector3Int& chunkIndex, map<tuple<int, int, int>, BlockData*>& blockDataData) {
+	const string& filePath = "Worlds/" + worldName + "/blockData_" + GetChunkFileName(chunkIndex);
+
+	ifstream f(filePath);
+	if(!f) {
+		f.close();
+		assert(false);
+		return;
+	}
+
+	if(f.good()) {
+		ostringstream stringBuff;
+		stringBuff << f.rdbuf();
+
+		string jsonString = stringBuff.str();
+
+		nlohmann::json json = nlohmann::json::parse(jsonString);
+
+		for(auto& item : json.items()) {
+			nlohmann::json keyJson = nlohmann::json::parse(item.key());
+			//nlohmann::json valueJson = nlohmann::json::parse(item.value())
+
+			int arr[3] = { keyJson[0], keyJson[1], keyJson[2] };
+			tuple<int, int, int> tpl = { arr[0], arr[1], arr[2] };
+			//nlohmann::json::array()
+			//item.key()
+
+			BlockData* blockData = nullptr;
+			if(item.value() != 0) {
+				blockData = new BlockData();
+				blockData->Deserialize(item.value());
+			}
+
+			blockDataData[tpl] = blockData;
+		}
+	}
+	f.close();
+}
+
 void ChunkDatabase::TryLoadChunkHash()
 {
 	if(!hasLoadedChunkHash) {
@@ -129,6 +192,13 @@ void ChunkDatabase::TryLoadChunkHash()
 			vector<tuple<int, int, int>> loadedHash = worldNameJson["chunkHash"];
 			for(tuple<int, int, int> chunkIndex : loadedHash) {
 				chunkHash[chunkIndex] = nullptr;
+			}
+
+			if(worldNameJson.find("chunksWithBlockData")!=worldNameJson.end()) {
+				vector<tuple<int, int, int>> loadedChunksWithBlockData = worldNameJson["chunksWithBlockData"];
+				for(auto& chunkIndex : loadedChunksWithBlockData) {
+					chunksWithBlockData[chunkIndex] = nullptr;
+				}
 			}
 		}
 		else { // if file doesnt exist
@@ -153,6 +223,11 @@ void ChunkDatabase::SaveWorldData() {
 		chunkHashVector.push_back(pair.first);
 	}
 
+	vector<tuple<int, int, int>> chunksWithBlockDataVector = {};
+	for(auto& pair : chunksWithBlockData) {
+		chunksWithBlockDataVector.push_back(pair.first);
+	}
+
 	Vector3 playerPos = Engine::Get()->GetScene("game")->GetObject3D("PlayerController")->transform.position;
 	Inventory* inv = Engine::Get()->GetScene("game")->GetObject3D<Inventory>("Inventory");
 
@@ -160,10 +235,12 @@ void ChunkDatabase::SaveWorldData() {
 		{"seed", WorldGen::GetSeed()},
 		{"worldName", worldName.c_str()},
 		{"chunkHash", chunkHashVector},
+		{"chunksWithBlockData", chunksWithBlockDataVector},
 		{"playerPos", {playerPos.x, playerPos.y, playerPos.z}},
 		{"inventory", inv->Serialize()}
 	};
 	file << newJson.dump(2);
+	file.close();
 }
 
 void ChunkDatabase::LoadWorldData()
@@ -206,6 +283,13 @@ void ChunkDatabase::SaveChunks()
 	for(const pair<tuple<int, int, int>, Chunk*>& pair : chunkHash) {
 		if(pair.second != nullptr) {
 			SaveChunkIntoFile(pair.first, pair.second->blockData);
+
+			if(pair.second->blockDataData.size() > 0) {
+				chunksWithBlockData[pair.first] = pair.second;
+
+				// save block data data into file
+				SaveChunkBlockDataDataIntoFile(pair.first, pair.second->blockDataData);
+			}
 		}
 	}
 	ReleaseSRWLockExclusive(&chunkHashMutex);
@@ -225,6 +309,17 @@ void ChunkDatabase::UnloadChunk(const Vector3Int& chunkIndex)
 			chunk = nullptr;
 		}
 	}
+
+	auto it2 = chunksWithBlockData.find(chunkIndex);
+	if(it2 != chunksWithBlockData.end()) {
+		Chunk*& chunk = it2->second;
+		if(chunk != nullptr) {
+			// save block data data into file
+			SaveChunkBlockDataDataIntoFile(chunkIndex, chunk->blockDataData);
+		}
+		chunk = nullptr;
+	}
+
 	ReleaseSRWLockExclusive(&chunkHashMutex);
 }
 
@@ -286,12 +381,21 @@ void ChunkDatabase::LoadChunkDataInto(const Vector3Int& chunkIndex, Chunk* chunk
 {
 	LoadChunkFromFile(chunkIndex, chunk->blockData);
 	chunkHash[chunkIndex] = chunk;
+
+	if(chunksWithBlockData.find(chunkIndex) != chunksWithBlockData.end()) {
+		LoadChunkBlockDataDataFromFile(chunkIndex, chunk->blockDataData);
+	}
 }
 
 void ChunkDatabase::SaveChunkData(const Vector3Int& chunkIndex, Chunk* chunk)
 {
 	chunkHash[chunkIndex] = chunk;
+	if(chunk->blockDataData.size() > 0) {
+		chunksWithBlockData[chunkIndex] = chunk;
+	}
+
 	TryLoadChunkHash();
+
 
 	//SaveChunkIntoFile(chunkIndex, chunkDataArray);
 }

@@ -150,11 +150,14 @@
   <ItemGroup>
     <ClCompile Include="Audio\Audio.cpp" />
     <ClCompile Include="Game\BlockAction.cpp" />
+    <ClCompile Include="Game\BlockData.cpp" />
+    <ClCompile Include="Game\ChestUI.cpp" />
     <ClCompile Include="Game\Crafting.cpp" />
     <ClCompile Include="Game\CraftingUI.cpp" />
     <ClCompile Include="Engine\UI\Button.cpp" />
     <ClCompile Include="Game\DroppedItem.cpp" />
     <ClCompile Include="Game\Entity.cpp" />
+    <ClCompile Include="Game\FurnaceUI.cpp" />
     <ClCompile Include="Game\HeldItem.cpp" />
     <ClCompile Include="Game\ItemAction.cpp" />
     <ClCompile Include="Game\Meshes\DroppedItemMesh.cpp" />
@@ -206,11 +209,14 @@
   <ItemGroup>
     <ClInclude Include="Audio\Audio.h" />
     <ClInclude Include="Game\BlockAction.h" />
+    <ClInclude Include="Game\BlockData.h" />
+    <ClInclude Include="Game\ChestUI.h" />
     <ClInclude Include="Game\DroppedItem.h" />
     <ClInclude Include="Game\Crafting.h" />
     <ClInclude Include="Game\CraftingUI.h" />
     <ClInclude Include="Engine\UI\Button.h" />
     <ClInclude Include="Game\Entity.h" />
+    <ClInclude Include="Game\FurnaceUI.h" />
     <ClInclude Include="Game\HeldItem.h" />
     <ClInclude Include="Game\ItemAction.h" />
     <ClInclude Include="Game\Meshes\DroppedItemMesh.h" />
