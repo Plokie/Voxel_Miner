@@ -13,7 +13,7 @@ class Button;
 
 class CraftingUI : public TableInterface {
 private:
-	Inventory* playerInv;
+	Inventory* playerInv = nullptr;
 
 	vector<Button*> _spawnedTabs;
 	vector<Button*> _spawnedButtons;

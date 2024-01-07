@@ -143,18 +143,26 @@ void CraftingUI::SelectRecipe(const Recipe& recipe) {
 void CraftingUI::Open(InterfaceContext ctx) {
 	TableInterface::Start();
 
-	for(const Category& category : Crafting::categories) {
+	vector<Category>* categoriesTarget = &Crafting::workbenchCategories;
+	if(ctx.blockID == FURNACE || ctx.blockID == LIT_FURNACE)
+		categoriesTarget = &Crafting::furnaceCategories;
+
+
+	const float tabWidth = 130.f;
+	const float tabSpacing = 10.f;
+
+	for(const Category& category : *categoriesTarget) {
 		int index = static_cast<int>(_spawnedTabs.size());
-	
+		
 		Button* tab = new Button("Baloo");
 		tab->Init(Graphics::Get()->GetDevice());
-		tab->SetDimensions({ 100.f, 30.f });
+		tab->SetDimensions({ tabWidth, 30.f });
 		tab->SetDepth(13.f);
 		tab->SetParent(this);
 		tab->SetPivot(0.0f, 0.f);
 		tab->SetAnchor(0.0f, 0.0f);
 		tab->SetText(category.name);
-		tab->SetPosition(110.f * index, 0.f);
+		tab->SetPosition((tabWidth+tabSpacing) * index, 0.f);
 		tab->SetBgColour(0.4f, 0.4f, 0.4f, 1.0f);
 		tab->SetTextColour(1.f, 1.f, 1.f, 1.f);
 	
@@ -178,6 +186,8 @@ void CraftingUI::Open(InterfaceContext ctx) {
 	for(auto& tab : _spawnedTabs) {
 		tab->SetText(tab->GetText());
 	}
+
+	LoadCategory((*categoriesTarget)[1]);
 }
 
 void CraftingUI::Update(const float dt) {

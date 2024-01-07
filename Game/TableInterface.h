@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "../Engine/Object2D.h"
+#include "Blocks.h"
 //#include "../Engine/UI/Button.h"
 //#include "../Engine/UI/HorizontalLayoutRect.h"
 
@@ -15,17 +16,20 @@ struct InterfaceContext {
 	Inventory* playerInventory;
 	Inventory* tableInventory;
 	Vector3Int tablePosition;
+	BlockID blockID = BlockID::AIR;
 
-	InterfaceContext(Inventory* playerInventory, Inventory* tableInventory, Vector3Int tablePosition) {
+	InterfaceContext(Inventory* playerInventory, Inventory* tableInventory, Vector3Int tablePosition, BlockID blockID) {
 		this->playerInventory = playerInventory;
 		this->tableInventory = tableInventory;
 		this->tablePosition = tablePosition;
+		this->blockID = blockID;
 	}
 
-	InterfaceContext(Inventory* playerInventory) {
+	InterfaceContext(Inventory* playerInventory, BlockID blockID) {
 		this->playerInventory = playerInventory;
 		this->tableInventory = nullptr;
 		this->tablePosition = Vector3Int(0,0,0);
+		this->blockID = blockID;
 	}
 };
 

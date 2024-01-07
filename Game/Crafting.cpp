@@ -12,8 +12,8 @@ Vector2Int RecipeComponent::GetUVPos() const
 	}
 }
 
-vector<Category> Crafting::categories = {
-	{"Crafting", {}},
+vector<Category> Crafting::workbenchCategories = {
+	{"Workbench", {}},
 	{"Blocks", {
 		{"OAK_PLANKS", "SPRUCE_PLANKS", "BIRCH_PLANKS", "CHERRY_PLANKS"},
 		{"STONE_COBBLE", "BLACKSTONE_COBBLE"},
@@ -23,14 +23,40 @@ vector<Category> Crafting::categories = {
 		{"COPPER_PICKAXE","GOLD_PICKAXE","AMETHYST_PICKAXE","TITANIUM_PICKAXE"},
 		{"COPPER_AXE","GOLD_AXE","AMETHYST_AXE","TITANIUM_AXE"},
 	}},
-	{"Minerals", {
-		{"COPPER_BAR", "GOLD_BAR", "TITANIUM_BAR"},
-	}},
+	//{"Minerals", {
+	//	{"COPPER_BAR", "GOLD_BAR", "TITANIUM_BAR"},
+	//}},
 	{"Misc", {
 		{"FURNACE","FURNACE_BLACKSTONE"},
 		{"WORKBENCH_OAK", "WORKBENCH_BIRCH", "WORKBENCH_SPRUCE", "WORKBENCH_CHERRY"},
 		{"DEBUG_RECIPE_1","DEBUG_RECIPE_2","DEBUG_RECIPE_3","DEBUG_RECIPE_4"}
 	}},
+};
+
+vector<Category> Crafting::furnaceCategories = {
+	{"Furnace", {}},
+	//{"Blocks", {
+	//	{"OAK_PLANKS", "SPRUCE_PLANKS", "BIRCH_PLANKS", "CHERRY_PLANKS"},
+	//	{"STONE_COBBLE", "BLACKSTONE_COBBLE"},
+	//}},
+	//{"Tools", {
+	//	{"OAK_STICKS","CHERRY_STICKS","SPRUCE_STICKS","BIRCH_STICKS"},
+	//	{"COPPER_PICKAXE","GOLD_PICKAXE","AMETHYST_PICKAXE","TITANIUM_PICKAXE"},
+	//	{"COPPER_AXE","GOLD_AXE","AMETHYST_AXE","TITANIUM_AXE"},
+	//}},
+	{"Minerals", {
+		{"COPPER_BAR", "GOLD_BAR", "TITANIUM_BAR"},
+	}},
+	{"Food", {
+		/*{"COOKED_STEAK", "COOKED_CHICKEN"},
+		{"ROASTED_CARROT", "ROASTED_APPLE"},
+		{"FRIED_EGG"},*/
+	}},
+	//{"Misc", {
+	//	{"FURNACE","FURNACE_BLACKSTONE"},
+	//	{"WORKBENCH_OAK", "WORKBENCH_BIRCH", "WORKBENCH_SPRUCE", "WORKBENCH_CHERRY"},
+	//	{"DEBUG_RECIPE_1","DEBUG_RECIPE_2","DEBUG_RECIPE_3","DEBUG_RECIPE_4"}
+	//}},
 };
 
 map<string, Recipe> Recipe::recipes = {
@@ -241,4 +267,11 @@ map<string, Recipe> Recipe::recipes = {
 			{CHERRY_PLANKS,8}
 		}
 	}},
+
+	/*{ "WORKBENCH_CHERRY",{
+		{WORKBENCH},
+		{
+			{CHERRY_PLANKS,8}
+		}
+	} },*/
 };

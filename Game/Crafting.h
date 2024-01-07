@@ -54,8 +54,8 @@ public:
 
 class Crafting {
 public:
-	static vector<Category> categories;
-
+	static vector<Category> workbenchCategories;
+	static vector<Category> furnaceCategories;
 
 
 };

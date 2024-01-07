@@ -22,8 +22,11 @@ static map<ItemID, ItemID> cookables = {
 map<BlockID, BlockAction> BlockAction::blockActions = {
 	{WORKBENCH, {[](BlockActionContext ctx) {
 		// code here is called when the block is clicked
-		ctx.invUI->Open(new CraftingUI(), InterfaceContext(ctx.inventory, nullptr, ctx.blockPosition));
-
+		ctx.invUI->Open(new CraftingUI(), InterfaceContext(ctx.inventory, nullptr, ctx.blockPosition, WORKBENCH));
+	}}},
+	{FURNACE, {[](BlockActionContext ctx) {
+		// code here is called when the block is clicked
+		ctx.invUI->Open(new CraftingUI(), InterfaceContext(ctx.inventory, nullptr, ctx.blockPosition, FURNACE));
 	}}},
 };
 
