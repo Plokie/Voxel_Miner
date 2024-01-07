@@ -310,11 +310,12 @@ void Inventory::Deserialize(nlohmann::json jsonInv) {
 
 void Inventory::LoadDefaultItems() {
 	items.clear();
-	AddItem((ItemID)COPPER_PICKAXE);
-	AddItem((ItemID)COPPER_AXE);
-	AddItem((ItemID)COPPER_SHOVEL);
-	AddItem((ItemID)CARROT, 5);
-	AddItem((ItemID)RAW_STEAK, 5);
+	AddItem(COPPER_PICKAXE);
+	AddItem(COPPER_AXE);
+	AddItem(COPPER_SHOVEL);
+	AddItem(WORKBENCH);
+	AddItem(CARROT, 5);
+	AddItem(RAW_STEAK, 5);
 	InvokeOnChange();
 	InvokeOnSelect();
 }

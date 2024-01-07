@@ -28,6 +28,7 @@ vector<Category> Crafting::categories = {
 	}},
 	{"Misc", {
 		{"FURNACE","FURNACE_BLACKSTONE"},
+		{"WORKBENCH_OAK", "WORKBENCH_BIRCH", "WORKBENCH_SPRUCE", "WORKBENCH_CHERRY"},
 		{"DEBUG_RECIPE_1","DEBUG_RECIPE_2","DEBUG_RECIPE_3","DEBUG_RECIPE_4"}
 	}},
 };
@@ -213,6 +214,31 @@ map<string, Recipe> Recipe::recipes = {
 		{FURNACE},
 		{
 			{BLACK_COBBLESTONE,12}
+		}
+	}},
+
+	{ "WORKBENCH_OAK",{
+		{WORKBENCH},
+		{
+			{OAK_PLANKS,8}
+		}
+	}},
+	{ "WORKBENCH_BIRCH",{
+		{WORKBENCH},
+		{
+			{BIRCH_PLANKS,8}
+		}
+	}},
+	{ "WORKBENCH_SPRUCE",{
+		{WORKBENCH},
+		{
+			{SPRUCE_PLANKS,8}
+		}
+	}},
+	{ "WORKBENCH_CHERRY",{
+		{WORKBENCH},
+		{
+			{CHERRY_PLANKS,8}
 		}
 	}},
 };

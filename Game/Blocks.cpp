@@ -225,30 +225,12 @@ const map<BlockID, Block> BlockDef::def = {
 		3, 6,
 		false, PICKAXE, 0, "LIT_FURNACE"
 	) },
-	//{ BlockID::LIT_FURNACE_2, Block("Lit Furnace 2", B_OPAQUE, 13,
-	//	3, 6,
-	//	2, 6,
-	//	3, 6,
-	//	false, PICKAXE, 0, "LIT_FURNACE"
-	//) },
-	//{ BlockID::LIT_FURNACE_3, Block("Lit Furnace 3", B_OPAQUE, 13,
-	//	3, 6,
-	//	2, 6,
-	//	3, 6,
-	//	false, PICKAXE, 0, "LIT_FURNACE"
-	//) },
-	//{ BlockID::LIT_FURNACE_4, Block("Lit Furnace 4", B_OPAQUE, 13,
-	//	3, 6,
-	//	2, 6,
-	//	3, 6,
-	//	false, PICKAXE, 0, "LIT_FURNACE"
-	//) },
-	//{ BlockID::LIT_FURNACE_5, Block("Lit Furnace 5", B_OPAQUE, 13,
-	//	3, 6,
-	//	2, 6,
-	//	3, 6,
-	//	false, PICKAXE, 0, "LIT_FURNACE"
-	//) },
+	{ BlockID::WORKBENCH, Block("Workbench", B_OPAQUE, 13,
+		3, 7,
+		2, 7,
+		3, 1,
+		false, AXE, 0
+	) },
 };
 
 const int Block::LightValue() const {

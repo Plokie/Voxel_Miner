@@ -168,9 +168,6 @@
     <ClCompile Include="Game\Meshes\HeldItemMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game\CraftingUIold.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Game\Crafting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

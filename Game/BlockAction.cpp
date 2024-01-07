@@ -20,17 +20,8 @@ static map<ItemID, ItemID> cookables = {
 };
 
 map<BlockID, BlockAction> BlockAction::blockActions = {
-	{FURNACE, {[](BlockActionContext ctx) {
+	{WORKBENCH, {[](BlockActionContext ctx) {
 		// code here is called when the block is clicked
-
-		/*InventoryItem* heldItem = nullptr;
-		if(ctx.inventory->GetHeldItem(&heldItem)) {
-			if(heldItem->Is(COAL)) {
-				ctx.inventory->SubHeldItem();
-				ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, LIT_FURNACE_1);
-			}
-		}*/
-
 		ctx.invUI->Open(new CraftingUI(), InterfaceContext(ctx.inventory, nullptr, ctx.blockPosition));
 
 	}}},

@@ -152,7 +152,6 @@
     <ClCompile Include="Game\BlockAction.cpp" />
     <ClCompile Include="Game\Crafting.cpp" />
     <ClCompile Include="Game\CraftingUI.cpp" />
-    <ClCompile Include="Game\CraftingUIold.cpp" />
     <ClCompile Include="Engine\UI\Button.cpp" />
     <ClCompile Include="Game\DroppedItem.cpp" />
     <ClCompile Include="Game\Entity.cpp" />
