@@ -181,33 +181,10 @@ void InventoryUI::DeleteIcon(ItemIcon* itemIcon) {
 	}
 }
 
-void InventoryUI::AttemptMoveFromStorage(ItemIcon* itemIcon) {
-
-	if(itemIcon->GetInventoryParent() != inventory) {
-		// erase icon from other ui
-		// push to here
-
-		// erase item from other inventory
-		// push to here
-
-		currentInterface->EraseIcon(itemIcon);
-		_spawnedIcons.push_back(itemIcon);
-
-		Inventory* otherInventory = itemIcon->GetInventoryParent();
-		auto it = otherInventory->GetInventoryItems().begin(); // erase invitem from other inventory
-		while(it != otherInventory->GetInventoryItems().end()) {
-			if(*it == heldItem->GetInvItem()) {
-				otherInventory->GetInventoryItems().erase(it);
-				break;
-			}
-			++it;
-		}
-
-		inventory->PushItem(itemIcon->GetInvItem());
-
-		itemIcon->SetInventoryParent(inventory);
-	}
-}
+//void InventoryUI::AttemptMoveFromStorage(ItemIcon* itemIcon) {
+//
+//	
+//}
 
 void InventoryUI::ReleaseItem(ItemIcon* invItem) {
 	if(currentInterface) {
@@ -217,101 +194,7 @@ void InventoryUI::ReleaseItem(ItemIcon* invItem) {
 	for(int y = 0; y < INVSIZE_Y; y++) {
 		for(int x = 0; x < INVSIZE_X; x++) {
 			if(invSlots[x][y]->IsHovering()) {
-
-				InventoryItem* prexistingInvItem = nullptr;
-				if(inventory->GetItemAt(x, y, &prexistingInvItem)) { // If an item already exists in the slot we're dropping on
-					if(prexistingInvItem == invItem->GetInvItem()) {
-						invItem->GetInvItem()->posX = x;
-						invItem->GetInvItem()->posY = y;
-
-						invItem->SetParent(invSlots[x][y]);
-						invItem->isHeld = false;
-						AttemptMoveFromStorage(invItem);
-
-						heldItem = nullptr;
-					}
-					else {
-						if(prexistingInvItem->IsSameItemAs(invItem->GetInvItem())) {
-							// If same item type, stack and make currently held item the remainder
-
-							int sum = prexistingInvItem->amount + invItem->GetInvItem()->amount;
-							int remainder = max(0, sum - prexistingInvItem->GetMaxStack());
-
-							prexistingInvItem->amount = min(sum, prexistingInvItem->GetMaxStack());
-
-							// delete the held item if the remainder is <0
-							if(remainder <= 0) {
-							
-								EraseIcon(invItem);
-
-								for(auto it = inventory->GetInventoryItems().begin(); it != inventory->GetInventoryItems().end(); ++it) {
-									if(*it == invItem->GetInvItem()) {
-										inventory->GetInventoryItems().erase(it);
-										break;
-									}
-								}
-
-								//inventory->ClearEmptyItems();
-								
-
-								delete invItem->GetInvItem();
-
-
-								delete invItem;
-
-								heldItem = nullptr;
-
-								ReloadIcons();
-
-								// i need a way to prevent any more mouse input actions from being called
-								// whats supposed to happen is just
-								//		attempt to pick up item beneath (fails because item is already held) -> merge items and delete held remainder
-								// but instead
-								//		merge items and delete held remainder -> pick up item beneath (succeeds now because no items are held anymore)
-								// since the merged items update loop is called AFTER the merge event
-							}
-							else { // set currently held amount to remainder
-								invItem->GetInvItem()->amount = remainder;
-							}
-						}
-						else { // Swap them
-							// just swap type, id and amount
-							// its much less tedious than swapping the icon (which we dont have for prexisting item)
-						
-							InventoryItem::Type tempType = prexistingInvItem->type;
-							unsigned short tempId = prexistingInvItem->ID;
-							int tempAmount = prexistingInvItem->amount;
-
-							prexistingInvItem->type = invItem->GetInvItem()->type;
-							prexistingInvItem->ID = invItem->GetInvItem()->ID;
-							prexistingInvItem->amount = invItem->GetInvItem()->amount;
-
-							invItem->GetInvItem()->type = tempType;
-							invItem->GetInvItem()->ID = tempId;
-							invItem->GetInvItem()->amount = tempAmount;
-
-							ReloadIcons();
-						}
-
-
-					}
-
-
-				}
-				else { //simply put item in empty slot and stop isHeld
-					invItem->GetInvItem()->posX = x;
-					invItem->GetInvItem()->posY = y;
-
-					invItem->SetParent(invSlots[x][y]);
-					invItem->isHeld = false;
-					AttemptMoveFromStorage(invItem);
-
-					heldItem = nullptr;
-				}
-
-				ReloadIcons();
-				DrawHotbarIcons();
-				return;
+				invItem->ReleaseFunction(x, y, invSlots[x][y], inventory, currentInterface);
 			}
 		}
 	}

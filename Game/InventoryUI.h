@@ -30,7 +30,7 @@ private:
 
 	TableInterface* currentInterface = nullptr;
 
-	void AttemptMoveFromStorage(ItemIcon* itemIcon);
+	//void AttemptMoveFromStorage(ItemIcon* itemIcon);
 
 	// held item by the mouse when in inventory ui
 public:

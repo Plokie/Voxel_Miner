@@ -2,10 +2,12 @@
 
 #include "../Engine/UI/Label.h"
 #include "../Engine/UI/UIRect.h"
+#include "../Engine/UI/Button.h"
 #include "../Engine/Engine.h"
 #include "InventoryUI.h"
 #include "Inventory.h"
 #include "Crafting.h"
+#include "TableInterface.h"
 
 ItemIcon::ItemIcon(InventoryItem* invItem, InventoryUI* invUI) {
 	this->invUI = invUI;
@@ -96,6 +98,158 @@ void ItemIcon::Reload() {
 
 void ItemIcon::SetInventoryParent(Inventory* inv) {
 	this->inv = inv;
+}
+
+void ItemIcon::AttemptStorageMigration(Inventory* targetInventory, TableInterface* tableInterface) {
+
+	//this is bugged
+
+	Inventory* playerInventory = Engine::Get()->GetCurrentScene()->GetObject3D<Inventory>("Inventory");
+	Inventory* currentInventory = inv;
+
+	if(currentInventory != targetInventory) {
+		// move this inv to target inventory
+
+		if(tableInterface) {
+			tableInterface->EraseIcon(this);
+			invUI->AddNewIcon(this);
+		}
+		else {
+			invUI->EraseIcon(this);
+			tableInterface->PushIcon(this);
+		}
+
+		auto it = currentInventory->GetInventoryItems().begin(); // erase invitem from current inventory
+		while(it != currentInventory->GetInventoryItems().end()) {
+			if(*it == GetInvItem()) {
+				currentInventory->GetInventoryItems().erase(it);
+				break;
+			}
+			++it;
+		}
+
+		targetInventory->PushItem(GetInvItem());
+		SetInventoryParent(targetInventory);
+	}
+
+
+	//Inventory* 
+
+	//if(itemIcon->GetInventoryParent() != inventory) {
+	//	// erase icon from other ui
+	//	// push to here
+
+	//	// erase item from other inventory
+	//	// push to here
+
+	//	currentInterface->EraseIcon(itemIcon);
+	//	_spawnedIcons.push_back(itemIcon);
+
+	//	Inventory* otherInventory = itemIcon->GetInventoryParent();
+	//	auto it = otherInventory->GetInventoryItems().begin(); // erase invitem from other inventory
+	//	while(it != otherInventory->GetInventoryItems().end()) {
+	//		if(*it == heldItem->GetInvItem()) {
+	//			otherInventory->GetInventoryItems().erase(it);
+	//			break;
+	//		}
+	//		++it;
+	//	}
+
+	//	inventory->PushItem(itemIcon->GetInvItem());
+
+	//	itemIcon->SetInventoryParent(inventory);
+	//}
+
+
+}
+
+void ItemIcon::ReleaseFunction(int idx, int idy, Button* parentSlot, Inventory* interfaceInventory, TableInterface* tableInterface)
+{
+	InventoryItem* thisInvItem = GetInvItem();
+	InventoryItem* prexistingInvItem = nullptr;
+	
+
+	if(inv->GetItemAt(idx, idy, &prexistingInvItem)) {
+		if(prexistingInvItem == thisInvItem) {
+			thisInvItem->posX = idx;
+			thisInvItem->posY = idy;
+			SetParent(parentSlot);
+			isHeld = false;
+
+			AttemptStorageMigration(interfaceInventory, tableInterface);
+
+			invUI->heldItem = nullptr;
+		}
+		else {
+			if(prexistingInvItem->IsSameItemAs(thisInvItem)) {
+				// If same item type, stack and make currently held item the remainder
+				int sum = prexistingInvItem->amount + thisInvItem->amount;
+				int remainder = max(0, sum - prexistingInvItem->GetMaxStack());
+
+				prexistingInvItem->amount = min(sum, prexistingInvItem->GetMaxStack());
+				if(remainder <= 0) {
+					if(tableInterface) {
+						tableInterface->EraseIcon(this);
+					}
+					else {
+						invUI->EraseIcon(this);
+					}
+
+
+					for(auto it = inv->GetInventoryItems().begin(); it != inv->GetInventoryItems().end(); ++it) {
+						if(*it == thisInvItem) {
+							inv->GetInventoryItems().erase(it);
+							break;
+						}
+					}
+
+					delete thisInvItem;
+
+					invUI->heldItem = nullptr;
+
+					invUI->ReloadIcons();
+					if(tableInterface) tableInterface->ReloadIcons();
+
+					delete this;
+					return;
+				}
+				else {
+					thisInvItem->amount = remainder;
+				}
+			}
+			else { // if different types, swap
+				InventoryItem::Type tempType = prexistingInvItem->type;
+				unsigned short tempId = prexistingInvItem->ID;
+				int tempAmount = prexistingInvItem->amount;
+
+				prexistingInvItem->type = thisInvItem->type;
+				prexistingInvItem->ID = thisInvItem->ID;
+				prexistingInvItem->amount = thisInvItem->amount;
+
+				thisInvItem->type = tempType;
+				thisInvItem->ID = tempId;
+				thisInvItem->amount = tempAmount;
+
+				invUI->ReloadIcons();
+				if(tableInterface) tableInterface->ReloadIcons();
+			}
+		}
+	}
+	else {// If no item exists here, simply put it down!
+		thisInvItem->posX = idx;
+		thisInvItem->posY = idy;
+
+		SetParent(parentSlot);
+		isHeld = false;
+
+		AttemptStorageMigration(interfaceInventory, tableInterface);
+
+		invUI->heldItem = nullptr;
+
+		invUI->ReloadIcons();
+		invUI->DrawHotbarIcons();
+		if(tableInterface) tableInterface->ReloadIcons();
+	}
 }
 
 const Vector2 ItemIcon::GetScreenPosition()

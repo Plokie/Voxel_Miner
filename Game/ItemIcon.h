@@ -7,6 +7,8 @@ class UIRect;
 class Label;
 class InventoryUI;
 class RecipeComponent;
+class Button;
+class TableInterface;
 class Inventory;
 
 class ItemIcon : public Object2D {
@@ -19,6 +21,8 @@ private:
 	Inventory* inv = nullptr;
 
 	bool isHovering = false;
+	
+	void AttemptStorageMigration(Inventory* targetInventory, TableInterface* tableInterface);
 public:
 	bool isHeld = false;
 	InventoryItem* GetInvItem() const { return invItem; }
@@ -35,6 +39,8 @@ public:
 
 	void SetInventoryParent(Inventory* inv);
 	Inventory* GetInventoryParent() { return inv; }
+
+	void ReleaseFunction(int idx, int idy, Button* parentSlot, Inventory* selfInventory, TableInterface* tableInterface = nullptr);
 
 	const Vector2 GetScreenPosition() override;
 	void Draw(SpriteBatch* spriteBatch) override;

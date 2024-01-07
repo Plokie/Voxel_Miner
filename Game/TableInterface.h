@@ -48,6 +48,8 @@ protected:
 public:
 	void ReleaseHeldItem();
 	bool EraseIcon(ItemIcon* icon);
+	void ReloadIcons();
+	void PushIcon(ItemIcon* itemIcon);
 
 	virtual void Open(InterfaceContext ctx);
 	virtual void Close();

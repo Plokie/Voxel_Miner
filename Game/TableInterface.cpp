@@ -47,53 +47,7 @@ void TableInterface::ReleaseHeldItem() {
 		if(kvp.second == nullptr) continue;
 
 		if(kvp.second->IsHovering()) {
-			// take held item from invUI and add to this
-			// reload
-
-			ItemIcon* heldItem = invUI->heldItem;
-
-
-			if(invUI->EraseIcon(heldItem)) { 
-				// if item icon is successfully removed, then item icon belongs to InventoryUI
-				
-
-				invUI->heldItem = nullptr;
-
-				heldItem->SetParent(kvp.second);
-				heldItem->isHeld = false;
-
-				_spawnedItemIcons.push_back(heldItem); // moves just the icon to the chest ui
-
-				// move from player inventory to block inventory
-
-				//Inventory
-
-				Inventory* playerInventory = Engine::Get()->GetCurrentScene()->GetObject3D<Inventory>("Inventory");
-				
-				auto it = playerInventory->GetInventoryItems().begin();
-				while(it != playerInventory->GetInventoryItems().end()) {
-					if(*it == heldItem->GetInvItem()) {
-						playerInventory->GetInventoryItems().erase(it);
-						break;
-					}
-					++it;
-				}
-
-				heldItem->GetInvItem()->posX = get<0>(kvp.first);
-				heldItem->GetInvItem()->posY = get<1>(kvp.first);
-
-				//heldItem->GetInvItem()
-				blockData->blockInventory->PushItem(heldItem->GetInvItem());
-			}
-			else {
-				heldItem->SetParent(kvp.second);
-				heldItem->isHeld = false;
-
-				heldItem->GetInvItem()->posX = get<0>(kvp.first);
-				heldItem->GetInvItem()->posY = get<1>(kvp.first);
-			}
-
-			return;
+			invUI->heldItem->ReleaseFunction(get<0>(kvp.first), get<1>(kvp.first), kvp.second, blockData->blockInventory, this);
 		}
 	}
 }
@@ -106,6 +60,14 @@ bool TableInterface::EraseIcon(ItemIcon* icon) {
 		}
 	}
 	return false;
+}
+
+void TableInterface::ReloadIcons() {
+}
+
+void TableInterface::PushIcon(ItemIcon* itemIcon)
+{
+	_spawnedItemIcons.push_back(itemIcon);
 }
 
 void TableInterface::Update(const float dt) {
