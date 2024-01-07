@@ -60,7 +60,7 @@ private:
 	}
 
 	int hunger = HUNGER_MAX;
-	int saturation = 0;
+	int saturation = HUNGER_MAX/2;
 	vector<function<void(int)>> _onHungerChangeEvents;
 	void InvokeOnHungerChange() {
 		for(auto& func : _onHungerChangeEvents) {

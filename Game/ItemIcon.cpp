@@ -86,7 +86,6 @@ const bool ItemIcon::WasRightClicked()
 
 void ItemIcon::Reload() {
 	if(invItem != nullptr) {
-		// hmm smells like one or more of these delete functions dont properly delete everythign
 		if(amtLabel) delete amtLabel;
 		if(nameLabel) delete nameLabel;
 		if(icon) delete icon;
