@@ -52,7 +52,7 @@ void ItemIcon::Display(const unsigned short ID, const InventoryItem::Type type, 
 	});
 
 
-	amtLabel = new Label(L"Data\\Fonts\\Baloo2.spritefont", { 1.f,1.f,1.f,1.f });
+	amtLabel = new Label("Baloo", { 1.f,1.f,1.f,1.f });
 	amtLabel->Init(Graphics::Get()->GetDevice());
 	amtLabel->InitSelf();
 	amtLabel->SetText((amount == 1 && hideOne) ? "" : to_string(amount));
@@ -63,7 +63,7 @@ void ItemIcon::Display(const unsigned short ID, const InventoryItem::Type type, 
 	amtLabel->SetParent(icon);
 
 
-	nameLabel = new Label(L"Data\\Fonts\\Baloo2.spritefont", { 1.f,1.f,1.f,1.f });
+	nameLabel = new Label("Baloo", { 1.f,1.f,1.f,1.f });
 	nameLabel->Init(Graphics::Get()->GetDevice());
 	nameLabel->InitSelf();
 	nameLabel->SetText((type == InventoryItem::Type::BLOCK) ? (BlockDef::GetDef((BlockID)ID).GetName()) : (ItemDef::Get((ItemID)ID).GetName()));
@@ -87,9 +87,9 @@ const bool ItemIcon::WasRightClicked()
 void ItemIcon::Reload() {
 	if(invItem != nullptr) {
 		// hmm smells like one or more of these delete functions dont properly delete everythign
-		if(icon) delete icon;
 		if(amtLabel) delete amtLabel;
 		if(nameLabel) delete nameLabel;
+		if(icon) delete icon;
 
 		Display(invItem->ID, invItem->type, invItem->amount, invItem->GetUVPos());
 	}
@@ -179,17 +179,18 @@ void ItemIcon::Update(const float dTime) {
 					invItem->amount -= subAmt;
 
 					if(invItem->amount <= 0) {
-						/*for(auto it = inv->GetInventoryItems().begin(); it != inv->GetInventoryItems().end(); ++it) {
+						
+						invUI->EraseIcon(this);
+						for(auto it = inv->GetInventoryItems().begin(); it != inv->GetInventoryItems().end(); ++it) {
 							if(*it == invItem) {
 								inv->GetInventoryItems().erase(it);
 								break;
 							}
-						}*/
-						inv->ClearEmptyItems();
+						}
+						//inv->ClearEmptyItems();
 
 						delete invItem;
 
-						invUI->EraseIcon(this);
 						invUI->ReloadIcons();
 						delete this; //uh oh
 						return; // should be okay as long as this return stays here
@@ -201,20 +202,25 @@ void ItemIcon::Update(const float dTime) {
 			invUI->ReloadIcons();
 		}
 		else {
-			// create new icon, set amt to 1, sub 1 from this
-			invItem->amount -= subAmt;
-			InventoryItem* newInvItem = new InventoryItem(invItem->type, invItem->ID, -1, -1, subAmt);
-			inv->PushItem(newInvItem);
+			if(invItem->amount == 1) {
+				isHeld = true;
+				invUI->heldItem = this;
+			}
+			else {
+				// create new icon, set amt to 1, sub 1 from this
+				invItem->amount -= subAmt;
+				InventoryItem* newInvItem = new InventoryItem(invItem->type, invItem->ID, -1, -1, subAmt);
+				inv->PushItem(newInvItem);
 
-			ItemIcon* newIcon = new ItemIcon(newInvItem, invUI);
-			newIcon->Init(pDevice);
-			newIcon->SetDimensions({ 50.f, 50.f });
-			newIcon->SetAnchor({ .5f,.5f });
-			newIcon->SetPivot({ .5f,.5f });
-			newIcon->isHeld = true;
-			invUI->heldItem = newIcon;
-
-			invUI->AddNewIcon(newIcon);
+				ItemIcon* newIcon = new ItemIcon(newInvItem, invUI);
+				newIcon->Init(pDevice);
+				newIcon->SetDimensions({ 50.f, 50.f });
+				newIcon->SetAnchor({ .5f,.5f });
+				newIcon->SetPivot({ .5f,.5f });
+				newIcon->isHeld = true;
+				invUI->heldItem = newIcon;
+				invUI->AddNewIcon(newIcon);
+			}
 			invUI->ReloadIcons();
 		}
 

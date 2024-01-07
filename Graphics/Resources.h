@@ -5,6 +5,7 @@
 #include <WICTextureLoader.h>
 #include <DDSTextureLoader.h>
 #include <d3d11.h>
+#include <SpriteFont.h>
 
 #include "Shaders.h"
 #include "Mesh.h"
@@ -27,6 +28,7 @@ private:
 	map<string, PixelShader*> pixelShaders = {};
 	map<string, VertexShader*> vertexShaders = {};
 	map<string, ID3D11ShaderResourceView*> textures = {};
+	map<string, SpriteFont*> spriteFonts = {};
 	map<string, Mesh*> meshes = {};
 
 	Resources(){}
@@ -47,10 +49,13 @@ public:
 	static void LoadMesh(string name);
 	static void LoadMesh(Vertex vertices[], int vertCount, DWORD indices[], int indexCount, string name);
 
+	static void LoadFont(const wchar_t* fontPath, string name);
+
 	static ID3D11ShaderResourceView* GetTexture(string name);
 	static PixelShader* GetPixelShader(string name);
 	static VertexShader* GetVertexShader(string name);
 	static Mesh* GetMesh(string name);
+	static SpriteFont* GetFont(string name);
 
 	~Resources();
 };

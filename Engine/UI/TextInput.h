@@ -32,7 +32,7 @@ public:
 	void SetBgColour(const float r, const float g, const float b, const float a);
 	const XMFLOAT4& GetBgColour();
 
-	void SetLabel(const string& text, const wstring& fontPath, const XMFLOAT4& col);
+	void SetLabel(const string& text, const string& font, const XMFLOAT4& col);
 	void SetRect(const XMFLOAT4& bgCol);
 	void SetCursor(const XMFLOAT4& bgCol);
 
@@ -40,10 +40,10 @@ public:
 
 	//Button();
 	//Button(const string& text, const wstring& fontPath, const XMFLOAT4& col = { 0.f,0.f,0.f,1.f });
-	TextInput(const wstring& fontPath, const XMFLOAT4& col = { 0.f,0.f,0.f,1.f });
+	TextInput(const string& font, const XMFLOAT4& col = { 0.f,0.f,0.f,1.f });
 	TextInput(const XMFLOAT4& bgCol);
 	//Button(const XMFLOAT4& txtCol, const XMFLOAT4& bgCol);
-	TextInput(const string& text, const wstring& fontPath, const XMFLOAT4& txtCol, const XMFLOAT4& bgCol);
+	TextInput(const string& text, const string& font, const XMFLOAT4& txtCol, const XMFLOAT4& bgCol);
 
 	void InitSelf() override;
 

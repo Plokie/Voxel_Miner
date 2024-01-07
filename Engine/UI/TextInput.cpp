@@ -69,14 +69,14 @@ const XMFLOAT4& TextInput::GetBgColour() {
 	return rect->GetColour();
 }
 
-void TextInput::SetLabel(const string& text, const wstring& fontPath, const XMFLOAT4& col) {
+void TextInput::SetLabel(const string& text, const string& font, const XMFLOAT4& col) {
 	if(label == nullptr) {
-		label = new Label(fontPath, col);
+		label = new Label(font, col);
 		label->Init(Engine::Get()->GetGraphics()->GetDevice());
 		label->InitSelf();
 	}
 	else {
-		label->SetFontPath(fontPath);
+		label->SetFont(font);
 		label->SetColour(col.x, col.y, col.z, col.w);
 		label->SetText(label->GetText());
 	}
@@ -135,10 +135,10 @@ void TextInput::SetDimensions(const Vector2& dim) {
 //	SetLabel("LABEL NOT SET", )
 //}
 
-TextInput::TextInput(const wstring& fontPath, const XMFLOAT4& col) {
+TextInput::TextInput(const string& font, const XMFLOAT4& col) {
 	//InitSelf();
 	if(rect == nullptr) SetRect({ 1.f,1.f,1.f,1.f });
-	SetLabel("TEXT NOT SET", fontPath, col);
+	SetLabel("TEXT NOT SET", font, col);
 	SetCursor({ 1.f,1.f,1.f,1.f });
 }
 
@@ -154,10 +154,10 @@ TextInput::TextInput(const XMFLOAT4& bgCol) {
 //	if(label==nullptr) SetLabel("TEXT NOT SET", )
 //}
 
-TextInput::TextInput(const string& text, const wstring& fontPath, const XMFLOAT4& txtCol, const XMFLOAT4& bgCol) {
+TextInput::TextInput(const string& text, const string& font, const XMFLOAT4& txtCol, const XMFLOAT4& bgCol) {
 	//InitSelf();
 	SetRect(bgCol);
-	SetLabel(text, fontPath, txtCol);
+	SetLabel(text, font, txtCol);
 	SetCursor({ 1.f,1.f,1.f,1.f });
 }
 

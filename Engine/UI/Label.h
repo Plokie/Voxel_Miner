@@ -6,7 +6,8 @@
 
 class Label : public Object2D {
 private:
-	wstring fontPath = L"Data\\Fonts\\Baloo2.spritefont";
+	//Data\\Fonts\\Baloo2.spritefont
+	string font = "Baloo";
 	SpriteFont* spriteFont = nullptr;
 	string text = "NO TEXT SET";
 	XMFLOAT4 color = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
@@ -18,11 +19,11 @@ public:
 	void SetText(const string& text);
 	const string& GetText();
 
-	void SetFontPath(const wstring& fontPath);
+	void SetFont(const string& font);
 
 	//Label(const wstring& fontPath, const string& text, const XMFLOAT4& = XMFLOAT4(1.f, 1.f, 1.f, 1.f));
-	Label(const wstring& fontPath, const XMFLOAT4& = XMFLOAT4(1.f, 1.f, 1.f, 1.f));
-	~Label();
+	Label(const string& font, const XMFLOAT4& = XMFLOAT4(1.f, 1.f, 1.f, 1.f));
+	//~Label();
 
 	void InitSelf() override;
 	void Start() override;

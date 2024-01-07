@@ -42,14 +42,14 @@ const XMFLOAT4& Button::GetBgColour() {
 	return rect->GetColour();
 }
 
-void Button::SetLabel(const string& text, const wstring& fontPath, const XMFLOAT4& col) {
+void Button::SetLabel(const string& text, const string& font, const XMFLOAT4& col) {
 	if(label == nullptr) {
-		label = new Label(fontPath, col);
+		label = new Label(font, col);
 		label->Init(Engine::Get()->GetGraphics()->GetDevice());
 		label->InitSelf();
 	}
 	else {
-		label->SetFontPath(fontPath);
+		label->SetFont(font);
 		label->SetColour(col.x, col.y, col.z, col.w);
 		label->SetText(label->GetText());
 	}
@@ -88,10 +88,10 @@ void Button::SetDimensions(const Vector2& dim) {
 //	SetLabel("LABEL NOT SET", )
 //}
 
-Button::Button(const wstring& fontPath, const XMFLOAT4& col) {
+Button::Button(const string& font, const XMFLOAT4& col) {
 	//InitSelf();
 	if(rect == nullptr) SetRect({ 1.f,1.f,1.f,1.f });
-	SetLabel("TEXT NOT SET", fontPath, col);
+	SetLabel("TEXT NOT SET", font, col);
 }
 
 Button::Button(const XMFLOAT4& bgCol) {
@@ -105,10 +105,10 @@ Button::Button(const XMFLOAT4& bgCol) {
 //	if(label==nullptr) SetLabel("TEXT NOT SET", )
 //}
 
-Button::Button(const string& text, const wstring& fontPath, const XMFLOAT4& txtCol, const XMFLOAT4& bgCol) {
+Button::Button(const string& text, const string& font, const XMFLOAT4& txtCol, const XMFLOAT4& bgCol) {
 	//InitSelf();
 	SetRect(bgCol);
-	SetLabel(text, fontPath, txtCol);
+	SetLabel(text, font, txtCol);
 }
 
 void Button::InitSelf() {}

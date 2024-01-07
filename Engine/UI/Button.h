@@ -30,17 +30,16 @@ public:
 	void SetBgColour(const float r, const float g, const float b, const float a);
 	const XMFLOAT4& GetBgColour();
 
-	void SetLabel(const string& text, const wstring& fontPath, const XMFLOAT4& col);
+	void SetLabel(const string& text, const string& font, const XMFLOAT4& col);
 	void SetRect(const XMFLOAT4& bgCol);
 
 	void SetDimensions(const Vector2& dim) override;
 
 	//Button();
-	//Button(const string& text, const wstring& fontPath, const XMFLOAT4& col = { 0.f,0.f,0.f,1.f });
-	Button(const wstring& fontPath, const XMFLOAT4& txtCol = { 0.f,0.f,0.f,1.f });
+	Button(const string& font, const XMFLOAT4& txtCol = { 0.f,0.f,0.f,1.f });
 	Button(const XMFLOAT4& bgCol);
 	//Button(const XMFLOAT4& txtCol, const XMFLOAT4& bgCol);
-	Button(const string& text, const wstring& fontPath, const XMFLOAT4& txtCol, const XMFLOAT4& bgCol);
+	Button(const string& text, const string& font, const XMFLOAT4& txtCol, const XMFLOAT4& bgCol);
 
 	void InitSelf() override;
 

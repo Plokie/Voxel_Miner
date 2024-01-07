@@ -68,10 +68,18 @@ void Resources::LoadMesh(string name) {
 void Resources::LoadMesh(Vertex vertices[], int vertCount, DWORD indices[], int indexCount, string name) {
 	InitiatedExitCheck();
 
-	_Instance->meshes[name] = new Mesh();
-	_Instance->meshes[name]->Init(_Instance->pDevice);
-	_Instance->meshes[name]->LoadVertices(vertices, vertCount);
-	_Instance->meshes[name]->LoadIndices(indices, indexCount);
+	Mesh* newMesh = new Mesh();
+	_Instance->meshes[name] = newMesh;
+	newMesh->Init(_Instance->pDevice);
+	newMesh->LoadVertices(vertices, vertCount);
+	newMesh->LoadIndices(indices, indexCount);
+}
+
+void Resources::LoadFont(const wchar_t* fontPath, string name)
+{
+	InitiatedExitCheck();
+
+	_Instance->spriteFonts[name] = new SpriteFont(_Instance->pDevice, fontPath);
 }
 
 ID3D11ShaderResourceView* Resources::GetTexture(string name) {
@@ -114,18 +122,32 @@ Mesh* Resources::GetMesh(string name) {
 	return _Instance->meshes[name];
 }
 
+SpriteFont* Resources::GetFont(string name)
+{
+	InitiatedExitCheck();
+	auto it = _Instance->spriteFonts.find(name);
+
+	if(it != _Instance->spriteFonts.end()) {
+		return it->second;
+	}
+	return nullptr;
+}
+
 Resources::~Resources() {
-	for (pair<string,ID3D11ShaderResourceView*> texPair : _Instance->textures) {
+	for (const pair<string,ID3D11ShaderResourceView*>& texPair : _Instance->textures) {
 		texPair.second->Release();
 		delete texPair.second;
 	}
-	for (pair<string, PixelShader*> pair : _Instance->pixelShaders) {
+	for (const pair<string, PixelShader*>& pair : _Instance->pixelShaders) {
 		delete pair.second;
 	}
-	for (pair<string, VertexShader*> pair : _Instance->vertexShaders) {
+	for (const pair<string, VertexShader*>& pair : _Instance->vertexShaders) {
 		delete pair.second;
 	}
-	for(pair<string, Mesh*> pair : _Instance->meshes) {
+	for(const pair<string, Mesh*>& pair : _Instance->meshes) {
+		delete pair.second;
+	}
+	for(const auto& pair : _Instance->spriteFonts) {
 		delete pair.second;
 	}
 }

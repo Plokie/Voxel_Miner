@@ -1,8 +1,11 @@
 #include "Label.h"
 
+#include "../../Graphics/Resources.h"
+
 void Label::InitSelf()
 {
-	spriteFont = new SpriteFont(pDevice, this->fontPath.c_str());
+	//spriteFont = new SpriteFont(pDevice, this->fontPath.c_str());
+	spriteFont = Resources::GetFont(this->font);
 }
 
 void Label::SetColour(const float& r, const float& g, const float& b, const float& a)
@@ -28,9 +31,10 @@ const string& Label::GetText()
 	return this->text;
 }
 
-void Label::SetFontPath(const wstring& fontPath)
+void Label::SetFont(const string& font)
 {
-	this->fontPath = fontPath;
+	this->font = font;
+	spriteFont = Resources::GetFont(this->font);
 }
 //
 //Label::Label(const wstring& fontPath, const string& text, const XMFLOAT4& color)
@@ -40,17 +44,17 @@ void Label::SetFontPath(const wstring& fontPath)
 //	this->color = color;
 //}
 
-Label::Label(const wstring& fontPath, const XMFLOAT4& color)
+Label::Label(const string& font, const XMFLOAT4& color)
 {
-	this->fontPath = fontPath;
+	this->font = font;
 	this->text = "TEXT NOT SET";
 	this->color = color;
 }
 
-Label::~Label()
-{
-	if(spriteFont) delete spriteFont; //todo: spriteFont be part of Resources class
-}
+//Label::~Label()
+//{
+//	//if(spriteFont) delete spriteFont; //todo: spriteFont be part of Resources class
+//}
 
 void Label::Start()
 {

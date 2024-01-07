@@ -62,7 +62,7 @@ void CraftingUI::Create() {
 	for(const Category& category : Crafting::categories) {
 		int index = static_cast<int>(_spawnedTabs.size());
 
-		Button* tab = new Button(L"Data\\Fonts\\Baloo2.spritefont");
+		Button* tab = new Button("Baloo");
 		tab->Init(Graphics::Get()->GetDevice());
 		tab->SetDimensions({ 100.f, 30.f });
 		tab->SetDepth(13.f);
@@ -109,7 +109,7 @@ void CraftingUI::LoadCategory(const Category* category) {
 
 			const Recipe& recipe = Recipe::recipes[recipeName];
 
-			Button* button = new Button(L"Data\\Fonts\\Baloo2.spritefont");
+			Button* button = new Button("Baloo");
 			button->Init(Graphics::Get()->GetDevice());
 			button->SetRect({ 0.3f,.3f,.3f,1.f });
 			button->SetDimensions({ 50.f, 50.f });
@@ -153,7 +153,7 @@ void CraftingUI::SelectRecipe(const Recipe& recipe) {
 		inventory = (Inventory*)Engine::Get()->GetScene("game")->GetObject3D("Inventory");
 	}
 
-	craftButton = new Button(L"Data\\Fonts\\Baloo2.spritefont");
+	craftButton = new Button("Baloo");
 	craftButton->Init(Graphics::Get()->GetDevice());
 	craftButton->SetDimensions({ 150.f, 30.f });
 	craftButton->SetParent(recipeDisplayBg);

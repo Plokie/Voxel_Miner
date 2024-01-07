@@ -220,7 +220,7 @@ int Inventory::GetItemCount(const unsigned int ID, const InventoryItem::Type typ
 
 void Inventory::ClearEmptyItems() {
 
-
+	//return; //todo: remove me after debugging
 	for(vector<InventoryItem*>::iterator it = items.begin(); it != items.end();) {
 		if((*it)->amount <= 0) {
 			delete *it;
@@ -281,6 +281,7 @@ nlohmann::json Inventory::Serialize()
 
 void Inventory::Deserialize(nlohmann::json jsonInv) {
 	items.clear();
+	items.reserve((INVSIZE_X * INVSIZE_Y) + INVSIZE_Y);
 	
 	vector<nlohmann::json> itemJsons = jsonInv["items"];
 	for(auto& itemJson : itemJsons) {

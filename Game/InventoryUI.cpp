@@ -204,26 +204,36 @@ void InventoryUI::ReleaseItem(ItemIcon* invItem) {
 
 							prexistingInvItem->amount = min(sum, prexistingInvItem->GetMaxStack());
 
-							// delete if the remainder is <0
+							// delete the held item if the remainder is <0
 							if(remainder <= 0) {
 							
-								/*for(auto it = inventory->GetInventoryItems().begin(); it != inventory->GetInventoryItems().end(); ++it) {
+								EraseIcon(invItem);
+
+								for(auto it = inventory->GetInventoryItems().begin(); it != inventory->GetInventoryItems().end(); ++it) {
 									if(*it == invItem->GetInvItem()) {
 										inventory->GetInventoryItems().erase(it);
 										break;
 									}
-								}*/
-								inventory->ClearEmptyItems();
+								}
+
+								//inventory->ClearEmptyItems();
+								
 
 								delete invItem->GetInvItem();
 
 
-								EraseIcon(invItem);
-								delete invItem;// need to erase from _spawnedIcons
+								delete invItem;
 
 								heldItem = nullptr;
 
 								ReloadIcons();
+
+								// i need a way to prevent any more mouse input actions from being called
+								// whats supposed to happen is just
+								//		attempt to pick up item beneath (fails because item is already held) -> merge items and delete held remainder
+								// but instead
+								//		merge items and delete held remainder -> pick up item beneath (succeeds now because no items are held anymore)
+								// since the merged items update loop is called AFTER the merge event
 							}
 							else { // set currently held amount to remainder
 								invItem->GetInvItem()->amount = remainder;
@@ -276,6 +286,8 @@ void InventoryUI::Open() {
 	invBg->SetEnabled(true);
 	Input::SetMouseLocked(false);
 
+	_spawnedIcons.reserve((INVSIZE_X * INVSIZE_Y) + INVSIZE_Y);
+
 	for(auto& invItem : this->inventory->GetInventoryItems()) {
 		ItemIcon* icon = new ItemIcon(invItem, this);
 		icon->Init(pDevice);
@@ -284,15 +296,16 @@ void InventoryUI::Open() {
 		icon->SetPivot({ .5f,.5f });
 
 		if(invItem->ID == 56797 || invItem->amount == -572662307 || invItem->posX == -572662307 || invItem->posY== -572662307 || invItem->type == 56797 || invItem->amount < -1) {
-			assert(false); // this will only be called on debug builds
+			//assert(false); // this will only be called on debug builds
 
 			//this isnt a fix, its just so the program doesnt crash so i can keep debugging and see what tf happened
-			invItem->ID = 0;
+			/*invItem->ID = 0;
 			invItem->amount = 1;
 			invItem->type = InventoryItem::ITEM;
 			Vector2Int freeSpot = this->inventory->GetFreeSpot();
 			invItem->posX = freeSpot.x;
-			invItem->posY = freeSpot.y;
+			invItem->posY = freeSpot.y;*/
+			continue;
 		}
 
 		icon->SetParent(invSlots[invItem->posX][invItem->posY]);

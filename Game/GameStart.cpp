@@ -35,6 +35,8 @@ void LoadResources() {
 	Resources::LoadTexture(L"Data\\Textures\\atlas.dds", "atlas");
 	Resources::LoadTexture(L"Data\\Textures\\item-atlas.dds", "item-atlas");
 
+	Resources::LoadFont(L"Data\\Fonts\\Baloo2.spritefont", "Baloo");
+
 	Resources::LoadPixelShader(L"pixelshader.cso", "pixelshader");
 	Resources::LoadPixelShader(L"pixelshellgrass.cso", "pixelshellgrass");
 	//Resources::LoadPixelShader(L"demopixelshader.cso", "demopshader");
@@ -84,15 +86,15 @@ void GameStart(Engine* engine) {
 
 	gameScene->GetObject3D("PlayerController")->transform.position = Vector3(0, 10, 0);
 
-	gameScene->CreateObject2D(new Label(L"Data\\Fonts\\Baloo2.spritefont", XMFLOAT4(0, 0, 0, 1.0f)), "fps-counter");
+	gameScene->CreateObject2D(new Label("Baloo", XMFLOAT4(0, 0, 0, 1.0f)), "fps-counter");
 	gameScene->GetObject2D("fps-counter")->SetPosition(Vector2(0.f, 80.f));
 	gameScene->GetObject2D<Label>("fps-counter")->SetColour(1.0f, 1.0f, 1.0f, 1.0f);
 
-	gameScene->CreateObject2D(new Label(L"Data\\Fonts\\Baloo2.spritefont", XMFLOAT4(0, 0, 0, 1.0f)), "worldpos");
+	gameScene->CreateObject2D(new Label("Baloo", XMFLOAT4(0, 0, 0, 1.0f)), "worldpos");
 	gameScene->GetObject2D("worldpos")->SetPosition(Vector2(0.f, 104.f));
 	gameScene->GetObject2D<Label>("worldpos")->SetColour(1.0f, 1.0f, 1.0f, 1.0f);
 
-	Label* scoreLabel = (Label*)gameScene->CreateObject2D(new Label(L"Data\\Fonts\\Baloo2.spritefont", XMFLOAT4(0, 0, 0, 1.0f)), "score");
+	Label* scoreLabel = (Label*)gameScene->CreateObject2D(new Label("Baloo", XMFLOAT4(0, 0, 0, 1.0f)), "score");
 	scoreLabel->SetAnchor({ 1.f, 0.f });
 	scoreLabel->SetPivot(1.f, 0.f);
 	scoreLabel->SetPosition({ -20.f, 90.f });
