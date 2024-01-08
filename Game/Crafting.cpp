@@ -16,7 +16,7 @@ vector<Category> Crafting::workbenchCategories = {
 	//{"Workbench", {}},
 	{"Blocks", {
 		{"OAK_PLANKS", "SPRUCE_PLANKS", "BIRCH_PLANKS", "CHERRY_PLANKS"},
-		{"STONE_COBBLE", "BLACKSTONE_COBBLE"},
+		//{"STONE_COBBLE", "BLACKSTONE_COBBLE"},
 		{"FURNACE","FURNACE_BLACKSTONE"},
 		{"WORKBENCH_OAK", "WORKBENCH_BIRCH", "WORKBENCH_SPRUCE", "WORKBENCH_CHERRY"},
 		{"CHEST_OAK", "CHEST_BIRCH", "CHEST_SPRUCE", "CHEST_CHERRY"},
@@ -70,6 +70,11 @@ map<tuple<int, int>, RecipeComponent> Crafting::furnaceRecipes = {
 	{{RAW_COPPER, InventoryItem::ITEM}, COPPER_BAR},
 	{{RAW_GOLD, InventoryItem::ITEM}, GOLD_BAR},
 	{{RAW_TITANIUM, InventoryItem::ITEM}, TITANIUM_BAR},
+
+	{{SAND, InventoryItem::BLOCK}, GLASS},
+
+	{{COBBLESTONE, InventoryItem::BLOCK}, STONE},
+	{{BLACK_COBBLESTONE, InventoryItem::BLOCK}, BLACKSTONE},
 };
 
 map<string, Recipe> Recipe::recipes = {

@@ -187,30 +187,34 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 
 	// If chunk is loaded
-	if(chunkMap.find(chunkIndex) != chunkMap.end()) {
+	auto itFind = chunkMap.find(chunkIndex);
+	if(itFind != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
 		//AcquireSRWLockExclusive(&this->gAccessMutex);
 		//unique_lock<std::mutex> lock(this->gAccessMutex);
-		Chunk* chunk = chunkMap[chunkIndex];
+		//Chunk* chunk = chunkMap[chunkIndex];
+		Chunk* chunk = itFind->second;
 		
-		unique_lock<std::mutex> lock(chunk->gAccessMutex);
+		// Okay this might seem redundant, but i promise its not (i think)
+		// this basically makes it so nothing else can modify it WHILE its being read from
+		// but if somethings already writing to it, we can read it anyway
+		bool didMutex = chunk->gAccessMutex.try_lock();
+		//unique_lock<std::mutex> lock(chunk->gAccessMutex);
+		
 		if(!(chunk == nullptr || chunk->pendingDeletion)) {
 			if (!chunk->hasLoadedBlockData) return WorldGen::GetBlockAt(x, y, z);
 			//TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
 
-			// Okay this might seem redundant, but i promise its not (i think)
-			// this basically makes it so nothing else can modify it WHILE its being read from
-			// but if somethings already writing to it, we can read it anyway
 			//bool didMutex = TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
-			//bool didMutex = chunk->gAccessMutex.try_lock();
 
 			BlockID blockID = static_cast<BlockID>(chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z]);
 			//if(didMutex) ReleaseSRWLockExclusive(&chunk->gAccessMutex);
-			//if(didMutex) chunk->gAccessMutex.unlock();
+			if(didMutex) chunk->gAccessMutex.unlock();
 			//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 			return blockID;
 		}
+		if(didMutex) chunk->gAccessMutex.unlock();
 	}
 
 	//todo: read from chunk cache of height,temp,moist samples?

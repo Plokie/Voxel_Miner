@@ -345,7 +345,7 @@ void PlayerController::Update(float dTime)
 	// DEBUG INFO
 	fpsCounter->SetText(to_string(static_cast<int>(roundf(1.f / dTime))));
 
-	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
+	/*Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
 	Vector3Int footPos = camBlockPos - Vector3Int(0, 1, 0);
 	Vector3Int chunkIndex = ChunkManager::ToChunkIndexPositionTuple(footPos.x, footPos.y, footPos.z);
 
@@ -361,7 +361,7 @@ void PlayerController::Update(float dTime)
 		+ "T: " + to_string(temp) + "\n"
 		+ "M: " + to_string(moist) + "\n"
 		+ "B: " + Biome::Get(temp, moist).name + "\n"
-	);
+	);*/
 
 	// KEEP AT END
 	camera->transform = transform;

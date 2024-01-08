@@ -237,6 +237,11 @@ const map<BlockID, Block> BlockDef::def = {
 		3, 8,
 		false, AXE, 0
 	) },
+
+	{ BlockID::GLASS, Block("Glass", B_CLIP, 0,
+		4, 4,
+		false, BASICITEM, 0, ""
+	) },
 };
 
 const int Block::LightValue() const {

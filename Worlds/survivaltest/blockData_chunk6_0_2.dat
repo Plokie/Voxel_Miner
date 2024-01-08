@@ -1,0 +1,21 @@
+{
+  "[111,1,42]": {
+    "inventory": {
+      "health": 20,
+      "hunger": 20,
+      "items": [
+        {
+          "ID": 1,
+          "amount": 37,
+          "posX": 0,
+          "posY": 0,
+          "type": 0
+        }
+      ],
+      "saturation": 10,
+      "score": 0
+    },
+    "timer1": 54.59917068481445,
+    "timer2": 0.0
+  }
+}
