@@ -18,6 +18,14 @@ public:
 
 	Vector2Int GetUVPos() const;
 
+	/*operator tuple<int, int>() const {
+
+	}*/
+
+	/*operator XMVECTOR() const {
+		return XMVectorSet(x, y, z, 0.0f);
+	}*/
+
 	RecipeComponent() {}
 	RecipeComponent(BlockID blockID) : type(InventoryItem::Type::BLOCK), ID(blockID), amount(1) {}
 	RecipeComponent(ItemID itemID) : type(InventoryItem::Type::ITEM), ID(itemID), amount(1) {}
@@ -55,7 +63,15 @@ public:
 class Crafting {
 public:
 	static vector<Category> workbenchCategories;
-	static vector<Category> furnaceCategories;
+	//static vector<Category> furnaceCategories;
+
+	// tuple of ID : Type
+	static map<tuple<int, int>, RecipeComponent> furnaceRecipes;
+
+	static bool GetFurnaceRecipe(unsigned short ID, InventoryItem::Type type, const RecipeComponent** outRecipeComponent);
+	static bool GetFurnaceRecipe(BlockID blockID, const RecipeComponent** outRecipeComponent);
+	static bool GetFurnaceRecipe(ItemID blockID, const RecipeComponent** outRecipeComponent);
+	static bool GetFurnaceRecipe(InventoryItem* inputItem, const RecipeComponent** outRecipeComponent);
 
 
 };

@@ -144,8 +144,8 @@ void CraftingUI::Open(InterfaceContext ctx) {
 	TableInterface::Open(ctx);
 
 	vector<Category>* categoriesTarget = &Crafting::workbenchCategories;
-	if(ctx.blockID == FURNACE || ctx.blockID == LIT_FURNACE)
-		categoriesTarget = &Crafting::furnaceCategories;
+	//if(ctx.blockID == FURNACE || ctx.blockID == LIT_FURNACE)
+		//categoriesTarget = &Crafting::furnaceCategories;
 
 
 	const float tabWidth = 130.f;

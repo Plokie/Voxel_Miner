@@ -26,6 +26,9 @@ private:
 
 	UINT8 lightLevel[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};
 
+	const float secondsPerTick = 0.05f;
+	float tickTimer = 0.f;
+
 
 	void PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESHFLAG isTransparent = SOLID);
 	bool RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z);

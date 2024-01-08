@@ -280,8 +280,21 @@ void InventoryUI::ReloadIcons()
 			heldItem->Reload();
 		}
 
+		
+
 		//Close();
 		//Open();
+	}
+}
+
+void InventoryUI::TableReload(Vector3Int tablePosition) {
+	if(currentInterface) {
+		const InterfaceContext& interfaceContext = currentInterface->GetRecentInterfaceContext();
+		if(interfaceContext.blockID != 0 && interfaceContext.tablePosition == tablePosition) {
+			ReloadIcons();
+			currentInterface->HardReload();
+			heldItem = nullptr;
+		}
 	}
 }
 

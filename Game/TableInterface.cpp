@@ -51,6 +51,7 @@ ItemIcon* TableInterface::MakeItemIcon(InventoryItem* invItem)
 }
 
 void TableInterface::ComputeItemExistsHash() {
+	if(blockData && blockData->blockInventory)
 	for(auto& invItem : blockData->blockInventory->GetInventoryItems()) {
 		itemExistsHash[{invItem->posX, invItem->posY}] = invItem;
 	}
@@ -99,6 +100,17 @@ void TableInterface::ReloadIcons() {
 	}
 }
 
+void TableInterface::HardReload()
+{
+	Close();
+
+	if(blockData->blockInventory) {
+		blockData->blockInventory->ClearEmptyItems();
+	}
+
+	Open(recentContext);
+}
+
 void TableInterface::PushIcon(ItemIcon* itemIcon)
 {
 	_spawnedItemIcons.push_back(itemIcon);
@@ -128,21 +140,25 @@ void TableInterface::Close()
 		delete slot;
 		slot = nullptr;
 	}
+	_spawnedSlots.clear();
 	for(auto& rect : _spawnedUIRects) {
 		delete rect;
 		rect = nullptr;
 	}
+	_spawnedUIRects.clear();
 	for(auto& itemIcon : _spawnedItemIcons) {
 		delete itemIcon;
 		itemIcon = nullptr;
 	}
-
+	_spawnedItemIcons.clear();
 }
 
 void TableInterface::Open(InterfaceContext ctx) {
 	this->Init(Graphics::Get()->GetDevice());
 	this->InitSelf(); //overriden func to init child-specific features
 	this->blockData = ctx.blockData;
+
+	recentContext = ctx;
 
 	this->SetPivot(0.5f, 0.0f);
 	this->SetAnchor(0.5f, 0.f);

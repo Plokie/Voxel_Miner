@@ -55,6 +55,7 @@ public:
 	void Open(TableInterface* tableInterface, InterfaceContext ctx);
 	void Close();
 	void ReloadIcons();
+	void TableReload(Vector3Int tablePosition);
 	void Update(const float dTime) override;
 	void Start() override;
 	void Draw(SpriteBatch* spriteBatch) override;

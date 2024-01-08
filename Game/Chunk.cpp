@@ -2,6 +2,7 @@
 
 #include "WorldGen.h"
 #include "ChunkManager.h"
+#include "BlockAction.h"
 #include "ChunkDatabase.h"
 #include "BlockData.h"
 
@@ -27,7 +28,24 @@ void Chunk::Start() {
 	this->cullBox = AABB(transform.position + Vector3(CHUNKSIZE_X/2, CHUNKSIZE_Y / 2, CHUNKSIZE_Z / 2), Vector3(CHUNKSIZE_X / 2, CHUNKSIZE_Y / 2, CHUNKSIZE_Z / 2));
 }
 
-void Chunk::Update(float dTime) {}
+void Chunk::Update(float dTime) {
+	tickTimer += dTime;
+
+	if(tickTimer > secondsPerTick) {
+		tickTimer = 0.f;
+
+		for(const auto& _blockData : blockDataData) {
+			Vector3Int voxelWorldPos = { get<0>(_blockData.first), get<1>(_blockData.first), get<2>(_blockData.first) };
+			Vector3Int localVoxelPos = Vector3Int(FloorMod(voxelWorldPos.x, CHUNKSIZE_X), FloorMod(voxelWorldPos.y, CHUNKSIZE_Y), FloorMod(voxelWorldPos.z, CHUNKSIZE_Z));
+
+			BlockID blockID = blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z];
+
+			BlockTick::CallBlockTick(blockID, chunkManager, voxelWorldPos, this, _blockData.second);
+		}
+	}
+
+
+}
 
 Chunk::~Chunk() {
 	for(Model*& model : models) {

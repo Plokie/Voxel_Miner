@@ -10,9 +10,14 @@ class ItemIcon;
 class Recipe;
 class Inventory;
 class Button;
+class Label;
+class ProgressBar;
 
 class FurnaceUI : public TableInterface {
 private:
+	ProgressBar* fuelProgress;
+	ProgressBar* cookProgress;
+
 
 public:
 	void Open(InterfaceContext ctx) override;

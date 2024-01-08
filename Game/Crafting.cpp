@@ -34,30 +34,34 @@ vector<Category> Crafting::workbenchCategories = {
 	}},
 };
 
-vector<Category> Crafting::furnaceCategories = {
-	//{"Furnace", {}},
-	//{"Blocks", {
-	//	{"OAK_PLANKS", "SPRUCE_PLANKS", "BIRCH_PLANKS", "CHERRY_PLANKS"},
-	//	{"STONE_COBBLE", "BLACKSTONE_COBBLE"},
-	//}},
-	//{"Tools", {
-	//	{"OAK_STICKS","CHERRY_STICKS","SPRUCE_STICKS","BIRCH_STICKS"},
-	//	{"COPPER_PICKAXE","GOLD_PICKAXE","AMETHYST_PICKAXE","TITANIUM_PICKAXE"},
-	//	{"COPPER_AXE","GOLD_AXE","AMETHYST_AXE","TITANIUM_AXE"},
-	//}},
-	{"Minerals", {
-		{"COPPER_BAR", "GOLD_BAR", "TITANIUM_BAR"},
-	}},
-	{"Food", {
-		/*{"COOKED_STEAK", "COOKED_CHICKEN"},
-		{"ROASTED_CARROT", "ROASTED_APPLE"},
-		{"FRIED_EGG"},*/
-	}},
-	//{"Misc", {
-	//	{"FURNACE","FURNACE_BLACKSTONE"},
-	//	{"WORKBENCH_OAK", "WORKBENCH_BIRCH", "WORKBENCH_SPRUCE", "WORKBENCH_CHERRY"},
-	//	{"DEBUG_RECIPE_1","DEBUG_RECIPE_2","DEBUG_RECIPE_3","DEBUG_RECIPE_4"}
-	//}},
+//vector<Category> Crafting::furnaceCategories = {
+//	//{"Furnace", {}},
+//	//{"Blocks", {
+//	//	{"OAK_PLANKS", "SPRUCE_PLANKS", "BIRCH_PLANKS", "CHERRY_PLANKS"},
+//	//	{"STONE_COBBLE", "BLACKSTONE_COBBLE"},
+//	//}},
+//	//{"Tools", {
+//	//	{"OAK_STICKS","CHERRY_STICKS","SPRUCE_STICKS","BIRCH_STICKS"},
+//	//	{"COPPER_PICKAXE","GOLD_PICKAXE","AMETHYST_PICKAXE","TITANIUM_PICKAXE"},
+//	//	{"COPPER_AXE","GOLD_AXE","AMETHYST_AXE","TITANIUM_AXE"},
+//	//}},
+//	{"Minerals", {
+//		{"COPPER_BAR", "GOLD_BAR", "TITANIUM_BAR"},
+//	}},
+//	{"Food", {
+//		/*{"COOKED_STEAK", "COOKED_CHICKEN"},
+//		{"ROASTED_CARROT", "ROASTED_APPLE"},
+//		{"FRIED_EGG"},*/
+//	}},
+//	//{"Misc", {
+//	//	{"FURNACE","FURNACE_BLACKSTONE"},
+//	//	{"WORKBENCH_OAK", "WORKBENCH_BIRCH", "WORKBENCH_SPRUCE", "WORKBENCH_CHERRY"},
+//	//	{"DEBUG_RECIPE_1","DEBUG_RECIPE_2","DEBUG_RECIPE_3","DEBUG_RECIPE_4"}
+//	//}},
+//};
+
+map<tuple<int, int>, RecipeComponent> Crafting::furnaceRecipes = {
+	{{RAW_STEAK, InventoryItem::ITEM}, COOKED_STEAK}
 };
 
 map<string, Recipe> Recipe::recipes = {
@@ -294,3 +298,38 @@ map<string, Recipe> Recipe::recipes = {
 		}
 	} },
 };
+
+bool Crafting::GetFurnaceRecipe(unsigned short ID, InventoryItem::Type type, const RecipeComponent** outRecipeComponent)
+{
+	auto findIt = furnaceRecipes.find({ ID, type });
+	if(findIt != furnaceRecipes.end()) {
+		*outRecipeComponent = &findIt->second;
+
+		return true;
+	}
+
+	/*for(const auto& kvp : furnaceRecipes) {
+		if(get<0>(kvp.first) == ID && get<1>(kvp.first) == type) {
+			*outRecipeComponent = &kvp.second;
+
+			return true;
+		}
+	}*/
+	return false;
+}
+
+bool Crafting::GetFurnaceRecipe(BlockID blockID, const RecipeComponent** outRecipeComponent)
+{
+	return GetFurnaceRecipe(blockID, InventoryItem::BLOCK, outRecipeComponent);
+}
+
+bool Crafting::GetFurnaceRecipe(ItemID itemID, const RecipeComponent** outRecipeComponent)
+{
+	return GetFurnaceRecipe(itemID, InventoryItem::BLOCK, outRecipeComponent);
+}
+
+bool Crafting::GetFurnaceRecipe(InventoryItem* invItem, const RecipeComponent** outRecipeComponent)
+{
+	return GetFurnaceRecipe(invItem->ID, invItem->type, outRecipeComponent);
+}
+

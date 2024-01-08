@@ -42,6 +42,7 @@ protected:
 	vector<ItemIcon*> _spawnedItemIcons;
 	vector<UIRect*> _spawnedUIRects;
 	BlockData* blockData;
+	InterfaceContext recentContext = InterfaceContext(nullptr, nullptr, Vector3Int(0,0,0), (BlockID)0);
 	InventoryUI* invUI;
 	map<tuple<int, int>, InventoryItem*> itemExistsHash;
 
@@ -57,7 +58,10 @@ public:
 	void ReleaseHeldItem();
 	bool EraseIcon(ItemIcon* icon);
 	void ReloadIcons();
+	void HardReload();
 	void PushIcon(ItemIcon* itemIcon);
+
+	const InterfaceContext& GetRecentInterfaceContext() const { return recentContext; }
 
 	virtual void Open(InterfaceContext ctx);
 	virtual void Close();

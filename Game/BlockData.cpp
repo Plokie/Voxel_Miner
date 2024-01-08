@@ -6,7 +6,8 @@ nlohmann::json BlockData::Serialize()
 {
 	nlohmann::json json = {};
 
-	json["timer"] = timer;
+	json["timer1"] = timer1;
+	json["timer2"] = timer2;
 	if(blockInventory == nullptr) {
 		json["inventory"] = 0;
 	}
@@ -18,7 +19,8 @@ nlohmann::json BlockData::Serialize()
 }
 
 void BlockData::Deserialize(nlohmann::json json) {
-	timer = json["timer"];
+	timer1 = json["timer1"];
+	timer2 = json["timer2"];
 
 	if(json["inventory"] == 0) {
 		blockInventory = nullptr;
