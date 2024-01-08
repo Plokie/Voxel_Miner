@@ -24,6 +24,7 @@ private:
 	
 	void AttemptStorageMigration(Inventory* targetInventory, TableInterface* tableInterface);
 public:
+	bool onPlacedownCooldown = false; // Used to ignore pickups for a frame
 	bool isHeld = false;
 	InventoryItem* GetInvItem() const { return invItem; }
 

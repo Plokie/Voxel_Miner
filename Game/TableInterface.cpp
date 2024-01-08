@@ -63,6 +63,9 @@ bool TableInterface::EraseIcon(ItemIcon* icon) {
 }
 
 void TableInterface::ReloadIcons() {
+	for(auto& icon : _spawnedItemIcons) {
+		icon->Reload();
+	}
 }
 
 void TableInterface::PushIcon(ItemIcon* itemIcon)
