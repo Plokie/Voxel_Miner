@@ -149,6 +149,7 @@ void TableInterface::Close()
 		itemIcon = nullptr;
 	}
 	_spawnedItemIcons.clear();
+	itemExistsHash.clear();
 }
 
 void TableInterface::Open(InterfaceContext ctx) {
