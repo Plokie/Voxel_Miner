@@ -177,6 +177,7 @@ void ItemIcon::ReleaseFunction(int idx, int idy, Button* parentSlot, Inventory* 
 
 				prexistingInvItem->amount = min(sum, prexistingInvItem->GetMaxStack());
 				if(remainder <= 0) {
+					if(tableInterface)
 					tableInterface->EraseIcon(this);
 					invUI->EraseIcon(this);
 					/*if(tableInterface) {

@@ -11,7 +11,7 @@
 map<HUNGER_DECREMENT_STATE, float> Inventory::_hungerDecrementValues = {
 	{HDS_WALK, 0.000001f},
 	{HDS_SPRINT, 0.000001f},
-	{HDS_JUMP, 0.1f},
+	{HDS_JUMP, 1.0f},
 };
 
 //map<HUNGER_DECREMENT_STATE, bool> Inventory::_hungerDecrementStates = {

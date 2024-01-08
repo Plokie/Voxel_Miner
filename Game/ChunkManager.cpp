@@ -193,6 +193,8 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 		//AcquireSRWLockExclusive(&this->gAccessMutex);
 		//unique_lock<std::mutex> lock(this->gAccessMutex);
 		Chunk* chunk = chunkMap[chunkIndex];
+		
+		unique_lock<std::mutex> lock(chunk->gAccessMutex);
 		if(!(chunk == nullptr || chunk->pendingDeletion)) {
 			if (!chunk->hasLoadedBlockData) return WorldGen::GetBlockAt(x, y, z);
 			//TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
@@ -201,11 +203,11 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 			// this basically makes it so nothing else can modify it WHILE its being read from
 			// but if somethings already writing to it, we can read it anyway
 			//bool didMutex = TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
-			bool didMutex = chunk->gAccessMutex.try_lock();
+			//bool didMutex = chunk->gAccessMutex.try_lock();
 
 			BlockID blockID = static_cast<BlockID>(chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z]);
 			//if(didMutex) ReleaseSRWLockExclusive(&chunk->gAccessMutex);
-			if(didMutex) chunk->gAccessMutex.unlock();
+			//if(didMutex) chunk->gAccessMutex.unlock();
 			//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 			return blockID;
 		}
