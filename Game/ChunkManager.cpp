@@ -48,6 +48,8 @@ void ChunkManager::Update(float dTime) {
 	if(Input::IsKeyPressed('I')) {
 		ChunkDatabase::Get()->Close(); // doenst actually close but saves loaded chunk data to disk
 	}
+
+	ChunkDatabase::Get()->Update(dTime); // Handles autosaving
 }
 
 void ChunkManager::Thread() {

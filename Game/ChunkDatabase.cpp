@@ -276,6 +276,18 @@ void ChunkDatabase::LoadWorldData()
 	f.close();
 }
 
+#define AUTOSAVE_TIME 180.f //autosave every 3 minutes (180 seconds)
+
+void ChunkDatabase::Update(float dt)
+{
+	autosaveTimer += dt;
+
+	if(autosaveTimer > AUTOSAVE_TIME) {
+		autosaveTimer = 0.f;
+		Close(); // Doesnt actually close but DOES save the world data into the files
+	}
+}
+
 void ChunkDatabase::SaveChunks()
 {
 	if(this == nullptr)return;

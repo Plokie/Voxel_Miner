@@ -1,12 +1,6 @@
 {
   "[-3,67,-223]": {
-    "inventory": {
-      "health": 20,
-      "hunger": 20,
-      "items": [],
-      "saturation": 10,
-      "score": 0
-    },
+    "inventory": 0,
     "timer1": 0.0,
     "timer2": 0.0
   },

@@ -33,6 +33,7 @@ private:
 
 	//todo: create event that is called when a chunk is unloaded
 
+	float autosaveTimer = 0.f;
 
 	string worldName = "World";
 
@@ -69,6 +70,8 @@ public:
 
 	void SaveWorldData();
 	void LoadWorldData();
+
+	void Update(float dt);
 
 	void SaveChunks();
 
