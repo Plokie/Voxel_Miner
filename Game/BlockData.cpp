@@ -2,6 +2,15 @@
 
 #include "Inventory.h"
 
+void BlockData::TryDropItems(Vector3 worldPosition)
+{
+	if(blockInventory) {
+		blockInventory->DropAllItems(worldPosition);
+		delete blockInventory;
+		blockInventory = nullptr;
+	}
+}
+
 nlohmann::json BlockData::Serialize()
 {
 	nlohmann::json json = {};

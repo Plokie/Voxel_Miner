@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Engine/json.hpp"
+#include "../Engine/MathUtil.h"
 
 class Inventory;
 
@@ -15,6 +16,8 @@ public:
 	BlockData(float timer1) : timer1(timer1){}
 	BlockData(float timer1, float timer2) : timer1(timer1), timer2(timer2){}
 	BlockData(Inventory* blockInventory) : blockInventory(blockInventory) {}
+
+	void TryDropItems(Vector3 worldPosition);
 
 	nlohmann::json Serialize();
 	void Deserialize(nlohmann::json json);

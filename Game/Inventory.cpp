@@ -4,6 +4,7 @@
 #include "InventoryUI.h"
 #include "../Engine/Engine.h"
 #include "../Audio/Audio.h"
+#include "DroppedItem.h"
 
 //map<HUNGER_DECREMENT_STATE, bool> Inventory::_hungerDecrementStates 
 
@@ -318,6 +319,17 @@ void Inventory::LoadDefaultItems() {
 	AddItem(RAW_STEAK, 5);
 	InvokeOnChange();
 	InvokeOnSelect();
+}
+
+void Inventory::DropAllItems(Vector3 position)
+{
+	//InventoryItem* newDroppedItem = new InventoryItem(heldItem->type, heldItem->ID, -1, -1, 1);
+	//DroppedItem* droppedItemEntity = DroppedItem::Create(newDroppedItem, transform.position + (transform.forward() * 1.46f));
+
+	for(auto& inventoryItem : items) {
+		DroppedItem* droppedItemEntity = DroppedItem::Create(inventoryItem, position);
+	}
+	items.clear();
 }
 
 void Inventory::Update(float dt) {

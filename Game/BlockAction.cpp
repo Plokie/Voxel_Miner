@@ -36,7 +36,7 @@ void FurnaceActionFunction(BlockActionContext ctx) {
 			blockData = findIt->second;
 		}
 
-		if(blockData == nullptr) {
+		if(blockData == nullptr || blockData->blockInventory == nullptr) {
 			blockData = new BlockData(new Inventory());
 			chunk->blockDataData[ctx.blockPosition] = blockData;
 			ChunkDatabase::Get()->SaveChunkData(chunkIndex, chunk);
@@ -72,7 +72,7 @@ map<BlockID, BlockAction> BlockAction::blockActions = {
 				blockData = findIt->second;
 			}
 
-			if(blockData == nullptr) {
+			if(blockData == nullptr || blockData->blockInventory == nullptr) {
 				blockData = new BlockData(new Inventory());
 				chunk->blockDataData[ctx.blockPosition] = blockData;
 				ChunkDatabase::Get()->SaveChunkData(chunkIndex, chunk);

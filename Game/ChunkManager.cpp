@@ -7,6 +7,8 @@
 #include "VoxelLighting.h"
 #include "../Engine/ThreadUtil.h"
 
+#include "BlockData.h"
+
 void ChunkManager::CreateChunk(const int x, const int y, const int z)
 {
 	tuple<int, int, int> pos = { x,y,z };
@@ -232,6 +234,11 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 		const Block& oldBlockDef = BlockDef::GetDef(oldBlock);
 
 		chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z] = id;
+
+		auto findIt = chunk->blockDataData.find({ x,y,z });
+		if(findIt != chunk->blockDataData.end()) { // if blockData exists for this block
+			findIt->second->TryDropItems({ (float)x,(float)y,(float)z });
+		}
 
 		//lighting->QueueRemoveSkyLight({ localVoxelPos, chunk, (short)15 });
 		//lighting->QueueSkyLight({ localVoxelPos, chunk });

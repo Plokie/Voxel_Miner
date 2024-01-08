@@ -73,8 +73,6 @@ bool TableInterface::TryMakeItemIcon(Button* parent, int idx, int idy)
 void TableInterface::ReleaseHeldItem() {
 	if(invUI->heldItem == nullptr) return;
 
-	//todo: essentially re-write InventoryUI::ReleaseItem's functionality
-
 	for(const auto& kvp : _indexedSlots) {
 		if(kvp.second == nullptr) continue;
 

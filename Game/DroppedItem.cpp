@@ -136,6 +136,7 @@ void DroppedItem::Start() {
 	aabb = AABB(Vector3(0.f, 0.f, 0.f), Vector3(.25f, .25f, .25f));
 
 	transform.scale = Vector3(0.5f, 0.5f, 0.5f);
+	transform.rotation = Vector3(0.f, static_cast<float>(rand() % 360), 0.f);
 
 	RecalculateGroundCheck();
 }
