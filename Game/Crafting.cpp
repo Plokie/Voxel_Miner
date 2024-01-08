@@ -61,7 +61,15 @@ vector<Category> Crafting::workbenchCategories = {
 //};
 
 map<tuple<int, int>, RecipeComponent> Crafting::furnaceRecipes = {
-	{{RAW_STEAK, InventoryItem::ITEM}, COOKED_STEAK}
+	{{RAW_STEAK, InventoryItem::ITEM}, COOKED_STEAK},
+	{{RAW_CHICKEN, InventoryItem::ITEM}, COOKED_CHICKEN},
+	{{CARROT, InventoryItem::ITEM}, ROASTED_CARROT},
+	{{EGG, InventoryItem::ITEM}, FRIED_EGG},
+	{{APPLE, InventoryItem::ITEM}, ROASTED_APPLE},
+
+	{{RAW_COPPER, InventoryItem::ITEM}, COPPER_BAR},
+	{{RAW_GOLD, InventoryItem::ITEM}, GOLD_BAR},
+	{{RAW_TITANIUM, InventoryItem::ITEM}, TITANIUM_BAR},
 };
 
 map<string, Recipe> Recipe::recipes = {

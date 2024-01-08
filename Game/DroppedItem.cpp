@@ -90,8 +90,10 @@ void DroppedItem::SetupModel() {
 void DroppedItem::OnCollide(PlayerController* pc) {
 	if(invItem) {
 		Inventory* inv = Engine::Get()->GetCurrentScene()->GetObject3D<Inventory>("Inventory");
-		int outRemainder;
-		if(inv->AddItem(invItem, &outRemainder)) {
+		
+		int outRemainder = invItem->amount % invItem->GetMaxStack();
+
+		if(inv->AddItem(invItem)) {
 			// after its added, its merged with other inv items handled by inventory
 			// delete this free instance
 			delete invItem;

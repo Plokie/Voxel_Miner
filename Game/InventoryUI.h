@@ -51,6 +51,8 @@ public:
 
 	void ReleaseItem(ItemIcon* invItem);
 
+	void FlagItemIconCooldown(InventoryItem* invItemChild);
+
 	void Open();
 	void Open(TableInterface* tableInterface, InterfaceContext ctx);
 	void Close();

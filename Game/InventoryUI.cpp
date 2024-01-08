@@ -200,6 +200,16 @@ void InventoryUI::ReleaseItem(ItemIcon* invItem) {
 	}
 }
 
+void InventoryUI::FlagItemIconCooldown(InventoryItem* invItemChild)
+{
+	for(const auto& icon : _spawnedIcons) {
+		if(icon->GetInvItem() == invItemChild) {
+			icon->onPlacedownCooldown = true;
+			break;
+		}
+	}
+}
+
 
 
 void InventoryUI::Open() {

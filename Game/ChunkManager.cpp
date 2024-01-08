@@ -237,9 +237,12 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 
 		chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z] = id;
 
-		auto findIt = chunk->blockDataData.find({ x,y,z });
-		if(findIt != chunk->blockDataData.end()) { // if blockData exists for this block
-			findIt->second->TryDropItems({ (float)x,(float)y,(float)z });
+
+		if(id == AIR) { // if block with blockdata is being removed
+			auto findIt = chunk->blockDataData.find({ x,y,z });
+			if(findIt != chunk->blockDataData.end()) { // if blockData exists for this block
+				findIt->second->TryDropItems({ (float)x,(float)y,(float)z });
+			}
 		}
 
 		//lighting->QueueRemoveSkyLight({ localVoxelPos, chunk, (short)15 });

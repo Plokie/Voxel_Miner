@@ -75,26 +75,26 @@ const bool Inventory::DoesItemExistAtPos(int posX, int posY) const
 	}
 	return false;
 }
-bool Inventory::AddItem(const InventoryItem* item, int* outRemainder) {
+bool Inventory::AddItem(const InventoryItem* item, InventoryItem** outInvItem) {
 	if(item->type == InventoryItem::Type::BLOCK) {
-		return AddItem((BlockID)item->ID, item->amount);
+		return AddItem((BlockID)item->ID, item->amount, outInvItem);
 	}
 	else {
-		return AddItem((ItemID)item->ID, item->amount);
+		return AddItem((ItemID)item->ID, item->amount, outInvItem);
 	}
 }
 
-bool Inventory::AddItem(const BlockID blockID, const int amount, int* outRemainder) {
-	return AddItem(blockID, InventoryItem::Type::BLOCK, amount);
+bool Inventory::AddItem(const BlockID blockID, const int amount, InventoryItem** outInvItem) {
+	return AddItem(blockID, InventoryItem::Type::BLOCK, amount, outInvItem);
 }
 
 
-bool Inventory::AddItem(const ItemID itemID, const int amount, int* outRemainder) {
-	return AddItem(itemID, InventoryItem::Type::ITEM, amount);
+bool Inventory::AddItem(const ItemID itemID, const int amount, InventoryItem** outInvItem) {
+	return AddItem(itemID, InventoryItem::Type::ITEM, amount, outInvItem);
 }
 
-bool Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, const int amount, int* outRemainder) {
-	if(outRemainder != nullptr) *outRemainder = amount; //hmm
+bool Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, const int amount, InventoryItem** outInvItem) {
+	//if(outRemainder != nullptr) *outRemainder = amount; //hmm
 
 	for(auto& invItem : items) {
 		// check for merges
@@ -103,7 +103,7 @@ bool Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, c
 			invItem->amount += amount;
 
 			if(invItem->amount > maxStack) {
-				AddItem(ID, type, invItem->amount - amount, outRemainder); // add remainder
+				AddItem(ID, type, invItem->amount - amount); // add remainder
 				invItem->amount = maxStack;
 			}
 			else 
@@ -111,6 +111,9 @@ bool Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, c
 				InvokeOnChange();
 				InvokeOnSelect();
 			}
+
+			if(outInvItem) *outInvItem = invItem;
+
 			return true;
 		}
 	}
@@ -124,7 +127,9 @@ bool Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, c
 		Vector2Int newPos = GetFreeSpot();
 		if(newPos.x == -1) return false;
 		//items.emplace_back(type, ID, newPos.x, newPos.y, amount);
-		items.push_back(new InventoryItem(type, ID, newPos.x, newPos.y, amount));
+		InventoryItem* newInvItem = new InventoryItem(type, ID, newPos.x, newPos.y, amount);
+		items.push_back(newInvItem);
+		if(outInvItem) *outInvItem = newInvItem;
 	}
 	else {
 		int fullstacks = amount / maxStack;
@@ -134,14 +139,18 @@ bool Inventory::AddItem(const unsigned int ID, const InventoryItem::Type type, c
 			Vector2Int newPos = GetFreeSpot();
 			if(newPos.x == -1) return false;
 			//items.emplace_back(type, ID, newPos.x, newPos.y, maxStack);
-			items.push_back(new InventoryItem(type, ID, newPos.x, newPos.y, maxStack));
+			InventoryItem* newInvItem = new InventoryItem(type, ID, newPos.x, newPos.y, maxStack);
+			items.push_back(newInvItem);
+			if(outInvItem) *outInvItem = newInvItem;
 		}
 
 		if(remainder > 0) {
 			Vector2Int newPos = GetFreeSpot();
 			if(newPos.x == -1) return false;
 			//items.emplace_back(type, ID, newPos.x, newPos.y, remainder);
-			items.push_back(new InventoryItem(type, ID, newPos.x, newPos.y, remainder));
+			InventoryItem* newInvItem = new InventoryItem(type, ID, newPos.x, newPos.y, remainder);
+			items.push_back(newInvItem);
+			if(outInvItem) *outInvItem = newInvItem;
 		}
 	}
 

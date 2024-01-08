@@ -36,12 +36,12 @@ void FurnaceActionFunction(BlockActionContext ctx) {
 			blockData = findIt->second;
 		}
 
-		if(blockData == nullptr || blockData->blockInventory == nullptr) {
+		if(blockData == nullptr /*|| blockData->blockInventory == nullptr*/) {
 			blockData = new BlockData(new Inventory());
 			chunk->blockDataData[ctx.blockPosition] = blockData;
-			ChunkDatabase::Get()->SaveChunkData(chunkIndex, chunk);
 		}
 		ctx.invUI->Open(new FurnaceUI(), InterfaceContext(ctx.inventory, blockData, ctx.blockPosition, FURNACE));
+		ChunkDatabase::Get()->SaveChunkData(chunkIndex, chunk);
 	}
 }
 
@@ -75,9 +75,9 @@ map<BlockID, BlockAction> BlockAction::blockActions = {
 			if(blockData == nullptr || blockData->blockInventory == nullptr) {
 				blockData = new BlockData(new Inventory());
 				chunk->blockDataData[ctx.blockPosition] = blockData;
-				ChunkDatabase::Get()->SaveChunkData(chunkIndex, chunk);
 			}
 			ctx.invUI->Open(new ChestUI(), InterfaceContext(ctx.inventory, blockData, ctx.blockPosition, CHEST));
+			ChunkDatabase::Get()->SaveChunkData(chunkIndex, chunk);
 		}
 	}}},
 };
@@ -127,7 +127,14 @@ void FurnaceUpdateFunction(BlockTickContext ctx) {
 
 					// convert input to an output
 					ctx.blockData->blockInventory->SubItem(inputItem->ID, inputItem->type);
-					ctx.blockData->blockInventory->AddItem(resultRecipe->ID, resultRecipe->type);
+
+					InventoryItem* invItemResult = nullptr;
+					ctx.blockData->blockInventory->AddItem(resultRecipe->ID, resultRecipe->type, resultRecipe->amount, &invItemResult);
+
+					if(invItemResult) {
+						invItemResult->posX = 2; // force to output slot
+					}
+					//ctx.blockData->blockInventory->PushItem(new InventoryItem(resultRecipe->ID))
 
 					ctx.blockData->timer2 = 0.f;
 

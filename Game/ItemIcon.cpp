@@ -165,6 +165,15 @@ void ItemIcon::ReleaseFunction(int idx, int idy, Button* parentSlot, Inventory* 
 				int remainder = max(0, sum - prexistingInvItem->GetMaxStack());
 
 				//onPlacedownCooldown = true;
+				/*for(auto it = slotParentInventory->GetInventoryItems().begin(); it != slotParentInventory->GetInventoryItems().end(); ++it) {
+					if(*it == prexistingInvItem) {
+						
+						break;
+					}
+				}*/
+				if(slotParentInventory == invUI->GetInventory()) {
+					invUI->FlagItemIconCooldown(prexistingInvItem);
+				}
 
 				prexistingInvItem->amount = min(sum, prexistingInvItem->GetMaxStack());
 				if(remainder <= 0) {

@@ -134,10 +134,10 @@ public:
 	vector<InventoryItem*>& GetInventoryItems() { return items; } // bad
 
 	// Dont forget to delete InventoryItem* instance if desired
-	bool AddItem(const InventoryItem* item, int* outRemainder = nullptr);
-	bool AddItem(const BlockID blockID, const int amount = 1, int* outRemainder = nullptr);
-	bool AddItem(const ItemID itemID, const int amount = 1, int* outRemainder = nullptr);
-	bool AddItem(const unsigned int ID, const InventoryItem::Type type, const int amount = 1, int* outRemainder = nullptr);
+	bool AddItem(const InventoryItem* item, InventoryItem** outInvItem = nullptr);
+	bool AddItem(const BlockID blockID, const int amount = 1, InventoryItem** outInvItem = nullptr);
+	bool AddItem(const ItemID itemID, const int amount = 1, InventoryItem** outInvItem = nullptr);
+	bool AddItem(const unsigned int ID, const InventoryItem::Type type, const int amount = 1, InventoryItem** outInvItem = nullptr);
 
 	void PushItem(InventoryItem* item);
 
