@@ -5,6 +5,7 @@
 #include "Blocks.h"
 //#include "../Engine/UI/Button.h"
 //#include "../Engine/UI/HorizontalLayoutRect.h"
+#include "InventoryItem.h"
 
 class HorizontalLayoutRect;
 class Button;
@@ -39,12 +40,19 @@ class TableInterface : public Object2D {
 protected:
 	vector<Button*> _spawnedSlots;
 	vector<ItemIcon*> _spawnedItemIcons;
+	vector<UIRect*> _spawnedUIRects;
 	BlockData* blockData;
 	InventoryUI* invUI;
+	map<tuple<int, int>, InventoryItem*> itemExistsHash;
 
 	map<tuple<int, int>, Button*> _indexedSlots;
 
 	Button* MakeSlot(int idx, int idy);
+	ItemIcon* MakeItemIcon(InventoryItem* invItem);
+	void ComputeItemExistsHash();
+
+	// If an item exists at position idx,idy. Create it as child of parent.
+	bool TryMakeItemIcon(Button* parent, int idx, int idy);
 public:
 	void ReleaseHeldItem();
 	bool EraseIcon(ItemIcon* icon);

@@ -42,7 +42,8 @@ map<BlockID, BlockAction> BlockAction::blockActions = {
 			}
 
 			if(blockData == nullptr) {
-				chunk->blockDataData[ctx.blockPosition] = new BlockData(new Inventory());
+				blockData = new BlockData(new Inventory());
+				chunk->blockDataData[ctx.blockPosition] = blockData;
 				ChunkDatabase::Get()->SaveChunkData(chunkIndex, chunk);
 			}
 			ctx.invUI->Open(new FurnaceUI(), InterfaceContext(ctx.inventory, blockData, ctx.blockPosition, FURNACE));
@@ -61,7 +62,8 @@ map<BlockID, BlockAction> BlockAction::blockActions = {
 			}
 
 			if(blockData == nullptr) {
-				chunk->blockDataData[ctx.blockPosition] = new BlockData(new Inventory());
+				blockData = new BlockData(new Inventory());
+				chunk->blockDataData[ctx.blockPosition] = blockData;
 				ChunkDatabase::Get()->SaveChunkData(chunkIndex, chunk);
 			}
 			ctx.invUI->Open(new ChestUI(), InterfaceContext(ctx.inventory, blockData, ctx.blockPosition, CHEST));

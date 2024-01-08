@@ -187,7 +187,7 @@ void CraftingUI::Open(InterfaceContext ctx) {
 		tab->SetText(tab->GetText());
 	}
 
-	LoadCategory((*categoriesTarget)[1]);
+	LoadCategory((*categoriesTarget)[0]);
 }
 
 void CraftingUI::Update(const float dt) {

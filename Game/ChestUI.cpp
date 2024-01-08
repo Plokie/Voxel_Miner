@@ -8,12 +8,6 @@
 void ChestUI::Open(InterfaceContext ctx) {
 	TableInterface::Open(ctx);
 
-	map<tuple<int, int>, InventoryItem*> itemExistsHash;
-	for(auto& invItem : blockData->blockInventory->GetInventoryItems()) {
-		itemExistsHash[{invItem->posX, invItem->posY}] = invItem;
-	}
-
-
 	const float spacing = 5.f;
 
 	for(int y = 0; y < CHESTSIZE_Y; y++) {
@@ -26,18 +20,7 @@ void ChestUI::Open(InterfaceContext ctx) {
 				y * (55.f + spacing) + 55.f
 			);
 
-			auto itFind = itemExistsHash.find({ x, y });
-			if(itFind != itemExistsHash.end()) {
-				ItemIcon* icon = new ItemIcon(itFind->second, invUI); //todo: easier MakeIcon func
-				icon->Init(pDevice);
-				icon->SetDimensions({ 50.f, 50.f });
-				icon->SetAnchor({ .5f,.5f });
-				icon->SetPivot({ .5f,.5f });
-				icon->SetParent(slot);
-				icon->SetInventoryParent(blockData->blockInventory);
-
-				_spawnedItemIcons.push_back(icon);
-			}
+			TryMakeItemIcon(slot, x, y);
 		}
 	}
 

@@ -65,11 +65,11 @@
       "hunger": 20,
       "items": [
         {
-          "ID": 11,
-          "amount": 1,
+          "ID": 1,
+          "amount": 100,
           "posX": 0,
           "posY": 0,
-          "type": 1
+          "type": 0
         }
       ],
       "saturation": 10,

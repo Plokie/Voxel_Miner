@@ -38,6 +38,37 @@ Button* TableInterface::MakeSlot(int idx, int idy)
 	return slot;
 }
 
+ItemIcon* TableInterface::MakeItemIcon(InventoryItem* invItem)
+{
+	ItemIcon* icon = new ItemIcon(invItem, invUI); //todo: easier MakeIcon func
+	icon->Init(pDevice);
+	icon->SetDimensions({ 50.f, 50.f });
+	icon->SetAnchor({ .5f,.5f });
+	icon->SetPivot({ .5f,.5f });
+	icon->SetInventoryParent(blockData->blockInventory);
+
+	return icon;
+}
+
+void TableInterface::ComputeItemExistsHash() {
+	for(auto& invItem : blockData->blockInventory->GetInventoryItems()) {
+		itemExistsHash[{invItem->posX, invItem->posY}] = invItem;
+	}
+}
+
+bool TableInterface::TryMakeItemIcon(Button* parent, int idx, int idy)
+{
+	auto itFind = itemExistsHash.find({ idx, idy });
+	if(itFind != itemExistsHash.end()) {
+		ItemIcon* icon = MakeItemIcon(itFind->second);
+		icon->SetParent(parent);
+
+		_spawnedItemIcons.push_back(icon);
+		return true;
+	}
+	return false;
+}
+
 void TableInterface::ReleaseHeldItem() {
 	if(invUI->heldItem == nullptr) return;
 
@@ -77,6 +108,9 @@ void TableInterface::Update(const float dt) {
 	for(auto& icon : _spawnedItemIcons) { // attempts to pick up
 		icon->Update(dt);
 	}
+	for(auto& rect : _spawnedUIRects) {
+		rect->Update(dt);
+	}
 	for(auto& slot : _spawnedSlots) { // drops it
 		slot->Update(dt);
 	}
@@ -93,6 +127,10 @@ void TableInterface::Close()
 	for(auto& slot : _spawnedSlots) {
 		delete slot;
 		slot = nullptr;
+	}
+	for(auto& rect : _spawnedUIRects) {
+		delete rect;
+		rect = nullptr;
 	}
 	for(auto& itemIcon : _spawnedItemIcons) {
 		delete itemIcon;
@@ -111,6 +149,8 @@ void TableInterface::Open(InterfaceContext ctx) {
 	this->SetDimensions({ 550.f, 265.f });
 	this->SetPosition(0.f, 10.f);
 	this->SetDepth(11.f);
+
+	ComputeItemExistsHash();
 }
 
 
@@ -119,7 +159,12 @@ void TableInterface::Draw(SpriteBatch* sb) {
 		slot->Draw(sb);
 	}
 
+	for(auto& icon : _spawnedUIRects) {
+		icon->Draw(sb);
+	}
+
 	for(auto& icon : _spawnedItemIcons) {
 		icon->Draw(sb);
 	}
+
 }

@@ -12,7 +12,7 @@
 ItemIcon::ItemIcon(InventoryItem* invItem, InventoryUI* invUI) {
 	this->invUI = invUI;
 	this->invItem = invItem;
-	this->inv = Engine::Get()->GetCurrentScene()->GetObject3D<Inventory>("Inventory"); // todo: change this to point to correct inventory
+	this->inv = Engine::Get()->GetCurrentScene()->GetObject3D<Inventory>("Inventory"); // todo: change this to point to correct inventory. pass as argument?
 	Display(invItem->ID, invItem->type, invItem->amount, invItem->GetUVPos());
 }
 
@@ -140,8 +140,7 @@ void ItemIcon::AttemptStorageMigration(Inventory* slotParentInventory, TableInte
 	}
 }
 
-void ItemIcon::ReleaseFunction(int idx, int idy, Button* parentSlot, Inventory* slotParentInventory, TableInterface* tableInterface)
-{
+void ItemIcon::ReleaseFunction(int idx, int idy, Button* parentSlot, Inventory* slotParentInventory, TableInterface* tableInterface) {
 	InventoryItem* thisInvItem = GetInvItem();
 	InventoryItem* prexistingInvItem = nullptr;
 	
@@ -165,14 +164,16 @@ void ItemIcon::ReleaseFunction(int idx, int idy, Button* parentSlot, Inventory* 
 				int sum = prexistingInvItem->amount + thisInvItem->amount;
 				int remainder = max(0, sum - prexistingInvItem->GetMaxStack());
 
+				//onPlacedownCooldown = true;
+
 				prexistingInvItem->amount = min(sum, prexistingInvItem->GetMaxStack());
 				if(remainder <= 0) {
-					if(tableInterface) {
-						tableInterface->EraseIcon(this);
+					tableInterface->EraseIcon(this);
+					invUI->EraseIcon(this);
+					/*if(tableInterface) {
 					}
 					else {
-						invUI->EraseIcon(this);
-					}
+					}*/
 
 
 					for(auto it = inv->GetInventoryItems().begin(); it != inv->GetInventoryItems().end(); ++it) {
@@ -323,6 +324,8 @@ void ItemIcon::Update(const float dTime) {
 					if(invItem->amount <= 0) {
 						
 						invUI->EraseIcon(this);
+
+						//todo: encapsulate function
 						for(auto it = inv->GetInventoryItems().begin(); it != inv->GetInventoryItems().end(); ++it) {
 							if(*it == invItem) {
 								inv->GetInventoryItems().erase(it);
