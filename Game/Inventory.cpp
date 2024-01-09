@@ -26,6 +26,20 @@ void Inventory::ChangeHealth(int amt) {
 	if(amt < 0) {
 		Audio::Play("hurt", 1.f);
 	}
+
+	if(health <= 0) {
+		//DropAllItems();
+		health = HEALTH_MAX;
+		saturation = HEALTH_MAX/2;
+		hunger = HUNGER_MAX;
+		InvokeOnHealthChange();
+		InvokeOnHungerChange();
+
+		score /= 2;
+		InvokeOnScoreChange();
+
+		InvokeOnDeathEvent();
+	}
 }
 
 const Vector2Int Inventory::GetFreeSpot() const {

@@ -32,6 +32,25 @@ void PlayerController::Start()
 
 	this->inv = engine->GetCurrentScene()->GetObject3D<Inventory>("Inventory");
 
+	inv->AddOnDeathEvent([this, engine]() {
+		inv->DropAllItems(transform.position);
+		transform.position = { 0.f, ceil(WorldGen::SampleWorldHeight(0, 0)) + 3.f, 0.f};
+		
+		Camera* camera = &engine->GetGraphics()->camera;
+		camera->transform = transform;
+
+		aabb.SetPosition(transform.position - Vector3(0, 0.62f, 0));
+
+		inv->AddItem(COPPER_PICKAXE);
+		inv->AddItem(COPPER_AXE);
+		inv->AddItem(COPPER_SHOVEL);
+		inv->AddItem(WORKBENCH);
+
+		InventoryUI* invUI = engine->GetCurrentScene()->GetObject2D<InventoryUI>("invUI");
+		invUI->ReloadIcons();
+		invUI->DrawHotbarIcons();
+	});
+
 	//engine->GetCurrentScene()->CreateObject3D(new Object3D(), "a_debug_look", "cube", "err");
 	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->models[0]->SetTransparent(true);
 	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.scale = Vector3(0.001f, 0.001f, 0.001f);

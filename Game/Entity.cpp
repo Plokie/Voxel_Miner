@@ -50,6 +50,9 @@ void Entity::Start() {
 }
 
 void Entity::Update(float dTime) {
+	if(lifetimeCooldown > 0.f)
+		lifetimeCooldown -= dTime;
+
 	vector<AABB> blocks = GetNearbyAABBs(chunkManager);
 
 	// Basic check if object is grounded
@@ -80,7 +83,8 @@ void Entity::Update(float dTime) {
 		transform.position += AABB::penetration_vector(AABB::minkowski_difference(playerController->GetAABB(), aabb));
 		aabb.SetPosition(transform.position);
 
-		OnCollide(playerController);
+		if(lifetimeCooldown <=0.f)
+			OnCollide(playerController);
 	}
 
 	// Block collision check

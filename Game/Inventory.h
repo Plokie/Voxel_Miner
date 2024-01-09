@@ -44,6 +44,14 @@ private:
 	vector<function<void()>> _onChangeEvents;
 	vector<function<void(int)>> _onSelectEvents;
 
+	vector<function<void()>> _onDeathEvents;
+
+	void InvokeOnDeathEvent() {
+		for(auto& func : _onDeathEvents) {
+			func();
+		}
+	}
+
 	int selectedSlotNum = 0;
 
 	void InvokeOnChange();
@@ -118,6 +126,10 @@ public:
 
 	void SetDamageFlag(DAMAGE_STATE flag, bool state) {
 		_damageStates[flag] = state;
+	}
+
+	void AddOnDeathEvent(function<void()> func) {
+		_onDeathEvents.emplace_back(func);
 	}
 
 	const Vector2Int GetFreeSpot() const;

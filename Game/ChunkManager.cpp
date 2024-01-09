@@ -199,11 +199,10 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 		// Okay this might seem redundant, but i promise its not (i think)
 		// this basically makes it so nothing else can modify it WHILE its being read from
 		// but if somethings already writing to it, we can read it anyway
-		bool didMutex = chunk->gAccessMutex.try_lock();
 		//unique_lock<std::mutex> lock(chunk->gAccessMutex);
 		
-		if(!(chunk == nullptr || chunk->pendingDeletion)) {
-			if (!chunk->hasLoadedBlockData) return WorldGen::GetBlockAt(x, y, z);
+		if(!(chunk == nullptr || chunk->pendingDeletion || !chunk->hasLoadedBlockData)) {
+			bool didMutex = chunk->gAccessMutex.try_lock();
 			//TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
 
 			//bool didMutex = TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
@@ -214,7 +213,7 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 			//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 			return blockID;
 		}
-		if(didMutex) chunk->gAccessMutex.unlock();
+		//if(didMutex) chunk->gAccessMutex.unlock();
 	}
 
 	//todo: read from chunk cache of height,temp,moist samples?
