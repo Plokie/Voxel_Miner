@@ -52,6 +52,8 @@ void PlayerController::Start()
 		invUI->DrawHotbarIcons();
 	});
 
+	Input::SetVirtualMouse(false);
+
 	//engine->GetCurrentScene()->CreateObject3D(new Object3D(), "a_debug_look", "cube", "err");
 	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->models[0]->SetTransparent(true);
 	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.scale = Vector3(0.001f, 0.001f, 0.001f);
@@ -130,7 +132,7 @@ void PlayerController::Update(float dTime)
 		//DroppedItem::Create(new InventoryItem(COBBLESTONE, -1, -1, 1), transform.position + (transform.forward() * 1.46f));
 	}
 
-	if(Input::IsKeyPressed('Q')) {
+	if(Input::IsKeyPressed('Q') || Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_X)) {
 		//engine->GetCurrentScene()->CreateObject3D(new Entity(), "test-entity-"+to_string(rand()), "cube")->transform.position = transform.position;
 		InventoryItem* heldItem;
 		if(inv->GetHeldItem(&heldItem)) {
@@ -147,12 +149,12 @@ void PlayerController::Update(float dTime)
 
 	if(Input::IsMouseLocked()) {
 		bool isSprinting = false;
-		if(Input::IsKeyHeld(VK_SHIFT)) {
+		if(Input::IsKeyHeld(VK_SHIFT) || Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_LEFT_THUMB)) {
 			//transform.position -= Vector3(0, camSpeed, 0);
 			movementSpeed = 5.612f;
 			isSprinting = true;
 		}
-		if(Input::IsKeyHeld(VK_CONTROL)) {
+		if(Input::IsKeyHeld(VK_CONTROL) || Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_RIGHT_THUMB)) {
 			movementSpeed = 1.0f;
 		}
 		if(freeCam) {
@@ -176,19 +178,27 @@ void PlayerController::Update(float dTime)
 		//velocity.x = moveAxis.x;
 		//velocity.z = moveAxis.z;
 
-		if(Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_A)) {
+		/*if() {
 			transform.position += Vector3(0, movementSpeed, 0);
-		}
+		}*/
 
 		XMFLOAT2 mouseDelta = Input::MouseDelta();
-		float lookSpeed = 0.0025f; // The polling of the mouse is already tied to the framerate, so no dt
+		float mouseSens = 0.0025f; // The polling of the mouse is already tied to the framerate, so no dt
+		float joystickSens = 0.007f;
+
+		Vector2 lookInput = Input::RightAxis(0) * joystickSens;
+		lookInput.y *= -1.f;
+
+		lookInput.x += mouseDelta.x * mouseSens;
+		lookInput.y += mouseDelta.y * mouseSens;
+
 
 
 		transform.position += moveAxis;
-		transform.rotation += Vector3(mouseDelta.y * lookSpeed, mouseDelta.x * lookSpeed, 0.f);
+		transform.rotation += Vector3(lookInput.y, lookInput.x, 0.f);
 	}
 
-	if(Input::IsKeyPressed(VK_ESCAPE)) {
+	if(Input::IsKeyPressed(VK_ESCAPE) || Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_START)) {
 		Input::SetMouseLocked(!Input::IsMouseLocked());
 
 		if(!Input::IsMouseLocked()) {
@@ -233,7 +243,7 @@ void PlayerController::Update(float dTime)
 		}
 		else {
 			velocity.y = -3.0f * dTime; //Small nudge to ground level, nothing noticable
-			if(Input::IsKeyHeld(VK_SPACE) && Input::IsMouseLocked()) 
+			if((Input::IsKeyHeld(VK_SPACE) || Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_A)) && Input::IsMouseLocked())
 			{
 				inv->DecrementHungerFlag(HDS_JUMP);
 				velocity.y = jumpVelocity;
@@ -254,10 +264,10 @@ void PlayerController::Update(float dTime)
 		}
 	}
 	else {
-		if(Input::IsKeyHeld(VK_SPACE) && Input::IsMouseLocked()) {
+		if((Input::IsKeyHeld(VK_SPACE) || Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_A)) && Input::IsMouseLocked()) {
 			transform.position.y += movementSpeed * dTime;
 		}
-		if(Input::IsKeyHeld(VK_SHIFT) && Input::IsMouseLocked()) {
+		if((Input::IsKeyHeld(VK_SHIFT) || Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_RIGHT_THUMB)) && Input::IsMouseLocked()) {
 			transform.position.y -= movementSpeed * dTime;
 		}
 	}
@@ -278,10 +288,10 @@ void PlayerController::Update(float dTime)
 	if(Input::IsKeyPressed('9')) inv->SetSlotNum(8);
 	if(Input::IsKeyPressed('0')) inv->SetSlotNum(9);
 
-	if(Input::GetMouseScrollDelta() > 0) {
+	if(Input::GetMouseScrollDelta() > 0 || Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_LEFT_SHOULDER)) {
 		inv->ChangeSlotNum(-1);
 	}
-	else if(Input::GetMouseScrollDelta() < 0) {
+	else if(Input::GetMouseScrollDelta() < 0 || Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_RIGHT_SHOULDER)) {
 		inv->ChangeSlotNum(1);
 	}
 
@@ -298,7 +308,7 @@ void PlayerController::Update(float dTime)
 
 		// INPUT MODIFY
 		if(Input::IsMouseLocked()) {
-			if(Input::IsMouseKeyPressed(MOUSE_L)) {
+			if(Input::IsMouseKeyPressed(MOUSE_L) || Input::IsRightTriggerPressed(0)) { // Mine
 				InventoryItem* invItem;
 				
 				if(inv->GetHeldItem(&invItem)) {
@@ -335,7 +345,7 @@ void PlayerController::Update(float dTime)
 
 			}
 
-			if(Input::IsMouseKeyPressed(MOUSE_R)) {
+			if(Input::IsMouseKeyPressed(MOUSE_R) || Input::IsLeftTriggerPressed(0)) {
 				//inv->GetItemAt()
 
 				if(BlockAction::CallBlockAction(lookHitBlock, this, inv, chunkManager, lookHitPoint)) {
@@ -364,7 +374,7 @@ void PlayerController::Update(float dTime)
 		blockSelectRef->models[0]->alpha = 0.0f;
 	}
 
-	if(Input::IsMouseKeyPressed(MOUSE_R)) {
+	if(Input::IsMouseKeyPressed(MOUSE_R) || Input::IsLeftTriggerPressed(0)) {
 		InventoryItem* invItem; // should get it again here since actions are called before this. Item in hand COULD disappear
 		if(inv->GetHeldItem(&invItem) && invItem->type == InventoryItem::ITEM) {
 			Item::CallItemAction((ItemID)invItem->ID, this, inv, chunkManager, lookHitPoint);

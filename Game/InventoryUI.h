@@ -41,9 +41,7 @@ public:
 	Inventory* GetInventory() const { return inventory; }
 	Button* GetInvSlot(int x, int y) const { return invSlots[x][y]; }
 	
-	void AddNewIcon(ItemIcon* itemIcon) {
-		_spawnedIcons.push_back(itemIcon);
-	}
+	void AddNewIcon(ItemIcon* itemIcon);
 	void DeleteIcon(ItemIcon* itemIcon);
 
 	//void SetHeldItem(ItemIcon* invItem);

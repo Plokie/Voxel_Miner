@@ -141,7 +141,7 @@ void Engine::Update(float dTime) {
 	}
 
 	// Keep at end
-	Input::EndUpdate();
+	Input::EndUpdate(dTime);
 	audio->Update();
 	currentScene->EndUpdate();
 	

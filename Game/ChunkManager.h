@@ -7,9 +7,16 @@
 #include "../Engine/Engine.h"
 #include "../Engine/ThreadPool.h"
 
-// faster to load while debugging, change back later
+// faster to load while debugging. plus debug builds are way slower
+#ifdef _DEBUG
+#define CHUNKLOAD_AREA_X 3
+#define CHUNKLOAD_AREA_Z 3
+#else
 #define CHUNKLOAD_AREA_X 12
 #define CHUNKLOAD_AREA_Z 12
+#endif
+
+
 #define CHUNKLOAD_FIXED_NY 6
 #define CHUNKLOAD_FIXED_PY 4
 

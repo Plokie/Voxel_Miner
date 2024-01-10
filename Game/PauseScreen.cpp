@@ -51,10 +51,12 @@ void PauseScreen::Open()
 {
 	Engine* engine = Engine::Get();
 	engine->SetScene("pause");
+	Input::SetVirtualMouse(true);
 }
 
 void PauseScreen::Close()
 {
 	Engine* engine = Engine::Get();
 	engine->SetScene("game");
+	Input::SetVirtualMouse(false);
 }

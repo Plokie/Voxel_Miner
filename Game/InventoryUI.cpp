@@ -170,6 +170,14 @@ InventoryUI::~InventoryUI() {
 //	}
 //}
 
+void InventoryUI::AddNewIcon(ItemIcon* itemIcon) {
+	for(auto& icon : _spawnedIcons) {
+		if(itemIcon == icon) return; // Icon already exists here
+	}
+
+	_spawnedIcons.push_back(itemIcon);
+}
+
 void InventoryUI::DeleteIcon(ItemIcon* itemIcon) {
 	for(auto it = _spawnedIcons.begin(); it != _spawnedIcons.end(); it++) {
 		if(*it == itemIcon) {
@@ -216,6 +224,7 @@ void InventoryUI::Open() {
 	isOpen = true;
 	invBg->SetEnabled(true);
 	Input::SetMouseLocked(false);
+	Input::SetVirtualMouse(true);
 
 	_spawnedIcons.reserve((INVSIZE_X * INVSIZE_Y) + INVSIZE_Y);
 
@@ -257,6 +266,7 @@ void InventoryUI::Close() {
 	isOpen = false;
 	invBg->SetEnabled(false);
 	Input::SetMouseLocked(true);
+	Input::SetVirtualMouse(false);
 
 	if(currentInterface) {
 		currentInterface->Close();
@@ -323,6 +333,16 @@ void InventoryUI::Update(const float dTime) {
 		isOpen = !isOpen;
 		if(isOpen) Open();
 		else Close();
+	}
+
+	if(Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_Y) || ((Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_B) || Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_START)) && isOpen)) {
+		isOpen = !isOpen;
+		if(isOpen) {
+			Open();
+		}
+		else {
+			Close();
+		}
 	}
 
 	if(currentInterface) {

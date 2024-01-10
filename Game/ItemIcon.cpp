@@ -135,6 +135,7 @@ void ItemIcon::AttemptStorageMigration(Inventory* slotParentInventory, TableInte
 		// now move the InventoryItem* to the target inventory
 		slotParentInventory->PushItem(GetInvItem());
 		SetInventoryParent(slotParentInventory);
+		inv = slotParentInventory;
 
 		onPlacedownCooldown = true;
 	}

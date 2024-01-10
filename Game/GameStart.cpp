@@ -77,6 +77,7 @@ void GameStart(Engine* engine) {
 	//todo: better randomness. Maybe random singleton for World / Block / Entity randomness
 	srand((unsigned)time(NULL));
 
+	Input::SetVirtualMouse(true);
 	TitleScreen::Setup(engine);
 	PauseScreen::Setup(engine);
 	

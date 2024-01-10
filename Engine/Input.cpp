@@ -20,6 +20,85 @@ void Input::UpdatePads() {
 	}
 }
 
+bool Input::IsPadButtonHeld(int idx, USHORT KEY)
+{
+	if(_Instance->gamepads[idx].port != -1) {
+		return (_Instance->gamepads[idx].xState.Gamepad.wButtons & KEY) != 0;
+	}
+	return false;
+}
+
+bool Input::IsPadButtonPressed(int idx, USHORT KEY)
+{
+	if(_Instance->gamepads[idx].port != -1) {
+		return ((_Instance->gamepads[idx].xState.Gamepad.wButtons & KEY) != 0) && ((_Instance->prevGamepadButtons[idx] & KEY) == 0);
+	}
+	return false;
+}
+
+float Input::GetPadLeftTrigger(int idx)
+{
+	if(_Instance->gamepads[idx].port != -1) {
+		return _Instance->gamepads[idx].leftTrigger;
+	}
+	return 0.0f;
+}
+
+float Input::GetPadRightTrigger(int idx)
+{
+	if(_Instance->gamepads[idx].port != -1) {
+		return _Instance->gamepads[idx].rightTrigger;
+	}
+	return 0.0f;
+}
+
+bool Input::IsLeftTriggerHeld(int idx)
+{
+	if(_Instance->gamepads[idx].port != -1) {
+		return _Instance->gamepads[idx].leftTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD / 255.f;
+	}
+	return false;
+}
+
+bool Input::IsRightTriggerHeld(int idx)
+{
+	if(_Instance->gamepads[idx].port != -1) {
+		return _Instance->gamepads[idx].rightTrigger > XINPUT_GAMEPAD_TRIGGER_THRESHOLD / 255.f;
+	}
+	return false;
+}
+
+bool Input::IsLeftTriggerPressed(int idx)
+{
+	return IsLeftTriggerHeld(idx) && !_Instance->prevLeftTriggerHeld[idx];
+}
+
+bool Input::IsRightTriggerPressed(int idx)
+{
+	return IsRightTriggerHeld(idx) && !_Instance->prevRightTriggerHeld[idx];
+}
+
+bool Input::IsLeftTriggerReleased(int idx)
+{
+	return !IsLeftTriggerHeld(idx) && _Instance->prevLeftTriggerHeld[idx];
+}
+
+bool Input::IsRightTriggerReleased(int idx)
+{
+	return !IsRightTriggerHeld(idx) && _Instance->prevRightTriggerHeld[idx];
+}
+
+const Vector2& Input::LeftAxis(int idx)
+{
+	if(_Instance->gamepads[idx].leftStick.sqrMagnitude() < 0.05f) return Vector2(0, 0);
+	return _Instance->gamepads[idx].leftStick;
+}
+
+const Vector2& Input::RightAxis(int idx) {
+	if(_Instance->gamepads[idx].rightStick.sqrMagnitude() < 0.05f) return Vector2(0, 0);
+	return _Instance->gamepads[idx].rightStick;
+}
+
 void Input::HandleRawInput(HRAWINPUT input) {
 	UINT dwSize = 0;
 	UINT res = GetRawInputData(input, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
@@ -89,6 +168,11 @@ void Input::HandleCharInput(WPARAM key)
 void Input::HandleMouseWheel(WPARAM wparam) {
 	int delta = GET_WHEEL_DELTA_WPARAM(wparam);
 	_Instance->scrollDelta = delta;
+}
+
+void Input::SetVirtualMouse(bool state)
+{
+	_Instance->virtualMouseEnabled = state;
 }
 
 void Input::GetMouseInformation() {
@@ -177,9 +261,73 @@ const Vector2 Input::GetInputVector() {
 	return Vector2(GetInputAxis("Horizontal"), GetInputAxis("Vertical"));
 }
 
-void Input::EndUpdate() {
+void Input::EndUpdate(float dt) {
 	memcpy(&_Instance->prevKeyBuffer, &_Instance->keyBuffer, sizeof(bool) * KEYBUFF_SIZE); //Create duplicate of keybuffer for previous frame
 	memcpy(&_Instance->prevmKeyBuffer, &_Instance->mKeyBuffer, sizeof(bool) * MKEYBUFF_SIZE);
+
+	
+
+	if(_Instance->gamepads[0].port != -1 && _Instance->virtualMouseEnabled) {
+		//_Instance->mouseDelta = Input::LeftAxis(0);
+		
+		POINT cursorPos;
+		GetCursorPos(&cursorPos);
+		bool changed = false;
+
+		_Instance->virtualMouseDelta += Input::LeftAxis(0) * dt * 400.f;
+		
+		if(_Instance->virtualMouseDelta.x > 1.f) {
+			cursorPos.x += 1;
+			_Instance->virtualMouseDelta.x = 0.f;
+			changed = true;
+		}
+		else if(_Instance->virtualMouseDelta.x < -1.f) {
+			cursorPos.x -= 1;
+			_Instance->virtualMouseDelta.x = 0.f;
+			changed = true;
+		}
+
+		if(_Instance->virtualMouseDelta.y > 1.f) {
+			cursorPos.y -= 1;
+			_Instance->virtualMouseDelta.y = 0.f;
+			changed = true;
+		}
+		else if(_Instance->virtualMouseDelta.y < -1.f) {
+			cursorPos.y += 1;
+			_Instance->virtualMouseDelta.y = 0.f;
+			changed = true;
+		}
+
+		if(changed) SetCursorPos(cursorPos.x, cursorPos.y);
+
+		/*_Instance->mKeyBuffer[MOUSE_L] = Input::IsRightTriggerHeld(0);
+		_Instance->mKeyBuffer[MOUSE_R] = Input::IsLeftTriggerHeld(0);*/
+
+		if(Input::IsRightTriggerPressed(0)) 
+			_Instance->mKeyBuffer[MOUSE_L] = true;
+		if(Input::IsRightTriggerReleased(0)) 
+			_Instance->mKeyBuffer[MOUSE_L] = false;
+
+		if(Input::IsLeftTriggerPressed(0)) 
+			_Instance->mKeyBuffer[MOUSE_R] = true;
+		if(Input::IsLeftTriggerReleased(0)) 
+			_Instance->mKeyBuffer[MOUSE_R] = false;
+
+		/*POINT cursorPos;
+		GetCursorPos(&cursorPos);
+		
+		cursorPos.y += static_cast<int>(  min(1.f,Input::LeftAxis(0).y * -2.f)  );
+		SetCursorPos(cursorPos.x, cursorPos.y);*/
+	}
+
+	for(int i = 0; i < GAMEPAD_COUNT; i++) {
+		if(_Instance->gamepads[i].port != -1) {
+			_Instance->prevGamepadButtons[i] = _Instance->gamepads[i].xState.Gamepad.wButtons;
+		}
+
+		_Instance->prevLeftTriggerHeld[i] = Input::IsLeftTriggerHeld(i);
+		_Instance->prevRightTriggerHeld[i] = Input::IsRightTriggerHeld(i);
+	}
 
 	_Instance->prevMousePos = _Instance->mousePos;
 

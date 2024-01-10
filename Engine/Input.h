@@ -15,6 +15,7 @@
 #define RAWBUFF_SIZE 512
 #define KEYBUFF_SIZE 255
 #define MKEYBUFF_SIZE 5
+#define GAMEPAD_COUNT 4
 
 using namespace DirectX;
 
@@ -32,6 +33,7 @@ struct GamepadState {
 	XINPUT_STATE xState = {};
 };
 
+
 class Input {
 private:
 	unsigned char inBuffer[RAWBUFF_SIZE];
@@ -40,6 +42,12 @@ private:
 
 	bool mKeyBuffer[MKEYBUFF_SIZE];
 	bool prevmKeyBuffer[MKEYBUFF_SIZE];
+
+	WORD prevGamepadButtons[GAMEPAD_COUNT];
+	bool prevLeftTriggerHeld[GAMEPAD_COUNT];
+	bool prevRightTriggerHeld[GAMEPAD_COUNT];
+	bool virtualMouseEnabled = false;
+	Vector2 virtualMouseDelta = Vector2(0.f,0.f);
 
 	bool isMouseLocked = false;
 	int scrollDelta = 0;
@@ -64,30 +72,38 @@ private:
 
 		ZeroMemory(&mKeyBuffer, sizeof(bool) * 5);
 		ZeroMemory(&prevmKeyBuffer, sizeof(bool) * 5);
+
+		ZeroMemory(&prevGamepadButtons, sizeof(WORD) * GAMEPAD_COUNT);
+		ZeroMemory(&prevLeftTriggerHeld, sizeof(bool) * GAMEPAD_COUNT);
+		ZeroMemory(&prevRightTriggerHeld, sizeof(bool) * GAMEPAD_COUNT);
 	}
 	static Input* _Instance;
 public:
 	Input(Input& other) = delete;
 	void operator=(const Input&) = delete;
 
-	GamepadState gamepads[4];
+	GamepadState gamepads[GAMEPAD_COUNT];
 
 	static void UpdatePads();
 
-	static bool IsPadButtonHeld(int idx, USHORT KEY) {
-		if (_Instance->gamepads[idx].port != -1) {
-			return (_Instance->gamepads[idx].xState.Gamepad.wButtons & KEY) != 0;
-		}
-		return false;
-	}
+	static bool IsPadButtonHeld(int idx, USHORT KEY);
+	static bool IsPadButtonPressed(int idx, USHORT KEY);
 
-	static const Vector2& LeftAxis(int idx) {
-		return _Instance->gamepads[idx].leftStick;
-	};
+	static float GetPadLeftTrigger(int idx);
+	static float GetPadRightTrigger(int idx);
 
-	static const Vector2& RightAxis(int idx) {
-		return _Instance->gamepads[idx].rightStick;
-	};
+	static bool IsLeftTriggerHeld(int idx);
+	static bool IsRightTriggerHeld(int idx);
+
+	static bool IsLeftTriggerPressed(int idx);
+	static bool IsRightTriggerPressed(int idx);
+
+	static bool IsLeftTriggerReleased(int idx);
+	static bool IsRightTriggerReleased(int idx);
+
+	static const Vector2& LeftAxis(int idx);
+
+	static const Vector2& RightAxis(int idx);
 
 	static void HandleRawInput(HRAWINPUT input);
 	
@@ -118,6 +134,8 @@ public:
 	static bool IsMouseKeyHeld(USHORT MKEY) {
 		return _Instance->mKeyBuffer[MKEY];
 	}
+
+	static void SetVirtualMouse(bool state);
 
 	static void GetMouseInformation();
 
@@ -155,7 +173,7 @@ public:
 	/// <summary>
 	/// !!  !! MUST call at the very end of every frame in order to service for IsKeyPressed and IsKeyReleased
 	/// </summary>
-	static void EndUpdate();
+	static void EndUpdate(float dt);
 
 	static void Init(HWND hwnd);
 };
