@@ -184,7 +184,8 @@ void PlayerController::Update(float dTime)
 
 		XMFLOAT2 mouseDelta = Input::MouseDelta();
 		float mouseSens = 0.0025f; // The polling of the mouse is already tied to the framerate, so no dt
-		float joystickSens = 0.007f;
+		//float joystickSens = 0.007f;
+		float joystickSens = dTime * 3.75f;
 
 		Vector2 lookInput = Input::RightAxis(0) * joystickSens;
 		lookInput.y *= -1.f;
