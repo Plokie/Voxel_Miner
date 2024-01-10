@@ -8,8 +8,8 @@
 #include "../Engine/ThreadPool.h"
 
 // faster to load while debugging, change back later
-#define CHUNKLOAD_AREA_X 5
-#define CHUNKLOAD_AREA_Z 5
+#define CHUNKLOAD_AREA_X 8
+#define CHUNKLOAD_AREA_Z 8
 #define CHUNKLOAD_FIXED_NY 6
 #define CHUNKLOAD_FIXED_PY 4
 

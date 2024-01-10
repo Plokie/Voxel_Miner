@@ -149,6 +149,14 @@ void TitleScreen::Setup(Engine* engine)
 		Engine::StopGame();
 	});
 
+	Label* creditLabel = new Label("Baloo");
+	creditLabel->Init(Graphics::Get()->GetDevice());
+	creditLabel->InitSelf();
+	creditLabel->SetAnchor(0.f, 1.f);
+	creditLabel->SetPivot(0.f, 1.f);
+	creditLabel->SetText("Music: Undercover Vampire Policeman - Chris Zabriskie (CC4.0)");
+	titleMain->CreateObject2D(creditLabel, "creditLabel");
+
 	engine->AddScene(titleMain, "titleMain");
 
 	//
@@ -201,8 +209,6 @@ void TitleScreen::Setup(Engine* engine)
 	titleLoad->clearColor = { 0.2f, 0.2f, 0.2f, 1.f };
 
 	//_findfirst
-
-
 	
 	vector<wstring> dirs;
 	GetSubdirectories(&dirs);

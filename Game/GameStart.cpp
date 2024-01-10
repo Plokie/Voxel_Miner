@@ -28,9 +28,9 @@
 
 void LoadResources() {
 	// todo: move resource loading to a separate thread, so the main thread can display a loading screen
-	Resources::LoadTexture(L"Data\\Textures\\img.dds", "head");
+	//Resources::LoadTexture(L"Data\\Textures\\img.dds", "head");
 	Resources::LoadTexture(L"Data\\Textures\\crosshair.dds", "crosshair");
-	Resources::LoadTexture(L"Data\\Textures\\pfp.dds", "pfp");
+	//Resources::LoadTexture(L"Data\\Textures\\pfp.dds", "pfp");
 	Resources::LoadTexture(L"Data\\Textures\\block-select.dds", "block-select");
 	Resources::LoadTexture(L"Data\\Textures\\chunkborder.dds", "chunkborder");
 	Resources::LoadTexture(L"Data\\Textures\\bar-split.dds", "bar-split");
@@ -52,7 +52,7 @@ void LoadResources() {
 	Resources::LoadVertexShader(L"vertexshellgrass.cso", "vertexshellgrass");
 	Resources::LoadVertexShader(L"vertexshaderleaves.cso", "vertexshaderleaves");
 
-	Audio::LoadClipStream("Data\\Music\\UndercoverVampirePoliceman.ogg", "MusicBg");
+	Audio::LoadClipStream("Data\\Music\\MusicBg.ogg", "MusicBg");
 	Audio::LoadClip("Data\\Sounds\\hit.wav", "hit");
 	Audio::LoadClip("Data\\Sounds\\hurt.wav", "hurt");
 	Audio::LoadClip("Data\\Sounds\\eat.wav", "eat");
