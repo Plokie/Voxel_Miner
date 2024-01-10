@@ -118,7 +118,8 @@ void ChunkManager::Thread() {
 						engine->DestroyObject3D(pair.second); // Delete chunk in-engine (adds to queue)
 					}
 
-					{	unique_lock<std::mutex> lock(gAccessMutex);
+					{	unique_lock<std::mutex> lock(chunkMapMutex);
+						//.lock();
 						chunkMap.erase(it++);
 					}
 			}
@@ -187,6 +188,7 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 
 	// If chunk is loaded
+	chunkMapMutex.lock();
 	auto itFind = chunkMap.find(chunkIndex);
 	if(itFind != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
@@ -211,10 +213,12 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 			//if(didMutex) ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 			if(didMutex) chunk->gAccessMutex.unlock();
 			//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+			chunkMapMutex.unlock();
 			return blockID;
 		}
 		//if(didMutex) chunk->gAccessMutex.unlock();
 	}
+	chunkMapMutex.unlock();
 
 	//todo: read from chunk cache of height,temp,moist samples?
 	return WorldGen::GetBlockAt(x, y, z);

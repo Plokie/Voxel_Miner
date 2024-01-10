@@ -71,6 +71,7 @@ bool TableInterface::TryMakeItemIcon(Button* parent, int idx, int idy)
 }
 
 void TableInterface::ReleaseHeldItem() {
+	if(invUI == nullptr) return;
 	if(invUI->heldItem == nullptr) return;
 
 	for(const auto& kvp : _indexedSlots) {

@@ -8,8 +8,8 @@
 #include "../Engine/ThreadPool.h"
 
 // faster to load while debugging, change back later
-#define CHUNKLOAD_AREA_X 3
-#define CHUNKLOAD_AREA_Z 3
+#define CHUNKLOAD_AREA_X 5
+#define CHUNKLOAD_AREA_Z 5
 #define CHUNKLOAD_FIXED_NY 6
 #define CHUNKLOAD_FIXED_PY 4
 
@@ -27,7 +27,7 @@ private:
 
 	ThreadPool* threadPool = nullptr;
 
-
+	std::mutex chunkMapMutex;
 	map<tuple<int, int, int>, Chunk*> chunkMap;
 
 	std::mutex newChunkQueueMutex;

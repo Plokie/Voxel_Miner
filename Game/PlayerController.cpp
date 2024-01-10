@@ -15,6 +15,7 @@
 //#include "ChunkDatabase.h"
 
 #include "../Audio/Audio.h"
+#include "PauseScreen.h"
 
 void PlayerController::Start()
 {
@@ -102,7 +103,7 @@ void PlayerController::Update(float dTime)
 {
 	if(!enabled) {
 		worldPosLabel->SetText(to_string(chunkManager->LoadMinAreaProgress()*100.f) + "%");
-
+		fpsCounter->SetText("Loading...");
 		if(chunkManager->HasLoadedMinArea()) {
 			enabled = true;
 			Input::SetMouseLocked(true);
@@ -189,6 +190,15 @@ void PlayerController::Update(float dTime)
 
 	if(Input::IsKeyPressed(VK_ESCAPE)) {
 		Input::SetMouseLocked(!Input::IsMouseLocked());
+
+		if(!Input::IsMouseLocked()) {
+			// Open pause screen
+			PauseScreen::Open();
+		}
+		else {
+			// Close pause screen
+			PauseScreen::Close();
+		}
 	}
 
 
@@ -363,6 +373,10 @@ void PlayerController::Update(float dTime)
 
 	// DEBUG INFO
 	fpsCounter->SetText(to_string(static_cast<int>(roundf(1.f / dTime))));
+	
+	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
+	Vector3Int footPos = camBlockPos - Vector3Int(0, 1, 0);
+	worldPosLabel->SetText(footPos.ToString());
 
 	/*Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
 	Vector3Int footPos = camBlockPos - Vector3Int(0, 1, 0);

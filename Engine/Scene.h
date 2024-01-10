@@ -46,6 +46,8 @@ public:
 	void StartUpdate();
 	void EndUpdate();
 
+	void Clear();
+
 	template <typename T>
 	T* GetObject3D(string name) {
 		auto it = sceneObjects3D.find(name);

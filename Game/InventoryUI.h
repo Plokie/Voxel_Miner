@@ -57,6 +57,7 @@ public:
 	void Open(TableInterface* tableInterface, InterfaceContext ctx);
 	void Close();
 	void ReloadIcons();
+	void HardReloadIcons();
 	void TableReload(Vector3Int tablePosition);
 	void Update(const float dTime) override;
 	void Start() override;

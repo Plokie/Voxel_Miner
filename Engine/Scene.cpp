@@ -93,6 +93,21 @@ void Scene::EndUpdate()
 	//ProcessDestroyQueue();
 }
 
+void Scene::Clear()
+{
+	for(pair<const string, Object3D*>& pair : sceneObjects3D) {
+		delete pair.second;
+		pair.second = nullptr;
+	}
+	sceneObjects3D.clear();
+
+	for(pair<const string, Object2D*>& pair : sceneObjects2D) {
+		delete pair.second;
+		pair.second = nullptr;
+	}
+	sceneObjects2D.clear();
+}
+
 Object3D* Scene::GetObject3D(string name)
 {
 	if(sceneObjects3D.count(name))
@@ -119,10 +134,15 @@ map<string, Object2D*>* Scene::GetSceneObjects2D()
 
 Scene::~Scene()
 {
-	printf("Begin Delete scene");
 	for(pair<const string, Object3D*>& pair : sceneObjects3D) {
-		printf("Delete %s", pair.first.c_str());
 		delete pair.second;
 		pair.second = nullptr;
 	}
+	sceneObjects3D.clear();
+
+	for(pair<const string, Object2D*>& pair : sceneObjects2D) {
+		delete pair.second;
+		pair.second = nullptr;
+	}
+	sceneObjects2D.clear();
 }

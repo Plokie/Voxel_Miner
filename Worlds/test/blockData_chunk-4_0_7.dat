@@ -1,0 +1,68 @@
+{
+  "[-52,1,115]": {
+    "inventory": {
+      "health": 20,
+      "hunger": 20,
+      "items": [
+        {
+          "ID": 1,
+          "amount": 50,
+          "posX": 0,
+          "posY": 0,
+          "type": 0
+        }
+      ],
+      "saturation": 10,
+      "score": 0
+    },
+    "timer1": 26.549598693847656,
+    "timer2": 0.0
+  },
+  "[-52,1,116]": {
+    "inventory": {
+      "health": 20,
+      "hunger": 20,
+      "items": [
+        {
+          "ID": 6,
+          "amount": 6,
+          "posX": 0,
+          "posY": 0,
+          "type": 1
+        },
+        {
+          "ID": 6,
+          "amount": 7,
+          "posX": 1,
+          "posY": 0,
+          "type": 0
+        },
+        {
+          "ID": 2,
+          "amount": 9,
+          "posX": 2,
+          "posY": 0,
+          "type": 0
+        },
+        {
+          "ID": 16,
+          "amount": 41,
+          "posX": 3,
+          "posY": 0,
+          "type": 1
+        },
+        {
+          "ID": 18,
+          "amount": 52,
+          "posX": 4,
+          "posY": 0,
+          "type": 1
+        }
+      ],
+      "saturation": 10,
+      "score": 0
+    },
+    "timer1": 0.0,
+    "timer2": 0.0
+  }
+}

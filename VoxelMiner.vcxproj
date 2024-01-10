@@ -158,6 +158,7 @@
     <ClCompile Include="Game\DroppedItem.cpp" />
     <ClCompile Include="Game\Entity.cpp" />
     <ClCompile Include="Game\FurnaceUI.cpp" />
+    <ClCompile Include="Game\GameScene.cpp" />
     <ClCompile Include="Game\HeldItem.cpp" />
     <ClCompile Include="Game\ItemAction.cpp" />
     <ClCompile Include="Game\Meshes\DroppedItemMesh.cpp" />
@@ -185,6 +186,7 @@
     <ClCompile Include="Game\ChunkMesh.cpp" />
     <ClCompile Include="Game\ExampleObject3D.cpp" />
     <ClCompile Include="Game\GameStart.cpp" />
+    <ClCompile Include="Game\PauseScreen.cpp" />
     <ClCompile Include="Game\TableInterface.cpp" />
     <ClCompile Include="Game\VoxelLighting.cpp" />
     <ClCompile Include="Game\PlayerController.cpp" />
@@ -217,6 +219,7 @@
     <ClInclude Include="Engine\UI\Button.h" />
     <ClInclude Include="Game\Entity.h" />
     <ClInclude Include="Game\FurnaceUI.h" />
+    <ClInclude Include="Game\GameScene.h" />
     <ClInclude Include="Game\HeldItem.h" />
     <ClInclude Include="Game\ItemAction.h" />
     <ClInclude Include="Game\Meshes\DroppedItemMesh.h" />
@@ -247,6 +250,7 @@
     <ClInclude Include="Game\FastNoiseLite.h" />
     <ClInclude Include="Game\GameStart.h" />
     <ClInclude Include="Engine\ThreadUtil.h" />
+    <ClInclude Include="Game\PauseScreen.h" />
     <ClInclude Include="Game\TableInterface.h" />
     <ClInclude Include="Game\VoxelLighting.h" />
     <ClInclude Include="Game\PlayerController.h" />

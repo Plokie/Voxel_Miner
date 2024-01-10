@@ -81,25 +81,25 @@ map<string, Recipe> Recipe::recipes = {
 	{"DEBUG_RECIPE_1", {
 		{RAW_STEAK,1}, // Result (single RecipeComponent)
 		{ // Input (vector of RecipeComponents)
-			{COBBLESTONE,1}
+			{COAL,5}
 		}
 	}},
 	{"DEBUG_RECIPE_2", {
 		{RAW_CHICKEN,1}, // Result (single RecipeComponent)
 		{ // Input (vector of RecipeComponents)
-			{COBBLESTONE,1}
+			{COAL,4}
 		}
 	}},
 	{"DEBUG_RECIPE_3", {
 		{EGG,1}, // Result (single RecipeComponent)
 		{ // Input (vector of RecipeComponents)
-			{COBBLESTONE,1}
+			{COAL,3}
 		}
 	}},
 	{"DEBUG_RECIPE_4", {
 		{CARROT,1}, // Result (single RecipeComponent)
 		{ // Input (vector of RecipeComponents)
-			{COBBLESTONE,1}
+			{COAL,3}
 		}
 	}},
 

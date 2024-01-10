@@ -113,7 +113,7 @@ void CraftingUI::SelectRecipe(const Recipe& recipe) {
 
 			/*invUI->Close();
 			invUI->Open();*/
-			invUI->ReloadIcons();
+			invUI->HardReloadIcons();
 		});
 	}
 	else {

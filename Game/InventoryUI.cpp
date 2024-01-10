@@ -297,6 +297,16 @@ void InventoryUI::ReloadIcons()
 	}
 }
 
+void InventoryUI::HardReloadIcons()
+{
+	for(auto& icon : _spawnedIcons) {
+		delete icon;
+	}
+	_spawnedIcons.clear();
+
+	Open();
+}
+
 void InventoryUI::TableReload(Vector3Int tablePosition) {
 	if(currentInterface) {
 		const InterfaceContext& interfaceContext = currentInterface->GetRecentInterfaceContext();
