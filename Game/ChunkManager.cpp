@@ -230,10 +230,14 @@ BlockID ChunkManager::GetBlockAtWorldPos(const Vector3Int& v) {
 
 void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, const BlockID& id) {
 	Vector3Int chunkIndex = ToChunkIndexPositionTuple(x, y, z);
-	if(chunkMap.count(chunkIndex)) {
+
+	unique_lock<std::mutex> lock(chunkMapMutex);
+
+	auto findIt = chunkMap.find(chunkIndex);
+	if(findIt != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
-		Chunk*& chunk = chunkMap[chunkIndex];
+		Chunk*& chunk = findIt->second;
 		if(chunk == nullptr) {
 			assert(false);
 			return;
@@ -335,15 +339,17 @@ void ChunkManager::QueueRegen(const Vector3Int& index, int priority)
 	}
 }
 
-int ChunkManager::GetBlockLightAtWorldPos(const int& x, const int& y, const int& z) const
+int ChunkManager::GetBlockLightAtWorldPos(const int& x, const int& y, const int& z)
 {
 	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 
+	unique_lock<std::mutex> lock(chunkMapMutex);
 	// If chunk is loaded
-	if(chunkMap.find(chunkIndex) != chunkMap.end()) {
+	auto itFind = chunkMap.find(chunkIndex);
+	if(itFind != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
-		Chunk* chunk = chunkMap.at(chunkIndex);
+		Chunk* chunk = itFind->second;
 		if(chunk == nullptr || chunk->pendingDeletion) return -1;
 		//AcquireSRWLockExclusive(&chunk->gAccessMutex);
 		int light = 0;
@@ -355,10 +361,10 @@ int ChunkManager::GetBlockLightAtWorldPos(const int& x, const int& y, const int&
 
 		return light;
 	}
-	return 0;
+	return 15;
 }
 
-int ChunkManager::GetBlockLightAtWorldPos(const Vector3Int& p) const
+int ChunkManager::GetBlockLightAtWorldPos(const Vector3Int& p)
 {
 	return GetBlockLightAtWorldPos(p.x, p.y, p.z);
 }

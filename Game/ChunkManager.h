@@ -8,8 +8,8 @@
 #include "../Engine/ThreadPool.h"
 
 // faster to load while debugging, change back later
-#define CHUNKLOAD_AREA_X 8
-#define CHUNKLOAD_AREA_Z 8
+#define CHUNKLOAD_AREA_X 12
+#define CHUNKLOAD_AREA_Z 12
 #define CHUNKLOAD_FIXED_NY 6
 #define CHUNKLOAD_FIXED_PY 4
 
@@ -83,8 +83,8 @@ public:
 	void SetBlockAtWorldPos(const int& x, const int& y, const int& z, const BlockID& id);
 	void SetBlockAtWorldPos(const Vector3Int& pos, const BlockID& id);
 
-	int GetBlockLightAtWorldPos(const int& x, const int& y, const int& z) const;
-	int GetBlockLightAtWorldPos(const Vector3Int& p) const;
+	int GetBlockLightAtWorldPos(const int& x, const int& y, const int& z);
+	int GetBlockLightAtWorldPos(const Vector3Int& p);
 	void SetBlockLightAtWorldPos(const int& x, const int& y, const int& z, const int& val) const;
 	void SetBlockLightAtWorldPos(const Vector3Int& p, const int& val) const;
 
