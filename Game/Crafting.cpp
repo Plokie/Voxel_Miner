@@ -25,6 +25,7 @@ vector<Category> Crafting::workbenchCategories = {
 		{"OAK_STICKS","CHERRY_STICKS","SPRUCE_STICKS","BIRCH_STICKS"},
 		{"COPPER_PICKAXE","GOLD_PICKAXE","AMETHYST_PICKAXE","TITANIUM_PICKAXE"},
 		{"COPPER_AXE","GOLD_AXE","AMETHYST_AXE","TITANIUM_AXE"},
+		{"COPPER_SHOVEL","GOLD_SHOVEL","AMETHYST_SHOVEL","TITANIUM_SHOVEL"},
 	}},
 	//{"Minerals", {
 	//	{"COPPER_BAR", "GOLD_BAR", "TITANIUM_BAR"},
@@ -246,6 +247,34 @@ map<string, Recipe> Recipe::recipes = {
 		{
 			{STICK,2},
 			{TITANIUM_BAR, 3}
+		}
+	}},
+	{"COPPER_SHOVEL",{
+		{COPPER_SHOVEL},
+		{
+			{STICK,2},
+			{COPPER_BAR, 2}
+		}
+	}},
+	{"GOLD_SHOVEL",{
+		{GOLD_SHOVEL},
+		{
+			{STICK,2},
+			{GOLD_BAR, 2}
+		}
+	}},
+	{"AMETHYST_SHOVEL",{
+		{AMETHYST_SHOVEL},
+		{
+			{STICK,2},
+			{AMETHYST, 6}
+		}
+	}},
+	{"TITANIUM_SHOVEL",{
+		{TITANIUM_SHOVEL},
+		{
+			{STICK,2},
+			{TITANIUM_BAR, 2}
 		}
 	}},
 	{ "FURNACE",{

@@ -400,6 +400,10 @@ void Inventory::Update(float dt) {
 			saturation--;
 			ChangeHealth(1);
 		}
+
+		if(hunger <= 0 && saturation <= 0) {
+			ChangeHealth(-1);
+		}
 	}
 }
 
