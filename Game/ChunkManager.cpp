@@ -231,7 +231,7 @@ BlockID ChunkManager::GetBlockAtWorldPos(const Vector3Int& v) {
 void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, const BlockID& id) {
 	Vector3Int chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 
-	//unique_lock<std::mutex> lock(chunkMapMutex);
+	unique_lock<std::mutex> lock(chunkMapMutex);
 
 	auto findIt = chunkMap.find(chunkIndex);
 	if(findIt != chunkMap.end()) {
