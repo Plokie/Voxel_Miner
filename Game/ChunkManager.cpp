@@ -188,7 +188,7 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 
 	// If chunk is loaded
-	chunkMapMutex.lock();
+	bool tryLockChunkMap = chunkMapMutex.try_lock();
 	auto itFind = chunkMap.find(chunkIndex);
 	if(itFind != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
@@ -213,12 +213,12 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 			//if(didMutex) ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 			if(didMutex) chunk->gAccessMutex.unlock();
 			//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
-			chunkMapMutex.unlock();
+			if(tryLockChunkMap) chunkMapMutex.unlock();
 			return blockID;
 		}
 		//if(didMutex) chunk->gAccessMutex.unlock();
 	}
-	chunkMapMutex.unlock();
+	if(tryLockChunkMap) chunkMapMutex.unlock();
 
 	//todo: read from chunk cache of height,temp,moist samples?
 	return WorldGen::GetBlockAt(x, y, z);
@@ -231,7 +231,7 @@ BlockID ChunkManager::GetBlockAtWorldPos(const Vector3Int& v) {
 void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, const BlockID& id) {
 	Vector3Int chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 
-	unique_lock<std::mutex> lock(chunkMapMutex);
+	//unique_lock<std::mutex> lock(chunkMapMutex);
 
 	auto findIt = chunkMap.find(chunkIndex);
 	if(findIt != chunkMap.end()) {
