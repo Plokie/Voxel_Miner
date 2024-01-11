@@ -5,5 +5,6 @@ enum ItemType : unsigned short {
 	PICKAXE,
 	AXE,
 	SHOVEL,
-	FOOD
+	FOOD,
+	INDESTRUCTIBLE
 };

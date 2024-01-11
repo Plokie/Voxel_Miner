@@ -45,7 +45,8 @@ void PlayerController::Start()
 		inv->AddItem(COPPER_PICKAXE);
 		inv->AddItem(COPPER_AXE);
 		inv->AddItem(COPPER_SHOVEL);
-		inv->AddItem(WORKBENCH);
+		inv->AddItem(WORKBENCH, 5);
+		inv->AddItem(APPLE, 5);
 
 		InventoryUI* invUI = engine->GetCurrentScene()->GetObject2D<InventoryUI>("invUI");
 		invUI->ReloadIcons();
@@ -120,17 +121,19 @@ void PlayerController::Update(float dTime)
 
 	float movementSpeed = 4.317f;
 
+#ifdef _DEBUG
 	if(Input::IsMouseLocked())
-	if(Input::IsKeyPressed('P')) {
+	if(Input::IsKeyPressed('P') || Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_DPAD_LEFT)) {
 		freeCam = !freeCam;
 	}
 
 	//todo: remove // debug spawn entity
 	if(Input::IsMouseLocked())
-	if(Input::IsKeyPressed('M')) {
+	if(Input::IsKeyPressed('M') || Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_DPAD_RIGHT)) {
 		engine->GetCurrentScene()->CreateObject3D(new Entity(), "test-entity-"+to_string(rand()), "cube")->transform.position = transform.position;
 		//DroppedItem::Create(new InventoryItem(COBBLESTONE, -1, -1, 1), transform.position + (transform.forward() * 1.46f));
 	}
+#endif
 
 	if(Input::IsKeyPressed('Q') || Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_X)) {
 		//engine->GetCurrentScene()->CreateObject3D(new Entity(), "test-entity-"+to_string(rand()), "cube")->transform.position = transform.position;
@@ -243,6 +246,11 @@ void PlayerController::Update(float dTime)
 			velocity.y = max(velocity.y, terminalVelocity);
 		}
 		else {
+			if(velocity.y < -20.f) {
+				// fall damage
+				inv->ChangeHealth(static_cast<int>((velocity.y * 1.5f) / 5.f));
+			}
+
 			velocity.y = -3.0f * dTime; //Small nudge to ground level, nothing noticable
 			if((Input::IsKeyHeld(VK_SPACE) || Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_A)) && Input::IsMouseLocked())
 			{

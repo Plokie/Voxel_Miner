@@ -237,10 +237,12 @@ void ItemIcon::ReleaseFunction(int idx, int idy, Button* parentSlot, Inventory* 
 
 		invUI->heldItem = nullptr;
 
-		invUI->ReloadIcons();
-		invUI->DrawHotbarIcons();
+		//invUI->ReloadIcons();
+		//invUI->DrawHotbarIcons();
 		if(tableInterface) tableInterface->ReloadIcons();
 	}
+	invUI->ReloadIcons();
+	invUI->DrawHotbarIcons();
 }
 
 const Vector2 ItemIcon::GetScreenPosition()

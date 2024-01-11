@@ -337,7 +337,7 @@ void Inventory::LoadDefaultItems() {
 	AddItem(COPPER_PICKAXE);
 	AddItem(COPPER_AXE);
 	AddItem(COPPER_SHOVEL);
-	AddItem(WORKBENCH);
+	AddItem(WORKBENCH, 5);
 	AddItem(APPLE, 5);
 	AddItem(RAW_STEAK, 5);
 	InvokeOnChange();

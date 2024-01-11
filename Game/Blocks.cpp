@@ -64,7 +64,7 @@ const map<BlockID, Block> BlockDef::def = {
 		4, 3
 	)},
 	{BlockID::WATER,	Block("Water", B_TRANSPARENT, 0,
-		4, 1
+		4, 1, false, INDESTRUCTIBLE
 	)},
 
 	{BlockID::OAK_LOG,	Block("Oak Log", B_OPAQUE, 0,
@@ -210,7 +210,7 @@ const map<BlockID, Block> BlockDef::def = {
 	) },
 
 	{ BlockID::LAVA, Block("Lava", B_CLIP, 13,
-	4, 5
+	4, 5, false, INDESTRUCTIBLE
 	) },
 
 	{ BlockID::FURNACE, Block("Furnace", B_OPAQUE, 0,
