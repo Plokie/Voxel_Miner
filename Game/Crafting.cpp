@@ -14,12 +14,17 @@ Vector2Int RecipeComponent::GetUVPos() const
 
 vector<Category> Crafting::workbenchCategories = {
 	//{"Workbench", {}},
-	{"Blocks", {
+	{"Utilities", {
 		{"OAK_PLANKS", "SPRUCE_PLANKS", "BIRCH_PLANKS", "CHERRY_PLANKS"},
-		//{"STONE_COBBLE", "BLACKSTONE_COBBLE"},
 		{"FURNACE","FURNACE_BLACKSTONE"},
 		{"WORKBENCH_OAK", "WORKBENCH_BIRCH", "WORKBENCH_SPRUCE", "WORKBENCH_CHERRY"},
 		{"CHEST_OAK", "CHEST_BIRCH", "CHEST_SPRUCE", "CHEST_CHERRY"},
+	}},
+	{"Blocks", {
+		{"OAK_PLANKS", "SPRUCE_PLANKS", "BIRCH_PLANKS", "CHERRY_PLANKS"},
+		{"COAL_BLOCK", "COPPER_BLOCK", "GOLD_BLOCK", "AMETHYST_BLOCK"},
+		{"TITANIUM_BLOCK"},
+		{"STONE_BRICKS","BLACKSTONE_BRICKS"},
 	}},
 	{"Tools", {
 		{"OAK_STICKS","CHERRY_STICKS","SPRUCE_STICKS","BIRCH_STICKS"},
@@ -31,7 +36,9 @@ vector<Category> Crafting::workbenchCategories = {
 	//	{"COPPER_BAR", "GOLD_BAR", "TITANIUM_BAR"},
 	//}},
 	{"Misc", {
-		{"DEBUG_RECIPE_1","DEBUG_RECIPE_2","DEBUG_RECIPE_3","DEBUG_RECIPE_4"}
+		{"DEBUG_RECIPE_1","DEBUG_RECIPE_2","DEBUG_RECIPE_3","DEBUG_RECIPE_4"},
+		{"REVERSE_COAL_BLOCK", "REVERSE_COPPER_BLOCK", "REVERSE_GOLD_BLOCK", "REVERSE_AMETHYST_BLOCK"},
+		{"REVERSE_TITANIUM_BLOCK"},
 	}},
 };
 
@@ -76,6 +83,7 @@ map<tuple<int, int>, RecipeComponent> Crafting::furnaceRecipes = {
 
 	{{COBBLESTONE, InventoryItem::BLOCK}, STONE},
 	{{BLACK_COBBLESTONE, InventoryItem::BLOCK}, BLACKSTONE},
+	{{CLAY, InventoryItem::BLOCK}, BRICK_BLOCK},
 };
 
 map<string, Recipe> Recipe::recipes = {
@@ -337,6 +345,81 @@ map<string, Recipe> Recipe::recipes = {
 		{CHEST},
 		{
 			{CHERRY_PLANKS,12}
+		}
+	} },
+
+	{ "COAL_BLOCK",{
+		{COAL_BLOCK},
+		{
+			{COAL,10}
+		}
+	} },
+	{ "COPPER_BLOCK",{
+		{COPPER_BLOCK},
+		{
+			{COPPER_BAR,10}
+		}
+	} },
+	{ "GOLD_BLOCK",{
+		{GOLD_BLOCK},
+		{
+			{GOLD_BAR,10}
+		}
+	} },
+	{ "AMETHYST_BLOCK",{
+		{AMETHYST_BLOCK},
+		{
+			{AMETHYST,10}
+		}
+	} },
+	{ "TITANIUM_BLOCK",{
+		{TITANIUM_BLOCK},
+		{
+			{TITANIUM_BAR,10}
+		}
+	}},
+
+	{ "REVERSE_COAL_BLOCK",{
+		{COAL, 10},
+		{
+			{COAL_BLOCK}
+		}
+	} },
+	{ "REVERSE_COPPER_BLOCK",{
+		{COPPER_BAR, 10},
+		{
+			{COPPER_BLOCK}
+		}
+	} },
+	{ "REVERSE_GOLD_BLOCK",{
+		{GOLD_BAR, 10},
+		{
+			{GOLD_BLOCK}
+		}
+	} },
+	{ "REVERSE_AMETHYST_BLOCK",{
+		{AMETHYST, 10},
+		{
+			{AMETHYST_BLOCK}
+		}
+	} },
+	{ "REVERSE_TITANIUM_BLOCK",{
+		{TITANIUM_BAR, 10},
+		{
+			{TITANIUM_BLOCK}
+		}
+	}},
+
+	{ "STONE_BRICKS",{
+		{STONE_BRICKS, 1},
+		{
+			{STONE,2}
+		}
+	}},
+	{ "BLACKSTONE_BRICKS",{
+		{BLACKSTONE_BRICKS, 1},
+		{
+			{BLACKSTONE,2}
 		}
 	} },
 };

@@ -5,7 +5,7 @@ map<string, LootTable> LootTable::map = {
 		{COBBLESTONE, 1}
 	}}},
 	{"BLACKSTONE", {{
-		{COBBLESTONE, 1} //id, weight
+		{BLACK_COBBLESTONE, 1} //id, weight
 	}}},
 	{"COAL", {{
 		{COAL, 1, 1, 2} //id, weight, min, max

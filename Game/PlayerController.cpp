@@ -83,7 +83,7 @@ vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager, vector
 				BlockID block = chunkManager->GetBlockAtWorldPos(blockPos);
 				AABB blockAABB = AABB(Vector3(static_cast<float>(blockPos.x), static_cast<float>(blockPos.y), static_cast<float>(blockPos.z)) + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
 
-				if(BlockDef::GetDef(block).GetDrawType() == B_OPAQUE) {
+				if(BlockDef::GetDef(block).IsSolid()) {
 					ret.push_back(blockAABB);
 				}
 
@@ -140,12 +140,27 @@ void PlayerController::Update(float dTime)
 		InventoryItem* heldItem;
 		if(inv->GetHeldItem(&heldItem)) {
 
-			InventoryItem* newDroppedItem = new InventoryItem(heldItem->type, heldItem->ID, -1, -1, 1);
-			
-			DroppedItem* droppedItemEntity = DroppedItem::Create(newDroppedItem, transform.position + (transform.forward() * 1.46f));
-			//droppedItemEntity->SetVelocity(transform.forward());
+			//declare before possible goto call
+			InventoryItem* newDroppedItem;
+			DroppedItem* droppedItemEntity;
 
+			if(heldItem->type == InventoryItem::ITEM  ) {
+				Item itemDef = ItemDef::Get(static_cast<ItemID>(heldItem->ID));
+				if(itemDef.GetItemType() != BASICITEM && itemDef.GetItemType() != FOOD) { //todo: special item type check
+
+					if(inv->GetToolsOfType(itemDef.GetItemType()).size() <= 1) {
+						goto passdrop; // skip item drop logic since the player only has one tool of this type
+						// we dont want the player to drop their only pickaxe for example
+					}
+
+				}
+			}
+
+			newDroppedItem = new InventoryItem(heldItem->type, heldItem->ID, -1, -1, 1);
+			droppedItemEntity = DroppedItem::Create(newDroppedItem, transform.position + (transform.forward() * 1.46f));
 			inv->SubHeldItem(1, heldItem); 
+
+		passdrop: __nop();
 		}
 		
 	}
@@ -319,38 +334,39 @@ void PlayerController::Update(float dTime)
 		if(Input::IsMouseLocked()) {
 			if(Input::IsMouseKeyPressed(MOUSE_L) || Input::IsRightTriggerPressed(0)) { // Mine
 				InventoryItem* invItem;
+				BlockID targetBlock = chunkManager->GetBlockAtWorldPos(lookHitPoint);
+				Block blockDef = BlockDef::GetDef(targetBlock);
 				
+				Item itemDef = ItemDef::Get(COAL);
 				if(inv->GetHeldItem(&invItem)) {
-					BlockID targetBlock = chunkManager->GetBlockAtWorldPos(lookHitPoint);
-					Block blockDef = BlockDef::GetDef(targetBlock);
-					Item itemDef = (invItem->type == InventoryItem::Type::BLOCK)?ItemDef::Get((ItemID)0):ItemDef::Get((ItemID)invItem->ID);
+					itemDef = (invItem->type == InventoryItem::Type::BLOCK)?ItemDef::Get((ItemID)0):ItemDef::Get((ItemID)invItem->ID);
+				}
 
-					if((itemDef.GetItemType() == blockDef.GetMineType() && itemDef.GetTier() >= blockDef.GetTier() ) || blockDef.GetMineType() == BASICITEM) {
-						Audio::Play("hit", 1.f);
-						chunkManager->SetBlockAtWorldPos(lookHitPoint, AIR);
+				if(blockDef.GetMineType() == BASICITEM || (itemDef.GetItemType() == blockDef.GetMineType() && itemDef.GetTier() >= blockDef.GetTier() )) {
+					Audio::Play("hit", 1.f);
+					chunkManager->SetBlockAtWorldPos(lookHitPoint, AIR);
 						
-						inv->ChangeScore(blockDef.GetTier());
+					inv->ChangeScore(blockDef.GetTier());
 
-						if(blockDef.GetLootTableName() != "") {
-							const InventoryItem loot = LootTable::Choose(blockDef.GetLootTableName());
+					if(blockDef.GetLootTableName() != "") {
+						const InventoryItem loot = LootTable::Choose(blockDef.GetLootTableName());
 
 
-							//inv->AddItem(loot.ID, loot.type, loot.amount);
+						//inv->AddItem(loot.ID, loot.type, loot.amount);
 
-							InventoryItem* newDroppedItem = new InventoryItem(loot.type, loot.ID, -1, -1, loot.amount);
-							DroppedItem::Create(newDroppedItem, lookHitPoint);
-						}
-						else 
-						{
-							//inv->AddItem(targetBlock);
+						InventoryItem* newDroppedItem = new InventoryItem(loot.type, loot.ID, -1, -1, loot.amount);
+						DroppedItem::Create(newDroppedItem, lookHitPoint);
+					}
+					else 
+					{
+						//inv->AddItem(targetBlock);
 
-							InventoryItem* newDroppedItem = new InventoryItem(targetBlock, -1, -1, 1);
-							DroppedItem::Create(newDroppedItem, lookHitPoint);
-						}
-
+						InventoryItem* newDroppedItem = new InventoryItem(targetBlock, -1, -1, 1);
+						DroppedItem::Create(newDroppedItem, lookHitPoint);
 					}
 
 				}
+
 
 			}
 

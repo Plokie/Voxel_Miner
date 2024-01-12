@@ -199,6 +199,7 @@ void ItemIcon::ReleaseFunction(int idx, int idy, Button* parentSlot, Inventory* 
 					invUI->heldItem = nullptr;
 
 					invUI->ReloadIcons();
+					invUI->DrawHotbarIcons();
 					if(tableInterface) tableInterface->ReloadIcons();
 
 					delete this;

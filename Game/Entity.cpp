@@ -15,7 +15,7 @@ vector<AABB> Entity::GetNearbyAABBs(ChunkManager* chunkManager) {
 				Vector3Int playerBlockPos = Vector3Int::FloorToInt(transform.position);
 				Vector3Int blockPos = playerBlockPos + offset;
 				BlockID block = chunkManager->GetBlockAtWorldPos(blockPos);
-				if(BlockDef::GetDef(block).GetDrawType() == B_OPAQUE) {
+				if(BlockDef::GetDef(block).IsSolid()) {
 					ret.push_back(AABB(Vector3(static_cast<float>(blockPos.x), static_cast<float>(blockPos.y), static_cast<float>(blockPos.z)) + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f)));
 				}
 			}

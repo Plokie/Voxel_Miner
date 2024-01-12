@@ -80,7 +80,7 @@ void Chunk::GenerateBlockData()
 				worldY = y + (indexPosition.y * CHUNKSIZE_Y);
 
 				if(indexPosition.y == -(CHUNKLOAD_FIXED_NY - 1) && y == 0) {
-					blockData[x][y][z] = BLACKSTONE;
+					blockData[x][y][z] = BEDROCK;
 					continue;
 				}
 

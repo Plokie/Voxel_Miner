@@ -42,6 +42,23 @@ void Inventory::ChangeHealth(int amt) {
 	}
 }
 
+vector<InventoryItem*> Inventory::GetToolsOfType(ItemType itemType)
+{
+	vector<InventoryItem*> retVec = {};
+
+	for(InventoryItem* invItem : items) {
+		if(invItem->type == InventoryItem::ITEM) {
+			Item itemDef = ItemDef::Get(static_cast<ItemID>(invItem->ID));
+			if(itemDef.GetItemType() == itemType) {
+				retVec.push_back(invItem);
+			}
+		}
+	}
+
+
+	return retVec;
+}
+
 const Vector2Int Inventory::GetFreeSpot() const {
 	Vector2Int tryPos = { 0, 0 };
 

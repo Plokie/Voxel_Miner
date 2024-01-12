@@ -104,6 +104,8 @@ public:
 		_onHealthChangeEvents.emplace_back(func);
 	}
 
+	vector<InventoryItem*> GetToolsOfType(ItemType itemType);
+
 	void SetHunger(int amt) { hunger = amt; InvokeOnHungerChange(); }
 	const int GetHunger() const { return hunger; }
 	void ChangeHunger(int amt, bool saturate=true) { 

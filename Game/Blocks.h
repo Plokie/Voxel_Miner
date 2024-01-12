@@ -45,7 +45,13 @@ enum BlockID : unsigned short {
 	WORKBENCH,
 	CHEST,
 	
-	GLASS
+	GLASS,
+	COAL_BLOCK, COPPER_BLOCK, GOLD_BLOCK, AMETHYST_BLOCK, TITANIUM_BLOCK,
+	BRICK_BLOCK,
+	STONE_BRICKS,
+	BLACKSTONE_BRICKS,
+	BEDROCK,
+	CACTUS
 };
 
 class Block {
@@ -53,6 +59,7 @@ private:
 	string name;
 
 	DRAW_TYPE draw_type; // Is the block opaque, transparent, or clip
+	bool isSolid = true;
 	int lightValue = 0;
 
 	int topUvIdX, topUvIdY;
@@ -69,8 +76,10 @@ public:
 
 	Block(string _Name,
 		DRAW_TYPE draw_type,
+		bool isSolid,
 		int _lightValue,
 		int UvIdX, int UvIdY,
+		//bool isSolid = true,
 		bool hasShell = false,
 		ItemType mineType = ItemType::BASICITEM,
 		int tier=0,
@@ -78,6 +87,7 @@ public:
 	) :
 		name(_Name),
 		draw_type(draw_type),
+		isSolid(isSolid),
 		lightValue(_lightValue),
 		topUvIdX(UvIdX), topUvIdY(UvIdY),
 		bottUvIdX(UvIdX), bottUvIdY(UvIdY),
@@ -90,10 +100,12 @@ public:
 
 	Block(string _Name,
 		DRAW_TYPE draw_type,
+		bool isSolid,
 		int _lightValue,
 		int TopUvIdX, int TopUvIdY,
 		int SideUvIdX, int SideUvIdY,
 		int BottUvIdX, int BottUvIdY,
+		//bool isSolid = true,
 		bool hasShell = false,
 		ItemType mineType = ItemType::BASICITEM,
 		int tier = 0,
@@ -101,6 +113,7 @@ public:
 	) :
 		name(_Name),
 		draw_type(draw_type),
+		isSolid(isSolid),
 		lightValue(_lightValue),
 		topUvIdX(TopUvIdX), topUvIdY(TopUvIdY),
 		sideUvIdX(SideUvIdX), sideUvIdY(SideUvIdY),
@@ -118,6 +131,7 @@ public:
 	const ItemType GetMineType() const { return mineType; }
 	const string& GetLootTableName() const { return lootTable; }
 	const int GetTier() const { return tier; }
+	const bool IsSolid() const { return isSolid; }
 
 	const int GetTopUVidx() const;
 	const int GetTopUVidy() const;
