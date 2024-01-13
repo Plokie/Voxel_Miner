@@ -140,11 +140,11 @@ void TitleScreen::Setup(Engine* engine)
 		Engine::Get()->SetScene("titlePlay");
 	});
 	AddButton(engine, titleMain, "How to play", -50.f, [] {
-
+		Engine::Get()->SetScene("howToPlay");
 	});
-	AddButton(engine, titleMain, "Options", 50.f, [] {
-		
-	});
+	//AddButton(engine, titleMain, "Options", 50.f, [] {
+	//	
+	//});
 	AddButton(engine, titleMain, "Quit", 150.f, [] {
 		Engine::StopGame();
 	});
@@ -175,6 +175,48 @@ void TitleScreen::Setup(Engine* engine)
 	});
 
 	engine->AddScene(titlePlay, "titlePlay");
+
+	//
+
+	Scene* howToPlay = new Scene(Graphics::Get());
+	howToPlay->clearColor = { 0.2f, 0.2f, 0.2f, 1.f };
+
+	Label* label1 = new Label("Baloo");
+	label1->Init(Graphics::Get()->GetDevice());
+	label1->InitSelf();
+	label1->SetAnchor(0.f, 0.f);
+	label1->SetPivot(0.f, 0.f);
+	label1->SetText("Voxel Miner is a fundamental Minecraft clone. \n\
+The world is a sandbox that you can build and destroy to any extent. \n\
+While you play, you need to keep track of your health and hunger, and keep yourself fed and not die!\n\
+You use your relevant tools to mine corresponding blocks to collect resources\n\
+You can gain score by mining rarer ores, which you need better tools to mine!\n\
+When you die, you drop all your items, your score is halved and you return to spawn.\n\
+You can use the Workbench to craft items, and the Furnace to smelt items.\n\
+Chests allow you to store items\n\
+\n\
+Controls:\n\
+WASD to Move.   TAB to open Inventory.   Space to jump.    Shift to sprint, CTRL to walk slow\n\
+Left click to mine, Right click to build/interact.    Esc to pause.    Q to drop held item\n\
+Scroll wheel / number keys to change hotbar item.        \n\
+Controller input is also supported. In UI, Left click is Right Trigger, Right click is Left Trigger\n\
+");
+	howToPlay->CreateObject2D(label1, "creditLabel");
+
+	Button* button = (Button*)howToPlay->CreateObject2D(new Button("Baloo"), "howToPlayBack");
+	button->SetAnchor(1.f, 1.f);
+	button->SetDimensions(Vector2(500.f, 50.f));
+	button->SetPosition({ 0.f, 0.f });
+	button->SetPivot({ 1.f, 1.f });
+	button->SetText("Back");
+
+	button->rect->SetColour(0.3f, 0.3f, 0.3f, 1.0f);
+	button->label->SetColour(1.0f, 1.0f, 1.0f, 1.0f);
+
+	button->AddListener([] {Engine::Get()->SetScene("titleMain"); });
+
+	engine->AddScene(howToPlay, "howToPlay");
+
 
 	//
 
