@@ -15,7 +15,7 @@ void ChunkManager::CreateChunk(const int x, const int y, const int z)
 	if(chunkMap.find(pos) == chunkMap.end()) {
 		Chunk* newChunk = new Chunk(pos, this);
 
-		{	unique_lock<std::mutex> lock(gAccessMutex);
+		{	unique_lock<std::mutex> lock(chunkMapMutex);
 			chunkMap[pos] = newChunk;
 		}
 
@@ -25,11 +25,20 @@ void ChunkManager::CreateChunk(const int x, const int y, const int z)
 
 		threadPool->Queue([=] {
 			//unique_lock<std::mutex> lock(newChunk->gAccessMutex);
-			if(ChunkDatabase::Get()->DoesDataExistForChunk({ x,y,z })) 
+			if(ChunkDatabase::Get()->DoesDataExistForChunk({ x,y,z })) {
 				ChunkDatabase::Get()->LoadChunkDataInto({ x,y,z }, newChunk);
+
+				this->QueueRegen((Vector3Int)pos + Vector3Int(1, 0, 0));
+				this->QueueRegen((Vector3Int)pos + Vector3Int(-1, 0, 0));
+				this->QueueRegen((Vector3Int)pos + Vector3Int(0, 1, 0));
+				this->QueueRegen((Vector3Int)pos + Vector3Int(0, -1, 0));
+				this->QueueRegen((Vector3Int)pos + Vector3Int(0, 0, 1));
+				this->QueueRegen((Vector3Int)pos + Vector3Int(0, 0, -1));
+			}
 			else newChunk->GenerateBlockData();
 			
-			newChunk->hasLoadedBlockData = true;
+			//newChunk->hasLoadedBlockData = true;
+			newChunk->currentGenerationPhase= (Chunk::GENERATION_PHASE)((int)newChunk->currentGenerationPhase + 1);
 			
 			newChunk->InitSkyLight();
 		}, y == CHUNKLOAD_FIXED_PY); // If the chunk is at the TOP, the higher priority value means it will be completed last (or it should be...)
@@ -203,7 +212,8 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 		// but if somethings already writing to it, we can read it anyway
 		//unique_lock<std::mutex> lock(chunk->gAccessMutex);
 		
-		if(!(chunk == nullptr || chunk->pendingDeletion || !chunk->hasLoadedBlockData)) {
+		//if(!(chunk == nullptr || chunk->pendingDeletion || !chunk->hasLoadedBlockData)) {
+		if(!(chunk == nullptr || chunk->pendingDeletion || chunk->currentGenerationPhase==Chunk::BLOCKDATA)) {
 			bool didMutex = chunk->gAccessMutex.try_lock();
 			//TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
 
@@ -334,7 +344,7 @@ void ChunkManager::QueueRegen(const Vector3Int& index, int priority)
 	unique_lock<std::mutex> regenLock(regenQueueMutex);
 	auto it = chunkMap.find(index);
 	if(it != chunkMap.end()) {
-		if(it->second == nullptr || it->second->pendingDeletion) return;
+		if(it->second == nullptr || it->second->pendingDeletion || it->second->currentGenerationPhase==Chunk::BLOCKDATA) return;
 		regenQueue.push({ it->second, priority });
 	}
 }

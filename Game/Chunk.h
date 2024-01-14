@@ -21,6 +21,12 @@ public:
 		LEAVES
 	};
 
+	enum GENERATION_PHASE : unsigned char {
+		BLOCKDATA,
+		MESH,
+		LIGHTING
+	};
+
 private:
 	ChunkManager* chunkManager = nullptr;
 
@@ -37,7 +43,10 @@ private:
 	void CorrectIndexForNeighbours(const Vector3Int& index, Chunk** outChunk, Vector3Int* outIndex);
 	//Vector3Int LocalToWorld(const int x, const int y, const int z);
 public:
-	bool hasLoadedBlockData = false;
+	//bool hasLoadedBlockData = false;
+
+	GENERATION_PHASE currentGenerationPhase = BLOCKDATA;
+
 	void GenerateBlockData();
 	void BuildMesh();
 
