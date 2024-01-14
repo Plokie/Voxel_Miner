@@ -13,10 +13,11 @@ class InventoryUI;
 class Chunk;
 class BlockData;
 class TableInterface;
+class PlayerData;
 
 struct BlockActionContext {
 	PlayerController* playerController;
-	Inventory* inventory;
+	PlayerData* playerData;
 	ChunkManager* chunkManager;
 	Vector3Int blockPosition;
 	InventoryUI* invUI = nullptr;
@@ -39,7 +40,7 @@ private:
 public:
 
 	void Invoke(BlockActionContext ctx);
-	static bool CallBlockAction(BlockID blockID, PlayerController* playerController, Inventory* inv, ChunkManager* chunkManager, Vector3Int blockPos);
+	static bool CallBlockAction(BlockID blockID, PlayerController* playerController, PlayerData* playerData, ChunkManager* chunkManager, Vector3Int blockPos);
 
 	BlockAction(function<void(BlockActionContext)> func);
 };

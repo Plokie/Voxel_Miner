@@ -7,6 +7,7 @@
 class Label;
 class ChunkManager;
 class Inventory;
+class PlayerData;
 
 class PlayerController : public Object3D {
 	bool enabled = false;
@@ -20,7 +21,8 @@ class PlayerController : public Object3D {
 	Object3D* blockSelectRef = nullptr;
 	Label* fpsCounter = nullptr;
 	Label* worldPosLabel = nullptr;
-	Inventory* inv = nullptr;
+	PlayerData* _pCurrentPlayerData = nullptr;
+	//Inventory* _pInventory;
 
 	ChunkManager* chunkManager = nullptr;
 

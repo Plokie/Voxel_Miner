@@ -7,40 +7,11 @@
 #include "DroppedItem.h"
 
 //map<HUNGER_DECREMENT_STATE, bool> Inventory::_hungerDecrementStates 
-
-map<HUNGER_DECREMENT_STATE, float> Inventory::_hungerDecrementValues = {
-	{HDS_WALK, 0.000001f},
-	{HDS_SPRINT, 0.000001f},
-	{HDS_JUMP, 1.0f},
-};
-
 //map<HUNGER_DECREMENT_STATE, bool> Inventory::_hungerDecrementStates = {
 //	{HDS_WALK, false},
 //	{HDS_SPRINT, false},
 //	{HDS_JUMP, false},
 //};
-
-void Inventory::ChangeHealth(int amt) {
-	health += amt;
-	InvokeOnHealthChange();
-	if(amt < 0) {
-		Audio::Play("hurt", 1.f);
-	}
-
-	if(health <= 0) {
-		//DropAllItems();
-		health = HEALTH_MAX;
-		saturation = HEALTH_MAX/2;
-		hunger = HUNGER_MAX;
-		InvokeOnHealthChange();
-		InvokeOnHungerChange();
-
-		score /= 2;
-		InvokeOnScoreChange();
-
-		InvokeOnDeathEvent();
-	}
-}
 
 vector<InventoryItem*> Inventory::GetToolsOfType(ItemType itemType)
 {
@@ -311,10 +282,7 @@ nlohmann::json Inventory::Serialize()
 	json["items"] = itemJsons;
 
 	//todo: move to PlayerData class
-	json["score"] = score;
-	json["health"] = health;
-	json["hunger"] = hunger;
-	json["saturation"] = saturation;
+	
 	//json[""]
 
 	return json;
@@ -330,23 +298,10 @@ void Inventory::Deserialize(nlohmann::json jsonInv) {
 	}
 
 
-	if(jsonInv.find("score")!=jsonInv.end())
-		score = jsonInv["score"];
-
-	if(jsonInv.find("health") != jsonInv.end())
-		health = jsonInv["health"];
-
-	if(jsonInv.find("hunger") != jsonInv.end())
-		hunger = jsonInv["hunger"];
-
-	if(jsonInv.find("saturation") != jsonInv.end())
-		saturation = jsonInv["saturation"];
+	
 
 	InvokeOnChange();
 	InvokeOnSelect();
-	InvokeOnScoreChange();
-	InvokeOnHungerChange();
-	InvokeOnHealthChange();
 }
 
 void Inventory::LoadDefaultItems() {
@@ -370,58 +325,6 @@ void Inventory::DropAllItems(Vector3 position)
 		DroppedItem* droppedItemEntity = DroppedItem::Create(inventoryItem, position);
 	}
 	items.clear();
-}
-
-void Inventory::Update(float dt) {
-	float currentExhaustion = 0.0f;
-
-	for(int i = 0; i < HDS_COUNT; i++) {
-		currentExhaustion += (float)_hungerDecrementStates[(HUNGER_DECREMENT_STATE)i] * _hungerDecrementStates[(HUNGER_DECREMENT_STATE)i];
-	}
-
-
-
-	hungerDecrementer += dt * currentExhaustion;
-
-	if(hungerDecrementer > 25.f) {
-		hungerDecrementer = 0.f;
-
-		if(saturation > 0) {
-			saturation--;
-		}
-		else {
-			hunger--;
-			InvokeOnHungerChange();
-		}
-	}
-
-
-	damageTickTimer -= dt;
-	if(damageTickTimer <= 0.0f) {
-		damageTickTimer = secondsPerDamageTick;
-
-		// check damage state and hurt
-		bool isDamaging = false;
-		for(int i = 0; i < DS_COUNT; i++) {
-			if(_damageStates[(DAMAGE_STATE)i]) {
-				isDamaging = true;
-				break;
-			}
-		}
-
-		if(isDamaging) {
-			ChangeHealth(-2);
-		}
-
-		if(health < HEALTH_MAX && saturation > 0) {
-			saturation--;
-			ChangeHealth(1);
-		}
-
-		if(hunger <= 0 && saturation <= 0) {
-			ChangeHealth(-1);
-		}
-	}
 }
 
 InventoryItem* Inventory::GetItemAt(const int x, const int y) {

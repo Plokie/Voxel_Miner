@@ -12,12 +12,15 @@ class UIRect;
 class Inventory;
 class ItemIcon;
 class Button;
+class PlayerData;
 
 class InventoryUI : public Object2D {
 private:
 	HorizontalLayoutRect* hotbar = nullptr;
 	UIRect* invBg = nullptr;
-	Inventory* inventory = nullptr;
+	
+	PlayerData* _pPlayerData = nullptr;
+	//Inventory* inventory = nullptr;
 
 	// pair of slot parent and slot icon
 	Button* invSlots[INVSIZE_X][INVSIZE_Y];
@@ -38,7 +41,7 @@ public:
 	InventoryUI(Engine* engine, Scene* gameScene);
 	~InventoryUI();
 
-	Inventory* GetInventory() const { return inventory; }
+	Inventory* GetInventory() const;
 	Button* GetInvSlot(int x, int y) const { return invSlots[x][y]; }
 	
 	void AddNewIcon(ItemIcon* itemIcon);

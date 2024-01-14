@@ -12,6 +12,7 @@
 #include "Chunk.h"
 #include "BlockData.h"
 #include "ChunkDatabase.h"
+#include "PlayerData.h"
 
 //todo: move to recipes
 static map<ItemID, ItemID> cookables = {
@@ -40,7 +41,7 @@ void FurnaceActionFunction(BlockActionContext ctx) {
 			blockData = new BlockData(new Inventory());
 			chunk->blockDataData[ctx.blockPosition] = blockData;
 		}
-		ctx.invUI->Open(new FurnaceUI(), InterfaceContext(ctx.inventory, blockData, ctx.blockPosition, FURNACE));
+		ctx.invUI->Open(new FurnaceUI(), InterfaceContext(ctx.playerData, blockData, ctx.blockPosition, FURNACE));
 		ChunkDatabase::Get()->SaveChunkData(chunkIndex, chunk);
 	}
 }
@@ -48,7 +49,7 @@ void FurnaceActionFunction(BlockActionContext ctx) {
 map<BlockID, BlockAction> BlockAction::blockActions = {
 	{WORKBENCH, {[](BlockActionContext ctx) {
 		// code here is called when the block is clicked
-		ctx.invUI->Open(new CraftingUI(), InterfaceContext(ctx.inventory, nullptr, ctx.blockPosition, WORKBENCH));
+		ctx.invUI->Open(new CraftingUI(), InterfaceContext(ctx.playerData, nullptr, ctx.blockPosition, WORKBENCH));
 	}}},
 	{FURNACE, {[](BlockActionContext ctx) {
 		// code here is called when the block is clicked
@@ -76,7 +77,7 @@ map<BlockID, BlockAction> BlockAction::blockActions = {
 				blockData = new BlockData(new Inventory());
 				chunk->blockDataData[ctx.blockPosition] = blockData;
 			}
-			ctx.invUI->Open(new ChestUI(), InterfaceContext(ctx.inventory, blockData, ctx.blockPosition, CHEST));
+			ctx.invUI->Open(new ChestUI(), InterfaceContext(ctx.playerData, blockData, ctx.blockPosition, CHEST));
 			ChunkDatabase::Get()->SaveChunkData(chunkIndex, chunk);
 		}
 	}}},
@@ -178,10 +179,10 @@ map<BlockID, BlockTick> BlockTick::blockUpdates = {
 	}}}
 };
 
-bool BlockAction::CallBlockAction(BlockID blockID, PlayerController* playerController, Inventory* inv, ChunkManager* chunkManager, Vector3Int blockPos) {
+bool BlockAction::CallBlockAction(BlockID blockID, PlayerController* playerController, PlayerData* playerData, ChunkManager* chunkManager, Vector3Int blockPos) {
 	auto it = blockActions.find(blockID);
 	if(it != blockActions.end()) {
-		it->second.Invoke({ playerController, inv, chunkManager, blockPos });
+		it->second.Invoke({ playerController, playerData, chunkManager, blockPos });
 		return true;
 	}
 	return false;

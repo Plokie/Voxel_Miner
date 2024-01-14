@@ -2,6 +2,7 @@
 
 #include "Inventory.h"
 #include "../Audio/Audio.h"
+#include "PlayerData.h"
 
 map<ItemID, BlockAction> Item::itemActions = {
 	
@@ -66,17 +67,17 @@ const Item& ItemDef::Get(ItemID id)
 	return defs.at(ITEMERR);
 }
 
-bool Item::CallItemAction(ItemID itemID, PlayerController* playerController, Inventory* inv, ChunkManager* chunkManager, Vector3Int targetBlockPos) {
+bool Item::CallItemAction(ItemID itemID, PlayerController* playerController, PlayerData* playerData, ChunkManager* chunkManager, Vector3Int targetBlockPos) {
 	const Item& def = ItemDef::Get(itemID);
-	if(def.itemType == FOOD && (inv->GetHunger() < HUNGER_MAX || (inv->GetHealth() < HEALTH_MAX && inv->GetSaturation()<=0 ))) {
-		inv->ChangeHunger(def.tier);
-		inv->SubHeldItem(); // this could cause logic errors when using an item that isnt held. But i dont see that happening
+	if(def.itemType == FOOD && (playerData->GetHunger() < HUNGER_MAX || (playerData->GetHealth() < HEALTH_MAX && playerData->GetSaturation()<=0 ))) {
+		playerData->ChangeHunger(def.tier);
+		playerData->GetInventory()->SubHeldItem(); // this could cause logic errors when using an item that isnt held. But i dont see that happening
 		Audio::Play("eat", 1.f);
 	}
 
 	auto it = itemActions.find(itemID);
 	if(it != itemActions.end()) {
-		it->second.Invoke({ playerController, inv, chunkManager, targetBlockPos });
+		it->second.Invoke({ playerController, playerData, chunkManager, targetBlockPos });
 		return true;
 	}
 	return false;

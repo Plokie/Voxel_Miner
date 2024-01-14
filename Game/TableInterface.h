@@ -14,22 +14,23 @@ class Inventory;
 class InventoryUI;
 class ItemIcon;
 class BlockData;
+class PlayerData;
 
 struct InterfaceContext {
-	Inventory* playerInventory;
+	PlayerData* playerData;
 	BlockData* blockData;
 	Vector3Int tablePosition;
 	BlockID blockID = BlockID::AIR;
 
-	InterfaceContext(Inventory* playerInventory, BlockData* blockData, Vector3Int tablePosition, BlockID blockID) {
-		this->playerInventory = playerInventory;
+	InterfaceContext(PlayerData* playerData, BlockData* blockData, Vector3Int tablePosition, BlockID blockID) {
+		this->playerData = playerData;
 		this->blockData = blockData;
 		this->tablePosition = tablePosition;
 		this->blockID = blockID;
 	}
 
-	InterfaceContext(Inventory* playerInventory, BlockID blockID) {
-		this->playerInventory = playerInventory;
+	InterfaceContext(PlayerData* playerData, BlockID blockID) {
+		this->playerData = playerData;
 		this->blockData = nullptr;
 		this->tablePosition = Vector3Int(0,0,0);
 		this->blockID = blockID;

@@ -2,6 +2,7 @@
 
 #include "PlayerController.h"
 #include "Inventory.h"
+#include "PlayerData.h"
 
 //Vector2 
 
@@ -89,14 +90,16 @@ void DroppedItem::SetupModel() {
 
 void DroppedItem::OnCollide(PlayerController* pc) {
 	if(invItem) {
-		Inventory* inv = Engine::Get()->GetCurrentScene()->GetObject3D<Inventory>("Inventory");
+		//Inventory* inv = Engine::Get()->GetCurrentScene()->GetObject3D<Inventory>("Inventory");
+		PlayerData* playerData = Engine::Get()->GetCurrentScene()->GetObject3D<PlayerData>("PlayerData");
+		Inventory* inv = playerData->GetInventory();
 		
 		int outRemainder = invItem->amount % invItem->GetMaxStack();
 
 		if(inv->AddItem(invItem)) {
 			// after its added, its merged with other inv items handled by inventory
 			// delete this free instance
-			delete invItem;
+			delete invItem; 
 			invItem = nullptr;
 		}
 		else {

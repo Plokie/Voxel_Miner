@@ -10,12 +10,16 @@
 #include "HeldItem.h"
 #include "ChunkManager.h"
 #include "InventoryUI.h"
+#include "PlayerData.h"
 
 Scene* GameScene::Setup(Engine* engine, Scene* gameScene)
 {
 	gameScene->CreateObject3D(new ChunkManager(), "AChunkManager");
-	Inventory* inventory = (Inventory*)gameScene->CreateObject3D(new Inventory(), "Inventory");
-	inventory->LoadDefaultItems();
+	//Inventory* inventory = (Inventory*)gameScene->CreateObject3D(new Inventory(), "Inventory");
+	//inventory->LoadDefaultItems();
+
+	PlayerData* playerData = (PlayerData*)gameScene->CreateObject3D(new PlayerData(), "PlayerData");
+	playerData->GetInventory()->LoadDefaultItems();
 
 	PlayerController* pc = (PlayerController*)gameScene->CreateObject3D(new PlayerController(), "PlayerController");
 	HeldItem* heldItem = (HeldItem*)gameScene->CreateObject3D(new HeldItem(), "HeldItem");
@@ -38,9 +42,9 @@ Scene* GameScene::Setup(Engine* engine, Scene* gameScene)
 	scoreLabel->SetPosition({ -20.f, 90.f });
 	scoreLabel->SetText("Score: 0");
 	scoreLabel->SetColour(1.0f, 1.0f, 1.0f, 1.0f);
-	inventory->AddOnScoreChangeEvent([scoreLabel](int score) {
+	playerData->AddOnScoreChangeEvent([scoreLabel](int score) {
 		scoreLabel->SetText("Score: " + to_string(score));
-		});
+	});
 
 
 	UIRect* crosshair = (UIRect*)gameScene->CreateObject2D(new UIRect("crosshair", { 1.f,1.f,1.f,.7f }), "crosshair");

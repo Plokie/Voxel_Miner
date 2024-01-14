@@ -5,6 +5,7 @@
 #include "../Graphics/Graphics.h"
 #include "ItemIcon.h"
 #include "Inventory.h"
+#include "PlayerData.h"
 #include "InventoryUI.h"
 
 void CraftingUI::DeleteCategoryObjects() {
@@ -90,9 +91,10 @@ void CraftingUI::SelectRecipe(const Recipe& recipe) {
 	DeleteRecipeObjects();
 
 	if(playerInv == nullptr) {
-		playerInv = (Inventory*)Engine::Get()->GetScene("game")->GetObject3D("Inventory");
+		playerInv = ((PlayerData*)Engine::Get()->GetScene("game")->GetObject3D("PlayerData"))->GetInventory();
 	}
 
+	//if(!craftButton)
 	craftButton = new Button("Baloo");
 	craftButton->Init(Graphics::Get()->GetDevice());
 	craftButton->SetDimensions({ 150.f, 30.f });
@@ -108,7 +110,9 @@ void CraftingUI::SelectRecipe(const Recipe& recipe) {
 		craftButton->SetBgColour(0.5f,.5f,.5f,1.f );
 
 		craftButton->AddListener([recipe] {
-			((Inventory*)Engine::Get()->GetScene("game")->GetObject3D("Inventory"))->TryCraft(recipe);
+			//((Inventory*)Engine::Get()->GetScene("game")->GetObject3D("Inventory"))->TryCraft(recipe);
+			Engine::Get()->GetScene("game")->GetObject3D<PlayerData>("PlayerData")->GetInventory()->TryCraft(recipe);
+		
 			InventoryUI* invUI = (InventoryUI*)Engine::Get()->GetScene("game")->GetObject2D("invUI");
 
 			/*invUI->Close();
@@ -187,7 +191,7 @@ void CraftingUI::Open(InterfaceContext ctx) {
 		tab->SetText(tab->GetText());
 	}
 
-	LoadCategory((*categoriesTarget)[0]);
+	LoadCategory(categoriesTarget->at(0));
 }
 
 void CraftingUI::Update(const float dt) {

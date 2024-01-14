@@ -12,12 +12,14 @@
 #include "HeldItem.h"
 //#include "CraftingUI.h"
 #include "TableInterface.h"
+#include "PlayerData.h"
 
 InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
-	inventory = gameScene->GetObject3D<Inventory>("Inventory");
+	_pPlayerData = gameScene->GetObject3D<PlayerData>("PlayerData");
+	//inventory = _pPlayerData->GetInventory();
 	this->SetDepth(15.f); // The item icons get drawn on the same draw call as the inventory, so make the depth ABOVE the other stuff
 
-	inventory->AddOnChangeEvent([&] {DrawHotbarIcons(); });
+	_pPlayerData->GetInventory()->AddOnChangeEvent([&] {DrawHotbarIcons(); });
 
 	//
 
@@ -44,10 +46,10 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 	hotbarSelect->SetPivot({ 0.f, 0.5f });
 	hotbarSelect->SetDepth(0.5f);
 
-	inventory->AddOnSelectEvent([this, gameScene](int slotNum) {
+	_pPlayerData->GetInventory()->AddOnSelectEvent([this, gameScene](int slotNum) {
 
 		hotbarSelect->SetPosition({ slotNum * 65.f, 0.f });
-		InventoryItem* invItem = inventory->GetItemAt(slotNum, 0);
+		InventoryItem* invItem = _pPlayerData->GetInventory()->GetItemAt(slotNum, 0);
 		HeldItem* heldItemModel = gameScene->GetObject3D<HeldItem>("HeldItem");
 		if(invItem == nullptr || invItem->ID == 0) {
 			heldItemModel->SetItem((BlockID)0);
@@ -57,7 +59,7 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 		}
 	});
 
-	DrawHotbarIcons();
+	//DrawHotbarIcons();
 
 
 	ProgressBar* healthBar = (ProgressBar*)gameScene->CreateObject2D(new ProgressBar(), "healthBar");
@@ -67,7 +69,7 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 	healthBar->SetPosition(-10.f, 10.f);
 	healthBar->SetProgressCol({ 245.f/255.f, 66.f/255.f, 90.f/255.f, 1.f });
 	healthBar->SetDirection(RIGHT_TO_LEFT);
-	inventory->AddOnHealthChangeEvent([healthBar](int health) { //health out of 100
+	_pPlayerData->AddOnHealthChangeEvent([healthBar](int health) { //health out of 100
 		healthBar->SetValue(health / (float)HEALTH_MAX);
 	});
 
@@ -85,7 +87,7 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 	hungerBar->SetPosition(-10.f, 50.f);
 	hungerBar->SetProgressCol({ 143.f/255.f, 87.f/255.f, 24.f/255.f, 1.f });
 	hungerBar->SetDirection(RIGHT_TO_LEFT);
-	inventory->AddOnHungerChangeEvent([hungerBar](int hunger) { //hunger out of 100
+	_pPlayerData->AddOnHungerChangeEvent([hungerBar](int hunger) { //hunger out of 100
 		hungerBar->SetValue(hunger / (float)HUNGER_MAX);
 	});
 
@@ -156,6 +158,11 @@ InventoryUI::~InventoryUI() {
 	}
 }
 
+Inventory* InventoryUI::GetInventory() const
+{
+	return _pPlayerData->GetInventory();
+}
+
 //void InventoryUI::SetHeldItem(ItemIcon* invItem) {
 //	heldItem = invItem;
 //}
@@ -202,7 +209,7 @@ void InventoryUI::ReleaseItem(ItemIcon* invItem) {
 	for(int y = 0; y < INVSIZE_Y; y++) {
 		for(int x = 0; x < INVSIZE_X; x++) {
 			if(invSlots[x][y]->IsHovering()) {
-				invItem->ReleaseFunction(x, y, invSlots[x][y], inventory, currentInterface);
+				invItem->ReleaseFunction(x, y, invSlots[x][y], _pPlayerData->GetInventory(), currentInterface);
 			}
 		}
 	}
@@ -228,7 +235,7 @@ void InventoryUI::Open() {
 
 	_spawnedIcons.reserve((INVSIZE_X * INVSIZE_Y) + INVSIZE_Y);
 
-	for(auto& invItem : this->inventory->GetInventoryItems()) {
+	for(auto& invItem : this->_pPlayerData->GetInventory()->GetInventoryItems()) {
 		ItemIcon* icon = new ItemIcon(invItem, this);
 		icon->Init(pDevice);
 		icon->SetDimensions({ 50.f, 50.f });
@@ -393,7 +400,7 @@ void InventoryUI::DrawHotbarIcons() {
 	}
 	_hotbarIcons.clear();
 
-	for(auto& invItem : inventory->GetInventoryItems()) {
+	for(auto& invItem : _pPlayerData->GetInventory()->GetInventoryItems()) {
 		if(invItem->posY == 0) {
 			ItemIcon* icon = new ItemIcon(invItem, this);
 			icon->Init(pDevice);

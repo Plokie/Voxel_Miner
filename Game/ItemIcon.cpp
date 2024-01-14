@@ -8,11 +8,13 @@
 #include "Inventory.h"
 #include "Crafting.h"
 #include "TableInterface.h"
+#include "PlayerData.h"
 
 ItemIcon::ItemIcon(InventoryItem* invItem, InventoryUI* invUI) {
 	this->invUI = invUI;
 	this->invItem = invItem;
-	this->inv = Engine::Get()->GetCurrentScene()->GetObject3D<Inventory>("Inventory"); // todo: change this to point to correct inventory. pass as argument?
+	this->inv = Engine::Get()->GetScene("game")->GetObject3D<PlayerData>("PlayerData")->GetInventory(); // todo: change this to point to correct inventory. pass as argument?
+	//this->inv = nullptr;
 	Display(invItem->ID, invItem->type, invItem->amount, invItem->GetUVPos());
 }
 
@@ -101,7 +103,9 @@ void ItemIcon::SetInventoryParent(Inventory* inv) {
 }
 
 void ItemIcon::AttemptStorageMigration(Inventory* slotParentInventory, TableInterface* currentInterface) {
-	Inventory* playerInventory = Engine::Get()->GetCurrentScene()->GetObject3D<Inventory>("Inventory");
+
+
+	Inventory* playerInventory = Engine::Get()->GetCurrentScene()->GetObject3D<PlayerData>("PlayerData")->GetInventory();
 	Inventory* currentInventory = inv;
 	
 	////targetInventory : the inventory that is being hovered over

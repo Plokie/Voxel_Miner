@@ -52,7 +52,7 @@ public:
 	const ItemType GetItemType() const { return itemType; }
 	const int GetTier() const { return tier; }
 
-	static bool CallItemAction(ItemID itemID, PlayerController* playerController, Inventory* inv, ChunkManager* chunkManager, Vector3Int targetBlockPos);
+	static bool CallItemAction(ItemID itemID, PlayerController* playerController, PlayerData* inv, ChunkManager* chunkManager, Vector3Int targetBlockPos);
 };
 
 class ItemDef {

@@ -8,6 +8,7 @@
 #include "InventoryUI.h"
 #include "InventoryItem.h"
 #include "Inventory.h"
+#include "PlayerData.h"
 #include "LootTables.h"
 #include "Entity.h"
 #include "DroppedItem.h"
@@ -31,10 +32,11 @@ void PlayerController::Start()
 	this->fpsCounter = engine->GetCurrentScene()->GetObject2D<Label>("fps-counter");
 	this->worldPosLabel = engine->GetCurrentScene()->GetObject2D<Label>("worldpos");
 
-	this->inv = engine->GetCurrentScene()->GetObject3D<Inventory>("Inventory");
+	//this->inv = engine->GetCurrentScene()->GetObject3D<Inventory>("Inventory");
+	this->_pCurrentPlayerData = engine->GetCurrentScene()->GetObject3D<PlayerData>("PlayerData");
 
-	inv->AddOnDeathEvent([this, engine]() {
-		inv->DropAllItems(transform.position);
+	_pCurrentPlayerData->AddOnDeathEvent([this, engine]() {
+		_pCurrentPlayerData->GetInventory()->DropAllItems(transform.position);
 		transform.position = { 0.f, ceil(WorldGen::SampleWorldHeight(0, 0)) + 3.f, 0.f};
 		
 		Camera* camera = &engine->GetGraphics()->camera;
@@ -42,11 +44,11 @@ void PlayerController::Start()
 
 		aabb.SetPosition(transform.position - Vector3(0, 0.62f, 0));
 
-		inv->AddItem(COPPER_PICKAXE);
-		inv->AddItem(COPPER_AXE);
-		inv->AddItem(COPPER_SHOVEL);
-		inv->AddItem(WORKBENCH, 5);
-		inv->AddItem(APPLE, 5);
+		_pCurrentPlayerData->GetInventory()->AddItem(COPPER_PICKAXE);
+		_pCurrentPlayerData->GetInventory()->AddItem(COPPER_AXE);
+		_pCurrentPlayerData->GetInventory()->AddItem(COPPER_SHOVEL);
+		_pCurrentPlayerData->GetInventory()->AddItem(WORKBENCH, 5);
+		_pCurrentPlayerData->GetInventory()->AddItem(APPLE, 5);
 
 		InventoryUI* invUI = engine->GetCurrentScene()->GetObject2D<InventoryUI>("invUI");
 		invUI->ReloadIcons();
@@ -104,6 +106,8 @@ vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager, vector
 
 void PlayerController::Update(float dTime)
 {
+	Inventory* inv = _pCurrentPlayerData->GetInventory();
+
 	if(!enabled) {
 		worldPosLabel->SetText(to_string(chunkManager->LoadMinAreaProgress()*100.f) + "%");
 		fpsCounter->SetText("Loading...");
@@ -186,12 +190,12 @@ void PlayerController::Update(float dTime)
 		moveAxis *= movementSpeed * dTime;
 
 		if(input.sqrMagnitude() > 0.5f) {
-			inv->SetHungerFlag(HDS_WALK, true);
-			inv->SetHungerFlag(HDS_SPRINT, isSprinting);
+			_pCurrentPlayerData->SetHungerFlag(HDS_WALK, true);
+			_pCurrentPlayerData->SetHungerFlag(HDS_SPRINT, isSprinting);
 		}
 		else {
-			inv->SetHungerFlag(HDS_WALK, false);
-			inv->SetHungerFlag(HDS_SPRINT, false);
+			_pCurrentPlayerData->SetHungerFlag(HDS_WALK, false);
+			_pCurrentPlayerData->SetHungerFlag(HDS_SPRINT, false);
 		}
 		//velocity.x = moveAxis.x;
 		//velocity.z = moveAxis.z;
@@ -243,7 +247,7 @@ void PlayerController::Update(float dTime)
 				break;
 			}
 		}
-		inv->SetDamageFlag(DS_LAVA, takingDamage);
+		_pCurrentPlayerData->SetDamageFlag(DS_LAVA, takingDamage);
 		
 
 		bool isGrounded = false;
@@ -263,13 +267,13 @@ void PlayerController::Update(float dTime)
 		else {
 			if(velocity.y < -20.f) {
 				// fall damage
-				inv->ChangeHealth(static_cast<int>((velocity.y * 1.5f) / 5.f));
+				_pCurrentPlayerData->ChangeHealth(static_cast<int>((velocity.y * 1.5f) / 5.f));
 			}
 
 			velocity.y = -3.0f * dTime; //Small nudge to ground level, nothing noticable
 			if((Input::IsKeyHeld(VK_SPACE) || Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_A)) && Input::IsMouseLocked())
 			{
-				inv->DecrementHungerFlag(HDS_JUMP);
+				_pCurrentPlayerData->DecrementHungerFlag(HDS_JUMP);
 				velocity.y = jumpVelocity;
 			}
 		}
@@ -346,7 +350,7 @@ void PlayerController::Update(float dTime)
 					Audio::Play("hit", 1.f);
 					chunkManager->SetBlockAtWorldPos(lookHitPoint, AIR);
 						
-					inv->ChangeScore(blockDef.GetTier());
+					_pCurrentPlayerData->ChangeScore(blockDef.GetTier());
 
 					if(blockDef.GetLootTableName() != "") {
 						const InventoryItem loot = LootTable::Choose(blockDef.GetLootTableName());
@@ -373,7 +377,7 @@ void PlayerController::Update(float dTime)
 			if(Input::IsMouseKeyPressed(MOUSE_R) || Input::IsLeftTriggerPressed(0)) {
 				//inv->GetItemAt()
 
-				if(BlockAction::CallBlockAction(lookHitBlock, this, inv, chunkManager, lookHitPoint)) {
+				if(BlockAction::CallBlockAction(lookHitBlock, this, _pCurrentPlayerData, chunkManager, lookHitPoint)) {
 
 				}
 				else {
@@ -402,7 +406,7 @@ void PlayerController::Update(float dTime)
 	if(Input::IsMouseKeyPressed(MOUSE_R) || Input::IsLeftTriggerPressed(0)) {
 		InventoryItem* invItem; // should get it again here since actions are called before this. Item in hand COULD disappear
 		if(inv->GetHeldItem(&invItem) && invItem->type == InventoryItem::ITEM) {
-			Item::CallItemAction((ItemID)invItem->ID, this, inv, chunkManager, lookHitPoint);
+			Item::CallItemAction((ItemID)invItem->ID, this, _pCurrentPlayerData, chunkManager, lookHitPoint);
 		}
 	}
 

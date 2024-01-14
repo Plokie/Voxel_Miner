@@ -3,6 +3,7 @@
 #include "WorldGen.h"
 #include "../Engine/Engine.h"
 #include "Inventory.h"
+#include "PlayerData.h"
 #include "BlockData.h"
 
 ChunkDatabase* ChunkDatabase::_Instance = nullptr;
@@ -228,16 +229,21 @@ void ChunkDatabase::SaveWorldData() {
 		chunksWithBlockDataVector.push_back(pair.first);
 	}
 
-	Vector3 playerPos = Engine::Get()->GetScene("game")->GetObject3D("PlayerController")->transform.position;
-	Inventory* inv = Engine::Get()->GetScene("game")->GetObject3D<Inventory>("Inventory");
+	//Vector3 playerPos = Engine::Get()->GetScene("game")->GetObject3D("PlayerController")->transform.position;
+	//Inventory* inv = Engine::Get()->GetScene("game")->GetObject3D<Inventory>("Inventory");
+	PlayerData* playerData = Engine::Get()->GetScene("game")->GetObject3D<PlayerData>("PlayerData");
+
+	vector<nlohmann::json> playerDatas = {};
+	playerDatas.push_back(playerData->Serialize());
 
 	nlohmann::json newJson = {
 		{"seed", WorldGen::GetSeed()},
 		{"worldName", worldName.c_str()},
 		{"chunkHash", chunkHashVector},
 		{"chunksWithBlockData", chunksWithBlockDataVector},
-		{"playerPos", {playerPos.x, playerPos.y, playerPos.z}},
-		{"inventory", inv->Serialize()}
+		//{"playerPos", {playerPos.x, playerPos.y, playerPos.z}},
+		//{"inventory", inv->Serialize()}
+		{"playerData", playerDatas}
 	};
 	file << newJson.dump(2);
 	file.close();
@@ -252,7 +258,8 @@ void ChunkDatabase::LoadWorldData()
 		return; // Error reading file
 	}
 
-	Inventory* inv = Engine::Get()->GetScene("game")->GetObject3D<Inventory>("Inventory");
+	//Inventory* inv = Engine::Get()->GetScene("game")->GetObject3D<Inventory>("Inventory");
+	PlayerData* playerData = Engine::Get()->GetScene("game")->GetObject3D<PlayerData>("PlayerData");
 
 	if(f.good()) { // if file exists
 		ostringstream stringBuff;
@@ -266,11 +273,16 @@ void ChunkDatabase::LoadWorldData()
 		WorldGen::SetSeed(json["seed"]);
 		this->worldName = json["worldName"];
 
-		Engine::Get()->GetScene("game")->GetObject3D("PlayerController")->transform.position = { json["playerPos"][0], json["playerPos"][1], json["playerPos"][2] };
-		inv->Deserialize(json["inventory"]);
+		//Engine::Get()->GetScene("game")->GetObject3D("PlayerController")->transform.position = { json["playerPos"][0], json["playerPos"][1], json["playerPos"][2] };
+		//inv->Deserialize(json["inventory"]);
+
+		playerData->Deserialize(json["playerData"][0]);
+
+		//playerData->GetInventory()->Deserialize();
 	}
 	else { // if file doesnt exist
-		inv->LoadDefaultItems();
+		//inv->LoadDefaultItems();
+		playerData->GetInventory()->LoadDefaultItems();
 		SaveWorldData(); // create world data file
 	}
 	f.close();

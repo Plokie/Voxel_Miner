@@ -1,6 +1,16 @@
 {
   "chunkHash": [
     [
+      -2,
+      0,
+      -2
+    ],
+    [
+      -2,
+      0,
+      -1
+    ],
+    [
       0,
       -1,
       0
@@ -8,94 +18,121 @@
     [
       0,
       0,
-      -2
-    ],
-    [
-      0,
-      0,
-      -1
-    ],
-    [
-      0,
-      0,
       0
+    ],
+    [
+      0,
+      0,
+      1
     ]
   ],
   "chunksWithBlockData": [
     [
+      -2,
       0,
-      0,
-      -1
+      -2
     ]
   ],
-  "inventory": {
-    "health": 20,
-    "hunger": 20,
-    "items": [
-      {
-        "ID": 9,
-        "amount": 1,
-        "posX": 0,
-        "posY": 0,
-        "type": 0
+  "playerData": [
+    {
+      "health": 20,
+      "hunger": 20,
+      "inventory": {
+        "items": [
+          {
+            "ID": 9,
+            "amount": 1,
+            "posX": 0,
+            "posY": 0,
+            "type": 0
+          },
+          {
+            "ID": 13,
+            "amount": 1,
+            "posX": 1,
+            "posY": 0,
+            "type": 0
+          },
+          {
+            "ID": 17,
+            "amount": 1,
+            "posX": 2,
+            "posY": 0,
+            "type": 0
+          },
+          {
+            "ID": 30,
+            "amount": 5,
+            "posX": 4,
+            "posY": 0,
+            "type": 0
+          },
+          {
+            "ID": 22,
+            "amount": 2,
+            "posX": 5,
+            "posY": 0,
+            "type": 0
+          },
+          {
+            "ID": 22,
+            "amount": 3,
+            "posX": 7,
+            "posY": 0,
+            "type": 0
+          },
+          {
+            "ID": 15,
+            "amount": 2,
+            "posX": 6,
+            "posY": 0,
+            "type": 1
+          },
+          {
+            "ID": 3,
+            "amount": 5,
+            "posX": 8,
+            "posY": 0,
+            "type": 1
+          },
+          {
+            "ID": 4,
+            "amount": 6,
+            "posX": 8,
+            "posY": 1,
+            "type": 1
+          },
+          {
+            "ID": 51,
+            "amount": 3,
+            "posX": 8,
+            "posY": 2,
+            "type": 1
+          },
+          {
+            "ID": 42,
+            "amount": 4,
+            "posX": 8,
+            "posY": 4,
+            "type": 1
+          },
+          {
+            "ID": 19,
+            "amount": 48,
+            "posX": 8,
+            "posY": 3,
+            "type": 1
+          }
+        ]
       },
-      {
-        "ID": 13,
-        "amount": 1,
-        "posX": 1,
-        "posY": 0,
-        "type": 0
-      },
-      {
-        "ID": 17,
-        "amount": 1,
-        "posX": 2,
-        "posY": 0,
-        "type": 0
-      },
-      {
-        "ID": 30,
-        "amount": 4,
-        "posX": 4,
-        "posY": 0,
-        "type": 0
-      },
-      {
-        "ID": 3,
-        "amount": 14,
-        "posX": 7,
-        "posY": 0,
-        "type": 1
-      },
-      {
-        "ID": 31,
-        "amount": 58,
-        "posX": 8,
-        "posY": 0,
-        "type": 1
-      },
-      {
-        "ID": 23,
-        "amount": 5,
-        "posX": 5,
-        "posY": 0,
-        "type": 0
-      },
-      {
-        "ID": 31,
-        "amount": 1,
-        "posX": 4,
-        "posY": 1,
-        "type": 0
-      }
-    ],
-    "saturation": 8,
-    "score": 102
-  },
-  "playerPos": [
-    1.8959813117980957,
-    2.5199999809265137,
-    -7.304991722106934
+      "position": [
+        -30.083837509155273,
+        3.5199999809265137,
+        -23.315675735473633
+      ],
+      "saturation": 10,
+      "score": 101
+    }
   ],
   "seed": 1337,
   "worldName": "World_Name"
