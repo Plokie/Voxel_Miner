@@ -436,6 +436,9 @@
     <FxCompile Include="vertexshaderleaves.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
+    <FxCompile Include="chunkpixelshader.hlsl">
+      <Filter>Resource Files</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="git-log.txt" />

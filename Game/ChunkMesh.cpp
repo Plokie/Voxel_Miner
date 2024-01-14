@@ -227,6 +227,7 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 		Model* newModel = models[modelCount];
 		newModel->SetTexture(0, "atlas");
 
+		newModel->SetPixelShader(0, "chunkpixelshader");
 
 		switch(meshFlag) {
 		case TRANS:

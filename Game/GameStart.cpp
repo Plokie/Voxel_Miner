@@ -45,6 +45,7 @@ void LoadResources() {
 
 	Resources::LoadPixelShader(L"pixelshader.cso", "pixelshader");
 	Resources::LoadPixelShader(L"pixelshellgrass.cso", "pixelshellgrass");
+	Resources::LoadPixelShader(L"chunkpixelshader.cso", "chunkpixelshader");
 	//Resources::LoadPixelShader(L"demopixelshader.cso", "demopshader");
 
 	Resources::LoadVertexShader(L"vertexshader.cso", "vertexshader");
