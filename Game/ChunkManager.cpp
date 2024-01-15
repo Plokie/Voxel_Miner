@@ -9,6 +9,23 @@
 
 #include "BlockData.h"
 
+bool ChunkManager::CanServiceQueue(GENERATION_PHASE phase)
+{
+	if(phase == BLOCKDATA) return true;
+
+	bool arePriorQueuesEmpty = true;
+	for(int i = 0; i < phase; i++) {
+		queue<Chunk*>& queue = chunkGenerationQueues[(GENERATION_PHASE)i].second;
+
+		if(queue.size() > 0) {
+			arePriorQueuesEmpty = false;
+			break;
+		}
+	}
+
+	return arePriorQueuesEmpty;
+}
+
 void ChunkManager::CreateChunk(const int x, const int y, const int z)
 {
 	tuple<int, int, int> pos = { x,y,z };
@@ -20,28 +37,11 @@ void ChunkManager::CreateChunk(const int x, const int y, const int z)
 		}
 
 		newChunk->transform.position = Vector3(static_cast<float>(CHUNKSIZE_X * x), static_cast<float>(CHUNKSIZE_Y * y), static_cast<float>(CHUNKSIZE_Z * z));
+		newChunk->indexPosition = Vector3Int(x, y, z);
+		//newChunkQueue.push(newChunk);
 
-		newChunkQueue.push(newChunk);
-
-		threadPool->Queue([=] {
-			//unique_lock<std::mutex> lock(newChunk->gAccessMutex);
-			if(ChunkDatabase::Get()->DoesDataExistForChunk({ x,y,z })) {
-				ChunkDatabase::Get()->LoadChunkDataInto({ x,y,z }, newChunk);
-
-				this->QueueRegen((Vector3Int)pos + Vector3Int(1, 0, 0));
-				this->QueueRegen((Vector3Int)pos + Vector3Int(-1, 0, 0));
-				this->QueueRegen((Vector3Int)pos + Vector3Int(0, 1, 0));
-				this->QueueRegen((Vector3Int)pos + Vector3Int(0, -1, 0));
-				this->QueueRegen((Vector3Int)pos + Vector3Int(0, 0, 1));
-				this->QueueRegen((Vector3Int)pos + Vector3Int(0, 0, -1));
-			}
-			else newChunk->GenerateBlockData();
-			
-			//newChunk->hasLoadedBlockData = true;
-			newChunk->currentGenerationPhase= (Chunk::GENERATION_PHASE)((int)newChunk->currentGenerationPhase + 1);
-			
-			newChunk->InitSkyLight();
-		}, y == CHUNKLOAD_FIXED_PY); // If the chunk is at the TOP, the higher priority value means it will be completed last (or it should be...)
+		QueueChunkToGenerationPhase(newChunk, BLOCKDATA);
+		
 	}
 }
 
@@ -66,28 +66,71 @@ void ChunkManager::Thread() {
 	while(isRunning) {
 		Vector3Int camIndex = ChunkFloorPosForPositionCalculation(camTrans->position);
 
-		if(newChunkQueue.empty())
-			for(int y = 1 - CHUNKLOAD_FIXED_NY; y < CHUNKLOAD_FIXED_PY + 1; y++) {
-				for(int x = 1 - CHUNKLOAD_AREA_X; x < CHUNKLOAD_AREA_X + 1; x++) {
-					for(int z = 1 - CHUNKLOAD_AREA_Z; z < CHUNKLOAD_AREA_Z + 1; z++) {
-						CreateChunk(camIndex.x + x, y, camIndex.z + z);
-					}
+		//if(newChunkQueue.empty())
+		for(int y = 1 - CHUNKLOAD_FIXED_NY; y < CHUNKLOAD_FIXED_PY + 1; y++) {
+			for(int x = 1 - CHUNKLOAD_AREA_X; x < CHUNKLOAD_AREA_X + 1; x++) {
+				for(int z = 1 - CHUNKLOAD_AREA_Z; z < CHUNKLOAD_AREA_Z + 1; z++) {
+					CreateChunk(camIndex.x + x, y, camIndex.z + z);
 				}
 			}
+		}
 
-		if(!threadPool->IsBusy() && !newChunkQueue.empty()) {
-			while(!newChunkQueue.empty()) {
-				Chunk* chunk = newChunkQueue.front();
+		queue<Chunk*>& blockdataPendingQueue = chunkGenerationQueues[BLOCKDATA].second;
+		while(!blockdataPendingQueue.empty()) {
+			Chunk* chunk = blockdataPendingQueue.front();
+
+			threadPool->Queue([=] {
+				if(ChunkDatabase::Get()->DoesDataExistForChunk(chunk->indexPosition)) {
+					ChunkDatabase::Get()->LoadChunkDataInto(chunk->indexPosition, chunk);
+
+					this->QueueRegen(chunk->indexPosition + Vector3Int(1, 0, 0));
+					this->QueueRegen(chunk->indexPosition + Vector3Int(-1, 0, 0));
+					this->QueueRegen(chunk->indexPosition + Vector3Int(0, 1, 0));
+					this->QueueRegen(chunk->indexPosition + Vector3Int(0, -1, 0));
+					this->QueueRegen(chunk->indexPosition + Vector3Int(0, 0, 1));
+					this->QueueRegen(chunk->indexPosition + Vector3Int(0, 0, -1));
+				}
+				else chunk->GenerateBlockData();
+
+				chunk->currentGenerationPhase = LIGHTING;
+				this->QueueChunkToGenerationPhase(chunk, LIGHTING);
+
+				chunk->InitSkyLight();
+
+			}, chunk->indexPosition.y == CHUNKLOAD_FIXED_PY); // If the chunk is at the TOP, the higher priority value means it will be completed last (or it should be...)
+
+			blockdataPendingQueue.pop();
+		}
+
+
+		if(CanServiceQueue(LIGHTING)) { // Makes it wait until the queues preceeding this phase are empty
+			queue<Chunk*>& lightingPendingQueue = chunkGenerationQueues[LIGHTING].second;
+			while(!lightingPendingQueue.empty()) {
+				Chunk* chunk = lightingPendingQueue.front();
+
+				// do work here
+
+				chunk->currentGenerationPhase = MESH;
+				QueueChunkToGenerationPhase(chunk, MESH);
+			
+				lightingPendingQueue.pop();
+			}
+		}
+
+		if(CanServiceQueue(MESH)) {
+			queue<Chunk*>& meshPendingQueue = chunkGenerationQueues[MESH].second;
+			while(!meshPendingQueue.empty()) {
+			
+				Chunk* chunk = meshPendingQueue.front();
 				threadPool->Queue([=] {
-
 					chunk->Finalize();
-					//chunk->InitSkyLight();
-					//_numChunksLoaded++;
+
 					unique_lock<mutex> lock(this->_numChunksLoadedMutex);
 					this->_numChunksLoaded++;
+					chunk->currentGenerationPhase = DONE;
 				});
-				//_numChunksLoaded++;
-				newChunkQueue.pop();
+
+				meshPendingQueue.pop();
 			}
 		}
 
@@ -139,6 +182,22 @@ void ChunkManager::Thread() {
 
 		
 	}
+}
+
+void ChunkManager::QueueChunkToGenerationPhase(Chunk* chunk, GENERATION_PHASE phase)
+{
+	//auto findIt = chunkGenerationQueues.find(phase);
+	//if(findIt == chunkGenerationQueues.end()) {
+	//	//chunkGenerationQueues[phase] = pair<std::mutex, queue<Chunk*>>({}, {});
+	//	//chunkGenerationQueues[phase] = tuple<std::mutex, queue<Chunk*>>(std::mutex(), queue<Chunk*>());
+	//	chunkGenerationQueues[phase];
+	//}
+
+	//pair<Chunk::GENERATION_PHASE, tuple<std::mutex, queue<Chunk*>>>& refPair = chunkGenerationQueues[phase];
+	auto& refPair = chunkGenerationQueues[phase]; //does this construct it?
+	
+	std::unique_lock<std::mutex> lock(refPair.first);
+	refPair.second.push(chunk);
 }
 
 void ChunkManager::Start()
@@ -213,7 +272,7 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 		//unique_lock<std::mutex> lock(chunk->gAccessMutex);
 		
 		//if(!(chunk == nullptr || chunk->pendingDeletion || !chunk->hasLoadedBlockData)) {
-		if(!(chunk == nullptr || chunk->pendingDeletion || chunk->currentGenerationPhase==Chunk::BLOCKDATA)) {
+		if(!(chunk == nullptr || chunk->pendingDeletion || chunk->currentGenerationPhase==BLOCKDATA)) {
 			bool didMutex = chunk->gAccessMutex.try_lock();
 			//TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
 
@@ -344,7 +403,7 @@ void ChunkManager::QueueRegen(const Vector3Int& index, int priority)
 	unique_lock<std::mutex> regenLock(regenQueueMutex);
 	auto it = chunkMap.find(index);
 	if(it != chunkMap.end()) {
-		if(it->second == nullptr || it->second->pendingDeletion || it->second->currentGenerationPhase==Chunk::BLOCKDATA) return;
+		if(it->second == nullptr || it->second->pendingDeletion || it->second->currentGenerationPhase==BLOCKDATA) return;
 		regenQueue.push({ it->second, priority });
 	}
 }

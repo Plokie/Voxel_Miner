@@ -3,6 +3,7 @@
 #include "../Engine/Engine.h"
 #include "Blocks.h"
 //#include "BlockData.h"
+#include "ChunkGenerationPhase.h"
 
 #define CHUNKSIZE_X 16
 #define CHUNKSIZE_Y 16
@@ -19,12 +20,6 @@ public:
 		LIQUID,
 		SHELL,
 		LEAVES
-	};
-
-	enum GENERATION_PHASE : unsigned char {
-		BLOCKDATA,
-		MESH,
-		LIGHTING
 	};
 
 private:

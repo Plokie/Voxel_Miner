@@ -416,6 +416,9 @@
     <ClInclude Include="Game\PlayerData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Game\ChunkGenerationPhase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="pixelshader.hlsl">

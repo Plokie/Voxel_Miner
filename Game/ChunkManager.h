@@ -6,6 +6,7 @@
 #include "Blocks.h"
 #include "../Engine/Engine.h"
 #include "../Engine/ThreadPool.h"
+#include "ChunkGenerationPhase.h"
 
 // faster to load while debugging. plus debug builds are way slower
 #ifdef _DEBUG
@@ -37,8 +38,15 @@ private:
 	std::mutex chunkMapMutex;
 	map<tuple<int, int, int>, Chunk*> chunkMap;
 
-	std::mutex newChunkQueueMutex;
-	queue<Chunk*> newChunkQueue;
+	//std::mutex newChunkQueueMutex;
+	//queue<Chunk*> newChunkQueue;
+
+	bool CanServiceQueue(GENERATION_PHASE phase);
+
+
+	//std::mutex newChunk_BlockDataPhase
+
+	map<GENERATION_PHASE, pair<std::mutex, queue<Chunk*>>> chunkGenerationQueues;
 
 	std::mutex regenQueueMutex;
 	queue<pair<Chunk*,int>> regenQueue;
@@ -57,6 +65,8 @@ public:
 	const float LoadMinAreaProgress() const { return _numChunksLoaded / (float)minLoadCount; }
 	const bool HasLoadedMinArea() const { return _numChunksLoaded > minLoadCount; }
 	const int TotalChunksLoaded() const { return _numChunksLoaded; }
+
+	void QueueChunkToGenerationPhase(Chunk* chunk, GENERATION_PHASE phase);
 
 	//Lighting* GetLighting() const {
 	//	return this->lighting;

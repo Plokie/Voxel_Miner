@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <ProjectOutputs>
+    <ProjectOutput>
+      <FullPath>C:\Users\Plokie\source\repos\VoxelMiner\x64\Artist\VoxelMiner.exe</FullPath>
+    </ProjectOutput>
+  </ProjectOutputs>
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>C:\Users\Plokie\source\repos\VoxelMiner\x64\Artist\chunkpixelshader.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\Plokie\source\repos\VoxelMiner\x64\Artist\pixelshader.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\Plokie\source\repos\VoxelMiner\x64\Artist\pixelshellgrass.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\Plokie\source\repos\VoxelMiner\x64\Artist\vertexshader.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\Plokie\source\repos\VoxelMiner\x64\Artist\vertexshaderleaves.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\Plokie\source\repos\VoxelMiner\x64\Artist\vertexshellgrass.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\Plokie\source\repos\VoxelMiner\x64\Artist\watervertexshader.cso</FullPath>
+    </ContentFile>
+  </ContentFiles>
+  <SatelliteDlls />
+  <NonRecipeFileRefs />
+</Project>
