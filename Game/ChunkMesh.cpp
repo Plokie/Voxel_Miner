@@ -355,7 +355,7 @@ void Chunk::BuildMesh() {
 
 	this->PushChunkMesh(grassShellVertices, grassShellIndices, Chunk::MESHFLAG::SHELL);
 
-	this->PushChunkMesh(transVertices, transIndices, Chunk::MESHFLAG::TRANS);
+	//this->PushChunkMesh(transVertices, transIndices, Chunk::MESHFLAG::TRANS);
 	this->PushChunkMesh(waterVertices, waterIndices, Chunk::MESHFLAG::LIQUID);
 	this->PushChunkMesh(leavesVertices, leavesIndices, Chunk::MESHFLAG::LEAVES);
 }

@@ -92,10 +92,10 @@ void ChunkManager::Thread() {
 				}
 				else chunk->GenerateBlockData();
 
+				chunk->InitSkyLight();
+
 				chunk->currentGenerationPhase = LIGHTING;
 				this->QueueChunkToGenerationPhase(chunk, LIGHTING);
-
-				chunk->InitSkyLight();
 
 			}, chunk->indexPosition.y == CHUNKLOAD_FIXED_PY); // If the chunk is at the TOP, the higher priority value means it will be completed last (or it should be...)
 
@@ -256,7 +256,8 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 
 	// If chunk is loaded
-	bool tryLockChunkMap = chunkMapMutex.try_lock();
+	//bool tryLockChunkMap = chunkMapMutex.try_lock();
+	chunkMapMutex.lock();
 	auto itFind = chunkMap.find(chunkIndex);
 	if(itFind != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
@@ -265,7 +266,7 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 		//unique_lock<std::mutex> lock(this->gAccessMutex);
 		//Chunk* chunk = chunkMap[chunkIndex];
 		Chunk* chunk = itFind->second;
-		
+		chunkMapMutex.unlock();
 		// Okay this might seem redundant, but i promise its not (i think)
 		// this basically makes it so nothing else can modify it WHILE its being read from
 		// but if somethings already writing to it, we can read it anyway
@@ -282,12 +283,14 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 			//if(didMutex) ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 			if(didMutex) chunk->gAccessMutex.unlock();
 			//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
-			if(tryLockChunkMap) chunkMapMutex.unlock();
+			//if(tryLockChunkMap) chunkMapMutex.unlock();
 			return blockID;
 		}
+		return WorldGen::GetBlockAt(x, y, z);
 		//if(didMutex) chunk->gAccessMutex.unlock();
 	}
-	if(tryLockChunkMap) chunkMapMutex.unlock();
+	chunkMapMutex.unlock();
+	//if(tryLockChunkMap) chunkMapMutex.unlock();
 
 	//todo: read from chunk cache of height,temp,moist samples?
 	return WorldGen::GetBlockAt(x, y, z);
