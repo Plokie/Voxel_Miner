@@ -68,6 +68,8 @@ TextInput* TableInterface::MakeTextInput(const string& defaultText)
 	textInput->SetAnchor(0.f, 0.f);
 	textInput->SetPivot(0.0f, 0.0f);
 
+	invUI = Engine::Get()->GetCurrentScene()->GetObject2D<InventoryUI>("invUI");
+
 	_spawnedTextInputs.push_back(textInput);
 
 	return textInput;
@@ -167,6 +169,8 @@ void TableInterface::PushIcon(ItemIcon* itemIcon)
 }
 
 void TableInterface::Update(const float dt) {
+	invUI->canClose = true;
+
 	for(auto& icon : _spawnedItemIcons) { // attempts to pick up
 		icon->Update(dt);
 	}
@@ -181,6 +185,8 @@ void TableInterface::Update(const float dt) {
 	}
 	for(auto& textInput : _spawnedTextInputs) {
 		textInput->Update(dt);
+
+		if(textInput->IsEngaged()) invUI->canClose = false;
 	}
 	for(auto& button : _spawnedButtons) {
 		button->Update(dt);
@@ -253,6 +259,10 @@ void TableInterface::Draw(SpriteBatch* sb) {
 		slot->Draw(sb);
 	}
 
+	for(auto& button : _spawnedButtons) {
+		button->Draw(sb);
+	}
+
 	for(auto& icon : _spawnedUIRects) {
 		icon->Draw(sb);
 	}
@@ -269,7 +279,4 @@ void TableInterface::Draw(SpriteBatch* sb) {
 		textInput->Draw(sb);
 	}
 
-	for(auto& button : _spawnedButtons) {
-		button->Draw(sb);
-	}
 }

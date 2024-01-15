@@ -49,7 +49,7 @@ map<BiomeID, Biome> Biome::def = {
 		SAND, // Sand under surface
 		CLAY, // Clay layer under sand
 
-		OAK_LOG,
+		CACTUS,
 		AIR
 	}},
 	{BiomeID::TAIGA, {
@@ -74,10 +74,10 @@ map<BiomeID, Biome> Biome::def = {
 		DIRT,
 		STONE,
 
-		CHERRY_GRASS,
+		SAND,
+		SAND,
 		DIRT,
-		DIRT,
-		DIRT,
+		CLAY,
 
 		CHERRY_LOG,
 		CHERRY_LEAVES
@@ -90,9 +90,9 @@ map<BiomeID, Biome> Biome::def = {
 		STONE,
 
 		MAPLE_GRASS,
+		GRAVEL,
 		DIRT,
-		DIRT,
-		DIRT,
+		CLAY,
 
 		BIRCH_LOG,
 		BIRCH_LEAVES
@@ -111,10 +111,13 @@ vector<pair<BiomeID, AABB>> Biome::range = {
 		{0.5f, 0.0f}, {1.0f, 0.35f}
 	)},
 	{	 BiomeID::CHERRY, AABB::FromMinMax(
-		{0.6f, 0.45f}, {1.0f, 1.0f}
+		{0.6f, 0.5f}, {1.0f, 1.0f}
+	)},
+	{ BiomeID::DESERT, AABB::FromMinMax(
+		{0.0f, 0.51f}, {0.5f, 1.0f}
 	)},
 	{	 BiomeID::MAPLE, AABB::FromMinMax(
-		{0.35f, 0.45f}, {1.0f, 1.0f}
+		{0.35f, 0.5f}, {1.0f, 1.0f}
 	)},
 
 
@@ -123,9 +126,6 @@ vector<pair<BiomeID, AABB>> Biome::range = {
 		{0.6f, 0.66666f}, {1.0f, 1.0f}
 	)},*/
 
-	{ BiomeID::DESERT, AABB::FromMinMax(
-		{0.0f, 0.66666f}, {0.5f, 1.0f}
-	)},
 
 	// GRASSLANDS is a default fallbakc when calling Get()
 	//{ BiomeID::GRASSLANDS, AABB( // Final fallback. Defaults to grasslands

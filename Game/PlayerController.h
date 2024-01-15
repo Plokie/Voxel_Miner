@@ -22,6 +22,8 @@ class PlayerController : public Object3D {
 	Label* fpsCounter = nullptr;
 	Label* worldPosLabel = nullptr;
 	PlayerData* _pCurrentPlayerData = nullptr;
+
+	float timeSinceLastJump = 0.f;
 	//Inventory* _pInventory;
 
 	ChunkManager* chunkManager = nullptr;

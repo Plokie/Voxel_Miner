@@ -236,6 +236,7 @@
     <ClCompile Include="Game\GameScene.cpp" />
     <ClCompile Include="Game\HeldItem.cpp" />
     <ClCompile Include="Game\ItemAction.cpp" />
+    <ClCompile Include="Game\ItemCategory.cpp" />
     <ClCompile Include="Game\Meshes\DroppedItemMesh.cpp" />
     <ClCompile Include="Game\Meshes\HeldItemMesh.cpp" />
     <ClCompile Include="Game\Inventory.cpp" />
@@ -300,6 +301,7 @@
     <ClInclude Include="Game\GameScene.h" />
     <ClInclude Include="Game\HeldItem.h" />
     <ClInclude Include="Game\ItemAction.h" />
+    <ClInclude Include="Game\ItemCategory.h" />
     <ClInclude Include="Game\Meshes\DroppedItemMesh.h" />
     <ClInclude Include="Game\Meshes\HeldItemMesh.h" />
     <ClInclude Include="Game\Inventory.h" />

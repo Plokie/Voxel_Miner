@@ -17,9 +17,14 @@ class Button;
 class CreativeUI : public TableInterface {
 private:
 
+	void ClearList();
+	void DrawList(vector<pair<unsigned short, InventoryItem::Type>>& vec);
 public:
 	void Open(InterfaceContext ctx) override;
 	void Close() override;
+
+	void LoadSearch(const string& search);
+	void LoadCategory(ITEM_CATEGORY itemCategory);
 
 	void Start() override;
 	void Update(const float dt) override;

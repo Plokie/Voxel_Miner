@@ -30,6 +30,9 @@ public:
 
 	ItemIcon(InventoryItem* invItem, InventoryUI* invUI);
 	ItemIcon(const RecipeComponent& recipeComponent);
+	ItemIcon(BlockID blockID);
+	ItemIcon(ItemID itemID);
+	ItemIcon(unsigned short ID, InventoryItem::Type type);
 	~ItemIcon();
 	
 	void Display(const unsigned short ID, const InventoryItem::Type type, const int amount, const Vector2Int& uvPos, const bool hideOne = true);

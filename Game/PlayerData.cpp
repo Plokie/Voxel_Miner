@@ -48,6 +48,8 @@ PlayerData::PlayerData() {
 //}
 
 void PlayerData::Update(const float dt) {
+	if(IsCreative()) return;
+
 	float currentExhaustion = 0.0f;
 
 	for(int i = 0; i < HDS_COUNT; i++) {

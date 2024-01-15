@@ -343,13 +343,13 @@ void InventoryUI::TableReload(Vector3Int tablePosition) {
 }
 
 void InventoryUI::Update(const float dTime) {
-	if((Input::IsKeyPressed(VK_TAB) || Input::IsKeyPressed('I')) && (Input::IsMouseLocked() || isOpen)) {
+	if(canClose &&(Input::IsKeyPressed(VK_TAB) || Input::IsKeyPressed('I')) && (Input::IsMouseLocked() || isOpen)) {
 		isOpen = !isOpen;
 		if(isOpen) Open();
-		else Close();
+		else if(canClose) Close();
 	}
 
-	if(Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_Y) || ((Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_B) || Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_START)) && isOpen)) {
+	if(canClose && (Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_Y) || ((Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_B) || Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_START)) && isOpen))) {
 		isOpen = !isOpen;
 		if(isOpen) {
 			Open();

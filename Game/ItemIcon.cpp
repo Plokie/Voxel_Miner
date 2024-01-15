@@ -22,6 +22,29 @@ ItemIcon::ItemIcon(const RecipeComponent& recipeComponent) {
 	Display(recipeComponent.ID, recipeComponent.type, recipeComponent.amount, recipeComponent.GetUVPos(), false);
 }
 
+ItemIcon::ItemIcon(BlockID blockID) {
+	const Block& blockDef = BlockDef::GetDef(blockID);
+	Display(blockID, InventoryItem::BLOCK, 1, { blockDef.GetSideUVidx(), blockDef.GetSideUVidy() });
+}
+
+ItemIcon::ItemIcon(ItemID itemID)
+{
+	const Item& itemDef = ItemDef::Get(itemID);
+	Display(itemID, InventoryItem::ITEM, 1, { itemDef.UVx(), itemDef.UVy() });
+}
+
+ItemIcon::ItemIcon(unsigned short ID, InventoryItem::Type type)
+{
+	if(type == InventoryItem::ITEM) {
+		const Item& itemDef = ItemDef::Get((ItemID)ID);
+		Display(ID, type, 1, { itemDef.UVx(), itemDef.UVy() });
+	}
+	else {
+		const Block& blockDef = BlockDef::GetDef((BlockID)ID);
+		Display(ID, type, 1, { blockDef.GetSideUVidx(), blockDef.GetSideUVidy() });
+	}
+}
+
 ItemIcon::~ItemIcon() {
 	if(icon != nullptr) {
 		delete icon;

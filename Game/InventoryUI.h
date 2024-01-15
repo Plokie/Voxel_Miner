@@ -47,6 +47,8 @@ public:
 	void AddNewIcon(ItemIcon* itemIcon);
 	void DeleteIcon(ItemIcon* itemIcon);
 
+	bool canClose = true;
+
 	//void SetHeldItem(ItemIcon* invItem);
 	//void SlotPressed(Button* slot);
 

@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include "ItemTypes.h"
+#include "ItemCategory.h"
 
 using namespace std;
 
@@ -51,13 +52,16 @@ enum BlockID : unsigned short {
 	STONE_BRICKS,
 	BLACKSTONE_BRICKS,
 	BEDROCK,
-	CACTUS
+	CACTUS,
+
+	BLOCK_COUNT
 };
 
 class Block {
 private:
 	string name;
 
+	ITEM_CATEGORY category;
 	DRAW_TYPE draw_type; // Is the block opaque, transparent, or clip
 	bool isSolid = true;
 	int lightValue = 0;
@@ -75,6 +79,7 @@ private:
 public:
 
 	Block(string _Name,
+		ITEM_CATEGORY category,
 		DRAW_TYPE draw_type,
 		bool isSolid,
 		int _lightValue,
@@ -86,6 +91,7 @@ public:
 		const string& lootTable = ""
 	) :
 		name(_Name),
+		category(category),
 		draw_type(draw_type),
 		isSolid(isSolid),
 		lightValue(_lightValue),
@@ -99,6 +105,7 @@ public:
 	{}
 
 	Block(string _Name,
+		ITEM_CATEGORY category,
 		DRAW_TYPE draw_type,
 		bool isSolid,
 		int _lightValue,
@@ -112,6 +119,7 @@ public:
 		const string& lootTable = ""
 	) :
 		name(_Name),
+		category(category),
 		draw_type(draw_type),
 		isSolid(isSolid),
 		lightValue(_lightValue),
@@ -132,6 +140,7 @@ public:
 	const string& GetLootTableName() const { return lootTable; }
 	const int GetTier() const { return tier; }
 	const bool IsSolid() const { return isSolid; }
+	const ITEM_CATEGORY GetCategory() const { return category; }
 
 	const int GetTopUVidx() const;
 	const int GetTopUVidy() const;

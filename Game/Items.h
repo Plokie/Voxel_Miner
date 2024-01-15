@@ -5,6 +5,8 @@
 #include "ItemTypes.h"
 #include "BlockAction.h"
 #include "../Engine/MathUtil.h"
+#include "ItemCategory.h"
+
 
 class BlockAction;
 class PlayerController;
@@ -29,12 +31,15 @@ enum ItemID : unsigned short {
 	RAW_CHICKEN, COOKED_CHICKEN,
 	CARROT, ROASTED_CARROT,
 	EGG, FRIED_EGG,
-	APPLE, ROASTED_APPLE
+	APPLE, ROASTED_APPLE,
+
+	ITEM_COUNT
 };
 
 class Item {
 private:
 	string name;
+	ITEM_CATEGORY category;
 
 	int uvX, uvY;
 	int maxStack;
@@ -43,7 +48,7 @@ private:
 
 	static map<ItemID, BlockAction> itemActions;
 public:
-	Item(string name, int uvX, int uvY, int maxStack=MAX_STACK, ItemType itemType = ItemType::BASICITEM, int tier = 0) : name(name), uvX(uvX), uvY(uvY), maxStack(maxStack), itemType(itemType), tier(tier) {}
+	Item(string name, ITEM_CATEGORY category, int uvX, int uvY, int maxStack=MAX_STACK, ItemType itemType = ItemType::BASICITEM, int tier = 0) : name(name), category(category), uvX(uvX), uvY(uvY), maxStack(maxStack), itemType(itemType), tier(tier) {}
 
 	const string& GetName() const { return name; }
 	const int UVx() const { return uvX; }
@@ -51,6 +56,7 @@ public:
 	const int GetMaxStack() const { return maxStack; }
 	const ItemType GetItemType() const { return itemType; }
 	const int GetTier() const { return tier; }
+	const ITEM_CATEGORY GetCategory() const { return category; }
 
 	static bool CallItemAction(ItemID itemID, PlayerController* playerController, PlayerData* inv, ChunkManager* chunkManager, Vector3Int targetBlockPos);
 };

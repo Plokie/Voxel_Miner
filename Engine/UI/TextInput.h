@@ -1,7 +1,10 @@
 #pragma once
 
+#include <vector>
 #include "Label.h"
 #include "UIRect.h"
+
+using namespace std;
 
 class TextInput : public Object2D {
 private:
@@ -9,7 +12,8 @@ private:
 	bool isHovering;
 	bool engaged;
 
-
+	vector<function<void()>> _events = {};
+	void InvokeEvents();
 
 public:
 	Label* label = nullptr;
@@ -17,12 +21,14 @@ public:
 	UIRect* rect = nullptr;
 	UIRect* cursor = nullptr;
 
-	//void AddListener(function<void()> func);
+	void AddListener(function<void()> func);
 	void HandleKey(unsigned short vKey);
 
 	bool IsPressed();
 	bool IsHovering();
 	bool WasPressed();
+
+	const bool IsEngaged() const { return engaged; }
 
 	void SetText(const string& s);
 	const string& GetText();

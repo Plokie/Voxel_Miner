@@ -282,7 +282,8 @@ void ChunkDatabase::LoadWorldData()
 	}
 	else { // if file doesnt exist
 		//inv->LoadDefaultItems();
-		playerData->GetInventory()->LoadDefaultItems();
+		//if(!playerData->IsCreative())
+			playerData->GetInventory()->LoadDefaultItems();
 		SaveWorldData(); // create world data file
 	}
 	f.close();

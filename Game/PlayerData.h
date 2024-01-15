@@ -40,7 +40,7 @@ private:
 	string _name;
 	GAMEMODE _gamemode = GM_SURVIVAL;
 	
-
+	
 
 	// Update / mechanical stuff
 	vector<function<void()>> _onDeathEvents;
@@ -143,6 +143,10 @@ public:
 
 	void AddOnDeathEvent(function<void()> func) {
 		_onDeathEvents.emplace_back(func);
+	}
+
+	bool IsCreative() {
+		return _gamemode == GM_CREATIVE;
 	}
 
 	PlayerData();

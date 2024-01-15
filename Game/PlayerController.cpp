@@ -106,6 +106,16 @@ vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager, vector
 
 void PlayerController::Update(float dTime)
 {
+	bool didDoubleTapJump = false;
+	timeSinceLastJump += dTime;
+	if(Input::IsKeyPressed(VK_SPACE) || Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_A)) {
+		
+		if(timeSinceLastJump <= .5f) {
+			didDoubleTapJump = true;
+		}
+		timeSinceLastJump = 0.f;
+	}
+
 	Inventory* inv = _pCurrentPlayerData->GetInventory();
 
 	if(!enabled) {
@@ -148,6 +158,7 @@ void PlayerController::Update(float dTime)
 			InventoryItem* newDroppedItem;
 			DroppedItem* droppedItemEntity;
 
+			if(!_pCurrentPlayerData->IsCreative())
 			if(heldItem->type == InventoryItem::ITEM  ) {
 				Item itemDef = ItemDef::Get(static_cast<ItemID>(heldItem->ID));
 				if(itemDef.GetItemType() != BASICITEM && itemDef.GetItemType() != FOOD) { //todo: special item type check
@@ -234,6 +245,9 @@ void PlayerController::Update(float dTime)
 		}
 	}
 
+	if(didDoubleTapJump && _pCurrentPlayerData->IsCreative()) {
+		freeCam = !freeCam;
+	}
 
 	if(!freeCam) {
 		// GRAVITY PHYSICS
@@ -265,7 +279,7 @@ void PlayerController::Update(float dTime)
 			velocity.y = max(velocity.y, terminalVelocity);
 		}
 		else {
-			if(velocity.y < -20.f) {
+			if(velocity.y < -20.f && !_pCurrentPlayerData->IsCreative()) {
 				// fall damage
 				_pCurrentPlayerData->ChangeHealth(static_cast<int>((velocity.y * 1.5f) / 5.f));
 			}
@@ -346,7 +360,7 @@ void PlayerController::Update(float dTime)
 					itemDef = (invItem->type == InventoryItem::Type::BLOCK)?ItemDef::Get((ItemID)0):ItemDef::Get((ItemID)invItem->ID);
 				}
 
-				if(blockDef.GetMineType() == BASICITEM || (itemDef.GetItemType() == blockDef.GetMineType() && itemDef.GetTier() >= blockDef.GetTier() )) {
+				if(_pCurrentPlayerData->IsCreative() || blockDef.GetMineType() == BASICITEM || (itemDef.GetItemType() == blockDef.GetMineType() && itemDef.GetTier() >= blockDef.GetTier() )) {
 					Audio::Play("hit", 1.f);
 					chunkManager->SetBlockAtWorldPos(lookHitPoint, AIR);
 						
@@ -359,6 +373,8 @@ void PlayerController::Update(float dTime)
 						//inv->AddItem(loot.ID, loot.type, loot.amount);
 
 						InventoryItem* newDroppedItem = new InventoryItem(loot.type, loot.ID, -1, -1, loot.amount);
+
+						if(!_pCurrentPlayerData->IsCreative())
 						DroppedItem::Create(newDroppedItem, lookHitPoint);
 					}
 					else 
@@ -366,6 +382,8 @@ void PlayerController::Update(float dTime)
 						//inv->AddItem(targetBlock);
 
 						InventoryItem* newDroppedItem = new InventoryItem(targetBlock, -1, -1, 1);
+
+						if(!_pCurrentPlayerData->IsCreative())
 						DroppedItem::Create(newDroppedItem, lookHitPoint);
 					}
 
@@ -389,7 +407,8 @@ void PlayerController::Update(float dTime)
 							//inv->SubItem((BlockID)invItem->ID);
 							/*invItem->amount -= 1;
 							if(invItem->amount<=0) inv->ClearEmptyItems();*/
-							inv->SubHeldItem(1, invItem);
+							if(!_pCurrentPlayerData->IsCreative())
+								inv->SubHeldItem(1, invItem);
 						}
 					}
 				}
@@ -413,11 +432,9 @@ void PlayerController::Update(float dTime)
 	// DEBUG INFO
 	fpsCounter->SetText(to_string(static_cast<int>(roundf(1.f / dTime))));
 	
-	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
-	Vector3Int footPos = camBlockPos - Vector3Int(0, 1, 0);
-	worldPosLabel->SetText(footPos.ToString());
 
-	/*Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
+//#ifdef _DEBUG
+	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
 	Vector3Int footPos = camBlockPos - Vector3Int(0, 1, 0);
 	Vector3Int chunkIndex = ChunkManager::ToChunkIndexPositionTuple(footPos.x, footPos.y, footPos.z);
 
@@ -433,7 +450,12 @@ void PlayerController::Update(float dTime)
 		+ "T: " + to_string(temp) + "\n"
 		+ "M: " + to_string(moist) + "\n"
 		+ "B: " + Biome::Get(temp, moist).name + "\n"
-	);*/
+	);
+//#else
+//	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
+//	Vector3Int footPos = camBlockPos - Vector3Int(0, 1, 0);
+//	worldPosLabel->SetText(footPos.ToString());
+//#endif
 
 	// KEEP AT END
 	camera->transform = transform;

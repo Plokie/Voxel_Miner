@@ -6,6 +6,17 @@
 //	_onClick.push_back(func);
 //}
 
+void TextInput::InvokeEvents()
+{
+	for(auto& event : _events) {
+		event();
+	}
+}
+
+void TextInput::AddListener(function<void()> func) {
+	_events.push_back(func);
+}
+
 // takes keyboard key id and parses it as a key input
 void TextInput::HandleKey(unsigned short key)
 {
@@ -16,6 +27,8 @@ void TextInput::HandleKey(unsigned short key)
 		char ch = static_cast<char>(key);
 		label->SetText(label->GetText() + ch);
 	}
+
+	InvokeEvents();
 }
 
 bool TextInput::IsPressed() {
@@ -214,6 +227,8 @@ void TextInput::Draw(SpriteBatch* spriteBatch) {
 }
 
 TextInput::~TextInput() {
+	Input::CloseInputStream(this);
+
 	if(label != nullptr) {
 		delete label;
 		label = nullptr;
