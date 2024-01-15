@@ -47,7 +47,7 @@ void Label::SetFont(const string& font)
 Label::Label(const string& font, const XMFLOAT4& color)
 {
 	this->font = font;
-	this->text = "TEXT NOT SET";
+	this->text = "";
 	this->color = color;
 }
 

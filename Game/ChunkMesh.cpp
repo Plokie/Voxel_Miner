@@ -270,6 +270,7 @@ void Chunk::BuildMesh() {
 		//delete model;
 	}
 	this->models.clear();
+	this->models.reserve(5);
 
 	const int reserveSizeSolid = (CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z) / 2;
 	const int reserveSizeTrans = (CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z) / 4;

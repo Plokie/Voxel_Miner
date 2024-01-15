@@ -9,21 +9,6 @@
 // takes keyboard key id and parses it as a key input
 void TextInput::HandleKey(unsigned short key)
 {
-	//if(vKey >= 'A' && vKey <= 'Z') {
-	//	bool isCaps = (GetKeyState(VK_CAPITAL) & 1) != 0;
-	//	if(!isCaps) {
-	//		vKey |= 32;
-	//	}
-	//}
-
-	//if(vKey >= 32 && vKey <= 126) { // If its a normal character
-	//if(
-	//	vKey == ' ' ||
-	//	(vKey >= '0' && vKey <= '9') ||
-	//	(vKey >= 'A' && vKey <= 'Z') ||
-	//	(vKey >= 'a' && vKey <= 'z')
-	//) {
-	//}
 	if(key == 8) { // Backspace
 		label->SetText(label->GetText().substr(0, label->GetText().size() - 1));
 	}
@@ -51,6 +36,16 @@ void TextInput::SetText(const string& s) {
 
 const string& TextInput::GetText() {
 	return label->GetText();
+}
+
+void TextInput::SetTemplateText(const string& s)
+{
+	templateLabel->SetText(s);
+}
+
+void TextInput::SetTemplateTextColour(const float r, const float g, const float b, const float a)
+{
+	templateLabel->SetColour(r, g, b, a);
 }
 
 void TextInput::SetTextColour(const float r, const float g, const float b, const float a) {
@@ -83,6 +78,23 @@ void TextInput::SetLabel(const string& text, const string& font, const XMFLOAT4&
 	label->SetAnchor({ 0.0f, 0.5f });
 	label->SetPivot({ 0.0f, 0.5f });
 	label->SetParent(rect);
+}
+
+void TextInput::SetTemplateLabel(const string& text, const string& font, const XMFLOAT4& col)
+{
+	if(templateLabel == nullptr) {
+		templateLabel = new Label(font, col);
+		templateLabel->Init(Engine::Get()->GetGraphics()->GetDevice());
+		templateLabel->InitSelf();
+	}
+	else {
+		templateLabel->SetFont(font);
+		templateLabel->SetColour(col.x, col.y, col.z, col.w);
+		templateLabel->SetText(templateLabel->GetText());
+	}
+	templateLabel->SetAnchor({ 0.0f, 0.5f });
+	templateLabel->SetPivot({ 0.0f, 0.5f });
+	templateLabel->SetParent(rect);
 }
 
 void TextInput::SetRect(const XMFLOAT4& bgCol)
@@ -135,16 +147,18 @@ void TextInput::SetDimensions(const Vector2& dim) {
 //	SetLabel("LABEL NOT SET", )
 //}
 
-TextInput::TextInput(const string& font, const XMFLOAT4& col) {
+TextInput::TextInput(const string& font, const XMFLOAT4& col, const XMFLOAT4& templateCol) {
 	//InitSelf();
 	if(rect == nullptr) SetRect({ 1.f,1.f,1.f,1.f });
-	SetLabel("TEXT NOT SET", font, col);
+	SetLabel("", font, col);
+	SetTemplateLabel("TEMPLATE NOT SET", font, templateCol);
 	SetCursor({ 1.f,1.f,1.f,1.f });
 }
 
 TextInput::TextInput(const XMFLOAT4& bgCol) {
 	//InitSelf();
 	SetRect(bgCol);
+	//SetTemplateLabel("TEMPLATE NOT SET", font, col);
 	SetCursor({ 1.f,1.f,1.f,1.f });
 }
 
@@ -157,7 +171,8 @@ TextInput::TextInput(const XMFLOAT4& bgCol) {
 TextInput::TextInput(const string& text, const string& font, const XMFLOAT4& txtCol, const XMFLOAT4& bgCol) {
 	//InitSelf();
 	SetRect(bgCol);
-	SetLabel(text, font, txtCol);
+	SetLabel("", font, txtCol);
+	SetTemplateLabel(text, font, { .3f,.3f,.3f,1.f});
 	SetCursor({ 1.f,1.f,1.f,1.f });
 }
 
@@ -193,13 +208,20 @@ void TextInput::Draw(SpriteBatch* spriteBatch) {
 	rect->Draw(spriteBatch);
 	label->Draw(spriteBatch);
 	if(engaged)
-	cursor->Draw(spriteBatch);
+		cursor->Draw(spriteBatch);
+	else if(label->GetText() == "")
+		templateLabel->Draw(spriteBatch);
 }
 
 TextInput::~TextInput() {
 	if(label != nullptr) {
 		delete label;
 		label = nullptr;
+	}
+
+	if(templateLabel != nullptr) {
+		delete templateLabel;
+		templateLabel = nullptr;
 	}
 
 	if(rect != nullptr) {

@@ -223,6 +223,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio\Audio.cpp" />
+    <ClCompile Include="Game\CreativeUI.cpp" />
     <ClCompile Include="Game\BlockAction.cpp" />
     <ClCompile Include="Game\BlockData.cpp" />
     <ClCompile Include="Game\ChestUI.cpp" />
@@ -285,6 +286,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio\Audio.h" />
+    <ClInclude Include="Game\CreativeUI.h" />
     <ClInclude Include="Game\BlockAction.h" />
     <ClInclude Include="Game\BlockData.h" />
     <ClInclude Include="Game\ChestUI.h" />

@@ -11,6 +11,11 @@ map<HUNGER_DECREMENT_STATE, float> PlayerData::_hungerDecrementValues = {
 };
 
 
+void PlayerData::SetGamemode(GAMEMODE gm)
+{
+	_gamemode = gm;
+}
+
 void PlayerData::ChangeHealth(int amt) {
 	health += amt;
 	InvokeOnHealthChange();
@@ -42,7 +47,7 @@ PlayerData::PlayerData() {
 //	// load player data from file
 //}
 
-void PlayerData::PlayerUpdate(const float dt) {
+void PlayerData::Update(const float dt) {
 	float currentExhaustion = 0.0f;
 
 	for(int i = 0; i < HDS_COUNT; i++) {
@@ -105,6 +110,7 @@ nlohmann::json PlayerData::Serialize()
 	json["health"] = health;
 	json["hunger"] = hunger;
 	json["saturation"] = saturation;
+	json["gamemode"] = _gamemode;
 	
 	if(_pInventory) {
 		json["inventory"] = _pInventory->Serialize();
@@ -132,6 +138,9 @@ void PlayerData::Deserialize(nlohmann::json json) {
 
 	if(json.find("saturation") != json.end())
 		saturation = json["saturation"];
+	
+	if(json.find("gamemode") != json.end())
+		_gamemode = (GAMEMODE)json["gamemode"];
 
 	if(json.find("inventory") != json.end()) {
 		//if(json["inventory"] != 0) {

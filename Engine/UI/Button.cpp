@@ -91,7 +91,7 @@ void Button::SetDimensions(const Vector2& dim) {
 Button::Button(const string& font, const XMFLOAT4& col) {
 	//InitSelf();
 	if(rect == nullptr) SetRect({ 1.f,1.f,1.f,1.f });
-	SetLabel("TEXT NOT SET", font, col);
+	SetLabel("", font, col);
 }
 
 Button::Button(const XMFLOAT4& bgCol) {

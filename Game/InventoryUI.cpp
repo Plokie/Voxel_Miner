@@ -13,6 +13,7 @@
 //#include "CraftingUI.h"
 #include "TableInterface.h"
 #include "PlayerData.h"
+#include "CreativeUI.h"
 
 InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 	_pPlayerData = gameScene->GetObject3D<PlayerData>("PlayerData");
@@ -258,6 +259,12 @@ void InventoryUI::Open() {
 		icon->SetParent(invSlots[invItem->posX][invItem->posY]);
 
 		_spawnedIcons.push_back(icon);
+	}
+
+	if(currentInterface == nullptr && _pPlayerData && _pPlayerData->GetGamemode() == GM_CREATIVE) {
+		currentInterface = new CreativeUI();
+		currentInterface->Open(InterfaceContext(_pPlayerData, nullptr, {0,0,0}, ERR));
+		currentInterface->SetParent(invBg);
 	}
 }
 

@@ -14,7 +14,9 @@ class Inventory;
 class InventoryUI;
 class ItemIcon;
 class BlockData;
+class Label;
 class PlayerData;
+class TextInput;
 
 struct InterfaceContext {
 	PlayerData* playerData;
@@ -42,6 +44,9 @@ protected:
 	vector<Button*> _spawnedSlots;
 	vector<ItemIcon*> _spawnedItemIcons;
 	vector<UIRect*> _spawnedUIRects;
+	vector<Label*> _spawnedLabels;
+	vector<TextInput*> _spawnedTextInputs;
+	vector<Button*> _spawnedButtons;
 	BlockData* blockData;
 	InterfaceContext recentContext = InterfaceContext(nullptr, nullptr, Vector3Int(0,0,0), (BlockID)0);
 	InventoryUI* invUI;
@@ -50,6 +55,9 @@ protected:
 	map<tuple<int, int>, Button*> _indexedSlots;
 
 	Button* MakeSlot(int idx, int idy);
+	Label* MakeLabel(const string& text);
+	TextInput* MakeTextInput(const string& defaultText);
+	Button* MakeButton(const string& text, const XMFLOAT4& textCol = { 1.f, 1.f, 1.f, 1.f }, const XMFLOAT4& bgCol = {.3f, .3f, .3f, 1.f});
 	ItemIcon* MakeItemIcon(InventoryItem* invItem);
 	void ComputeItemExistsHash();
 

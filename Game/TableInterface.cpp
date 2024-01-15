@@ -6,6 +6,8 @@
 #include "InventoryUI.h"
 #include "../Engine/Engine.h"
 #include "BlockData.h"
+#include "../Engine/UI/Label.h"
+#include "../Engine/UI/TextInput.h"
 
 Button* TableInterface::MakeSlot(int idx, int idy)
 {
@@ -38,6 +40,39 @@ Button* TableInterface::MakeSlot(int idx, int idy)
 	return slot;
 }
 
+Label* TableInterface::MakeLabel(const string& text)
+{
+	Label* newLabel = new Label("Baloo");
+	newLabel->Init(Graphics::Get()->GetDevice());
+	newLabel->InitSelf();
+	newLabel->SetParent(this);
+	newLabel->SetText(text);
+	newLabel->SetAnchor(0.f, 0.f);
+	newLabel->SetPivot(0.5f, 0.5f);
+
+	_spawnedLabels.push_back(newLabel);
+
+	return newLabel;
+}
+
+TextInput* TableInterface::MakeTextInput(const string& defaultText)
+{
+	TextInput* textInput = new TextInput("Baloo");
+	textInput->Init(Graphics::Get()->GetDevice());
+	textInput->InitSelf();
+	textInput->SetDimensions({ 300.f, 35.f });
+	textInput->SetParent(this);
+	textInput->SetBgColour(0.2f,.2f,.2f,1.f);
+	textInput->SetTextColour(1.f, 1.f, 1.f, 1.f);
+	textInput->SetTemplateText(defaultText);
+	textInput->SetAnchor(0.f, 0.f);
+	textInput->SetPivot(0.0f, 0.0f);
+
+	_spawnedTextInputs.push_back(textInput);
+
+	return textInput;
+}
+
 ItemIcon* TableInterface::MakeItemIcon(InventoryItem* invItem)
 {
 	ItemIcon* icon = new ItemIcon(invItem, invUI); //todo: easier MakeIcon func
@@ -48,6 +83,22 @@ ItemIcon* TableInterface::MakeItemIcon(InventoryItem* invItem)
 	icon->SetInventoryParent(blockData->blockInventory);
 
 	return icon;
+}
+
+Button* TableInterface::MakeButton(const string& text, const XMFLOAT4& textCol, const XMFLOAT4& bgCol) {
+	Button* button = new Button("Baloo");
+	button->Init(pDevice);
+	button->InitSelf();
+	button->SetDimensions({ 150.f, 35.f });
+	button->SetParent(this);
+	button->SetAnchor(0.f, 0.f);
+	button->SetPivot(0.f, 0.f);
+	button->SetText(text);
+	button->SetTextColour(textCol.x, textCol.y, textCol.z, textCol.w);
+	button->SetBgColour(bgCol.x, bgCol.y, bgCol.z, bgCol.w);
+
+	_spawnedButtons.push_back(button);
+	return button;
 }
 
 void TableInterface::ComputeItemExistsHash() {
@@ -125,6 +176,15 @@ void TableInterface::Update(const float dt) {
 	for(auto& slot : _spawnedSlots) { // drops it
 		slot->Update(dt);
 	}
+	for(auto& label : _spawnedLabels) {
+		label->Update(dt);
+	}
+	for(auto& textInput : _spawnedTextInputs) {
+		textInput->Update(dt);
+	}
+	for(auto& button : _spawnedButtons) {
+		button->Update(dt);
+	}
 
 
 	//if(invUI->heldItem) {
@@ -151,6 +211,24 @@ void TableInterface::Close()
 	}
 	_spawnedItemIcons.clear();
 	itemExistsHash.clear();
+
+	for(auto& label : _spawnedLabels) {
+		delete label;
+		label = nullptr;
+	}
+	_spawnedLabels.clear();
+
+	for(auto& textInput : _spawnedTextInputs) {
+		delete textInput;
+		textInput = nullptr;
+	}
+	_spawnedTextInputs.clear();
+
+	for(auto& button : _spawnedButtons) {
+		delete button;
+		button = nullptr;
+	}
+	_spawnedButtons.clear();
 }
 
 void TableInterface::Open(InterfaceContext ctx) {
@@ -183,4 +261,15 @@ void TableInterface::Draw(SpriteBatch* sb) {
 		icon->Draw(sb);
 	}
 
+	for(auto& label : _spawnedLabels) {
+		label->Draw(sb);
+	}
+
+	for(auto& textInput : _spawnedTextInputs) {
+		textInput->Draw(sb);
+	}
+
+	for(auto& button : _spawnedButtons) {
+		button->Draw(sb);
+	}
 }

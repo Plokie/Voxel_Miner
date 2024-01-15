@@ -12,6 +12,10 @@ enum DAMAGE_STATE : unsigned char { DS_LAVA, DS_COUNT };
 
 class Inventory;
 
+enum GAMEMODE {
+	GM_SURVIVAL,
+	GM_CREATIVE
+};
 
 class PlayerData : public Object3D {
 private:
@@ -33,6 +37,9 @@ private:
 	// Data to-be serialized:
 	Vector3 _storedPosition; // Not necessarily the actual current position, but the most recent stored position
 	Inventory* _pInventory;
+	string _name;
+	GAMEMODE _gamemode = GM_SURVIVAL;
+	
 
 
 	// Update / mechanical stuff
@@ -88,6 +95,9 @@ public:
 	void AddOnSelectEvent(function<void(int)> func);*/
 
 
+	GAMEMODE GetGamemode() const { return _gamemode; }
+	void SetGamemode(GAMEMODE gm);
+
 
 	// Gonna be removing these later
 	void SetScore(int amt) { score = amt; InvokeOnScoreChange(); }
@@ -142,7 +152,8 @@ public:
 
 
 	// Only to be called if its the currently active player
-	void PlayerUpdate(const float dt);
+	//void PlayerUpdate(const float dt);
+	void Update(const float dt) override;
 
 	nlohmann::json Serialize();
 	void Deserialize(nlohmann::json json);

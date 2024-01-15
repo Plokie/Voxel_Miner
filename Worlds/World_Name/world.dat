@@ -16,6 +16,11 @@
       -1
     ],
     [
+      -1,
+      -1,
+      0
+    ],
+    [
       0,
       -1,
       0
@@ -29,6 +34,11 @@
       0,
       0,
       1
+    ],
+    [
+      2,
+      4,
+      3
     ]
   ],
   "chunksWithBlockData": [
@@ -40,6 +50,7 @@
   ],
   "playerData": [
     {
+      "gamemode": 1,
       "health": 20,
       "hunger": 20,
       "inventory": {
@@ -66,45 +77,17 @@
             "type": 0
           },
           {
-            "ID": 30,
-            "amount": 5,
-            "posX": 4,
-            "posY": 0,
-            "type": 0
-          },
-          {
-            "ID": 22,
-            "amount": 2,
-            "posX": 5,
-            "posY": 0,
-            "type": 0
-          },
-          {
-            "ID": 22,
-            "amount": 3,
-            "posX": 7,
-            "posY": 0,
-            "type": 0
-          },
-          {
             "ID": 15,
             "amount": 2,
-            "posX": 6,
-            "posY": 0,
-            "type": 1
-          },
-          {
-            "ID": 3,
-            "amount": 5,
-            "posX": 8,
-            "posY": 0,
-            "type": 1
-          },
-          {
-            "ID": 4,
-            "amount": 6,
-            "posX": 8,
+            "posX": 7,
             "posY": 1,
+            "type": 1
+          },
+          {
+            "ID": 19,
+            "amount": 37,
+            "posX": 8,
+            "posY": 0,
             "type": 1
           },
           {
@@ -122,8 +105,8 @@
             "type": 1
           },
           {
-            "ID": 19,
-            "amount": 48,
+            "ID": 4,
+            "amount": 43,
             "posX": 8,
             "posY": 3,
             "type": 1
@@ -131,18 +114,39 @@
           {
             "ID": 31,
             "amount": 2,
+            "posX": 4,
+            "posY": 1,
+            "type": 1
+          },
+          {
+            "ID": 3,
+            "amount": 5,
             "posX": 3,
             "posY": 0,
             "type": 1
+          },
+          {
+            "ID": 18,
+            "amount": 95,
+            "posX": 4,
+            "posY": 0,
+            "type": 1
+          },
+          {
+            "ID": 23,
+            "amount": 4,
+            "posX": 7,
+            "posY": 0,
+            "type": 0
           }
         ]
       },
       "position": [
-        -28.065505981445313,
-        2.5199999809265137,
-        37.12855911254883
+        -27.49949836730957,
+        4.519999980926514,
+        -24.870101928710938
       ],
-      "saturation": 10,
+      "saturation": 1,
       "score": 103
     }
   ],

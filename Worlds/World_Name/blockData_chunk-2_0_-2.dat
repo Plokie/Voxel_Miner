@@ -11,28 +11,28 @@
       "items": [
         {
           "ID": 1,
-          "amount": 56,
+          "amount": 51,
           "posX": 0,
           "posY": 0,
           "type": 0
         },
         {
-          "ID": 31,
-          "amount": 13,
+          "ID": 30,
+          "amount": 9,
           "posX": 1,
           "posY": 0,
-          "type": 1
+          "type": 0
         },
         {
-          "ID": 4,
-          "amount": 24,
+          "ID": 31,
+          "amount": 10,
           "posX": 2,
           "posY": 0,
-          "type": 1
+          "type": 0
         }
       ]
     },
-    "timer1": 32.89950180053711,
-    "timer2": 7.100008964538574
+    "timer1": 55.74915313720703,
+    "timer2": 7.1500091552734375
   }
 }

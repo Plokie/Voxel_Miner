@@ -59,7 +59,7 @@ TextInput* AddTextInput(Engine* engine, Scene* scene, const string& text, const 
 	txtIn->SetDimensions(Vector2(500.f, 50.f));
 	txtIn->SetPosition({ 0.f, y });
 	txtIn->SetPivot({ 0.5f, 0.5f });
-	txtIn->SetText(text);
+	txtIn->SetTemplateText(text);
 
 	txtIn->rect->SetColour(0.1f, 0.1f, 0.1f, 1.0f);
 	txtIn->label->SetColour(1.0f, 1.0f, 1.0f, 1.0f);
@@ -70,6 +70,10 @@ TextInput* AddTextInput(Engine* engine, Scene* scene, const string& text, const 
 }
 
 int parseSeedInput(const string& str) {
+	if(str == "") {
+		return rand() * ((rand() % 2) ? 1 : -1);
+	}
+
 	int returnValue = 0;
 	
 	for(auto it = str.rbegin(); it != str.rend(); it++) {
@@ -224,7 +228,7 @@ Controller input is also supported. In UI, Left click is Right Trigger, Right cl
 	titleNew->clearColor = { 0.2f, 0.2f, 0.2f, 1.f };
 
 	TextInput* worldNameInput = AddTextInput(engine, titleNew, "World Name", -150.f, "name");
-	TextInput* seedInput = AddTextInput(engine, titleNew, "1337", -50.f, "seed");
+	TextInput* seedInput = AddTextInput(engine, titleNew, "Seed", -50.f, "seed");
 
 	// Create world button
 	AddButton(engine, titleNew, "Create", 50.f, [worldNameInput, seedInput] {
