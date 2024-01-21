@@ -10,8 +10,8 @@
 
 // faster to load while debugging. plus debug builds are way slower
 #ifdef _DEBUG
-#define CHUNKLOAD_AREA_X 7
-#define CHUNKLOAD_AREA_Z 7
+#define CHUNKLOAD_AREA_X 5
+#define CHUNKLOAD_AREA_Z 5
 #else
 #define CHUNKLOAD_AREA_X 12
 #define CHUNKLOAD_AREA_Z 12

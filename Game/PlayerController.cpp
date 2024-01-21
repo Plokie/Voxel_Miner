@@ -434,27 +434,30 @@ void PlayerController::Update(float dTime)
 	
 
 //#ifdef _DEBUG
+	//Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
+	//Vector3Int footPos = camBlockPos - Vector3Int(0, 1, 0);
+	//Vector3Int chunkIndex = ChunkManager::ToChunkIndexPositionTuple(footPos.x, footPos.y, footPos.z);
+
+	//float temp = WorldGen::SampleTemperature(footPos.x, footPos.z);
+	//float moist = WorldGen::SampleMoisture(footPos.x, footPos.z);
+
+
+	// this debug info freezes release builds often
+	// 
+	//worldPosLabel->SetText(
+	//	footPos.ToString() + "\n"
+	//	+ chunkIndex.ToString() + "\n"
+	//	+ Vector3Int(FloorMod(camBlockPos.x, CHUNKSIZE_X), FloorMod(camBlockPos.y, CHUNKSIZE_Y), FloorMod(camBlockPos.z, CHUNKSIZE_Z)).ToString() + "\n"
+	//	+ to_string(chunkManager->GetBlockLightAtWorldPos(footPos)) + "\n"
+	//	+ to_string(chunkManager->GetSkyLightAtWorldPos(footPos)) + "\n"
+	//	+ "T: " + to_string(temp) + "\n"
+	//	+ "M: " + to_string(moist) + "\n"
+	//	+ "B: " + Biome::Get(temp, moist).name + "\n"
+	//);
+//#else
 	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
 	Vector3Int footPos = camBlockPos - Vector3Int(0, 1, 0);
-	Vector3Int chunkIndex = ChunkManager::ToChunkIndexPositionTuple(footPos.x, footPos.y, footPos.z);
-
-	float temp = WorldGen::SampleTemperature(footPos.x, footPos.z);
-	float moist = WorldGen::SampleMoisture(footPos.x, footPos.z);
-
-	worldPosLabel->SetText(
-		footPos.ToString() + "\n"
-		+ chunkIndex.ToString() + "\n"
-		+ Vector3Int(FloorMod(camBlockPos.x, CHUNKSIZE_X), FloorMod(camBlockPos.y, CHUNKSIZE_Y), FloorMod(camBlockPos.z, CHUNKSIZE_Z)).ToString() + "\n"
-		+ to_string(chunkManager->GetBlockLightAtWorldPos(footPos)) + "\n"
-		+ to_string(chunkManager->GetSkyLightAtWorldPos(footPos)) + "\n"
-		+ "T: " + to_string(temp) + "\n"
-		+ "M: " + to_string(moist) + "\n"
-		+ "B: " + Biome::Get(temp, moist).name + "\n"
-	);
-//#else
-//	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
-//	Vector3Int footPos = camBlockPos - Vector3Int(0, 1, 0);
-//	worldPosLabel->SetText(footPos.ToString());
+	worldPosLabel->SetText(footPos.ToString());
 //#endif
 
 	// KEEP AT END

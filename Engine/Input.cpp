@@ -274,7 +274,9 @@ void Input::EndUpdate(float dt) {
 		GetCursorPos(&cursorPos);
 		bool changed = false;
 
-		_Instance->virtualMouseDelta += Input::LeftAxis(0) * dt * 400.f;
+		//_Instance->virtualMouseDelta += Input::LeftAxis(0) * dt * 400.f;
+		//_Instance->virtualMouseDelta += Input::LeftAxis(0) * (1.f / dt) * 400.f;
+		//_Instance->virtualMouseDelta += Input::LeftAxis(0) * 400.f;
 		
 		if(_Instance->virtualMouseDelta.x > 1.f) {
 			cursorPos.x += 1;

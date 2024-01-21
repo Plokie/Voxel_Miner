@@ -222,9 +222,9 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 
 	if(vertSize > 0 && indSize > 0) {
 		//AcquireSRWLockExclusive(&modelsMutex);
-		models.push_back(Model::Create(Graphics::Get()->GetDevice()));
+		
 
-		Model* newModel = models[modelCount];
+		Model* newModel = Model::Create(Graphics::Get()->GetDevice());
 		newModel->SetTexture(0, "atlas");
 
 		newModel->SetPixelShader(0, "chunkpixelshader");
@@ -259,6 +259,7 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 		newMesh->LoadIndices(&indices[0], static_cast<int>(indices.size()));
 
 		newModel->SetMesh(newMesh);
+		models.push_back(newModel);
 		//ReleaseSRWLockExclusive(&modelsMutex);
 	}
 }
