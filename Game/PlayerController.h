@@ -54,4 +54,6 @@ class PlayerController : public Object3D {
 public:
 
 	const AABB& GetAABB() { return aabb; }
+
+	~PlayerController();
 };

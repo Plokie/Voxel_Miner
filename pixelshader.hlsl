@@ -1,6 +1,7 @@
 cbuffer cbuff : register(b0)
 {
     float alpha = 1.0f;
+    float2 uvOffset = float2(0.f, 0.f);
 }
 
 struct PS_INPUT
@@ -17,7 +18,7 @@ SamplerState samplerState : SAMPLER : register(s0);
 
 float4 main(PS_INPUT input) : SV_TARGET
 {
-    float4 pixCol = tex.Sample(samplerState, input.texCoord + input.texOffset);
+    float4 pixCol = tex.Sample(samplerState, input.texCoord + input.texOffset + uvOffset);
     if (pixCol.a < 0.5f)
         discard;
     

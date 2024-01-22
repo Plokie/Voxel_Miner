@@ -16,9 +16,10 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worl
 	if(mesh == nullptr) return;
 	
 	CB_VS_vertexshader mxData;
-	CB_VS_pixelshader alphaData;
+	CB_VS_pixelshader pxData;
 
-	alphaData.alpha = alpha;
+	pxData.alpha = alpha;
+	pxData.uvOffset = uvOffset;
 
 	mxData.mx = modelMx * worldMx;
 	mxData.modelMx = modelMx;
@@ -36,7 +37,7 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worl
 	deviceCtx->VSSetConstantBuffers(0, 1, &constantBuffer);
 
 	deviceCtx->Map(alphaBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-	CopyMemory(map.pData, &alphaData, sizeof(CB_VS_pixelshader));
+	CopyMemory(map.pData, &pxData, sizeof(CB_VS_pixelshader));
 	deviceCtx->Unmap(alphaBuffer, 0);
 	deviceCtx->PSSetConstantBuffers(0, 1, &alphaBuffer);
 

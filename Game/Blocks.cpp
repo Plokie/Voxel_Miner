@@ -313,6 +313,13 @@ const int Block::GetBottUVidy() const {
 	return this->bottUvIdY;
 }
 
+const Vector2 Block::GetBottomUV() const
+{
+	Vector2 uv = { (float)this->bottUvIdX, (float)this->bottUvIdY };
+	uv /= ATLAS_TILE_SIZE;
+	return uv;
+}
+
 const Block& BlockDef::GetDef(BlockID id)
 {
 	if(def.count(id)) {

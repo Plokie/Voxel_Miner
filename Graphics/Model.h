@@ -25,6 +25,7 @@ struct CB_VS_vertexshader {
 
 struct CB_VS_pixelshader {
 	float alpha = 1.0f;
+	Vector2 uvOffset = { 0.f, 0.f };
 };
 
 /// <summary>
@@ -69,9 +70,12 @@ private:
 	VertexShader* vertexShader = nullptr;
 	PixelShader* pixelShader = nullptr;
 
+	Vector2 uvOffset = { 0.f, 0.f };
+
 public:
 	//SRWLOCK gAcquireMutex;
 	//SIZE_T indexCount = 0;
+	//todo: materials
 	float alpha = 1.0f;
 
 	Model* Init(ID3D11Device* device);
@@ -81,6 +85,10 @@ public:
 	}
 	void SetTransparent(bool _IsTransparent) {
 		this->alpha = _IsTransparent ? 0.99f : 1.0f;
+	}
+
+	void SetUVOffset(const Vector2& uvOffset) {
+		this->uvOffset = uvOffset;
 	}
 
 	static Model* Create(ID3D11Device* device) {

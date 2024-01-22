@@ -4,6 +4,7 @@
 #include <string>
 #include "ItemTypes.h"
 #include "ItemCategory.h"
+#include "../Engine/MathUtil.h"
 
 using namespace std;
 
@@ -148,6 +149,8 @@ public:
 	const int GetSideUVidy() const;
 	const int GetBottUVidx() const;
 	const int GetBottUVidy() const;	
+
+	const Vector2 GetBottomUV() const;
 };
 
 class BlockDef {

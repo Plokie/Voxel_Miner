@@ -1,6 +1,7 @@
 cbuffer cbuff : register(b0)
 {
     float alpha = 1.0f;
+    float2 uvOffset = float2(0.f, 0.f);
 }
 
 struct PS_INPUT

@@ -48,7 +48,7 @@ void ChunkDatabase::SaveChunkIntoFile(const Vector3Int& chunkIndex, BlockID chun
 			for(int y = 0; y < CHUNKSIZE_Y; y++) {
 				for(int z = 0; z < CHUNKSIZE_Z; z++) {
 					if(chunkDataArray[x][y][z] == ERR) {
-						assert(false);
+						//assert(false);
 					}
 
 					fileStream << (char)chunkDataArray[x][y][z];
@@ -99,7 +99,7 @@ void ChunkDatabase::LoadChunkFromFile(const Vector3Int& chunkIndex, BlockID chun
 		for(int y = 0; y < CHUNKSIZE_Y; y++) {
 			for(int z = 0; z < CHUNKSIZE_Z; z++) {
 				if(chunk1D[index] == ERR) {
-					assert(false);
+					//assert(false);
 				}
 
 				chunkDataArray[x][y][z] = chunk1D[index];
@@ -297,7 +297,7 @@ void ChunkDatabase::Update(float dt)
 
 	if(autosaveTimer > AUTOSAVE_TIME) {
 		autosaveTimer = 0.f;
-		Close(); // Doesnt actually close but DOES save the world data into the files
+		Autosave();
 	}
 }
 
@@ -354,12 +354,23 @@ ChunkDatabase::ChunkDatabase()
 
 ChunkDatabase::~ChunkDatabase()
 {
-	
 }
 
 void ChunkDatabase::Close() {
 	SaveChunks();
 	SaveWorldData();
+}
+
+void ChunkDatabase::Autosave()
+{
+	SaveChunks();
+	SaveWorldData();
+}
+
+void ChunkDatabase::Release()
+{
+	delete _Instance;
+	_Instance = nullptr;
 }
 
 ChunkDatabase* ChunkDatabase::Get()

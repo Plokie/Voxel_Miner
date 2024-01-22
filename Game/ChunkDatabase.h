@@ -60,6 +60,8 @@ public:
 	~ChunkDatabase();
 
 	void Close();
+	void Autosave();
+	void Release();
 
 	static ChunkDatabase* Get();
 

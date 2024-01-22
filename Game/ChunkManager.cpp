@@ -54,9 +54,6 @@ Vector3Int ChunkManager::ChunkFloorPosForPositionCalculation(Vector3 worldPositi
 }
 
 void ChunkManager::Update(float dTime) {
-	if(Input::IsKeyPressed('I')) {
-		ChunkDatabase::Get()->Close(); // doenst actually close but saves loaded chunk data to disk
-	}
 
 	ChunkDatabase::Get()->Update(dTime); // Handles autosaving
 }
@@ -238,6 +235,8 @@ ChunkManager::~ChunkManager()
 	delete threadPool;
 
 	if(lighting) delete lighting;
+
+	ChunkDatabase::Get()->Release();
 }
 
 tuple<int, int, int> ChunkManager::ToChunkIndexPositionTuple(const int& x, const int& y, const int& z)

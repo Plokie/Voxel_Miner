@@ -25,7 +25,9 @@ void TextInput::HandleKey(unsigned short key)
 	}
 	else {
 		char ch = static_cast<char>(key);
-		label->SetText(label->GetText() + ch);
+		if(label->GetSpriteFont()->ContainsCharacter(ch)) {
+			label->SetText(label->GetText() + ch);
+		}
 	}
 
 	InvokeEvents();

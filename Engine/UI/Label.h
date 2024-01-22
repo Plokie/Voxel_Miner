@@ -20,6 +20,7 @@ public:
 	const string& GetText();
 
 	void SetFont(const string& font);
+	const SpriteFont* GetSpriteFont() { return spriteFont; }
 
 	//Label(const wstring& fontPath, const string& text, const XMFLOAT4& = XMFLOAT4(1.f, 1.f, 1.f, 1.f));
 	Label(const string& font, const XMFLOAT4& = XMFLOAT4(1.f, 1.f, 1.f, 1.f));

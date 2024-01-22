@@ -14,6 +14,7 @@
   "chunksWithBlockData": [],
   "playerData": [
     {
+      "gamemode": 0,
       "health": 20,
       "hunger": 20,
       "inventory": {

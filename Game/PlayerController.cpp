@@ -57,9 +57,9 @@ void PlayerController::Start()
 
 	Input::SetVirtualMouse(false);
 
-	insideBlock = engine->GetCurrentScene()->CreateObject3D(new Object3D(), "insideBlock", "inverse-cube", "err");
+	insideBlock = engine->GetCurrentScene()->CreateObject3D(new Object3D(), "insideBlock", "inverse-cube", "atlas");
+	insideBlock->models[0]->SetTransparent(true);
 	insideBlock->transform.position = Vector3(0.f, 0.f, 0.f);
-
 	//engine->GetCurrentScene()->CreateObject3D(new Object3D(), "a_debug_look", "cube", "err");
 	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->models[0]->SetTransparent(true);
 	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.scale = Vector3(0.001f, 0.001f, 0.001f);
@@ -105,11 +105,6 @@ vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager, vector
 
 	return ret;
 }
-
-//vector<AABB> PlayerController::GetHarmfulAABBs(ChunkManager* chunkManager) {
-//	vector<AABB>
-//}
-
 
 void PlayerController::Update(float dTime)
 {
@@ -217,12 +212,6 @@ void PlayerController::Update(float dTime)
 			_pCurrentPlayerData->SetHungerFlag(HDS_WALK, false);
 			_pCurrentPlayerData->SetHungerFlag(HDS_SPRINT, false);
 		}
-		//velocity.x = moveAxis.x;
-		//velocity.z = moveAxis.z;
-
-		/*if() {
-			transform.position += Vector3(0, movementSpeed, 0);
-		}*/
 
 		XMFLOAT2 mouseDelta = Input::MouseDelta();
 		float mouseSens = 0.0025f; // The polling of the mouse is already tied to the framerate, so no dt
@@ -241,7 +230,7 @@ void PlayerController::Update(float dTime)
 		transform.rotation += Vector3(lookInput.y, lookInput.x, 0.f);
 	}
 
-	if(Input::IsKeyPressed(VK_ESCAPE) || Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_START)) {
+	if((Input::IsKeyPressed(VK_ESCAPE) || Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_START)) && Input::IsMouseLocked()) {
 		Input::SetMouseLocked(!Input::IsMouseLocked());
 
 		if(!Input::IsMouseLocked()) {
@@ -490,6 +479,29 @@ void PlayerController::Update(float dTime)
 
 	// KEEP AT END
 	camera->transform = transform;
-	//insideBlock->transform = transform;
+	insideBlock->transform = transform;
+
+	BlockID currentHeadBlockID = chunkManager->GetBlockAtWorldPos(camBlockPos);
+	Block currentHeadBlock = BlockDef::GetDef(currentHeadBlockID);
+	if(currentHeadBlockID==AIR || (freeCam && currentHeadBlock.IsSolid())) {
+		insideBlock->doRender = false;
+	}
+	else {
+		insideBlock->doRender = true;
+		Vector2 uv = currentHeadBlock.GetBottomUV();
+		insideBlock->models[0]->SetUVOffset(uv);
+		insideBlock->transform.scale = Vector3(0.25f, 0.25f, 0.25f);
+		insideBlock->transform.rotation.z += 0.01f;
+	}
+
+}
+
+PlayerController::~PlayerController()
+{
+	Object3D::~Object3D();
+
+	Transform& camTransform = Graphics::Get()->camera.transform;
+	camTransform.position = Vector3(0.f, 0.f, 0.f);
+	camTransform.rotation = Vector3(0.f, 0.f, 0.f);
 }
 

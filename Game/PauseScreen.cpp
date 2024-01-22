@@ -33,15 +33,17 @@ void PauseScreen::Setup(Engine* engine)
 		Close();
 		Input::SetMouseLocked(true);
 	});
-	AddButton2(engine, pauseScene, "Exit game", 50.f, [engine] {
-		//engine->GetCurrentScene()->
-		/*ChunkDatabase::Get()->Close();
+	AddButton2(engine, pauseScene, "Exit to menu", 50.f, [engine] {
+		//ChunkDatabase::Get()->Close();
 		engine->SetScene("titleMain");
 		Graphics::Get()->camera.transform.position = Vector3::Zero();
-		engine->GetScene("game")->Clear();
-		GameScene::Setup(engine, engine->GetScene("game"));*/
-		ChunkDatabase::Get()->Close();
-		Engine::StopGame();
+		engine->GetScene("game")->Clear(); // deleting chunkmanager closes the chunkdatabase
+		GameScene::Setup(engine, engine->GetScene("game"));
+
+
+
+		//ChunkDatabase::Get()->Close();
+		//Engine::StopGame();
 	});
 
 	engine->AddScene(pauseScene, "pause");
