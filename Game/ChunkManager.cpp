@@ -460,15 +460,17 @@ int ChunkManager::GetSkyLightAtWorldPos(const int& x, const int& y, const int& z
 {
 	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 
+	unique_lock<std::mutex> lock(chunkMapMutex);
 	// If chunk is loaded
-	if(chunkMap.find(chunkIndex) != chunkMap.end()) {
+	auto findIt = chunkMap.find(chunkIndex);
+	if(findIt != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
-		Chunk* chunk = chunkMap[chunkIndex];
+		Chunk* chunk = findIt->second;
 		if(chunk == nullptr || chunk->pendingDeletion) return -1;
 
 		int light = 0;
-		{	unique_lock<std::mutex> lock(chunk->gAccessMutex);
+		{	//unique_lock<std::mutex> lock(chunk->gAccessMutex);
 		light = chunk->GetSkyLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z);
 		}
 		return light;
@@ -483,16 +485,19 @@ int ChunkManager::GetSkyLightAtWorldPos(const Vector3Int& p)
 
 void ChunkManager::SetSkyLightAtWorldPos(const int& x, const int& y, const int& z, const int& val, bool update) {
 	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
-	if(chunkMap.find(chunkIndex) != chunkMap.end()) {
+	
+	unique_lock<std::mutex> lock(chunkMapMutex);
+	auto findIt = chunkMap.find(chunkIndex);
+	if(findIt != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
-		Chunk* chunk = chunkMap[chunkIndex];
+		Chunk* chunk = findIt->second;
 		//if(Engine::Get()->IsObjDeleted(chunk)) return;
 
 		if(chunk == nullptr || chunk->pendingDeletion) return;
 
 		//AcquireSRWLockExclusive(&chunk->gAccessMutex);
-		{	unique_lock<std::mutex> lock(chunk->gAccessMutex);
+		{	//unique_lock<std::mutex> lock(chunk->gAccessMutex);
 			chunk->SetSkyLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z, val);
 		}
 		//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
@@ -507,6 +512,7 @@ void ChunkManager::SetSkyLightAtWorldPos(const Vector3Int& p, const int& val, bo
 short ChunkManager::GetRawLightAtWorldPos(const int& x, const int& y, const int& z)
 {
 	tuple<int, int, int> chunkIndex = ToChunkIndexPositionTuple(x, y, z);
+	unique_lock<std::mutex> lock(chunkMapMutex);
 	auto it = chunkMap.find(chunkIndex);
 	if(it != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
