@@ -16,7 +16,7 @@ protected:
 	PlayerController* playerController = nullptr;
 	float lifetimeCooldown = 0.2f;
 
-	vector<AABB> GetNearbyAABBs(ChunkManager* chunkManager);
+	vector<AABB> GetNearbyAABBs(ChunkManager* chunkManager, vector<AABB>* liquidAABBs);
 	void RecalculateGroundCheck();
 public:
 

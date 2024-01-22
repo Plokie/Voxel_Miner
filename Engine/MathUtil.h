@@ -20,6 +20,10 @@ inline float frac(float f) {
 	return ff;
 }
 
+inline float lerp(float a, float b, float t) {
+	return a + t * (b - a);
+}
+
 struct Vector3 {
 public:
 	float x=0, y=0, z=0;

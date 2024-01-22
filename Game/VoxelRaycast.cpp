@@ -45,7 +45,7 @@ bool VoxelRay::Cast(const VoxelRay* ray, ChunkManager* chunkManager, float max_d
 
 	while(true) {
 		BlockID currentBlock = chunkManager->GetBlockAtWorldPos(pos);
-		if(currentBlock != AIR) { // If hit a block that is solid
+		if(currentBlock != AIR && currentBlock != WATER) { // If hit a block that is solid
 			// set available output variables 
 			if(outPosition != nullptr) *outPosition = pos;
 			if(outBlock != nullptr) *outBlock = currentBlock;

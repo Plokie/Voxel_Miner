@@ -5,7 +5,7 @@
 
 #define AABB_RANGE Vector3Int(1,2,1)
 // Gets nearby Block AABBs
-vector<AABB> Entity::GetNearbyAABBs(ChunkManager* chunkManager) {
+vector<AABB> Entity::GetNearbyAABBs(ChunkManager* chunkManager, vector<AABB>* liquidAABBs) {
 	vector<AABB> ret;
 
 	for(int z = -AABB_RANGE.z; z < AABB_RANGE.z + 1; z++) {
@@ -15,8 +15,14 @@ vector<AABB> Entity::GetNearbyAABBs(ChunkManager* chunkManager) {
 				Vector3Int playerBlockPos = Vector3Int::FloorToInt(transform.position);
 				Vector3Int blockPos = playerBlockPos + offset;
 				BlockID block = chunkManager->GetBlockAtWorldPos(blockPos);
+				AABB blockAABB = AABB(Vector3(static_cast<float>(blockPos.x), static_cast<float>(blockPos.y), static_cast<float>(blockPos.z)) + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
+
 				if(BlockDef::GetDef(block).IsSolid()) {
-					ret.push_back(AABB(Vector3(static_cast<float>(blockPos.x), static_cast<float>(blockPos.y), static_cast<float>(blockPos.z)) + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f)));
+					ret.push_back(blockAABB);
+				}
+
+				if(liquidAABBs && (block == WATER || block == LAVA)) {
+					liquidAABBs->push_back(blockAABB);
 				}
 			}
 		}
@@ -53,7 +59,16 @@ void Entity::Update(float dTime) {
 	if(lifetimeCooldown > 0.f)
 		lifetimeCooldown -= dTime;
 
-	vector<AABB> blocks = GetNearbyAABBs(chunkManager);
+	vector<AABB> liquidAABBs;
+	vector<AABB> blocks = GetNearbyAABBs(chunkManager, &liquidAABBs);
+
+	bool inLiquid = false;
+	for(const AABB& liquidAABB : liquidAABBs) {
+		if(aabb.Intersects(liquidAABB)) {
+			inLiquid = true;
+			break;
+		}
+	}
 
 	// Basic check if object is grounded
 	bool isGrounded = false;
@@ -73,6 +88,10 @@ void Entity::Update(float dTime) {
 	}
 	else {
 		velocity.y = -3.0f * dTime; //Small nudge to ground level, nothing noticable
+	}
+
+	if(inLiquid) {
+		velocity.y = 3.f;
 	}
 
 	transform.position += velocity * dTime;

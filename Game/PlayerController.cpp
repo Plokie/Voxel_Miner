@@ -57,6 +57,9 @@ void PlayerController::Start()
 
 	Input::SetVirtualMouse(false);
 
+	insideBlock = engine->GetCurrentScene()->CreateObject3D(new Object3D(), "insideBlock", "inverse-cube", "err");
+	insideBlock->transform.position = Vector3(0.f, 0.f, 0.f);
+
 	//engine->GetCurrentScene()->CreateObject3D(new Object3D(), "a_debug_look", "cube", "err");
 	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->models[0]->SetTransparent(true);
 	//engine->GetCurrentScene()->GetObject3D("a_debug_look")->transform.scale = Vector3(0.001f, 0.001f, 0.001f);
@@ -92,6 +95,10 @@ vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager, vector
 				if(outDamageAABBs && block == LAVA) {
 					outDamageAABBs->push_back(blockAABB);
 				}
+
+				if(outLiquidAABBs && (block == WATER || block == LAVA)) {
+					outLiquidAABBs->push_back(blockAABB);
+				}
 			}
 		}
 	}
@@ -110,10 +117,12 @@ void PlayerController::Update(float dTime)
 	timeSinceLastJump += dTime;
 	if(Input::IsKeyPressed(VK_SPACE) || Input::IsPadButtonPressed(0, XINPUT_GAMEPAD_A)) {
 		
-		if(timeSinceLastJump <= .5f) {
+		if(timeSinceLastJump <= .3f) {
 			didDoubleTapJump = true;
 		}
-		timeSinceLastJump = 0.f;
+		else {
+			timeSinceLastJump = 0.f;
+		}
 	}
 
 	Inventory* inv = _pCurrentPlayerData->GetInventory();
@@ -252,7 +261,8 @@ void PlayerController::Update(float dTime)
 	if(!freeCam) {
 		// GRAVITY PHYSICS
 		vector<AABB> damageAABBs;
-		vector<AABB> blocks = GetNearbyAABBs(chunkManager, &damageAABBs);
+		vector<AABB> liquidAABBs;
+		vector<AABB> blocks = GetNearbyAABBs(chunkManager, &damageAABBs, &liquidAABBs);
 
 		bool takingDamage = false;
 		for(const AABB& damageAABB : damageAABBs) {
@@ -263,6 +273,13 @@ void PlayerController::Update(float dTime)
 		}
 		_pCurrentPlayerData->SetDamageFlag(DS_LAVA, takingDamage);
 		
+		bool inLiquid = false;
+		for(const AABB& liquidAABB : liquidAABBs) {
+			if(aabb.Intersects(liquidAABB)) {
+				inLiquid = true;
+				break;
+			}
+		}
 
 		bool isGrounded = false;
 		for(const AABB& blockAABB : blocks) {
@@ -275,8 +292,10 @@ void PlayerController::Update(float dTime)
 		}
 
 		if(!isGrounded) {
-			velocity.y += gravity * dTime;
-			velocity.y = max(velocity.y, terminalVelocity);
+			velocity.y += gravity * dTime * ((inLiquid)?0.2f:1.0f);
+			// transition between terminal velocities depending on inLiquid
+			currentTerminalVelocity = lerp(currentTerminalVelocity, inLiquid ? liquidTerminalVelocity : terminalVelocity, dTime * 13.5f);
+			velocity.y = max(velocity.y, currentTerminalVelocity);
 		}
 		else {
 			if(velocity.y < -20.f && !_pCurrentPlayerData->IsCreative()) {
@@ -285,10 +304,19 @@ void PlayerController::Update(float dTime)
 			}
 
 			velocity.y = -3.0f * dTime; //Small nudge to ground level, nothing noticable
+			if(!inLiquid) {
+				if((Input::IsKeyHeld(VK_SPACE) || Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_A)) && Input::IsMouseLocked())
+				{
+					_pCurrentPlayerData->DecrementHungerFlag(HDS_JUMP);
+					velocity.y = jumpVelocity;
+				}
+			}
+		}
+
+		if(inLiquid) {
 			if((Input::IsKeyHeld(VK_SPACE) || Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_A)) && Input::IsMouseLocked())
 			{
-				_pCurrentPlayerData->DecrementHungerFlag(HDS_JUMP);
-				velocity.y = jumpVelocity;
+				velocity.y = 3.0f;
 			}
 		}
 
@@ -462,5 +490,6 @@ void PlayerController::Update(float dTime)
 
 	// KEEP AT END
 	camera->transform = transform;
+	//insideBlock->transform = transform;
 }
 

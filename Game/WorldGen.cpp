@@ -240,7 +240,7 @@ inline float smoothstep(float edge0, float edge1, float x) {
 	return x * x * (3.0f - 2.0f * x);
 }
 
-inline float lerp(float t, float a, float b) {
+inline float lerptab(float t, float a, float b) {
 	return a + t * (b - a);
 }
 
@@ -264,13 +264,13 @@ float WorldGen::SampleWorldHeight(const int& x, const int& z)
 	mountains = clamp(smoothstep(0.5f, 1.f, mountains), 0.f, 1.f); // Smoothstep and clamp to reduce spots
 
 	// Since increasing the inital v value of shard_noise offsets the base height, we need to account for that here
-	float mountainHeightOffset = lerp(mountains, 0.f, 22.f);
+	float mountainHeightOffset = lerptab(mountains, 0.f, 22.f);
 	// Sample raw height before offset base height
 	float rawMountainSample = DeNormalizeNoise(layered_shard_noise(samp, _Instance->noiseSampler_HeightVal0, _Instance->noiseSampler_HeightVal1, 1.f, 4.f, 5));
 	// Clamp height and then offset by base height
 	float mountainHeight = (clamp(rawMountainSample, 0, 3.f) * 30.f) - mountainHeightOffset;
 
-	return lerp(mountains, basicHeight, mountainHeight);
+	return lerptab(mountains, basicHeight, mountainHeight);
 #endif
 }
 
