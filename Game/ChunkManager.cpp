@@ -302,7 +302,7 @@ BlockID ChunkManager::GetBlockAtWorldPos(const Vector3Int& v) {
 void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, const BlockID& id) {
 	Vector3Int chunkIndex = ToChunkIndexPositionTuple(x, y, z);
 
-	unique_lock<std::mutex> lock(chunkMapMutex);
+	//unique_lock<std::mutex> lock(chunkMapMutex);
 
 	auto findIt = chunkMap.find(chunkIndex);
 	if(findIt != chunkMap.end()) {
@@ -424,9 +424,9 @@ int ChunkManager::GetBlockLightAtWorldPos(const int& x, const int& y, const int&
 		if(chunk == nullptr || chunk->pendingDeletion) return -1;
 		//AcquireSRWLockExclusive(&chunk->gAccessMutex);
 		int light = 0;
-		{	unique_lock<std::mutex> lock(chunk->gAccessMutex);
+		//{	unique_lock<std::mutex> lock(chunk->gAccessMutex);
 		light = chunk->GetBlockLight(localVoxelPos.x, localVoxelPos.y, localVoxelPos.z);
-		}
+		//}
 		//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
 
 

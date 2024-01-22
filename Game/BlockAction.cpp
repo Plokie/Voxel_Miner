@@ -109,7 +109,11 @@ void FurnaceUpdateFunction(BlockTickContext ctx) {
 
 			if(ctx.blockData->timer1 <= 0.f) {
 				// if coal has JUST ran out
+
+
 				ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, FURNACE);
+
+
 			}
 
 			if(hasInputItem && isInputItemValid) {
@@ -154,7 +158,11 @@ void FurnaceUpdateFunction(BlockTickContext ctx) {
 				if(ctx.blockData->blockInventory->GetItemAt(0, 0, &fuel)) {
 					if(fuel->Is(COAL)) { // check if coal is in input slot
 						ctx.blockData->timer1 = 80.f; // replenish fuel timer
+
+
 						ctx.chunkManager->SetBlockAtWorldPos(ctx.blockPosition, LIT_FURNACE);
+
+
 						ctx.blockData->blockInventory->SubItem(COAL);
 						//Reload icons
 						Engine::Get()->GetCurrentScene()->GetObject2D<InventoryUI>("invUI")->TableReload(ctx.blockPosition);
