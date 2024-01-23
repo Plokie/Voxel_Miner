@@ -359,10 +359,14 @@ void PlayerController::Update(float dTime)
 
 	Vector3Int lookHitPoint = Vector3Int(0, 0, 0);
 	Vector3Int lookHitNormal;
+
+	Vector3 lookHitPointf = Vector3((float)lookHitPoint.x, (float)lookHitPoint.y, (float)lookHitPoint.z);
+	Vector3 lookHitNormalf = Vector3((float)lookHitNormal.x, (float)lookHitNormal.y, (float)lookHitNormal.z);
+
 	BlockID lookHitBlock;
 	if(VoxelRay::Cast(&ray, chunkManager, 10.f, &lookHitPoint, &lookHitBlock, &lookHitNormal)) {
 		blockSelectRef->models[0]->alpha = 0.99f; // fails sometimes
-		blockSelectRef->transform.position = Vector3((float)lookHitPoint.x, (float)lookHitPoint.y, (float)lookHitPoint.z) + Vector3(0.5f, 0.5f, 0.5f);
+		blockSelectRef->transform.position = lookHitPointf + Vector3(0.5f, 0.5f, 0.5f);// +Vector3((float)lookHitNormal.x, (float)lookHitNormal.y, (float)lookHitNormal.z);
 
 
 		// INPUT MODIFY
@@ -418,7 +422,7 @@ void PlayerController::Update(float dTime)
 				else {
 					InventoryItem* invItem;
 					if(inv->GetHeldItem(&invItem) && invItem->type == InventoryItem::Type::BLOCK) {
-						AABB targetBlockAABB = AABB(lookHitPoint + lookHitNormal + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
+						AABB targetBlockAABB = AABB(lookHitPointf + lookHitNormalf + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
 						if(!targetBlockAABB.Intersects(aabb)) {
 							chunkManager->SetBlockAtWorldPos(lookHitPoint + lookHitNormal, (BlockID)invItem->ID);
 							//inv->SubItem((BlockID)invItem->ID);
