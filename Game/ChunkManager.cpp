@@ -105,12 +105,14 @@ void ChunkManager::Thread() {
 			while(!lightingPendingQueue.empty()) {
 				Chunk* chunk = lightingPendingQueue.front();
 
-				// do work here
+				if(chunk != nullptr) {
+					// do work here
 
-				chunk->currentGenerationPhase = MESH;
-				QueueChunkToGenerationPhase(chunk, MESH);
+					chunk->currentGenerationPhase = MESH;
+					QueueChunkToGenerationPhase(chunk, MESH);
 			
-				lightingPendingQueue.pop();
+					lightingPendingQueue.pop();
+				}
 			}
 		}
 

@@ -57,7 +57,7 @@ map<BiomeID, Biome> Biome::def = {
 		TAIGA_GRASS,
 		DIRT,
 		DIRT,
-		STONE,
+		BLACKSTONE,
 
 		TAIGA_GRASS,
 		DIRT,
