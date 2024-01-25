@@ -121,6 +121,7 @@ nlohmann::json PlayerData::Serialize()
 	json["hunger"] = hunger;
 	json["saturation"] = saturation;
 	json["gamemode"] = _gamemode;
+	json["oxygen"] = oxygen;
 	
 	if(_pInventory) {
 		json["inventory"] = _pInventory->Serialize();
@@ -151,6 +152,9 @@ void PlayerData::Deserialize(nlohmann::json json) {
 	
 	if(json.find("gamemode") != json.end())
 		_gamemode = (GAMEMODE)json["gamemode"];
+	
+	if(json.find("oxygen") != json.end())
+		oxygen = json["oxygen"];
 
 	if(json.find("inventory") != json.end()) {
 		//if(json["inventory"] != 0) {
