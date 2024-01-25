@@ -418,7 +418,7 @@ void PlayerController::Update(float dTime)
 					InventoryItem* invItem;
 					if(inv->GetHeldItem(&invItem) && invItem->type == InventoryItem::Type::BLOCK) {
 						AABB targetBlockAABB = AABB(lookHitPointf + lookHitNormalf + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
-						if(!targetBlockAABB.Intersects(aabb)) {
+						if(!targetBlockAABB.Intersects(aabb) || freeCam) {
 							chunkManager->SetBlockAtWorldPos(lookHitPoint + lookHitNormal, (BlockID)invItem->ID);
 							//inv->SubItem((BlockID)invItem->ID);
 							/*invItem->amount -= 1;
