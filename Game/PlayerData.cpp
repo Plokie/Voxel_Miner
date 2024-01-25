@@ -85,9 +85,17 @@ void PlayerData::Update(const float dt) {
 				break;
 			}
 		}
+		if(oxygen <= 0) isDamaging = true;
 
 		if(isDamaging) {
 			ChangeHealth(-2);
+		}
+
+		if(isSuffocating) {
+			ChangeOxygen(-1);
+		}
+		else {
+			ChangeOxygen(2);
 		}
 
 		if(health < HEALTH_MAX && saturation > 0) {

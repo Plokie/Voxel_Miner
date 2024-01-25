@@ -1,0 +1,72 @@
+{
+  "chunkHash": [
+    [
+      0,
+      0,
+      -1
+    ]
+  ],
+  "chunksWithBlockData": [],
+  "playerData": [
+    {
+      "gamemode": 0,
+      "health": 20,
+      "hunger": 20,
+      "inventory": {
+        "items": [
+          {
+            "ID": 9,
+            "amount": 1,
+            "posX": 0,
+            "posY": 0,
+            "type": 0
+          },
+          {
+            "ID": 13,
+            "amount": 1,
+            "posX": 1,
+            "posY": 0,
+            "type": 0
+          },
+          {
+            "ID": 17,
+            "amount": 1,
+            "posX": 2,
+            "posY": 0,
+            "type": 0
+          },
+          {
+            "ID": 42,
+            "amount": 5,
+            "posX": 3,
+            "posY": 0,
+            "type": 1
+          },
+          {
+            "ID": 30,
+            "amount": 4,
+            "posX": 4,
+            "posY": 0,
+            "type": 0
+          },
+          {
+            "ID": 22,
+            "amount": 4,
+            "posX": 5,
+            "posY": 0,
+            "type": 0
+          }
+        ]
+      },
+      "position": [
+        7.340872764587402,
+        1.5199999809265137,
+        -19.197452545166016
+      ],
+      "saturation": 1,
+      "score": 0
+    }
+  ],
+  "seed": 25475,
+  "worldName": "test"
+}

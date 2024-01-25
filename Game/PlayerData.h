@@ -9,6 +9,7 @@ enum DAMAGE_STATE : unsigned char { DS_LAVA, DS_COUNT };
 
 #define HEALTH_MAX 20
 #define HUNGER_MAX 20
+#define OXYGEN_MAX 20
 
 class Inventory;
 
@@ -39,8 +40,8 @@ private:
 	Inventory* _pInventory;
 	string _name;
 	GAMEMODE _gamemode = GM_SURVIVAL;
-	
-	
+
+
 
 	// Update / mechanical stuff
 	vector<function<void()>> _onDeathEvents;
@@ -71,6 +72,14 @@ private:
 		}
 	}
 
+	int oxygen = OXYGEN_MAX;
+	vector<function<void(int)>> _onOxygenChangeEvents;
+	void InvokeOnOxygenChange() {
+		for(auto& func : _onOxygenChangeEvents) {
+			func(oxygen);
+		}
+	}
+
 
 	int score = 0; // Gonna remove this later, just need it for competencies
 	vector<function<void(int)>> _onScoreChangeEvents;
@@ -91,6 +100,7 @@ private:
 	//void InvokeOnItemSelect();
 
 public:
+	bool isSuffocating = false;
 	/*void AddOnChangeEvent(function<void()> func);
 	void AddOnSelectEvent(function<void(int)> func);*/
 
@@ -130,6 +140,17 @@ public:
 	}
 	void AddOnHungerChangeEvent(function<void(int)> func) {
 		_onHungerChangeEvents.emplace_back(func);
+	}
+
+	void SetOxygen(int amt) { oxygen = amt; InvokeOnOxygenChange(); }
+	const int GetOxygen() const { return oxygen; }
+	void ChangeOxygen(int amt) {
+		oxygen += amt;
+		oxygen = max(0, min(oxygen, OXYGEN_MAX));
+		InvokeOnOxygenChange();
+	}
+	void AddOnOxygenChangeEvent(function<void(int)> func) {
+		_onOxygenChangeEvents.emplace_back(func);
 	}
 
 	void SetHungerFlag(HUNGER_DECREMENT_STATE flag, bool state) { _hungerDecrementStates[flag] = state; }

@@ -70,7 +70,7 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 	healthBar->SetPosition(-10.f, 10.f);
 	healthBar->SetProgressCol({ 245.f/255.f, 66.f/255.f, 90.f/255.f, 1.f });
 	healthBar->SetDirection(RIGHT_TO_LEFT);
-	_pPlayerData->AddOnHealthChangeEvent([healthBar](int health) { //health out of 100
+	_pPlayerData->AddOnHealthChangeEvent([healthBar](int health) { //health out of 20
 		healthBar->SetValue(health / (float)HEALTH_MAX);
 	});
 
@@ -88,7 +88,7 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 	hungerBar->SetPosition(-10.f, 50.f);
 	hungerBar->SetProgressCol({ 143.f/255.f, 87.f/255.f, 24.f/255.f, 1.f });
 	hungerBar->SetDirection(RIGHT_TO_LEFT);
-	_pPlayerData->AddOnHungerChangeEvent([hungerBar](int hunger) { //hunger out of 100
+	_pPlayerData->AddOnHungerChangeEvent([hungerBar](int hunger) { //hunger out of 20
 		hungerBar->SetValue(hunger / (float)HUNGER_MAX);
 	});
 
@@ -98,6 +98,32 @@ InventoryUI::InventoryUI(Engine* engine, Scene* gameScene) {
 	hungerBarOverlay->SetDimensions({ 340.f, 30.f });
 	hungerBarOverlay->SetDepth(1.f);
 	hungerBarOverlay->SetParent(hungerBar);
+
+	ProgressBar* oxygenBar = (ProgressBar*)gameScene->CreateObject2D(new ProgressBar(), "oxygenBar");
+	oxygenBar->SetAnchor({ 1.f, 0.f });
+	oxygenBar->SetPivot({ 1.f, 0.f });
+	oxygenBar->SetDimensions({ 340.f, 30.f });
+	oxygenBar->SetPosition(-10.f, 90.f);
+	oxygenBar->SetProgressCol({ 54.f / 255.f, 151.f / 255.f, 255.f / 255.f, 1.f });
+	oxygenBar->SetDirection(RIGHT_TO_LEFT);
+	_pPlayerData->AddOnOxygenChangeEvent([oxygenBar](int oxy) { //oxy out of 20
+		oxygenBar->SetValue(oxy / (float)OXYGEN_MAX);
+
+		if(oxy == OXYGEN_MAX) {
+			oxygenBar->SetEnabled(false);
+		}
+		else {
+			oxygenBar->SetEnabled(true);
+		}
+	});
+	oxygenBar->SetEnabled(false);
+
+	UIRect* oxygenBarOverlay = (UIRect*)gameScene->CreateObject2D(new UIRect("bar-split"), "oxygenBarOverlay");
+	oxygenBarOverlay->SetAnchor(0.f, 0.f);
+	oxygenBarOverlay->SetPivot(0.f, 0.f);
+	oxygenBarOverlay->SetDimensions({ 340.f, 30.f });
+	oxygenBarOverlay->SetDepth(1.f);
+	oxygenBarOverlay->SetParent(oxygenBar);
 
 
 

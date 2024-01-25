@@ -360,13 +360,13 @@ void PlayerController::Update(float dTime)
 	Vector3Int lookHitPoint = Vector3Int(0, 0, 0);
 	Vector3Int lookHitNormal;
 
-	Vector3 lookHitPointf = Vector3((float)lookHitPoint.x, (float)lookHitPoint.y, (float)lookHitPoint.z);
-	Vector3 lookHitNormalf = Vector3((float)lookHitNormal.x, (float)lookHitNormal.y, (float)lookHitNormal.z);
 
 	BlockID lookHitBlock;
 	if(VoxelRay::Cast(&ray, chunkManager, 10.f, &lookHitPoint, &lookHitBlock, &lookHitNormal)) {
-		blockSelectRef->models[0]->alpha = 0.99f; // fails sometimes
-		blockSelectRef->transform.position = lookHitPointf + Vector3(0.5f, 0.5f, 0.5f);// +Vector3((float)lookHitNormal.x, (float)lookHitNormal.y, (float)lookHitNormal.z);
+		Vector3 lookHitPointf = Vector3((float)lookHitPoint.x, (float)lookHitPoint.y, (float)lookHitPoint.z);
+		Vector3 lookHitNormalf = Vector3((float)lookHitNormal.x, (float)lookHitNormal.y, (float)lookHitNormal.z);
+		blockSelectRef->models[0]->alpha = 0.99f; // fails sometimes?
+		blockSelectRef->transform.position = lookHitPointf +Vector3(0.5f, 0.5f, 0.5f);// +Vector3((float)lookHitNormal.x, (float)lookHitNormal.y, (float)lookHitNormal.z);
 
 
 		// INPUT MODIFY
@@ -390,9 +390,6 @@ void PlayerController::Update(float dTime)
 					if(blockDef.GetLootTableName() != "") {
 						const InventoryItem loot = LootTable::Choose(blockDef.GetLootTableName());
 
-
-						//inv->AddItem(loot.ID, loot.type, loot.amount);
-
 						InventoryItem* newDroppedItem = new InventoryItem(loot.type, loot.ID, -1, -1, loot.amount);
 
 						if(!_pCurrentPlayerData->IsCreative())
@@ -400,8 +397,6 @@ void PlayerController::Update(float dTime)
 					}
 					else 
 					{
-						//inv->AddItem(targetBlock);
-
 						InventoryItem* newDroppedItem = new InventoryItem(targetBlock, -1, -1, 1);
 
 						if(!_pCurrentPlayerData->IsCreative())
@@ -489,6 +484,7 @@ void PlayerController::Update(float dTime)
 	Block currentHeadBlock = BlockDef::GetDef(currentHeadBlockID);
 	if(currentHeadBlockID==AIR || (freeCam && currentHeadBlock.IsSolid())) {
 		insideBlock->doRender = false;
+		_pCurrentPlayerData->isSuffocating = false;
 	}
 	else {
 		insideBlock->doRender = true;
@@ -496,6 +492,8 @@ void PlayerController::Update(float dTime)
 		insideBlock->models[0]->SetUVOffset(uv);
 		insideBlock->transform.scale = Vector3(0.25f, 0.25f, 0.25f);
 		insideBlock->transform.rotation.z += 0.01f;
+
+		_pCurrentPlayerData->isSuffocating = true;
 	}
 
 }
