@@ -223,6 +223,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio\Audio.cpp" />
+    <ClCompile Include="Audio\AudioFMOD.cpp" />
     <ClCompile Include="Game\CreativeUI.cpp" />
     <ClCompile Include="Game\BlockAction.cpp" />
     <ClCompile Include="Game\BlockData.cpp" />
@@ -287,6 +288,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio\Audio.h" />
+    <ClInclude Include="Audio\AudioFMOD.h" />
     <ClInclude Include="Game\CreativeUI.h" />
     <ClInclude Include="Game\BlockAction.h" />
     <ClInclude Include="Game\BlockData.h" />
@@ -355,6 +357,7 @@
     <ClInclude Include="Game\ItemTypes.h" />
     <ClInclude Include="Game\LootTables.h" />
     <ClInclude Include="Engine\UI\ProgressBar.h" />
+    <ClInclude Include="Audio\miniaudio.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="chunkpixelshader.hlsl">

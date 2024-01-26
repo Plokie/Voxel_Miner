@@ -1,0 +1,32 @@
+{
+  "[76,15,-67]": {
+    "inventory": {
+      "items": [
+        {
+          "ID": 1,
+          "amount": 17,
+          "posX": 0,
+          "posY": 0,
+          "type": 0
+        }
+      ]
+    },
+    "timer1": 0.0,
+    "timer2": 0.0
+  },
+  "[77,15,-67]": {
+    "inventory": {
+      "items": [
+        {
+          "ID": 54,
+          "amount": 10,
+          "posX": 4,
+          "posY": 1,
+          "type": 1
+        }
+      ]
+    },
+    "timer1": 0.0,
+    "timer2": 0.0
+  }
+}

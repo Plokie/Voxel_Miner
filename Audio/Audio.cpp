@@ -1,121 +1,103 @@
 #include "Audio.h"
 
-#include "../Engine/Transform.h"
-//#include <fmod_errors.h>
+bool ErrHandle(ma_result result, string message) {
+	if (result != MA_SUCCESS) {
 
-Audio* Audio::_Instance = nullptr;
+		// todo: print message here
+		assert(false);
+		return true;
+	}
 
-void Audio::LoadClip(const string& path, const string& name, bool is3d)
-{
-	//todo: make parameters
-	bool loop = false;
+	return false;
+}
 
-	assert(_Instance);
+void Audio::LoadClip(const string& path, const string& name, bool is3d) {
 
-	FMOD::Sound* newSound;
-	ERRCHECK(_Instance->fSystem->createSound(path.c_str(), is3d ? FMOD_3D : FMOD_2D, 0, &newSound));
-	ERRCHECK(newSound->setMode(loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF));
-	ERRCHECK(newSound->set3DMinMaxDistance(0.5f * DISTANCEFACTOR, 1000.0f * DISTANCEFACTOR));
-	_Instance->_audioClips[name] = newSound;	
 }
 
 void Audio::LoadClipStream(const string& path, const string& name, bool is3d) {
-	assert(_Instance);
-	bool loop = false;
-
-	FMOD::Sound* newSound;
-	ERRCHECK(_Instance->fSystem->createStream(path.c_str(), is3d?FMOD_3D:FMOD_2D, 0, &newSound));
-	ERRCHECK(newSound->setMode(loop ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF));
-	ERRCHECK(newSound->set3DMinMaxDistance(0.5f * DISTANCEFACTOR, 1000.0f * DISTANCEFACTOR));
-	_Instance->_audioClips[name] = newSound;
 }
 
-void Audio::Play(const string& name, Vector3 worldPos, float volume)
-{
-	assert(_Instance);
-	assert(_Instance->_audioClips[name]);
-
-	if(_Instance) {
-		FMOD::Channel* channel;
-		ERRCHECK(_Instance->fSystem->playSound(_Instance->_audioClips[name], _Instance->fChannelGroup, true, &channel));
-		channel->setVolume(volume);
-
-		FMOD_VECTOR position = { worldPos.x,worldPos.y,worldPos.z };
-		FMOD_VECTOR velocity = { 0.f,0.f,0.f };
-
-		ERRCHECK(channel->set3DAttributes(&position, &velocity));
-
-
-		ERRCHECK(channel->setPaused(false));
-	}
+void Audio::Play(const string& name, Vector3 worldPos, float volume) {
 }
 
-void Audio::Play(const string& name, float volume)
-{
-	assert(_Instance);
-	assert(_Instance->_audioClips[name]);
+void Audio::Play(const string& name, float volume) {
 
-	if(_Instance) {
-		FMOD::Channel* channel;
-		ERRCHECK(_Instance->fSystem->playSound(_Instance->_audioClips[name], _Instance->fChannelGroup, true, &channel));
-		channel->setVolume(volume);
-		ERRCHECK(channel->setPaused(false));
-	}
 }
 
-void Audio::Update()
-{
-	if(pListener != nullptr) {
-		FMOD_VECTOR position = { pListener->position.x, pListener->position.y, pListener->position.z };
+void Audio::Update() {
 
-		Vector3 v3fwd = pListener->forward();
-		FMOD_VECTOR forward = { v3fwd.x, v3fwd.y, v3fwd.z };
-
-		Vector3 v3up = pListener->up();
-		FMOD_VECTOR up = { v3up.x, v3up.y, v3up.z };
-
-		ERRCHECK(_Instance->fSystem->set3DListenerAttributes(0, &position, 0, &forward, &up));
-	}
-
-	fStudioSys->update();
 }
 
 void Audio::SetListener(const Transform* t) {
-	if(_Instance) {
-		_Instance->pListener = t;
-	}
 }
 
-void Audio::Init()
+void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 {
-	if(_Instance == nullptr) {
-		_Instance = this;
+	(void)pInput;
+	ma_engine_read_pcm_frames((ma_engine*)pDevice->pUserData, pOutput, frameCount, NULL);
+}
+
+void Audio::Init() {
+	ma_result result;
+	ma_uint32 playbackDeviceCount;
+
+	ma_context ctx;
+	result = ma_context_init(NULL, 0, NULL, &ctx);
+
+	// Get devices
+	ma_device_info* pDeviceInfo;
+	result = ma_context_get_devices(&ctx, &pDeviceInfo, &playbackDeviceCount, NULL, NULL);
+	// Get the default devices index
+	int chosenDeviceIndex = 0;
+	for (int di = 0; di< playbackDeviceCount; di++) {
+		if (&pDeviceInfo[di].isDefault) chosenDeviceIndex = di;
+	}
+	
+	ma_resource_manager_config resMgrConfig = ma_resource_manager_config_init();
+	resMgrConfig.decodedFormat = ma_format_f32;
+	resMgrConfig.decodedChannels = 0;
+	resMgrConfig.decodedSampleRate = 44100;
+	result = ma_resource_manager_init(&resMgrConfig, &resMgr);
+	if (ErrHandle(result, "Failed to init resource manager")) exit(777);
+
+	for (int i = 0; i < MAX_DEVICES; i++) {
+		ma_device_config deviceConfig = ma_device_config_init(ma_device_type_playback);
+		deviceConfig.playback.pDeviceID = &pDeviceInfo[chosenDeviceIndex].id;
+		deviceConfig.playback.format = resMgr.config.decodedFormat;
+		deviceConfig.playback.channels = 0;
+		deviceConfig.sampleRate = resMgr.config.decodedSampleRate;
+		deviceConfig.dataCallback = data_callback;
+		deviceConfig.pUserData = &engines[i];
+
+
+		ma_engine_config engineConfig = ma_engine_config_init();
+		engineConfig.pDevice = &devices[i];
+		engineConfig.pResourceManager = &resMgr;
+		engineConfig.noAutoStart = MA_TRUE;
+
+		ma_engine* currentEngine = &engines[i];
+
+		result = ma_engine_init(&engineConfig, currentEngine);
+
+		if(ErrHandle(result, "Failed to initialize engine " + i)) continue;
+
+		result = ma_engine_start(currentEngine);
+
+		if (ErrHandle(result, "Failed to start engine " + i)) continue;
+
+		//ma_sound_init_from_file()
+
 	}
 
-	ERRCHECK(FMOD::Studio::System::create(&fStudioSys));
-	ERRCHECK(fStudioSys->getCoreSystem(&fSystem));
-	ERRCHECK(fSystem->setSoftwareFormat(AUDIO_SAMPLE_RATE, FMOD_SPEAKERMODE_STEREO, 0));
-	ERRCHECK(fSystem->set3DSettings(1.0, DISTANCEFACTOR, 0.5f));
-	ERRCHECK(fStudioSys->initialize(MAX_AUDIO_CHANNELS, FMOD_STUDIO_INIT_NORMAL, FMOD_INIT_NORMAL, 0));
-	ERRCHECK(fSystem->getMasterChannelGroup(&fChannelGroup));
-
-	FMOD_VECTOR position = { 0.f,0.f,0.f };
-	FMOD_VECTOR forward = { 0.f,0.f,1.f };
-	FMOD_VECTOR up = { 0.f, 1.f, 0.f };
-	ERRCHECK(_Instance->fSystem->set3DListenerAttributes(0, &position, 0, &forward, &up));
+	//result = ma_engine_init(NULL, &engine);
 }
 
 Audio::Audio() {
 	Init();
 }
 
-Audio::~Audio()
-{
-	fSystem->close();
-	fStudioSys->release();
+Audio::~Audio() {
+
 }
 
-void ERRCHECK(FMOD_RESULT result)
-{
-	if(result != FMOD_OK) assert(false);
-}
