@@ -1,12 +1,23 @@
 {
   "chunkHash": [
     [
+      -14,
+      2,
+      -6
+    ],
+    [
       0,
       0,
       -1
     ]
   ],
-  "chunksWithBlockData": [],
+  "chunksWithBlockData": [
+    [
+      -14,
+      2,
+      -6
+    ]
+  ],
   "playerData": [
     {
       "gamemode": 0,
@@ -37,34 +48,28 @@
           },
           {
             "ID": 42,
-            "amount": 5,
+            "amount": 4,
             "posX": 3,
             "posY": 0,
             "type": 1
           },
           {
-            "ID": 30,
-            "amount": 4,
+            "ID": 23,
+            "amount": 1,
             "posX": 4,
-            "posY": 0,
-            "type": 0
-          },
-          {
-            "ID": 22,
-            "amount": 4,
-            "posX": 5,
             "posY": 0,
             "type": 0
           }
         ]
       },
+      "oxygen": 20,
       "position": [
-        7.340872764587402,
-        1.5199999809265137,
-        -19.197452545166016
+        -216.80104064941406,
+        40.52000045776367,
+        -83.57825469970703
       ],
-      "saturation": 1,
-      "score": 0
+      "saturation": 6,
+      "score": 47
     }
   ],
   "seed": 25475,

@@ -5,6 +5,7 @@
 #include "../Engine/UI/TextInput.h"
 #include "ChunkDatabase.h"
 #include "WorldGen.h"
+#include "PlayerData.h"
 
 #include <fstream>
 #include <tchar.h>
@@ -230,8 +231,26 @@ Controller input is also supported. In UI, Left click is Right Trigger, Right cl
 	TextInput* worldNameInput = AddTextInput(engine, titleNew, "World Name", -150.f, "name");
 	TextInput* seedInput = AddTextInput(engine, titleNew, "Seed", -50.f, "seed");
 
+	bool* currentGamemodeSelect = new bool(true); //hmm, should probably delete this but i cant think of a safe time to delete it
+	//(its a single bool, itll probably be fine for now)
+	//todo: make the rotating button select thing a class so its value gets deleted properly
+
+	// Gamemode button
+	Button* gamemodeButton = AddButton(engine, titleNew, "Gamemode: Survival", 50.f, [] {});
+	gamemodeButton->AddListener([gamemodeButton, currentGamemodeSelect] {
+		*currentGamemodeSelect = !*currentGamemodeSelect;
+		if(*currentGamemodeSelect) {
+			gamemodeButton->SetText("Gamemode: Survival");
+		}
+		else {
+			gamemodeButton->SetText("Gamemode: Creative");
+		}
+		
+		
+	});
+
 	// Create world button
-	AddButton(engine, titleNew, "Create", 50.f, [worldNameInput, seedInput] {
+	AddButton(engine, titleNew, "Create World", 150.f, [worldNameInput, seedInput, currentGamemodeSelect] {
 		// Function call on click
 		WorldGen::SetSeed(parseSeedInput(seedInput->label->GetText())); // Parse seed to integer
 		string validWorldName = ""; // For out val
@@ -241,9 +260,11 @@ Controller input is also supported. In UI, Left click is Right Trigger, Right cl
 		// Set the world name on the db and load
 		ChunkDatabase::Get()->SetWorldName(validWorldName);
 		Engine::Get()->SetScene("game");
+
+		Engine::Get()->GetScene("game")->GetObject3D<PlayerData>("PlayerData")->SetGamemode((*currentGamemodeSelect) ? GM_SURVIVAL : GM_CREATIVE);
 	});
 
-	AddButton(engine, titleNew, "Back", 150.f, [] {
+	AddButton(engine, titleNew, "Back", 250.f, [] {
 		Engine::Get()->SetScene("titlePlay");
 	});
 

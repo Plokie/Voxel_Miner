@@ -1,0 +1,46 @@
+{
+  "[-216,39,-82]": {
+    "inventory": {
+      "items": [
+        {
+          "ID": 1,
+          "amount": 8,
+          "posX": 0,
+          "posY": 0,
+          "type": 0
+        },
+        {
+          "ID": 31,
+          "amount": 3,
+          "posX": 2,
+          "posY": 0,
+          "type": 0
+        }
+      ]
+    },
+    "timer1": 35.29946517944336,
+    "timer2": 0.0
+  },
+  "[-217,39,-82]": {
+    "inventory": {
+      "items": [
+        {
+          "ID": 1,
+          "amount": 10,
+          "posX": 0,
+          "posY": 0,
+          "type": 0
+        },
+        {
+          "ID": 23,
+          "amount": 1,
+          "posX": 2,
+          "posY": 0,
+          "type": 0
+        }
+      ]
+    },
+    "timer1": 6.199721336364746,
+    "timer2": 0.0
+  }
+}
