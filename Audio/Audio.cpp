@@ -12,6 +12,17 @@ bool ErrHandle(ma_result result, string message) {
 }
 
 void Audio::LoadClip(const string& path, const string& name, bool is3d) {
+	ma_result result;
+	ma_sound newSound;
+
+	result = ma_sound_init_from_file(&_Instance->engines[0], path.c_str(), 0, NULL, NULL, &newSound);
+	if(result == MA_SUCCESS) {
+
+	}
+	else {
+		assert(false);
+	}
+
 
 }
 
