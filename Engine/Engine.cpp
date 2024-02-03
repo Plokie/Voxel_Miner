@@ -239,7 +239,6 @@ Engine::~Engine() {
 		pair.second = nullptr;
 	}
 
-	gfx->~Graphics();
 	delete gfx;
 	gfx = nullptr;
 }

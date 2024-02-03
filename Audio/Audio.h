@@ -2,6 +2,8 @@
 
 #include <string>
 #include <map>
+#include <list>
+#include <vector>
 #include <assert.h>
 #include "../Engine/MathUtil.h"
 #include "miniaudio.h"
@@ -13,14 +15,32 @@ class Transform;
 #define MAX_DEVICES 2
 #define MAX_VOICES 32
 
+/// <summary>
+/// 
+/// </summary>
+struct Sound {
+	ma_decoder* decoder;
+};
+
 class Audio {
 private:
-	ma_resource_manager resMgr;
-	ma_engine engines[MAX_DEVICES];
-	ma_device devices[MAX_DEVICES];
+	map<string, string> soundPaths;
+	map<string, ma_decoder*> decoders;
+	//ma_resource_manager resMgr;
+	////ma_engine engines[MAX_DEVICES];
+	//ma_engine engine;
+	//ma_context ctx;
+	////ma_device devices[MAX_DEVICES];
+	ma_device device;
 
-	map<string, ma_sound> _audioClips = {};
+
+	//map<string, ma_sound*> _audioClips = {};
+
+	//map<string, string> _audioClips = {};
 public:
+	list<Sound> sounds;
+	//ma_event g_stopEvent;
+	//vector<pair<ma_decoder,bool>> decoders;
 
 	static Audio* _Instance;
 

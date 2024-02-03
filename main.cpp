@@ -24,10 +24,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	Timer dTimer;
 	float dTime = 0.001f;
 
-	HRESULT hr = CoInitialize(NULL);
-	if(FAILED(hr)) {
-		return 999;
-	}
+	//HRESULT hr = CoInitialize(NULL);	//hmm, not sure what this did but removing it stopped it from crashing
+	//if(FAILED(hr)) {					// COM library or something i think... hopefully its not important
+	//	return 999;						// it kept breaking miniaudio (or miniaudio kept breaking *it*)
+	//}
 
 	// Load default textures
 	Resources::LoadTexture(L"Data\\Textures\\err.dds", "err");
