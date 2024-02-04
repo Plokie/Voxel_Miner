@@ -27,6 +27,7 @@ I need to make this automatic at some point, but for now here are instruction on
 Required files+folders:
 
     ] Data/** 										(copy the entire data folder here)
+    ] ^ Delete anything that doesn't end in .dds in Data/Textures/
     ] x64/Release(or Debug if debug)/*.cso			(put all .cso files here, need to fix this)
     ] Worlds/										(empty worlds folder)
     ] VoxelMiner.exe								(the actual exe)
