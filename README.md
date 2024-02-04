@@ -21,7 +21,7 @@ The only dependency required is DirectXTK
  3. Build Desktop_2022_Win10\x64 *Debug* and *Release*. This should place it in ../../DirectXTK/bin/x64/*
  4. Load the VoxelMiner Visual studio project and build either x64 Debug or x64 Release
 ## Packaging build as exe
-I need to make this automatic at some point, but for now here are instruction on how to isolate the exe and its necessary resources from the messy build folder
+I need to make this automatic at some point, but for now here are instructions on how to isolate the exe and its necessary resources from the messy build folder
 Required files+folders:
 
     ] Data/** 										(copy the entire data folder here)
