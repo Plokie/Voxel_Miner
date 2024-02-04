@@ -14,10 +14,10 @@ The only dependency required is DirectXTK
 
  - Download DXTK from https://github.com/microsoft/DirectXTK
  - Place folder at `../../` from the repo , ( the path should look like :
-    ====/source/repos/VoxelMiner/ *[this is the repo]*
-    ====/source/repos/
-    ====/source/DirectXTK/ *[DirectXTKs root should be here]*
-    
+
+        ====/source/repos/VoxelMiner/ *[this is the repo]*
+    	====/source/repos/
+        ====/source/DirectXTK/ *[DirectXTKs root should be here]*
 	Alternatively, change the Visual studio project properties to your desired location, but that could be messy
 
  - Build Desktop_2022_Win10\x64 *Debug* and *Release*. This should place it in ../../DirectXTK/bin/x64/*
