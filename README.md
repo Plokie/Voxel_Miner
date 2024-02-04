@@ -30,6 +30,10 @@ Required files+folders:
     ] Worlds/										(empty worlds folder)
     ] VoxelMiner.exe								(the actual exe)
 
+## Credits
+Music used: Undercover Vampire Policeman - Chris Zabriskie https://chriszabriskie.com/ (CC4.0)
+Sound effects made using JSFXR https://sfxr.me/
+
 ## License
 Under the GPL-2.0 license. Info can be seen at https://github.com/Plokie/dx11-voxel/blob/master/LICENSE
 ##
