@@ -461,7 +461,4 @@
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="git-log.txt" />
-  </ItemGroup>
 </Project>
