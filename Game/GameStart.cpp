@@ -53,7 +53,7 @@ void LoadResources() {
 	Resources::LoadVertexShader(L"vertexshellgrass.cso", "vertexshellgrass");
 	Resources::LoadVertexShader(L"vertexshaderleaves.cso", "vertexshaderleaves");
 
-	Audio::LoadClipStream("Data\\Music\\MusicBg.ogg", "MusicBg");
+	Audio::LoadClipStream("Data\\Music\\MusicBg.mp3", "MusicBg");
 	Audio::LoadClip("Data\\Sounds\\hit.wav", "hit");
 	Audio::LoadClip("Data\\Sounds\\hurt.wav", "hurt");
 	Audio::LoadClip("Data\\Sounds\\eat.wav", "eat");

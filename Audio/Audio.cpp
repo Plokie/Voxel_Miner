@@ -21,87 +21,48 @@ bool ErrHandle(ma_result result, string message) {
 }
 
 void Audio::LoadClip(const string& path, const string& name, bool is3d) {
-	ma_result result;
-	//ma_sound* newSound = new ma_sound();
-
-	//result = ma_sound_init_from_file(&_Instance->engine, path.c_str(),
-	//	MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_DECODE |
-	//	MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_ASYNC,
-	//	NULL, NULL, newSound);
-
-	//if(result == MA_SUCCESS) {
-	//	_Instance->_audioClips[name] = newSound;
-	//}
-	//else {
-	//	assert(false);
-	//}
-	//_Instance->_audioClips[name] = path;
-
-	//ma_engine_play_sound(&_Instance->engine, path.c_str(), NULL);
-
-	_Instance->soundPaths[name] = path;
+	_Instance->_sounds[name] = { path };
 
 }
 
 void Audio::LoadClipStream(const string& path, const string& name, bool is3d) {
-	ma_result result;
-	/*ma_sound* newSound = new ma_sound();
-
-	result = ma_sound_init_from_file(&_Instance->engine, path.c_str(), 
-		MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_DECODE |
-		MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_ASYNC |
-		MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_STREAM,
-		NULL, NULL, newSound);
-
-	if(result == MA_SUCCESS) {
-		_Instance->_audioClips[name] = newSound;
-	}
-	else {
-		assert(false);
-	}*/
+	_Instance->_sounds[name] = { path, true };
 }
 
 void Audio::Play(const string& name, Vector3 worldPos, float volume) {
 }
 
+void OnSoundEnd(void* pUserData, ma_sound* pSound) {
+	//this doesnt work, i think it deletes the sound data in memory?
+	ma_sound_uninit(pSound);
+	delete pSound;
+}
+
 void Audio::Play(const string& name, float volume) {
-	auto findPath = _Instance->soundPaths.find(name);
-	if(findPath != _Instance->soundPaths.end()) {
-		const string& path = findPath->second;
+	auto findIt = _Instance->_sounds.find(name);
+	if(findIt != _Instance->_sounds.end()) {
+		ma_result res;
+		
+		ma_sound* newSound = new ma_sound(); //hmm memory leak
 
-		Sound sound;
-
-		auto findDecoder = _Instance->decoders.find(path);
-		if(findDecoder == _Instance->decoders.end()) {
-			// sound not found in decoders, make a new decoder for this sound
-			ma_decoder* newDecoder = new ma_decoder();
-			ma_decoder_init_file(path.c_str(), NULL, newDecoder);
-
-			_Instance->decoders[path] = newDecoder;
-			sound.decoder = newDecoder;
+		ma_uint32 flags = MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_DECODE | MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_ASYNC;
+		if(findIt->second.isStream) {
+			flags = MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_DECODE | MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_ASYNC | MA_RESOURCE_MANAGER_DATA_SOURCE_FLAG_STREAM;
+			
+			//return; //todo: vorbis
 		}
-		else {
-			sound.decoder = findDecoder->second;
+		
+		res = ma_sound_init_from_file(&_Instance->engine, findIt->second.path.c_str(), flags, NULL, NULL, newSound);
+		ErrHandle(res, "Unable to initialise sound from file");
+		
+		//newSound->endCallback = OnSoundEnd; //this doesnt work, i think it deleted the sound data in memory
+
+		res = ma_sound_start(newSound);
+		//res = ma_engine_play_sound(&_Instance->engine, findIt->second.c_str(), NULL);
+		if(res != MA_SUCCESS) {
+			assert(false);
 		}
-
-		//sound.currFrame = 0;
-		//sound.isAtEnd = MA_FALSE;
-
-		_Instance->sounds.push_back(sound);
 	}
-
-
-	//auto findIt = _Instance->_audioClips.find(name);
-	//if(findIt != _Instance->_audioClips.end()) {
-	//	ma_result res;
-	//	
-	//	//_Instance->engines[0]
-	//	res = ma_sound_start(findIt->second);
-	//	//res = ma_engine_play_sound(&_Instance->engine, findIt->second.c_str(), NULL);
-	//	if(res != MA_SUCCESS) {
-	//		assert(false);
-	//	}
-	//}
 }
 
 void Audio::Update() {
@@ -111,86 +72,10 @@ void Audio::Update() {
 void Audio::SetListener(const Transform* t) {
 }
 
-ma_uint32 read_and_mix_pcm_frames_f32(ma_decoder* pDecoder, float* pOutputF32, ma_uint32 frameCount)
-{
-	/*
-	The way mixing works is that we just read into a temporary buffer, then take the contents of that buffer and mix it with the
-	contents of the output buffer by simply adding the samples together. You could also clip the samples to -1..+1, but I'm not
-	doing that in this example.
-	*/
-	ma_result result;
-	float temp[4096];
-	ma_uint32 tempCapInFrames = ma_countof(temp) / CHANNEL_COUNT;
-	ma_uint32 totalFramesRead = 0;
-
-	while(totalFramesRead < frameCount) {
-		ma_uint64 iSample;
-		ma_uint64 framesReadThisIteration;
-		ma_uint32 totalFramesRemaining = frameCount - totalFramesRead;
-		ma_uint32 framesToReadThisIteration = tempCapInFrames;
-		if(framesToReadThisIteration > totalFramesRemaining) {
-			framesToReadThisIteration = totalFramesRemaining;
-		}
-
-		//result = ma_decoder_read_pcm_frames(pDecoder, temp, framesToReadThisIteration, &framesReadThisIteration);
-		result = ma_decoder_read_pcm_frames(pDecoder, pOutputF32, framesToReadThisIteration, &framesReadThisIteration);
-		if(result != MA_SUCCESS || framesReadThisIteration == 0) {
-			break;
-		}
-
-		/* Mix the frames together. */
-		for(iSample = 0; iSample < framesReadThisIteration * CHANNEL_COUNT; ++iSample) {
-			pOutputF32[totalFramesRead * CHANNEL_COUNT + iSample] += temp[iSample];
-		}
-
-		totalFramesRead += (ma_uint32)framesReadThisIteration;
-
-		if(framesReadThisIteration < (ma_uint32)framesToReadThisIteration) {
-			break;  /* Reached EOF. */
-		}
-	}
-
-	return totalFramesRead;
-}
-
 void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 {
-	float* pOutputF32 = (float*)pOutput;
-	//float temp[4096];
-	//ma_engine_read_pcm_frames((ma_engine*)pDevice->pUserData, pOutput, frameCount, NULL);
-
-	//for(auto& sound : Audio::_Instance->sounds) {
-	for(auto it = Audio::_Instance->sounds.begin(); it != Audio::_Instance->sounds.end();) {
-		auto& sound = *it;
-		//ma_uint64 length;
-		//ma_decoder_get_length_in_pcm_frames(sound.decoder, &length);
-		//if(sound.isPlaying && sound.currFrame < length) {
-		//	//ma_decoder_read_pcm_frames(sound.decoder, )
-		//}
-		
-		ma_uint32 framesRead = read_and_mix_pcm_frames_f32(sound.decoder, pOutputF32, frameCount);
-
-		//ma_uint64 framesRead;
-		////ma_uint32 
-		//unsigned int i = 0;
-		//while(i < frameCount) {
-
-		//	ma_decoder_read_pcm_frames(sound.decoder, pOutputF32, frameCount, &framesRead);
-		//}
-
-		if(framesRead < frameCount) {
-			//sound.isAtEnd = true;
-			//sound.decoder->readPointerInPCMFrames
-			ma_decoder_seek_to_pcm_frame(sound.decoder, 0);
-			it = Audio::_Instance->sounds.erase(it);
-		}
-		else {
-			++it;
-		}
-
-	}
-
 	(void)pInput;
+	ma_engine_read_pcm_frames((ma_engine*)pDevice->pUserData, pOutput, frameCount, NULL);
 }
 
 #define DECODER_COUNT 5
@@ -199,20 +84,22 @@ void Audio::Init() {
 	_Instance = this;
 	ma_result result;
 
-	ma_device_config deviceCfg = ma_device_config_init(ma_device_type_playback);
-	deviceCfg.playback.format = SAMPLE_FORMAT;
-	deviceCfg.playback.channels = CHANNEL_COUNT;
-	deviceCfg.sampleRate = SAMPLE_RATE;
-	deviceCfg.dataCallback = data_callback;
+	// device / decoder config
+	//ma_device_config deviceCfg = ma_device_config_init(ma_device_type_playback);
+	//deviceCfg.playback.format = SAMPLE_FORMAT;
+	//deviceCfg.playback.channels = CHANNEL_COUNT;
+	//deviceCfg.sampleRate = SAMPLE_RATE;
+	//deviceCfg.dataCallback = data_callback;
 
-	result = ma_device_init(NULL, &deviceCfg, &device);
-	ErrHandle(result, "Failed to initialise device");
+	//result = ma_device_init(NULL, &deviceCfg, &device);
+	//ErrHandle(result, "Failed to initialise device");
 
-	result = ma_device_start(&device);
-	ErrHandle(result, "Failed to start device");
+	//result = ma_device_start(&device);
+	//ErrHandle(result, "Failed to start device");
 
 
-
+	result = ma_engine_init(NULL, &engine);
+	ErrHandle(result, "Failed to initialise engine");
 
 
 
@@ -340,6 +227,6 @@ Audio::~Audio() {
 	}
 	decoders.clear();
 
-	sounds.clear();
+	_sounds.clear();
 }
 

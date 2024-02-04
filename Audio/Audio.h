@@ -18,17 +18,24 @@ class Transform;
 /// <summary>
 /// 
 /// </summary>
-struct Sound {
-	ma_decoder* decoder;
+struct SoundStore {
+	//ma_decoder* decoder;
+
+	//ma_sound sound;
+	string path = "";
+	bool isStream = false;
+
+	SoundStore(){}
+	SoundStore(const string& path, bool isStream = false) : path(path), isStream(isStream){}
 };
 
 class Audio {
 private:
-	map<string, string> soundPaths;
+	//map<string, string> soundPaths;
 	map<string, ma_decoder*> decoders;
 	//ma_resource_manager resMgr;
 	////ma_engine engines[MAX_DEVICES];
-	//ma_engine engine;
+	ma_engine engine;
 	//ma_context ctx;
 	////ma_device devices[MAX_DEVICES];
 	ma_device device;
@@ -36,9 +43,9 @@ private:
 
 	//map<string, ma_sound*> _audioClips = {};
 
-	//map<string, string> _audioClips = {};
+	map<string, SoundStore> _sounds = {};
 public:
-	list<Sound> sounds;
+	//list<Sound> sounds;
 	//ma_event g_stopEvent;
 	//vector<pair<ma_decoder,bool>> decoders;
 
