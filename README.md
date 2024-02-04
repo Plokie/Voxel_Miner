@@ -8,6 +8,7 @@ This was originally started as  university project, but I kept working on it and
 You can see the roadmap at https://trello.com/b/w3MwgsMt/programming
   
 ## Building
+Building is only intended on Windows, Visual Studio (I used Visual Studio 2022)
 The only dependency required is DirectXTK
 
  1. Download DXTK from https://github.com/microsoft/DirectXTK
