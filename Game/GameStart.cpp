@@ -2,26 +2,12 @@
 
 #include "../Audio/Audio.h"
 
-
-// Include all Object3D and child type references
 // ---------------------------------------
-#include "ExampleObject3D.h"
 #include "TitleScreen.h"
-#include "PlayerController.h"
-#include "ChunkManager.h"
 #include "PauseScreen.h"
-
-#include "../Engine/UI/Label.h"
-#include "../Engine/UI/UIRect.h"
-#include "../Engine/UI/Button.h"
-#include "../Engine/UI/HorizontalLayoutRect.h"
-#include "../Engine/UI/ProgressBar.h"
-#include "InventoryUI.h"
-#include "Inventory.h"
 #include "HeldItem.h"
 #include "Meshes/HeldItemMesh.h"
 #include "Meshes/DroppedItemMesh.h"
-
 #include "GameScene.h"
 // ---------------------------------------
 
