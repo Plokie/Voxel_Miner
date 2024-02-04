@@ -222,9 +222,6 @@
     <ClCompile Include="Audio\Audio.cpp">
       <Filter>Engine\Audio</Filter>
     </ClCompile>
-    <ClCompile Include="Audio\miniaudio.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\AABB.h">

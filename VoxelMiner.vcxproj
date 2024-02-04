@@ -153,7 +153,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio\Audio.cpp" />
-    <ClCompile Include="Audio\miniaudio.cpp" />
     <ClCompile Include="Game\CreativeUI.cpp" />
     <ClCompile Include="Game\BlockAction.cpp" />
     <ClCompile Include="Game\BlockData.cpp" />
