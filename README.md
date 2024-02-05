@@ -1,3 +1,4 @@
+
 #  Voxel Miner 
 ### A C++ DX11 Minecraft clone
 ## Info
@@ -22,18 +23,19 @@ The only dependency required is DirectXTK
 
  - Build Desktop_2022_Win10\x64 *Debug* and *Release*. This should place it in ../../DirectXTK/bin/x64/*
  - Load the VoxelMiner Visual studio project and build either x64 Debug or x64 Release
-## Packaging clean build as exe
-I need to make this automatic at some point, but for now here are instruction on how to isolate the exe and its necessary resources from the messy build folder
-Required files+folders:
-
-    ] Data/** 										(copy the entire data folder here)
-    ] ^ Delete anything that doesn't end in .dds in Data/Textures/
-    ] Worlds/										(empty worlds folder)
-    ] VoxelMiner.exe								(the actual exe)
+## Packaging build as clean exe
+To package the .exe and its necessary data into a single clean folder
+ - Build Release x64 in Visual Studio
+ - Run `clean_build.bat`
+ - Find the clean build in the folder `Build/`
  
 ## Credits
  - Music: Undercover Vampire Policeman - Chris Zabriskie https://chriszabriskie.com/ (CC4.0)
  - Sound effects made using JSFXR https://sfxr.me/
+ - World shard gen by ENDESGA, ported from https://www.shadertoy.com/view/dlKyWw
+ - FastNoiseLite https://github.com/Auburn/FastNoiseLite
+ - Nlohmann json library https://github.com/nlohmann/json
+ - MiniAudio https://miniaud.io
 
 ## License
 Under the GPL-2.0 license. Info can be seen at https://github.com/Plokie/dx11-voxel/blob/master/LICENSE
