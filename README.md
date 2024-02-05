@@ -39,6 +39,7 @@ To package the .exe and its necessary data into a single clean folder
 
 ## License
 Under the GPL-2.0 license. Info can be seen at https://github.com/Plokie/dx11-voxel/blob/master/LICENSE
+Of course, read the license properly, but the keys are to not reapply a new license (and so must be open), and link back here as the source.
 ##
 
 <3
