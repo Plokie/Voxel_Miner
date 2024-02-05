@@ -367,15 +367,8 @@ bool Graphics::InitShaders() {
 	
 	// ---
 
-	// INIT VERTEX SHADERS ---------
-	std::wstring shaderFolder = L"";
-#pragma region GetShaderPath
-#ifdef _DEBUG
-		shaderFolder = L"x64\\Debug\\";
-#else
-		shaderFolder = L"x64\\Release\\";
-#endif
-
+	std::wstring shaderFolder = L"Data\\Shaders\\";
+	// INIT DEFAULT VERTEX SHADER ---------
 
 	if(!defaultVertexShader.Init(device, shaderFolder + L"vertexshader.cso", layout, numElements)) {
 		exit(20);
@@ -383,7 +376,7 @@ bool Graphics::InitShaders() {
 	}
 	// ------------
 
-	// INIT PIXEL SHADERS ------------
+	// INIT DEFAULT PIXEL SHADER ------------
 
 	if(!defaultPixelShader.Init(device, shaderFolder + L"pixelshader.cso")) {
 		exit(21);

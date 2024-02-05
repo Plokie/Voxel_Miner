@@ -34,19 +34,19 @@ void Resources::LoadTexture(const wchar_t* path, string name) {
 
 	
 }
-
-#ifdef _DEBUG
-wstring shaderFolder = L"x64\\Debug\\";
-#else
-wstring shaderFolder = L"x64\\Release\\";
-#endif
+//wstring shaderFolder = L"Data\\Shaders\\";
+////#ifdef _DEBUG
+////wstring shaderFolder = L"x64\\Debug\\";
+////#else
+////wstring shaderFolder = L"x64\\Release\\";
+////#endif
 
 void Resources::LoadPixelShader(const wchar_t* path, string name) {
 	InitiatedExitCheck();
 
 	_Instance->pixelShaders[name] = new PixelShader();
 
-	_Instance->pixelShaders[name]->Init(_Instance->pDevice, shaderFolder + path);
+	_Instance->pixelShaders[name]->Init(_Instance->pDevice, path);
 }
 
 void Resources::LoadVertexShader(const wchar_t* path, string name) {
@@ -54,7 +54,7 @@ void Resources::LoadVertexShader(const wchar_t* path, string name) {
 
 	_Instance->vertexShaders[name] = new VertexShader();
 
-	_Instance->vertexShaders[name]->Init(_Instance->pDevice, shaderFolder + path, _Instance->layout, _Instance->layoutCount);
+	_Instance->vertexShaders[name]->Init(_Instance->pDevice, path, _Instance->layout, _Instance->layoutCount);
 }
 
 void Resources::LoadMesh(string name) {

@@ -436,25 +436,25 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="pixelshader.hlsl">
+    <FxCompile Include="Shaders\pixelshader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="vertexshader.hlsl">
+    <FxCompile Include="Shaders\vertexshader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="pixelshellgrass.hlsl">
+    <FxCompile Include="Shaders\pixelshellgrass.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="watervertexshader.hlsl">
+    <FxCompile Include="Shaders\watervertexshader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="vertexshellgrass.hlsl">
+    <FxCompile Include="Shaders\vertexshellgrass.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="vertexshaderleaves.hlsl">
+    <FxCompile Include="Shaders\vertexshaderleaves.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="chunkpixelshader.hlsl">
+    <FxCompile Include="Shaders\chunkpixelshader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>

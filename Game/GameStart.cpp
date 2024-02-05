@@ -29,15 +29,15 @@ void LoadResources() {
 
 	Resources::LoadFont(L"Data\\Fonts\\Baloo2.spritefont", "Baloo");
 
-	Resources::LoadPixelShader(L"pixelshader.cso", "pixelshader");
-	Resources::LoadPixelShader(L"pixelshellgrass.cso", "pixelshellgrass");
-	Resources::LoadPixelShader(L"chunkpixelshader.cso", "chunkpixelshader");
+	Resources::LoadPixelShader(L"Data\\Shaders\\pixelshader.cso", "pixelshader");
+	Resources::LoadPixelShader(L"Data\\Shaders\\pixelshellgrass.cso", "pixelshellgrass");
+	Resources::LoadPixelShader(L"Data\\Shaders\\chunkpixelshader.cso", "chunkpixelshader");
 	//Resources::LoadPixelShader(L"demopixelshader.cso", "demopshader");
 
-	Resources::LoadVertexShader(L"vertexshader.cso", "vertexshader");
-	Resources::LoadVertexShader(L"watervertexshader.cso", "watervertexshader");
-	Resources::LoadVertexShader(L"vertexshellgrass.cso", "vertexshellgrass");
-	Resources::LoadVertexShader(L"vertexshaderleaves.cso", "vertexshaderleaves");
+	Resources::LoadVertexShader(L"Data\\Shaders\\vertexshader.cso", "vertexshader");
+	Resources::LoadVertexShader(L"Data\\Shaders\\watervertexshader.cso", "watervertexshader");
+	Resources::LoadVertexShader(L"Data\\Shaders\\vertexshellgrass.cso", "vertexshellgrass");
+	Resources::LoadVertexShader(L"Data\\Shaders\\vertexshaderleaves.cso", "vertexshaderleaves");
 
 	Audio::LoadClipStream("Data\\Music\\MusicBg.mp3", "MusicBg");
 	Audio::LoadClip("Data\\Sounds\\hit.wav", "hit");
