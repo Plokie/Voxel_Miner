@@ -25,7 +25,8 @@ struct VS_OUTPUT
     float3 worldPos : WORLDPOS;
 };
 
-VS_OUTPUT main(VS_INPUT input) {
+VS_OUTPUT main(VS_INPUT input)
+{
     VS_OUTPUT output;
     //output.pos = float4(input.pos + float3(offsetX, offsetY, 0), 1.0f);
     output.worldPos = input.pos;

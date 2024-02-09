@@ -1,7 +1,10 @@
 cbuffer c_buffer : register(b0)
 {
-    float4x4 mx;
-    float4x4 modelMx;
+    float4x4 model;
+    float4x4 view;
+    float4x4 proj;
+    float4x4 lightView;
+    float4x4 lightProj;
     float time;
 };
 
@@ -80,7 +83,7 @@ VS_OUTPUT main(VS_INPUT input)
     VS_OUTPUT output;
     //output.pos = float4(input.pos + float3(offsetX, offsetY, 0), 1.0f);
     
-    float3 modelMxPos = mul(float4(input.pos, 1.0f), modelMx).xyz;
+    float3 modelMxPos = mul(float4(input.pos, 1.0f), model).xyz;
     float height = frac(input.pos.y);
     // relative height 0.0f = base, 1.0f = top
     float relHeight = (height / ((tile_size / atlas_size) * shell_pix_height));
@@ -92,14 +95,20 @@ VS_OUTPUT main(VS_INPUT input)
     
     
     output.worldPos = input.pos;
-    output.pos = mul(float4(input.pos, 1.0f), mx);
+    float4 pos = float4(input.pos, 1.0f);
+    
+    pos = mul(pos, model);
+    pos = mul(pos, view);
+    pos = mul(pos, proj);
+    
+    output.pos = pos;
     //output.col = input.col;
     output.texCoord = input.texCoord;
     output.texOffset = input.texOffset;
     
     //output.normal = -input.normal;
     
-    output.normal = mul(float4(input.normal, 0.0f), modelMx).xyz;
+    output.normal = mul(float4(input.normal, 0.0f), model).xyz;
     //output.normal = input.normal;
     
     return output;

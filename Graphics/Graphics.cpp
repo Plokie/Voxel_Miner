@@ -199,7 +199,6 @@ bool Graphics::SetupAlphaDepthStencil() {
 }
 
 bool Graphics::SetupViewport() {
-	D3D11_VIEWPORT viewport;
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 
 	viewport.TopLeftX = 0;
@@ -331,7 +330,7 @@ bool Graphics::SetupShadowmapBuffer()
 
 	HRESULT hr = device->CreateTexture2D(&desc, nullptr, &shadowDepthTex);
 	if (FAILED(hr)) {
-		exit(20);
+		exit(50);
 		return false;
 	}
 	//
@@ -343,7 +342,7 @@ bool Graphics::SetupShadowmapBuffer()
 	stencilDesc.Texture2D.MipSlice = 0;
 
 	hr = device->CreateDepthStencilView(shadowDepthTex, &stencilDesc, &shadowDepthView);
-	if(FAILED(hr)) exit(21);
+	if(FAILED(hr)) exit(51);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC resDesc;
 	ZeroMemory(&resDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
@@ -352,7 +351,7 @@ bool Graphics::SetupShadowmapBuffer()
 	resDesc.Texture2D.MipLevels = 1;
 
 	hr = device->CreateShaderResourceView(shadowDepthTex, &resDesc, &shadowResourceView);
-	if(FAILED(hr)) exit(22);
+	if(FAILED(hr)) exit(52);
 
 	//
 
@@ -374,7 +373,7 @@ bool Graphics::SetupShadowmapBuffer()
 
 	hr = device->CreateSamplerState(&samplerDesc, &shadowSamplerState);
 	if(FAILED(hr)) {
-		exit(23);
+		exit(53);
 	}
 
 	//
@@ -386,7 +385,7 @@ bool Graphics::SetupShadowmapBuffer()
 	rastDesc.DepthClipEnable = true;
 	hr = device->CreateRasterizerState(&rastDesc, &shadowRastState);
 	if(FAILED(hr)) {
-		exit(24);
+		exit(54);
 	}
 
 	//
@@ -470,6 +469,13 @@ bool Graphics::InitShaders() {
 	}
 
 	// --------------------
+
+	if(!shadowVertexShader.Init(device, shaderFolder + L"shadowvertexshader.cso", layout, numElements)) {
+		exit(22);
+	}
+	if(!shadowPixelShader.Init(device, shaderFolder + L"shadowpixelshader.cso")) {
+		exit(23);
+	}
 	
 
 	return true;
@@ -491,29 +497,13 @@ bool Graphics::InitScene() {
 
 	shadowCamera.transform.position = Vector3(0.f, 0.f, 0.f);
 	shadowCamera.SetProjectionMatrix(XMMatrixPerspectiveFovRH(XM_PIDIV2, 1.f, 12.f, 1000.f));
-	XMStoreFloat4x4(&shadowCbufferData.projection, shadowCamera.GetProjectionMatrix());
+	
 	
 
 
 	return true;
 }
 
-void Graphics::RenderShadowMap(Scene* scene)
-{
-	XMStoreFloat4x4(&shadowCbufferData.view, shadowCamera.transform.mxView());
-	XMStoreFloat4(&shadowCbufferData.pos, shadowCamera.transform.position);
-	
-	D3D11_MAPPED_SUBRESOURCE map;
-	//deviceCtx->UpdateSubresource(&map, 0, NULL, &shadowCbuff, 0, 0);
-	deviceCtx->Map(shadowCbuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
-	CopyMemory(map.pData, &shadowCbufferData, sizeof(ShadowMap_CBuff));
-	deviceCtx->Unmap(shadowCbuffer, 0);
-
-	deviceCtx->ClearDepthStencilView(shadowDepthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-
-
-}
 
 bool Graphics::Init(HWND hwnd, int width, int height) {
 	//mesh = new Mesh();
@@ -566,6 +556,38 @@ bool Graphics::OnResize(HWND hwnd, int width, int height) {
 	return true;
 }
 
+void Graphics::RenderShadowMap(Scene* scene)
+{
+	return;
+	//XMStoreFloat4x4(&shadowCbufferData.view, shadowCamera.transform.mxView());
+	//XMStoreFloat4(&shadowCbufferData.pos, shadowCamera.transform.position);
+	//
+	//D3D11_MAPPED_SUBRESOURCE map;
+	////deviceCtx->UpdateSubresource(&map, 0, NULL, &shadowCbuff, 0, 0);
+	//deviceCtx->Map(shadowCbuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+	//CopyMemory(map.pData, &shadowCbufferData, sizeof(ShadowMap_CBuff));
+	//deviceCtx->Unmap(shadowCbuffer, 0);
+
+	deviceCtx->ClearDepthStencilView(shadowDepthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	deviceCtx->OMSetRenderTargets(1, &renderTargetView, shadowDepthView);
+	deviceCtx->RSSetState(shadowRastState);
+	deviceCtx->RSSetViewports(1, &shadowViewport);
+
+	//vector<tuple<Model*, XMMATRIX, Object3D*>> transparentModels = {};
+
+	for(auto it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); it++) {
+		if(it->second == nullptr) continue;
+		if((it->second->cullBox.GetHalfSize().magnitude() == 0.0f || shadowCamera.IsAABBInFrustum(it->second->cullBox)) && it->second->doRender)
+			it->second->Draw(deviceCtx, shadowCamera.transform.mxView(), shadowCamera.GetProjectionMatrix(), shadowPixelShader.GetShader(), shadowVertexShader.GetShader());
+			//it->second->Draw(deviceCtx, camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentModels);	
+	}
+
+
+
+}
+
+
 void Graphics::Render(Scene* scene) {
 	unique_lock<std::mutex> lock(scene->createObjectMutex);
 
@@ -585,6 +607,8 @@ void Graphics::Render(Scene* scene) {
 
 	deviceCtx->OMSetDepthStencilState(depthStencilState, 0);
 	deviceCtx->OMSetBlendState(blendState, NULL, 0xFFFFFFFF);
+	deviceCtx->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	deviceCtx->RSSetViewports(1, &viewport);
 
 	deviceCtx->PSSetSamplers(0, 1, &samplerStatePoint);
 
@@ -619,7 +643,7 @@ void Graphics::Render(Scene* scene) {
 	for(vector<Object3D*>::iterator it = objects.begin(); it != objects.end(); ++it) {
 
 		{	unique_lock<std::mutex> lock((*it)->gAccessMutex);
-			if ((*it)->Draw(deviceCtx, worldMx * camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentModels)) {
+			if ((*it)->Draw(deviceCtx, camera.transform.mxView(), camera.GetProjectionMatrix(), &transparentModels)) {
 				//If it drew something, return back to default error textures+shaders afterwards (so we can see missing tex objects)
 				deviceCtx->PSSetShaderResources(0, 1, &errTex);
 				deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
@@ -639,7 +663,7 @@ void Graphics::Render(Scene* scene) {
 		if (model->GetMesh() == nullptr || obj == nullptr || obj->pendingDeletion ) continue;
 
 		{	unique_lock<std::mutex> lock(obj->gAccessMutex);
-			model->Draw(deviceCtx, get<1>(*it), worldMx * camera.transform.mxView() * camera.GetProjectionMatrix());
+			model->Draw(deviceCtx, get<1>(*it), camera.transform.mxView(), camera.GetProjectionMatrix());
 			deviceCtx->PSSetShaderResources(0, 1, &errTex);
 			deviceCtx->VSSetShader(defaultVertexShader.GetShader(), NULL, 0);
 			deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
@@ -651,7 +675,7 @@ void Graphics::Render(Scene* scene) {
 
 	//
 
-	RenderShadowMap(scene);
+	//deviceCtx->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
 	//
 
@@ -676,6 +700,8 @@ void Graphics::Render(Scene* scene) {
 
 
 	this->spriteBatch->End();
+
+	RenderShadowMap(scene);
 
 	swapChain->Present(0, NULL);
 }

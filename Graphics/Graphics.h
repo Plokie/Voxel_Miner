@@ -26,11 +26,11 @@ using namespace std;
 
 #define LAYOUTSIZE 4
 
-struct ShadowMap_CBuff {
-	XMFLOAT4X4 projection;
-	XMFLOAT4X4 view;
-	XMFLOAT4 pos;
-};
+//struct ShadowMap_CBuff {
+//	XMFLOAT4X4 projection;
+//	XMFLOAT4X4 view;
+//	XMFLOAT4 pos;
+//};
 
 class Graphics {
 private:
@@ -38,6 +38,8 @@ private:
 	ID3D11DeviceContext* deviceCtx = nullptr;				// Resource allocation
 	IDXGISwapChain* swapChain = nullptr;					// Used to swap frames while rendering. Buffered rendering
 	ID3D11RenderTargetView* renderTargetView = nullptr;	// Render target window
+
+	D3D11_VIEWPORT viewport;
 
 	//todo: Make into resource collection of shaders and textures
 	VertexShader defaultVertexShader;
@@ -54,8 +56,11 @@ private:
 	ID3D11SamplerState* shadowSamplerState = nullptr;
 	ID3D11RasterizerState* shadowRastState = nullptr;
 	D3D11_VIEWPORT shadowViewport;
-	ShadowMap_CBuff shadowCbufferData;
-	ID3D11Buffer* shadowCbuffer;
+	//ShadowMap_CBuff shadowCbufferData;
+
+	VertexShader shadowVertexShader;
+	PixelShader shadowPixelShader;
+	//ID3D11Buffer* shadowCbuffer;
 	//ID3D10Blob* shadowBuffer;
 	//XMMATRIX shadowMx;
 

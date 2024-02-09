@@ -18,8 +18,13 @@
 using namespace DirectX;
 
 struct CB_VS_vertexshader {
-	DirectX::XMMATRIX mx;
+	//DirectX::XMMATRIX mx;
+	//XMMATRIX modelMx;
 	XMMATRIX modelMx;
+	XMMATRIX viewMx;
+	XMMATRIX projMx;
+	XMMATRIX lightViewMx;
+	XMMATRIX lightProjMx;
 	float time;
 };
 
@@ -108,9 +113,10 @@ public:
 	/// <param name="deviceCtx"></param>
 	/// <param name="modelMx">local object mx</param>
 	/// <param name="worldMx">cam view mx * cam proj mx</param>
-	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worldMx);
+	//void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worldMx);
 
-	void DrawShadowMap(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX viewMx, XMMATRIX projMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs);
+	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX viewMx, XMMATRIX projMx);
+	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX viewMx, XMMATRIX projMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs);
 
 	void SetTexture(int idx, ID3D11ShaderResourceView* tex) {
 		this->tex = tex;

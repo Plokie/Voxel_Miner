@@ -37,7 +37,7 @@ const float Object3D::GetClosestDistance(const Vector3& otherPos)
 	//}
 }
 
-bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<tuple<Model*, XMMATRIX, Object3D*>>* transparentModels) {
+bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX projMx, vector<tuple<Model*, XMMATRIX, Object3D*>>* transparentModels) {
 	//AcquireSRWLockExclusive(&this->gAccessMutex);
 	bool didDraw = false;
 
@@ -48,7 +48,7 @@ bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<tup
 			if (model == nullptr) continue;
 			if (!model->IsTransparent()) //If object is opaque, draw immediately upon request
 			{
-				model->Draw(deviceCtx, transform.mx(), worldMx);
+				model->Draw(deviceCtx, transform.mx(), viewMx, projMx);
 				didDraw = true;
 			}
 			else //if objects contains transparency, queue to be rendered after opaque geometry
@@ -62,6 +62,18 @@ bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX worldMx, vector<tup
 	//ReleaseSRWLockExclusive(&this->gAccessMutex);
 
 	return didDraw;
+}
+
+bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX projMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs) {
+	for(Model* model : models) {
+
+		if(model == nullptr) continue;
+		
+		if(!model->IsTransparent())
+			model->Draw(deviceCtx, transform.mx(), viewMx, projMx, ps, vs);
+	}
+
+	return true;
 }
 
 void Object3D::Update(float dTime) {}
