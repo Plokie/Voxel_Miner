@@ -314,6 +314,30 @@ bool Graphics::SetupSpriteBatch() {
 	return true;
 }
 
+#define SHADOWMAP_RESOLUTION Vector2Int(1080,1080)
+
+bool Graphics::SetupShadowmapBuffer()
+{
+	D3D11_TEXTURE2D_DESC desc;
+	ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
+	desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.SampleDesc.Count = 1;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
+	desc.Height = static_cast<UINT>(SHADOWMAP_RESOLUTION.y);
+	desc.Width = static_cast<UINT>(SHADOWMAP_RESOLUTION.x);
+
+	HRESULT hr = device->CreateTexture2D(&desc, nullptr, &shadowMap);
+	if (FAILED(hr)) {
+		exit(20);
+		return false;
+	}
+
+
+	return true;
+}
+
 bool Graphics::InitResolution(HWND hwnd) {
 	SetupSwapChain(hwnd);
 

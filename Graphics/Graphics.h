@@ -42,6 +42,8 @@ private:
 	ID3D11DepthStencilView* depthStencilView = nullptr;
 	ID3D11Texture2D* depthBuffer = nullptr;
 
+	ID3D11Texture2D* shadowMap = nullptr;
+
 	ID3D11DepthStencilState* depthStencilState = nullptr;
 	ID3D11DepthStencilState* alphaDepthStencilState = nullptr;
 
@@ -69,6 +71,7 @@ private:
 	bool SetupSamplerStatePoint();
 	bool SetupBlendState();
 	bool SetupSpriteBatch();
+	bool SetupShadowmapBuffer();
 
 	bool InitResolution(HWND hwnd);
 
