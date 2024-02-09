@@ -56,6 +56,7 @@ private:
 	ID3D11SamplerState* shadowSamplerState = nullptr;
 	ID3D11RasterizerState* shadowRastState = nullptr;
 	D3D11_VIEWPORT shadowViewport;
+	ID3D11RenderTargetView* shadowRenderTarget = nullptr;
 	//ShadowMap_CBuff shadowCbufferData;
 
 	VertexShader shadowVertexShader;

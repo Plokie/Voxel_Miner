@@ -396,6 +396,22 @@ bool Graphics::SetupShadowmapBuffer()
 	shadowViewport.MinDepth = 0.f;
 	shadowViewport.MaxDepth = 1.f;
 
+	//
+
+	ID3D11Texture2D* backBuffer;
+	hr = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+	if(FAILED(hr)) {
+		exit(55); //Failed to get or set back buffer
+		return false;
+	}
+
+	//
+	hr = device->CreateRenderTargetView(backBuffer, NULL, &shadowRenderTarget);
+	if(FAILED(hr)) {
+		exit(56); //Failed to create render target
+		return false;
+	}
+
 	return true;
 }
 
@@ -558,7 +574,7 @@ bool Graphics::OnResize(HWND hwnd, int width, int height) {
 
 void Graphics::RenderShadowMap(Scene* scene)
 {
-	return;
+	//return;
 	//XMStoreFloat4x4(&shadowCbufferData.view, shadowCamera.transform.mxView());
 	//XMStoreFloat4(&shadowCbufferData.pos, shadowCamera.transform.position);
 	//
@@ -568,9 +584,13 @@ void Graphics::RenderShadowMap(Scene* scene)
 	//CopyMemory(map.pData, &shadowCbufferData, sizeof(ShadowMap_CBuff));
 	//deviceCtx->Unmap(shadowCbuffer, 0);
 
+	const float bg[] = {0.f, 0.f, 0.f, 1.0f};
+	deviceCtx->ClearRenderTargetView(shadowRenderTarget, bg);
 	deviceCtx->ClearDepthStencilView(shadowDepthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	deviceCtx->OMSetRenderTargets(1, &renderTargetView, shadowDepthView);
+	//deviceCtx->OMSetRenderTargets(1, &shadowRenderTarget, shadowDepthView);
+	deviceCtx->OMSetRenderTargets(0, nullptr, shadowDepthView);
+	//deviceCtx->OMSetRenderTargets(1, &renderTargetView, shadowDepthView);
 	deviceCtx->RSSetState(shadowRastState);
 	deviceCtx->RSSetViewports(1, &shadowViewport);
 
@@ -608,6 +628,10 @@ void Graphics::Render(Scene* scene) {
 	deviceCtx->OMSetDepthStencilState(depthStencilState, 0);
 	deviceCtx->OMSetBlendState(blendState, NULL, 0xFFFFFFFF);
 	deviceCtx->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	
+	/*ID3D11RenderTargetView* targets[] = {renderTargetView, shadowRenderTarget};
+	deviceCtx->OMSetRenderTargets(2, targets, depthStencilView);*/
+
 	deviceCtx->RSSetViewports(1, &viewport);
 
 	deviceCtx->PSSetSamplers(0, 1, &samplerStatePoint);
