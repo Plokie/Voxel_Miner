@@ -4,10 +4,6 @@
 #include "miniaudio.h"
 #include "../Engine/Transform.h"
 
-#define SAMPLE_FORMAT   ma_format_f32
-#define CHANNEL_COUNT   2
-#define SAMPLE_RATE     44100
-
 Audio* Audio::_Instance = nullptr;
 
 bool ErrHandle(ma_result result, string message) {
@@ -49,7 +45,7 @@ void Audio::Play(const string& name, Vector3 worldPos, float volume) {
 		//ma_sound_init_copy()
 		ErrHandle(res, "Unable to initialise sound from file");
 
-		//newSound->endCallback = OnSoundEnd; //this doesnt work, i think it deletes the sound data in memory
+		//newSound->endCallback = OnSoundEnd; //this doesnt work
 
 		res = ma_sound_start(newSound);
 		ErrHandle(res, "Unable to play sound");
@@ -57,7 +53,7 @@ void Audio::Play(const string& name, Vector3 worldPos, float volume) {
 }
 
 void OnSoundEnd(void* pUserData, ma_sound* pSound) {
-	//this doesnt work, i think it deletes the sound data in memory?
+	//this doesnt work, it completely deletes the sound, cant be replayed again
 	ma_sound_uninit(pSound);
 	delete pSound;
 }
@@ -77,7 +73,7 @@ void Audio::Play(const string& name, float volume) {
 		res = ma_sound_init_from_file(&_Instance->engine, findIt->second.path.c_str(), flags, NULL, NULL, newSound);
 		ErrHandle(res, "Unable to initialise sound from file");
 		
-		//newSound->endCallback = OnSoundEnd; //this doesnt work, i think it deletes the sound data in memory
+		//newSound->endCallback = OnSoundEnd; //this doesnt work
 
 		res = ma_sound_start(newSound);
 		ErrHandle(res, "Unable to play sound");
@@ -99,8 +95,6 @@ void data_callback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uin
 	(void)pInput;
 	ma_engine_read_pcm_frames((ma_engine*)pDevice->pUserData, pOutput, frameCount, NULL);
 }
-
-#define DECODER_COUNT 5
 
 void Audio::Init() {
 	_Instance = this;
