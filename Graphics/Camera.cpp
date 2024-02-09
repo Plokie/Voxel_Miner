@@ -42,3 +42,8 @@ const XMMATRIX& Camera::GetProjectionMatrix() const
 {
 	return this->projectionMatrix;
 }
+
+void Camera::SetProjectionMatrix(const XMMATRIX& mx)
+{
+	projectionMatrix = mx;
+}

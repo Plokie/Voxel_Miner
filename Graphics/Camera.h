@@ -27,4 +27,5 @@ public:
 	Transform transform;
 
 	const XMMATRIX& GetProjectionMatrix() const;
+	void SetProjectionMatrix(const XMMATRIX& mx);
 };

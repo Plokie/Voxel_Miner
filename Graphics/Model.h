@@ -110,6 +110,8 @@ public:
 	/// <param name="worldMx">cam view mx * cam proj mx</param>
 	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worldMx);
 
+	void DrawShadowMap(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX viewMx, XMMATRIX projMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs);
+
 	void SetTexture(int idx, ID3D11ShaderResourceView* tex) {
 		this->tex = tex;
 	}

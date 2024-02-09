@@ -41,13 +41,9 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worl
 	deviceCtx->Unmap(alphaBuffer, 0);
 	deviceCtx->PSSetConstantBuffers(0, 1, &alphaBuffer);
 
-	// shouldnt need these, it means something else is going wrong
-	//if(mesh == nullptr) return;
-
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	deviceCtx->IASetVertexBuffers(0, 1, &mesh->vertexBuffer, &stride, &offset);
-	//if(mesh == nullptr) return;
  	deviceCtx->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
 	if (pixelShader != nullptr)
@@ -59,15 +55,13 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worl
 	if (tex != nullptr)
 		deviceCtx->PSSetShaderResources(0, 1, &tex);
 	
-	//ID3D11Resource* pRes = nullptr;
-	//D3D11_TEXTURE2D_DESC tempDesc{};
-	//tex->GetResource(&pRes);
-	//ID3D11Texture2D* pTex = (ID3D11Texture2D*)pRes;
-
-	//pTex->GetDesc(&tempDesc);
-	//if(mesh == nullptr) return;
+	
 
 	deviceCtx->DrawIndexed((UINT)mesh->GetIndexCount(), 0, 0);
+}
+
+void Model::DrawShadowMap(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX viewMx, XMMATRIX projMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs)
+{
 }
 
 void Model::ReleaseMesh()

@@ -221,6 +221,7 @@ bool Graphics::SetupRasterizer() {
 	//rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
 	//rasterizerDesc.CullMode = D3D11_CULL_NONE;
 	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	rasterizerDesc.DepthClipEnable = true;
 	//rasterizerDesc.AntialiasedLineEnable = TRUE;
 	//rasterizerDesc.MultisampleEnable = TRUE;
 	//rasterizerDesc.
@@ -328,12 +329,73 @@ bool Graphics::SetupShadowmapBuffer()
 	desc.Height = static_cast<UINT>(SHADOWMAP_RESOLUTION.y);
 	desc.Width = static_cast<UINT>(SHADOWMAP_RESOLUTION.x);
 
-	HRESULT hr = device->CreateTexture2D(&desc, nullptr, &shadowMap);
+	HRESULT hr = device->CreateTexture2D(&desc, nullptr, &shadowDepthTex);
 	if (FAILED(hr)) {
 		exit(20);
 		return false;
 	}
+	//
 
+	D3D11_DEPTH_STENCIL_VIEW_DESC stencilDesc;
+	ZeroMemory(&stencilDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+	stencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	stencilDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	stencilDesc.Texture2D.MipSlice = 0;
+
+	hr = device->CreateDepthStencilView(shadowDepthTex, &stencilDesc, &shadowDepthView);
+	if(FAILED(hr)) exit(21);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC resDesc;
+	ZeroMemory(&resDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	resDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	resDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	resDesc.Texture2D.MipLevels = 1;
+
+	hr = device->CreateShaderResourceView(shadowDepthTex, &resDesc, &shadowResourceView);
+	if(FAILED(hr)) exit(22);
+
+	//
+
+	D3D11_SAMPLER_DESC samplerDesc;
+	ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.BorderColor[0] = 1.0f;
+	samplerDesc.BorderColor[1] = 1.0f;
+	samplerDesc.BorderColor[2] = 1.0f;
+	samplerDesc.BorderColor[3] = 1.0f;
+	samplerDesc.MinLOD = 0.f;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	samplerDesc.MipLODBias = 0.f;
+	samplerDesc.MaxAnisotropy = 0;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+
+	hr = device->CreateSamplerState(&samplerDesc, &shadowSamplerState);
+	if(FAILED(hr)) {
+		exit(23);
+	}
+
+	//
+
+	D3D11_RASTERIZER_DESC rastDesc;
+	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
+	rastDesc.CullMode = D3D11_CULL_BACK;
+	rastDesc.FillMode = D3D11_FILL_SOLID;
+	rastDesc.DepthClipEnable = true;
+	hr = device->CreateRasterizerState(&rastDesc, &shadowRastState);
+	if(FAILED(hr)) {
+		exit(24);
+	}
+
+	//
+
+	ZeroMemory(&shadowViewport, sizeof(D3D11_VIEWPORT));
+	shadowViewport.Height = SHADOWMAP_RESOLUTION.y;
+	shadowViewport.Width = SHADOWMAP_RESOLUTION.x;
+	shadowViewport.MinDepth = 0.f;
+	shadowViewport.MaxDepth = 1.f;
 
 	return true;
 }
@@ -427,7 +489,30 @@ bool Graphics::InitScene() {
 	camera.transform.position = Vector3(0.0f, 0.0f, -6.0f);
 	camera.SetProjectionValues(90.f, static_cast<float>(windowWidth) / static_cast<float>(windowHeight), 0.05f, 1000.f);
 
+	shadowCamera.transform.position = Vector3(0.f, 0.f, 0.f);
+	shadowCamera.SetProjectionMatrix(XMMatrixPerspectiveFovRH(XM_PIDIV2, 1.f, 12.f, 1000.f));
+	XMStoreFloat4x4(&shadowCbufferData.projection, shadowCamera.GetProjectionMatrix());
+	
+
+
 	return true;
+}
+
+void Graphics::RenderShadowMap(Scene* scene)
+{
+	XMStoreFloat4x4(&shadowCbufferData.view, shadowCamera.transform.mxView());
+	XMStoreFloat4(&shadowCbufferData.pos, shadowCamera.transform.position);
+	
+	D3D11_MAPPED_SUBRESOURCE map;
+	//deviceCtx->UpdateSubresource(&map, 0, NULL, &shadowCbuff, 0, 0);
+	deviceCtx->Map(shadowCbuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
+	CopyMemory(map.pData, &shadowCbufferData, sizeof(ShadowMap_CBuff));
+	deviceCtx->Unmap(shadowCbuffer, 0);
+
+	deviceCtx->ClearDepthStencilView(shadowDepthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+
+
 }
 
 bool Graphics::Init(HWND hwnd, int width, int height) {
@@ -489,6 +574,8 @@ void Graphics::Render(Scene* scene) {
 	//const float bgCol[] = { 4.f / 255.f, 2.f / 255.f, 26.0f / 255.f, 1.0f };
 	deviceCtx->ClearRenderTargetView(renderTargetView, &scene->clearColor.x);
 	deviceCtx->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	//deviceCtx->ClearRenderTargetView()
 
 	//
 
@@ -560,6 +647,11 @@ void Graphics::Render(Scene* scene) {
 		}
 
 	}
+
+
+	//
+
+	RenderShadowMap(scene);
 
 	//
 

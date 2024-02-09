@@ -26,6 +26,12 @@ using namespace std;
 
 #define LAYOUTSIZE 4
 
+struct ShadowMap_CBuff {
+	XMFLOAT4X4 projection;
+	XMFLOAT4X4 view;
+	XMFLOAT4 pos;
+};
+
 class Graphics {
 private:
 	ID3D11Device* device = nullptr;						// 
@@ -42,7 +48,16 @@ private:
 	ID3D11DepthStencilView* depthStencilView = nullptr;
 	ID3D11Texture2D* depthBuffer = nullptr;
 
-	ID3D11Texture2D* shadowMap = nullptr;
+	ID3D11Texture2D* shadowDepthTex = nullptr;
+	ID3D11DepthStencilView* shadowDepthView = nullptr;
+	ID3D11ShaderResourceView* shadowResourceView = nullptr;
+	ID3D11SamplerState* shadowSamplerState = nullptr;
+	ID3D11RasterizerState* shadowRastState = nullptr;
+	D3D11_VIEWPORT shadowViewport;
+	ShadowMap_CBuff shadowCbufferData;
+	ID3D11Buffer* shadowCbuffer;
+	//ID3D10Blob* shadowBuffer;
+	//XMMATRIX shadowMx;
 
 	ID3D11DepthStencilState* depthStencilState = nullptr;
 	ID3D11DepthStencilState* alphaDepthStencilState = nullptr;
@@ -80,11 +95,13 @@ private:
 	bool InitDX(HWND hwnd);
 	bool InitShaders();
 	bool InitScene();
+	void RenderShadowMap(Scene* scene);
 
 	static Graphics* _Instance;
 public:
 	SRWLOCK gRenderingMutex;
 	Camera camera;
+	Camera shadowCamera;
 	int windowWidth=0, windowHeight=0;
 
 	static Graphics* Get() {
@@ -119,6 +136,10 @@ public:
 		if(depthStencilState) depthStencilState->Release();
 
 		if(rasterizerState) rasterizerState->Release();
+
+		if(shadowDepthTex) shadowDepthTex->Release();
+		if(shadowDepthView) shadowDepthView->Release();
+		if(shadowResourceView) shadowResourceView->Release();
 
 		// Errors?????????????????
 		//if(samplerStateLinear) samplerStateLinear->Release();
