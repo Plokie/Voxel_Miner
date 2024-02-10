@@ -320,8 +320,8 @@ bool Graphics::SetupShadowmapBuffer()
 {
 	D3D11_TEXTURE2D_DESC desc;
 	ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
-	//desc.Format = DXGI_FORMAT_R32_TYPELESS;
-	desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+	desc.Format = DXGI_FORMAT_R32_TYPELESS;
+	//desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
 
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
@@ -341,8 +341,8 @@ bool Graphics::SetupShadowmapBuffer()
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC stencilDesc;
 	ZeroMemory(&stencilDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
-	//stencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	stencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	stencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	//stencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	//stencilDesc.Flags
 	stencilDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	stencilDesc.Texture2D.MipSlice = 0;
@@ -353,8 +353,8 @@ bool Graphics::SetupShadowmapBuffer()
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC resDesc;
 	ZeroMemory(&resDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-	//resDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	resDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	resDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	//resDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
 
 	resDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	resDesc.Texture2D.MipLevels = desc.MipLevels;
