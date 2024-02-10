@@ -343,7 +343,7 @@ bool Graphics::SetupShadowmapBuffer()
 	ZeroMemory(&stencilDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
 	//stencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	stencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-
+	//stencilDesc.Flags
 	stencilDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	stencilDesc.Texture2D.MipSlice = 0;
 
@@ -378,9 +378,10 @@ bool Graphics::SetupShadowmapBuffer()
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	samplerDesc.MipLODBias = 0.f;
 	samplerDesc.MaxAnisotropy = 0;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
 	//samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+	//samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 
 	hr = device->CreateSamplerState(&samplerDesc, &shadowSamplerState);
 	if(FAILED(hr)) {
@@ -595,12 +596,12 @@ void Graphics::RenderShadowMap(Scene* scene)
 	//deviceCtx->OMSetRenderTargets(1, &shadowRenderTarget, shadowDepthView);
 	deviceCtx->OMSetRenderTargets(0, nullptr, shadowDepthView);
 	
-	deviceCtx->RSSetState(shadowRastState);
 	deviceCtx->RSSetViewports(1, &shadowViewport);
+	deviceCtx->RSSetState(shadowRastState);
 
 
-	//deviceCtx->PSSetShader(nullptr, nullptr, 0);
-	deviceCtx->PSSetShader(shadowPixelShader.GetShader(), nullptr, 0);
+	deviceCtx->PSSetShader(nullptr, nullptr, 0);
+	//deviceCtx->PSSetShader(shadowPixelShader.GetShader(), nullptr, 0);
 	deviceCtx->VSSetShader(shadowVertexShader.GetShader(), nullptr, 0);
 
 
@@ -714,8 +715,8 @@ void Graphics::Render(Scene* scene) {
 
 	}
 
-	//ID3D11ShaderResourceView* nullSRV[] = { nullptr };
-	//deviceCtx->PSSetShaderResources(1, 1, nullSRV);
+	ID3D11ShaderResourceView* nullSRV[] = { nullptr };
+	deviceCtx->PSSetShaderResources(1, 1, nullSRV);
 
 
 	//

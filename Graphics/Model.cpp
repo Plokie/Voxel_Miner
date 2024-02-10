@@ -42,7 +42,7 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX view
 	CopyMemory(map.pData, &psData, sizeof(CB_VS_pixelshader));
 	deviceCtx->Unmap(alphaBuffer, 0);
 	deviceCtx->PSSetConstantBuffers(0, 1, &alphaBuffer);
-
+	
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	deviceCtx->IASetVertexBuffers(0, 1, &mesh->vertexBuffer, &stride, &offset);
