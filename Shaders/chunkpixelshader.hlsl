@@ -7,17 +7,30 @@ cbuffer cbuff : register(b0)
 struct PS_INPUT
 {
     float4 pos : SV_POSITION;
-    //float3 col : COLOR;
     float2 texCoord : TEXCOORD;
     float3 normal : NORMAL;
     float2 texOffset : TEXOFFSET;
+    float3 worldPos : WORLDPOS;
+    
+    float4 lightSpacePos : LIGHTSPACEPOS;
+    float3 lightRay : LIGHTRAY;
+    float3 view : VIEW;
 };
 
 Texture2D tex : TEXTURE : register(t0);
+Texture2D lightTex : LIGHTTEXTURE : register(t1);
 SamplerState samplerState : SAMPLER : register(s0);
+SamplerState lightSamplerState : LIGHTSAMPLER : register(s1);
 
 float4 main(PS_INPUT input) : SV_TARGET
 {
+    //debug
+    
+    float4 sunTexSample = lightTex.Sample(lightSamplerState, input.texCoord * 16.0f);
+    return float4(sunTexSample.rgb, 1.0f);
+    //
+    
+    
     float4 pixCol = tex.Sample(samplerState, input.texCoord + input.texOffset);
     if (pixCol.a < 0.5f)
         discard;

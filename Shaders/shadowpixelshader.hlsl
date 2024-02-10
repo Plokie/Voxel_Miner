@@ -4,19 +4,22 @@
 //    float4x4 view;
 //    float4 sunPos;
 //}
+//cbuffer cbuff : register(b0)
+//{
+//    float alpha = 1.0f;
+//    float2 uvOffset = float2(0.f, 0.f);
+//}
 
-struct PS_INPUT
+struct SHADOW_PS_INPUT
 {
     float4 pos : SV_POSITION;
-    float2 texCoord : TEXCOORD;
-    float3 normal : NORMAL;
-    float2 texOffset : TEXOFFSET;
 };
 
-Texture2D tex : TEXTURE : register(t0);
-SamplerState samplerState : SAMPLER : register(s0);
-
-float4 main(PS_INPUT input) : SV_TARGET
+void main(SHADOW_PS_INPUT input)
 {
-	return float4(1.0f, 0.0f, 0.0f, 1.0f);
 }
+
+//float4 main(SHADOW_PS_INPUT input) : SV_TARGET
+//{
+//    return float4(0.5f, 0.0f, 0.0f, 1.0f);
+//}

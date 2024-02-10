@@ -82,7 +82,7 @@ private:
 	
 
 	bool ChooseAdapter();
-	bool SetupSwapChain(HWND hwnd);
+	bool SetupSwapChain(HWND hwnd, IDXGISwapChain** outSwapChain);
 	bool SetupDepthBuffer();
 	bool SetupDepthStencil();
 	bool SetupAlphaDepthStencil();
@@ -124,6 +124,10 @@ public:
 
 	void Sort3DObjects(vector<Object3D*>& objects, int startIndex, int endIndex);
 	void Sort2DObjects(vector<Object2D*>& objects, int startIndex, int endIndex);
+
+	ID3D11ShaderResourceView* GetShadowResourceView() const {
+		return shadowResourceView;
+	}
 
 	ID3D11Device* GetDevice() { return device; }
 

@@ -53,6 +53,7 @@ bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX pr
 			}
 			else //if objects contains transparency, queue to be rendered after opaque geometry
 			{
+				if(transparentModels!=nullptr)
 				transparentModels->push_back(tuple<Model*, XMMATRIX, Object3D*>(model, transform.mx(), this));
 			}
 		}

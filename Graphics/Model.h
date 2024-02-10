@@ -25,6 +25,7 @@ struct CB_VS_vertexshader {
 	XMMATRIX projMx;
 	XMMATRIX lightViewMx;
 	XMMATRIX lightProjMx;
+	//XMFLOAT4 lightPos;
 	float time;
 };
 
