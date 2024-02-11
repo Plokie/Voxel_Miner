@@ -314,7 +314,7 @@ bool Graphics::SetupSpriteBatch() {
 	return true;
 }
 
-#define SHADOWMAP_RESOLUTION Vector2Int(4096,4096)
+#define SHADOWMAP_RESOLUTION Vector2Int(8000,8000)
 
 bool Graphics::SetupShadowmapBuffer()
 {
@@ -381,7 +381,9 @@ bool Graphics::SetupShadowmapBuffer()
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_LESS;
 	//samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 	//samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+	//samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	//samplerDesc.Filter = D3D11_FILTER_
 
 	hr = device->CreateSamplerState(&samplerDesc, &shadowSamplerState);
 	if(FAILED(hr)) {
@@ -527,7 +529,7 @@ bool Graphics::InitScene() {
 	camera.SetProjectionValues(90.f, static_cast<float>(windowWidth) / static_cast<float>(windowHeight), 0.05f, 1000.f);
 
 	sun.position = Vector3(0.f, 0.f, 0.f);
-	sun.rotation = Vector3(45.f, 45.f, 45.f);
+	sun.rotation = Vector3(45.f, 45.f, 0.f);
 
 	//shadowCamera.transform.position = Vector3(0.0f, 3.f, 0.0f);
 	//shadowCamera.transform.rotation = Vector3(45.f, 45.f, 0.f);

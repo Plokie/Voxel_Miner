@@ -42,6 +42,10 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX view
 	psData.alpha = alpha;
 	psData.uvOffset = uvOffset;
 
+	//XMMATRIX lightMx = XMMatrixMultiply(Graphics::Get()->shadowCamera.transform.mxView(), Graphics::Get()->shadowCamera.GetProjectionMatrix());
+	//psData.lightMx = XMMatrixTranspose(lightMx);
+	//psData.lightMxInv = XMMatrixTranspose(XMMatrixInverse(nullptr, lightMx));
+
 	D3D11_MAPPED_SUBRESOURCE map;
 	HRESULT hr = deviceCtx->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map);
 	CopyMemory(map.pData, &vsData, sizeof(CB_VS_vertexshader));

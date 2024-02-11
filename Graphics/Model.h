@@ -32,6 +32,9 @@ struct CB_VS_vertexshader {
 struct CB_VS_pixelshader {
 	float alpha = 1.0f;
 	Vector2 uvOffset = { 0.f, 0.f };
+	float pad;
+	//XMMATRIX lightMx;
+	//XMMATRIX lightMxInv;
 };
 
 enum MODEL_FLAG : unsigned int {

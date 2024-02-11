@@ -40,18 +40,9 @@ VS_OUTPUT main(VS_INPUT input)
     pos = mul(modelPos, view);
     pos = mul(pos, proj);
     output.pos = pos;
-    
-    //float4 lightSpacePos = mul(model, lightView);
-    //lightSpacePos = mul(lightSpacePos, lightProj);
-    //output.lightSpacePos = lightSpacePos;
-    
-    //float3 lRay = lightPos.xyz - modelPos.xyz;
-    //output.lightRay = lRay;
-    
-    //output.view = eyePos.xyz - modelPos.xyz;
-    
-    output.lPos = mul(modelPos, lightView);
-    output.lPos = mul(output.lPos, lightProj);
+   
+    float4 lPos = mul(modelPos, lightView);
+    output.lPos = mul(lPos, lightProj);
     
     output.normal = mul(float4(input.normal, 0.0f), model).xyz;
     output.texCoord = input.texCoord;
