@@ -533,7 +533,10 @@ bool Graphics::InitScene() {
 	//shadowCamera.transform.rotation = Vector3(45.f, 45.f, 0.f);
 	//shadowCamera.SetProjectionMatrix(XMMatrixPerspectiveFovRH(XM_PIDIV2, 1.f, 0.1f, 1000.f));
 	//shadowCamera.SetProjectionValues(90.f, static_cast<float>(SHADOWMAP_RESOLUTION.x) / static_cast<float>(SHADOWMAP_RESOLUTION.y), 0.05f, 1000.f);
-	shadowCamera.SetProjectionMatrix(XMMatrixOrthographicLH(100.f, 100.f, 0.01f, 250.f));
+	shadowCamera.SetProjectionMatrix(XMMatrixOrthographicLH(100.f, 100.f, 0.01f, 800.f));
+	//shadowCamera.SetProjectionValues(180.f, static_cast<float>(SHADOWMAP_RESOLUTION.x) / static_cast<float>(SHADOWMAP_RESOLUTION.y), 0.05f, 1000.f);
+
+	
 	
 	
 
@@ -603,13 +606,13 @@ void Graphics::RenderShadowMap(Scene* scene)
 	deviceCtx->RSSetState(shadowRastState);
 
 
-	deviceCtx->PSSetShader(nullptr, nullptr, 0);
+	deviceCtx->PSSetShader(shadowPixelShader.GetShader(), nullptr, 0);
 	deviceCtx->VSSetShader(shadowVertexShader.GetShader(), nullptr, 0);
 
 	//shadowCamera.transform.position = camera.transform.position;
 
 	sun.position = camera.transform.position;
-	shadowCamera.transform.position = sun.position + (sun.back() * 75.f);
+	shadowCamera.transform.position = sun.position + (sun.back() * 400.f);
 	shadowCamera.transform.rotation = sun.rotation;
 
 	for(auto it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); it++) {

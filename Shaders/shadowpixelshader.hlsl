@@ -10,13 +10,19 @@
 //    float2 uvOffset = float2(0.f, 0.f);
 //}
 
+Texture2D tex : TEXTURE : register(t0);
+SamplerState samplerState : SAMPLER : register(s0);
+
 struct SHADOW_PS_INPUT
 {
     float4 pos : SV_POSITION;
+    float2 texCoord : TEXCOORD;
 };
 
 void main(SHADOW_PS_INPUT input)
 {
+    float4 texCol = tex.Sample(samplerState, input.texCoord);
+    clip(texCol.a - 0.2f);
 }
 
 //float4 main(SHADOW_PS_INPUT input) : SV_TARGET

@@ -50,7 +50,8 @@ float4 main(PS_INPUT input) : SV_TARGET
     
         float shadowMapSample = lightTex.Sample(lightSamplerState, input.lPos.xy).r;
     
-        input.lPos.z -= 0.00001f;
+        input.lPos.z -= 0.000001f;
+        
     
         shadowFac = (shadowMapSample < input.lPos.z) ? 0.5f : 1.0f;     
     }

@@ -21,6 +21,7 @@ struct VS_INPUT
 struct SHADOW_PS_INPUT
 {
     float4 pos : SV_POSITION;
+    float2 texCoord : TEXCOORD;
 };
 
 SHADOW_PS_INPUT main(VS_INPUT input)
@@ -33,6 +34,8 @@ SHADOW_PS_INPUT main(VS_INPUT input)
     pos = mul(pos, view);
     pos = mul(pos, proj);
     output.pos = pos;
+    
+    output.texCoord = input.texCoord;
     
  
     return output;
