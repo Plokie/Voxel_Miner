@@ -316,55 +316,8 @@ bool Graphics::SetupSpriteBatch() {
 
 #define SHADOWMAP_RESOLUTION Vector2Int(8000,8000)
 
-bool Graphics::SetupShadowmapBuffer()
+void Graphics::InitializeShadowmapSampler()
 {
-	D3D11_TEXTURE2D_DESC desc;
-	ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
-	desc.Format = DXGI_FORMAT_R32_TYPELESS;
-	//desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
-
-	desc.MipLevels = 1;
-	desc.ArraySize = 1;
-	desc.SampleDesc.Count = 1;
-	desc.SampleDesc.Quality = 0;
-	//desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
-	desc.Height = static_cast<UINT>(SHADOWMAP_RESOLUTION.y);
-	desc.Width = static_cast<UINT>(SHADOWMAP_RESOLUTION.x);
-
-	HRESULT hr = device->CreateTexture2D(&desc, nullptr, &shadowDepthTex);
-	if (FAILED(hr)) {
-		exit(50);
-		return false;
-	}
-	//
-
-	D3D11_DEPTH_STENCIL_VIEW_DESC stencilDesc;
-	ZeroMemory(&stencilDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
-	stencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
-	//stencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	//stencilDesc.Flags
-	stencilDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	stencilDesc.Texture2D.MipSlice = 0;
-
-	hr = device->CreateDepthStencilView(shadowDepthTex, &stencilDesc, &shadowDepthView);
-	//hr = device->CreateDepthStencilView(shadowDepthTex, 0, &shadowDepthView);
-	if(FAILED(hr)) exit(51);
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC resDesc;
-	ZeroMemory(&resDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-	resDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	//resDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-
-	resDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	resDesc.Texture2D.MipLevels = desc.MipLevels;
-	resDesc.Texture2D.MostDetailedMip = 0;
-
-	hr = device->CreateShaderResourceView(shadowDepthTex, &resDesc, &shadowResourceView);
-	if(FAILED(hr)) exit(52);
-
-	//
-
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
@@ -385,7 +338,7 @@ bool Graphics::SetupShadowmapBuffer()
 	//samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	//samplerDesc.Filter = D3D11_FILTER_
 
-	hr = device->CreateSamplerState(&samplerDesc, &shadowSamplerState);
+	HRESULT hr = device->CreateSamplerState(&samplerDesc, &shadowSamplerState);
 	if(FAILED(hr)) {
 		exit(53);
 	}
@@ -402,30 +355,60 @@ bool Graphics::SetupShadowmapBuffer()
 	if(FAILED(hr)) {
 		exit(54);
 	}
+}
 
+bool Graphics::SetupShadowmapBuffer(ID3D11Texture2D** depthTex, ID3D11DepthStencilView** depthStencilView, ID3D11ShaderResourceView** depthResourceView, D3D11_VIEWPORT* viewport, int resX, int resY)
+{
+	D3D11_TEXTURE2D_DESC desc;
+	ZeroMemory(&desc, sizeof(D3D11_TEXTURE2D_DESC));
+	desc.Format = DXGI_FORMAT_R32_TYPELESS;
+	//desc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	//desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
+	desc.Width = static_cast<UINT>(resX);
+	desc.Height = static_cast<UINT>(resY);
+
+	HRESULT hr = device->CreateTexture2D(&desc, nullptr, depthTex);
+	if (FAILED(hr)) {
+		exit(50);
+		return false;
+	}
 	//
 
-	ZeroMemory(&shadowViewport, sizeof(D3D11_VIEWPORT));
-	shadowViewport.Height = SHADOWMAP_RESOLUTION.y;
-	shadowViewport.Width = SHADOWMAP_RESOLUTION.x;
-	shadowViewport.MinDepth = 0.f;
-	shadowViewport.MaxDepth = 1.f;
+	D3D11_DEPTH_STENCIL_VIEW_DESC stencilDesc;
+	ZeroMemory(&stencilDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
+	stencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	//stencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	//stencilDesc.Flags
+	stencilDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	stencilDesc.Texture2D.MipSlice = 0;
 
-	//
+	hr = device->CreateDepthStencilView(shadowDepthTex, &stencilDesc, depthStencilView);
+	//hr = device->CreateDepthStencilView(shadowDepthTex, 0, &shadowDepthView);
+	if(FAILED(hr)) exit(51);
 
-	//ID3D11Texture2D* backBuffer;
-	//hr = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
-	//if(FAILED(hr)) {
-	//	exit(55); //Failed to get or set back buffer
-	//	return false;
-	//}
+	D3D11_SHADER_RESOURCE_VIEW_DESC resDesc;
+	ZeroMemory(&resDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	resDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	//resDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
 
-	////
-	//hr = device->CreateRenderTargetView(backBuffer, NULL, &shadowRenderTarget);
-	//if(FAILED(hr)) {
-	//	exit(56); //Failed to create render target
-	//	return false;
-	//}
+	resDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	resDesc.Texture2D.MipLevels = desc.MipLevels;
+	resDesc.Texture2D.MostDetailedMip = 0;
+
+	hr = device->CreateShaderResourceView(shadowDepthTex, &resDesc, depthResourceView);
+	if(FAILED(hr)) exit(52);
+
+	ZeroMemory(viewport, sizeof(D3D11_VIEWPORT));
+	viewport->Width = static_cast<float>(resX);
+	viewport->Height = static_cast<float>(resY);
+	viewport->MinDepth = 0.f;
+	viewport->MaxDepth = 1.f;
 
 	return true;
 }
@@ -461,7 +444,9 @@ bool Graphics::InitDX(HWND hwnd) {
 
 	SetupSpriteBatch();
 
-	SetupShadowmapBuffer();
+
+	InitializeShadowmapSampler();
+	SetupShadowmapBuffer(&shadowDepthTex, &shadowDepthView, &shadowResourceView, &shadowViewport, 8000, 8000);
 	
 	return true;
 }

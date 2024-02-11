@@ -92,7 +92,9 @@ private:
 	bool SetupSamplerStatePoint();
 	bool SetupBlendState();
 	bool SetupSpriteBatch();
-	bool SetupShadowmapBuffer();
+
+	void InitializeShadowmapSampler();
+	bool SetupShadowmapBuffer(ID3D11Texture2D** depthTex, ID3D11DepthStencilView** depthStencilView, ID3D11ShaderResourceView** depthResourceView, D3D11_VIEWPORT* shadowViewport, int resX, int resY);
 
 	bool InitResolution(HWND hwnd);
 
