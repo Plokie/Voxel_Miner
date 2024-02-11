@@ -26,9 +26,7 @@ struct VS_OUTPUT
     float2 texOffset : TEXOFFSET;
     float3 worldPos : WORLDPOS;
     
-    float4 lightSpacePos : LIGHTSPACEPOS;
-    float3 lightRay : LIGHTRAY;
-    float3 view : VIEW;
+    float4 lPos : LIGHTSPACEPOS;
 };
 
 VS_OUTPUT main(VS_INPUT input)
@@ -51,6 +49,9 @@ VS_OUTPUT main(VS_INPUT input)
     //output.lightRay = lRay;
     
     //output.view = eyePos.xyz - modelPos.xyz;
+    
+    output.lPos = mul(modelPos, lightView);
+    output.lPos = mul(output.lPos, lightProj);
     
     output.normal = mul(float4(input.normal, 0.0f), model).xyz;
     output.texCoord = input.texCoord;

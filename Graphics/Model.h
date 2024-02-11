@@ -34,6 +34,12 @@ struct CB_VS_pixelshader {
 	Vector2 uvOffset = { 0.f, 0.f };
 };
 
+enum MODEL_FLAG : unsigned int {
+	MF_NONE = 0,
+	MF_TRANSPARENT = 1,
+	MF_DO_NOT_WRITE_TO_SUN_DEPTH = 2,
+};
+
 /// <summary>
 /// Contains a mesh and additional const buffers, textures and shaders used to render the mesh
 /// </summary>
@@ -77,12 +83,17 @@ private:
 	PixelShader* pixelShader = nullptr;
 
 	Vector2 uvOffset = { 0.f, 0.f };
+	unsigned int flags = 0;
 
 public:
 	//SRWLOCK gAcquireMutex;
 	//SIZE_T indexCount = 0;
 	//todo: materials
 	float alpha = 1.0f;
+
+	void SetFlags(unsigned int flags);
+	bool HasFlag(MODEL_FLAG flag) const;
+
 
 	Model* Init(ID3D11Device* device);
 

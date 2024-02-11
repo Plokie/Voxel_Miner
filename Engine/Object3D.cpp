@@ -65,12 +65,13 @@ bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX pr
 	return didDraw;
 }
 
-bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX projMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs) {
+bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX projMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs, unsigned int modelFlagFilter = 0) {
 	for(Model* model : models) {
 
 		if(model == nullptr) continue;
 		
-		if(!model->IsTransparent())
+		//if(!model->IsTransparent())
+		if(!model->IsTransparent() && !model->HasFlag(static_cast<MODEL_FLAG>(modelFlagFilter)))
 			model->Draw(deviceCtx, transform.mx(), viewMx, projMx, ps, vs);
 	}
 

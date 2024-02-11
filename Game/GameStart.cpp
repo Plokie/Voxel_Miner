@@ -80,4 +80,8 @@ void GameStart(Engine* engine) {
 // Create a new class inheriting from Object3D and override Update(float dTime)
 // 
 void GameUpdate(Engine* engine, float dTime) {
+	Transform* sunTransform = &Graphics::Get()->sun;
+	sunTransform->rotation.x += dTime * (3.14159265359f / 600.f);
+	if(sunTransform->rotation.x > 3.14159265359f)
+		sunTransform->rotation.x = 0.f;
 }

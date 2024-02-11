@@ -314,7 +314,7 @@ bool Graphics::SetupSpriteBatch() {
 	return true;
 }
 
-#define SHADOWMAP_RESOLUTION Vector2Int(720,720)
+#define SHADOWMAP_RESOLUTION Vector2Int(4096,4096)
 
 bool Graphics::SetupShadowmapBuffer()
 {
@@ -393,7 +393,8 @@ bool Graphics::SetupShadowmapBuffer()
 	D3D11_RASTERIZER_DESC rastDesc;
 	ZeroMemory(&rastDesc, sizeof(D3D11_RASTERIZER_DESC));
 	rastDesc.FillMode = D3D11_FILL_SOLID;
-	rastDesc.CullMode = D3D11_CULL_BACK;
+	//rastDesc.CullMode = D3D11_CULL_BACK;
+	rastDesc.CullMode = D3D11_CULL_NONE;
 	rastDesc.DepthClipEnable = true;
 	hr = device->CreateRasterizerState(&rastDesc, &shadowRastState);
 	if(FAILED(hr)) {
@@ -525,10 +526,14 @@ bool Graphics::InitScene() {
 	camera.transform.position = Vector3(0.0f, 0.0f, -6.0f);
 	camera.SetProjectionValues(90.f, static_cast<float>(windowWidth) / static_cast<float>(windowHeight), 0.05f, 1000.f);
 
-	shadowCamera.transform.position = Vector3(0.5f, 0.5f, 0.5f);
-	shadowCamera.transform.rotation = Vector3(0.f, 45.f, 0.f);
+	sun.position = Vector3(0.f, 0.f, 0.f);
+	sun.rotation = Vector3(45.f, 45.f, 45.f);
+
+	//shadowCamera.transform.position = Vector3(0.0f, 3.f, 0.0f);
+	//shadowCamera.transform.rotation = Vector3(45.f, 45.f, 0.f);
 	//shadowCamera.SetProjectionMatrix(XMMatrixPerspectiveFovRH(XM_PIDIV2, 1.f, 0.1f, 1000.f));
-	shadowCamera.SetProjectionValues(90.f, static_cast<float>(SHADOWMAP_RESOLUTION.x) / static_cast<float>(SHADOWMAP_RESOLUTION.y), 0.05f, 1000.f);
+	//shadowCamera.SetProjectionValues(90.f, static_cast<float>(SHADOWMAP_RESOLUTION.x) / static_cast<float>(SHADOWMAP_RESOLUTION.y), 0.05f, 1000.f);
+	shadowCamera.SetProjectionMatrix(XMMatrixOrthographicLH(100.f, 100.f, 0.01f, 250.f));
 	
 	
 
@@ -591,9 +596,7 @@ bool Graphics::OnResize(HWND hwnd, int width, int height) {
 void Graphics::RenderShadowMap(Scene* scene)
 {
 	const float bg[] = {0.f, 0.f, 0.f, 1.0f};
-	//deviceCtx->ClearRenderTargetView(shadowRenderTarget, bg);
 	deviceCtx->ClearDepthStencilView(shadowDepthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	//deviceCtx->OMSetRenderTargets(1, &shadowRenderTarget, shadowDepthView);
 	deviceCtx->OMSetRenderTargets(0, nullptr, shadowDepthView);
 	
 	deviceCtx->RSSetViewports(1, &shadowViewport);
@@ -601,18 +604,18 @@ void Graphics::RenderShadowMap(Scene* scene)
 
 
 	deviceCtx->PSSetShader(nullptr, nullptr, 0);
-	//deviceCtx->PSSetShader(shadowPixelShader.GetShader(), nullptr, 0);
 	deviceCtx->VSSetShader(shadowVertexShader.GetShader(), nullptr, 0);
 
+	//shadowCamera.transform.position = camera.transform.position;
+
+	sun.position = camera.transform.position;
+	shadowCamera.transform.position = sun.position + (sun.back() * 75.f);
+	shadowCamera.transform.rotation = sun.rotation;
 
 	for(auto it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); it++) {
 		if(it->second == nullptr) continue;
-		if((it->second->cullBox.GetHalfSize().magnitude() == 0.0f || camera.IsAABBInFrustum(it->second->cullBox)) && it->second->doRender)
-			//it->second->Draw(deviceCtx, camera.transform.mxView(), camera.GetProjectionMatrix(), shadowPixelShader.GetShader(), shadowVertexShader.GetShader());
-			it->second->Draw(deviceCtx, camera.transform.mxView(), camera.GetProjectionMatrix(), nullptr, nullptr);
-			//it->second->Draw(deviceCtx, shadowCamera.transform.mxView(), shadowCamera.GetProjectionMatrix(), shadowPixelShader.GetShader(), shadowVertexShader.GetShader());
-			//it->second->Draw(deviceCtx, shadowCamera.transform.mxView(), shadowCamera.GetProjectionMatrix(), nullptr);
-			//it->second->Draw(deviceCtx, camera.transform.mxView() * camera.GetProjectionMatrix(), &transparentModels);	
+		if((it->second->cullBox.GetHalfSize().magnitude() == 0.0f || shadowCamera.IsAABBInFrustum(it->second->cullBox)) && it->second->doRender)
+			it->second->Draw(deviceCtx, shadowCamera.transform.mxView(), shadowCamera.GetProjectionMatrix(), nullptr, nullptr, MF_DO_NOT_WRITE_TO_SUN_DEPTH);
 	}
 
 
@@ -627,8 +630,7 @@ void Graphics::Render(Scene* scene) {
 	deviceCtx->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	//float bgCol[] = {1.0, 0.6, 1.0, 1.0};
 	//const float bgCol[] = { 145.f / 255.f, 217.f / 255.f, 1.0f, 1.0f };
-	//const float bgCol[] = { 4.f / 255.f, 2.f / 255.f, 26.0f / 255.f, 1.0f };
-	RenderShadowMap(scene);
+	//const float bgCol[] = { 4.f / 255.f, 2.f / 255.f, 26.0f / 255.f, 1.0f };	
 	
 	
 	deviceCtx->ClearRenderTargetView(renderTargetView, &scene->clearColor.x);
@@ -641,7 +643,15 @@ void Graphics::Render(Scene* scene) {
 
 	deviceCtx->OMSetDepthStencilState(depthStencilState, 0);
 	deviceCtx->OMSetBlendState(blendState, NULL, 0xFFFFFFFF);
-	deviceCtx->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+
+	RenderShadowMap(scene);
+
+	if(Input::IsKeyHeld('J')) {
+		deviceCtx->OMSetRenderTargets(1, &renderTargetView, shadowDepthView);
+	}
+	else {
+		deviceCtx->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	}
 	
 	/*ID3D11RenderTargetView* targets[] = {renderTargetView, shadowRenderTarget};
 	deviceCtx->OMSetRenderTargets(2, targets, depthStencilView);*/
@@ -833,4 +843,38 @@ void Graphics::Sort2DObjects(vector<Object2D*>& objects, int start, int end) {
 
 
 	//
+}
+
+Graphics::~Graphics()
+{
+	if(device) device->Release();
+	if(deviceCtx) deviceCtx->Release();
+	if(swapChain) swapChain->Release();
+	if(renderTargetView) renderTargetView->Release();
+
+	if(depthStencilView) depthStencilView->Release();
+	if(depthBuffer) depthBuffer->Release();
+	if(depthStencilState) depthStencilState->Release();
+
+	if(rasterizerState) rasterizerState->Release();
+
+	if(shadowDepthTex) shadowDepthTex->Release();
+	if(shadowDepthView) shadowDepthView->Release();
+	if(shadowResourceView) shadowResourceView->Release();
+	if(shadowSamplerState) shadowSamplerState->Release();
+	if(shadowRastState) shadowRastState->Release();
+	if(shadowRenderTarget) shadowRenderTarget->Release();
+
+	// Errors?????????????????
+	//if(samplerStateLinear) samplerStateLinear->Release();
+
+	//if(samplerStatePoint) samplerStatePoint->Release();
+
+	if(errTex) errTex->Release();
+
+	//if (spriteBatch) delete spriteBatch;
+
+	//if (testSpriteFont) delete testSpriteFont;
+
+	if(blendState) blendState->Release();
 }

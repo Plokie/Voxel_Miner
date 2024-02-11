@@ -23,6 +23,8 @@ struct VS_OUTPUT
     float3 normal : NORMAL;
     float2 texOffset : TEXOFFSET;
     float3 worldPos : WORLDPOS;
+    
+    float4 lPos : LIGHTSPACEPOS;
 };
 
 
@@ -83,7 +85,8 @@ VS_OUTPUT main(VS_INPUT input)
     VS_OUTPUT output;
     //output.pos = float4(input.pos + float3(offsetX, offsetY, 0), 1.0f);
     
-    float3 modelMxPos = mul(float4(input.pos, 1.0f), model).xyz;
+    float4 modelPos = mul(float4(input.pos, 1.0f), model);
+    float3 modelMxPos = modelPos.xyz;
     float height = frac(input.pos.y);
     // relative height 0.0f = base, 1.0f = top
     float relHeight = (height / ((tile_size / atlas_size) * shell_pix_height));
@@ -105,6 +108,9 @@ VS_OUTPUT main(VS_INPUT input)
     //output.col = input.col;
     output.texCoord = input.texCoord;
     output.texOffset = input.texOffset;
+    
+    output.lPos = mul(modelPos, lightView);
+    output.lPos = mul(output.lPos, lightProj);
     
     //output.normal = -input.normal;
     

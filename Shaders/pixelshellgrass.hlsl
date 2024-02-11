@@ -7,15 +7,20 @@ cbuffer cbuff : register(b0)
 struct PS_INPUT
 {
     float4 pos : SV_POSITION;
-    //float3 col : COLOR;
     float2 texCoord : TEXCOORD;
     float3 normal : NORMAL;
     float2 texOffset : TEXOFFSET;
     float3 worldPos : WORLDPOS;
+    
+    float4 lPos : LIGHTSPACEPOS;
+    float3 lightRay : LIGHTRAY;
+    float3 view : VIEW;
 };
 
 Texture2D tex : TEXTURE : register(t0);
+Texture2D lightTex : LIGHTTEXTURE : register(t1);
 SamplerState samplerState : SAMPLER : register(s0);
+SamplerState lightSamplerState : LIGHTSAMPLER : register(s1);
 
 float rand(in float2 uv)
 {
@@ -29,6 +34,30 @@ static const float shell_pix_height = 2.0f;
 
 float4 main(PS_INPUT input) : SV_TARGET
 {
+    float shadowFac = 1.0f;
+    input.lPos.xyz /= input.lPos.w; //re-homogenize
+    
+    if (input.lPos.x < -1.0f || input.lPos.x > 1.0f ||
+        input.lPos.y < -1.0f || input.lPos.y > 1.0f ||
+        input.lPos.z < 0.0f || input.lPos.z > 1.0f)
+        //return float4(1.0f, 1.0f, 1.0f, 1.0f);
+    {
+    }
+    else
+    {
+        input.lPos.x = input.lPos.x / 2 + 0.5;
+        input.lPos.y = input.lPos.y / -2 + 0.5;
+    
+        float shadowMapSample = lightTex.Sample(lightSamplerState, input.lPos.xy).r;
+    
+        input.lPos.z -= 0.00001f;
+    
+        shadowFac = (shadowMapSample < input.lPos.z) ? 0.5f : 1.0f;     
+    }
+    
+    ///
+    
+    
     float pixelSize = (tile_size / atlas_size);
     float4 pixCol = tex.Sample(samplerState, input.texCoord + input.texOffset);
     float2 normalUV = input.texCoord / pixelSize;
@@ -48,5 +77,8 @@ float4 main(PS_INPUT input) : SV_TARGET
     //todo: implement frosty grass in areas
     //return pixCol + (heightRatio * 0.25f); // this actually looks really cool for frosty grass
     
-    return pixCol * brightness;
+    float4 outCol = pixCol * brightness * shadowFac;
+    outCol.a = 1.0f;
+    
+    return outCol;
 }

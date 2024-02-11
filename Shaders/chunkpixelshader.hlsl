@@ -12,7 +12,7 @@ struct PS_INPUT
     float2 texOffset : TEXOFFSET;
     float3 worldPos : WORLDPOS;
     
-    float4 lightSpacePos : LIGHTSPACEPOS;
+    float4 lPos : LIGHTSPACEPOS;
     float3 lightRay : LIGHTRAY;
     float3 view : VIEW;
 };
@@ -26,8 +26,34 @@ float4 main(PS_INPUT input) : SV_TARGET
 {
     //debug
     
-    float4 sunTexSample = lightTex.Sample(lightSamplerState, input.texCoord * 16.0f);
-    return float4(sunTexSample.rgb, 1.0f);
+    //float4 sunTexSample = lightTex.Sample(lightSamplerState, input.texCoord * 16.0f);
+    //return float4(sunTexSample.rgb, 1.0f);
+    
+    float shadowFac = 1.0f;
+    float pixShadowFac = 1.0f;
+    
+    input.lPos.xyz /= input.lPos.w; //re-homogenize
+    
+    if (input.lPos.x < -1.0f || input.lPos.x > 1.0f ||
+        input.lPos.y < -1.0f || input.lPos.y > 1.0f ||
+        input.lPos.z < 0.0f || input.lPos.z > 1.0f)
+    {
+    }
+        //return float4(1.0f, 1.0f, 1.0f, 1.0f);
+    else {
+        input.lPos.x = input.lPos.x / 2 + 0.5;
+        input.lPos.y = input.lPos.y / -2 + 0.5;
+    
+        float shadowMapSample = lightTex.Sample(lightSamplerState, input.lPos.xy).r;
+    
+        input.lPos.z -= 0.00001f;
+    
+        shadowFac = (shadowMapSample < input.lPos.z)?0.5f:1.0f;
+        pixShadowFac = 0;
+    }
+    
+    
+    
     //
     
     
@@ -48,7 +74,10 @@ float4 main(PS_INPUT input) : SV_TARGET
     float4 col = float4(pixCol.rgb * lightDot, pixCol.a);
     //col = lerp(col, pixCol, 0.3f);
     //col += float4(ambientLight, 0.0f);
+    col *= shadowFac;
+    
     col = saturate(col);
+    
 
     //saturate(1.0f-input.pos.z) * 50.0f
     return float4(col.rgb, pixCol.a * alpha);

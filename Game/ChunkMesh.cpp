@@ -241,6 +241,7 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 			//newModel->SetTransparent(true);
 			newModel->SetVertexShader(0, "vertexshellgrass");
 			newModel->SetPixelShader(0, "pixelshellgrass");
+			newModel->SetFlags(MF_DO_NOT_WRITE_TO_SUN_DEPTH);
 			break;
 		case LEAVES:
 			newModel->SetVertexShader(0, "vertexshaderleaves");

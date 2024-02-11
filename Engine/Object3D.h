@@ -32,7 +32,7 @@ public:
 	const float GetClosestDistance(const Vector3& otherPos);
 
 	bool Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX projMx, vector<tuple<Model*, XMMATRIX, Object3D*>>* transparentModels);
-	bool Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX projMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs);
+	bool Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX projMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs, unsigned int modelFlagFilter);
 
 	Model* AddModel(ID3D11Device* device);
 

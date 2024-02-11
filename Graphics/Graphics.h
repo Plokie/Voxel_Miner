@@ -108,6 +108,7 @@ public:
 	SRWLOCK gRenderingMutex;
 	Camera camera;
 	Camera shadowCamera;
+	Transform sun;
 	int windowWidth=0, windowHeight=0;
 
 	static Graphics* Get() {
@@ -135,33 +136,5 @@ public:
 
 	ID3D11DeviceContext* GetDeviceCtx() { return deviceCtx; }
 
-	~Graphics() {
-		if(device) device->Release();
-		if(deviceCtx) deviceCtx->Release();
-		if(swapChain) swapChain->Release();
-		if(renderTargetView) renderTargetView->Release();
-
-		if(depthStencilView) depthStencilView->Release();
-		if(depthBuffer) depthBuffer->Release();
-		if(depthStencilState) depthStencilState->Release();
-
-		if(rasterizerState) rasterizerState->Release();
-
-		if(shadowDepthTex) shadowDepthTex->Release();
-		if(shadowDepthView) shadowDepthView->Release();
-		if(shadowResourceView) shadowResourceView->Release();
-
-		// Errors?????????????????
-		//if(samplerStateLinear) samplerStateLinear->Release();
-
-		//if(samplerStatePoint) samplerStatePoint->Release();
-
-		if(errTex) errTex->Release();
-
-		//if (spriteBatch) delete spriteBatch;
-
-		//if (testSpriteFont) delete testSpriteFont;
-
-		if (blendState) blendState->Release();
-	}
+	~Graphics();
 };

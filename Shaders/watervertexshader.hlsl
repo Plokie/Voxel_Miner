@@ -22,6 +22,9 @@ struct VS_OUTPUT
     float2 texCoord : TEXCOORD;
     float3 normal : NORMAL;
     float2 texOffset : TEXOFFSET;
+    float3 worldPos : WORLDPOS;
+    
+    float4 lPos : LIGHTSPACEPOS;
 };
 
 float hash(float p)
@@ -86,7 +89,8 @@ VS_OUTPUT main(VS_INPUT input)
     //output.pos = float4(input.pos + float3(offsetX, offsetY, 0), 1.0f);
     input.pos.y -= 0.125f;
     
-    float3 modelMxPos = mul(float4(input.pos, 1.0f), model).xyz;
+    float4 modelPos = mul(float4(input.pos, 1.0f), model);
+    float3 modelMxPos = modelPos.xyz;
     
     float noiseSample01 = fbm((modelMxPos.xz * WaterFrequency) + (float2(time, time) * WaterSpeed));
     float noiseSample11 = (noiseSample01 - 0.5f) * 2.0f;
@@ -103,6 +107,9 @@ VS_OUTPUT main(VS_INPUT input)
     //output.col = input.col;
     output.texCoord = input.texCoord;
     output.texOffset = input.texOffset;
+    
+    output.lPos = mul(modelPos, lightView);
+    output.lPos = mul(output.lPos, lightProj);
     
     //output.normal = -input.normal;
     

@@ -2,6 +2,16 @@
 
 #include "../Engine/Engine.h"
 
+void Model::SetFlags(unsigned int flags)
+{
+	this->flags = flags;
+}
+
+bool Model::HasFlag(MODEL_FLAG flag) const
+{
+	return flags & flag;
+}
+
 Model* Model::Init(ID3D11Device* device) {
 	pDevice = device;
 
@@ -48,9 +58,12 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX view
 	deviceCtx->IASetVertexBuffers(0, 1, &mesh->vertexBuffer, &stride, &offset);
 	deviceCtx->IASetIndexBuffer(mesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
-	if(ps) deviceCtx->PSSetShader(ps, NULL, 0);
-	if(vs) deviceCtx->VSSetShader(vs, NULL, 0);
-	if(tex) deviceCtx->PSSetShaderResources(0, 1, &tex);
+	if(ps)
+		deviceCtx->PSSetShader(ps, NULL, 0);
+	if(vs)
+		deviceCtx->VSSetShader(vs, NULL, 0);
+	if(tex)
+		deviceCtx->PSSetShaderResources(0, 1, &tex);
 
 	deviceCtx->DrawIndexed((UINT)mesh->GetIndexCount(), 0, 0);
 }
