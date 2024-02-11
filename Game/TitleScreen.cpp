@@ -11,8 +11,16 @@
 #include <tchar.h>
 #include <string>
 #include <locale>
+#include <direct.h>
 
 void GetSubdirectories(vector<wstring>* outVec) {
+	struct stat info;
+	stat("Worlds", &info); //get info on a Worlds folder
+
+	if(!(info.st_mode & S_IFDIR)) { // if folder doesnt exit
+		int ret = _mkdir("Worlds"); // create Worlds folder
+	}
+
 	WIN32_FIND_DATA findFileData;
 	HANDLE hFind = FindFirstFile(L"Worlds\\*", &findFileData);
 
