@@ -3,8 +3,8 @@ cbuffer c_buffer : register(b0)
     float4x4 model;
     float4x4 view;
     float4x4 proj;
-    float4x4 lightView;
-    float4x4 lightProj;
+    float4x4 lightView[4];
+    float4x4 lightProj[4];
     float time;
 };
 
@@ -108,8 +108,8 @@ VS_OUTPUT main(VS_INPUT input)
     output.texCoord = input.texCoord;
     output.texOffset = input.texOffset;
     
-    output.lPos = mul(modelPos, lightView);
-    output.lPos = mul(output.lPos, lightProj);
+    output.lPos = mul(modelPos, lightView[0]);
+    output.lPos = mul(output.lPos, lightProj[0]);
     
     //output.normal = -input.normal;
     

@@ -314,8 +314,6 @@ bool Graphics::SetupSpriteBatch() {
 	return true;
 }
 
-#define SHADOWMAP_RESOLUTION Vector2Int(8000,8000)
-
 void Graphics::InitializeShadowmapSampler()
 {
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -411,6 +409,25 @@ bool Graphics::SetupShadowmapBuffer(ID3D11Texture2D** depthTex, ID3D11DepthStenc
 	viewport->MaxDepth = 1.f;
 
 	return true;
+}
+
+void Graphics::AddShadowCamera(XMMATRIX projection)
+{
+	Camera* newShadowCam = new Camera();
+
+	newShadowCam->SetProjectionMatrix(projection);
+
+	for(auto& pCam : shadowCameras) {
+		if(pCam == nullptr) {
+			pCam = newShadowCam;
+			return;
+		}
+	}
+
+	//MAX SHADOW CAMERAS / CASCADES
+	assert(false);
+
+	//shadowCameras.push_back(newShadowCam);
 }
 
 bool Graphics::InitResolution(HWND hwnd) {
@@ -516,12 +533,8 @@ bool Graphics::InitScene() {
 	sun.position = Vector3(0.f, 0.f, 0.f);
 	sun.rotation = Vector3(45.f, 45.f, 0.f);
 
-	//shadowCamera.transform.position = Vector3(0.0f, 3.f, 0.0f);
-	//shadowCamera.transform.rotation = Vector3(45.f, 45.f, 0.f);
-	//shadowCamera.SetProjectionMatrix(XMMatrixPerspectiveFovRH(XM_PIDIV2, 1.f, 0.1f, 1000.f));
-	//shadowCamera.SetProjectionValues(90.f, static_cast<float>(SHADOWMAP_RESOLUTION.x) / static_cast<float>(SHADOWMAP_RESOLUTION.y), 0.05f, 1000.f);
-	shadowCamera.SetProjectionMatrix(XMMatrixOrthographicLH(100.f, 100.f, 0.01f, 800.f));
-	//shadowCamera.SetProjectionValues(180.f, static_cast<float>(SHADOWMAP_RESOLUTION.x) / static_cast<float>(SHADOWMAP_RESOLUTION.y), 0.05f, 1000.f);
+	//shadowCamera.SetProjectionMatrix(XMMatrixOrthographicLH(100.f, 100.f, 0.01f, 800.f));
+	AddShadowCamera(XMMatrixOrthographicLH(100.f, 100.f, 0.01f, 800.f));
 
 	
 	
@@ -599,14 +612,21 @@ void Graphics::RenderShadowMap(Scene* scene)
 	//shadowCamera.transform.position = camera.transform.position;
 
 	sun.position = camera.transform.position;
-	shadowCamera.transform.position = sun.position + (sun.back() * 400.f);
-	shadowCamera.transform.rotation = sun.rotation;
 
-	for(auto it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); it++) {
-		if(it->second == nullptr) continue;
-		if((it->second->cullBox.GetHalfSize().magnitude() == 0.0f || shadowCamera.IsAABBInFrustum(it->second->cullBox)) && it->second->doRender)
-			it->second->Draw(deviceCtx, shadowCamera.transform.mxView(), shadowCamera.GetProjectionMatrix(), nullptr, nullptr, MF_DO_NOT_WRITE_TO_SUN_DEPTH);
+	for(auto pShadowCam : shadowCameras) {
+		if(pShadowCam == nullptr) continue;
+		pShadowCam->transform.position = sun.position + (sun.back() * 400.f);
+		pShadowCam->transform.rotation = sun.rotation;
+		pShadowCam->UpdateViewFrustum();
+
+		for(auto it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); it++) {
+			if(it->second == nullptr) continue;
+			//if((it->second->cullBox.GetHalfSize().magnitude() == 0.0f || shadowCamera.IsAABBInFrustum(it->second->cullBox)) && it->second->doRender)
+			if(it->second->doRender)
+				it->second->Draw(deviceCtx, pShadowCam->transform.mxView(), pShadowCam->GetProjectionMatrix(), nullptr, nullptr, MF_DO_NOT_WRITE_TO_SUN_DEPTH);
+		}
 	}
+
 
 
 
@@ -664,7 +684,6 @@ void Graphics::Render(Scene* scene) {
 	// DRAW SCENE
 
 	camera.UpdateViewFrustum();
-	shadowCamera.UpdateViewFrustum();
 
 	vector<tuple<Model*,XMMATRIX, Object3D*>> transparentModels = {}; // Transparent meshes to be drawn AFTER the opaque geometry
 	vector<Object3D*> objects = {};
@@ -854,6 +873,11 @@ Graphics::~Graphics()
 	if(shadowSamplerState) shadowSamplerState->Release();
 	if(shadowRastState) shadowRastState->Release();
 	if(shadowRenderTarget) shadowRenderTarget->Release();
+
+	for(auto& shadowCam : shadowCameras) {
+		delete shadowCam;
+		shadowCam = nullptr;
+	}
 
 	// Errors?????????????????
 	//if(samplerStateLinear) samplerStateLinear->Release();

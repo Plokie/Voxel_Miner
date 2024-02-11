@@ -15,6 +15,9 @@
 #include "Resources.h"
 #include "Mesh.h"
 
+// also change Graphics.h
+#define MAX_SHADOW_CASCADES 4
+
 using namespace DirectX;
 
 struct CB_VS_vertexshader {
@@ -23,8 +26,9 @@ struct CB_VS_vertexshader {
 	XMMATRIX modelMx;
 	XMMATRIX viewMx;
 	XMMATRIX projMx;
-	XMMATRIX lightViewMx;
-	XMMATRIX lightProjMx;
+
+	XMMATRIX lightViewMx[MAX_SHADOW_CASCADES];
+	XMMATRIX lightProjMx[MAX_SHADOW_CASCADES];
 	//XMFLOAT4 lightPos;
 	float time;
 };

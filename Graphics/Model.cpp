@@ -35,8 +35,17 @@ void Model::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX view
 	vsData.modelMx = XMMatrixTranspose(modelMx);
 	vsData.viewMx = XMMatrixTranspose(viewMx);
 	vsData.projMx = XMMatrixTranspose(projMx);
-	vsData.lightViewMx = XMMatrixTranspose(Graphics::Get()->shadowCamera.transform.mxView());
-	vsData.lightProjMx = XMMatrixTranspose(Graphics::Get()->shadowCamera.GetProjectionMatrix());
+
+	int index = 0;
+	for(Camera* pShadowCam : Graphics::Get()->shadowCameras) {
+		if(pShadowCam != nullptr) {
+			vsData.lightViewMx[index] = XMMatrixTranspose(pShadowCam->transform.mxView());
+			vsData.lightProjMx[index] = XMMatrixTranspose(pShadowCam->GetProjectionMatrix());
+		}
+		else break;
+		index++;
+	}
+
 	vsData.time = Engine::Get()->GetTotalElapsedTime();
 
 	psData.alpha = alpha;

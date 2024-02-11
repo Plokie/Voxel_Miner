@@ -26,6 +26,9 @@ using namespace std;
 
 #define LAYOUTSIZE 4
 
+//also change Model.h
+#define MAX_SHADOW_CASCADES 4
+
 //struct ShadowMap_CBuff {
 //	XMFLOAT4X4 projection;
 //	XMFLOAT4X4 view;
@@ -95,6 +98,7 @@ private:
 
 	void InitializeShadowmapSampler();
 	bool SetupShadowmapBuffer(ID3D11Texture2D** depthTex, ID3D11DepthStencilView** depthStencilView, ID3D11ShaderResourceView** depthResourceView, D3D11_VIEWPORT* shadowViewport, int resX, int resY);
+	void AddShadowCamera(XMMATRIX projection);
 
 	bool InitResolution(HWND hwnd);
 
@@ -109,7 +113,10 @@ private:
 public:
 	SRWLOCK gRenderingMutex;
 	Camera camera;
-	Camera shadowCamera;
+
+
+	Camera* shadowCameras[MAX_SHADOW_CASCADES];
+
 	Transform sun;
 	int windowWidth=0, windowHeight=0;
 
