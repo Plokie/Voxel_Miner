@@ -211,11 +211,11 @@ void ChunkManager::Thread() {
 				visibilityBfs.pop();
 
 				auto findVisited = visitedHash.find(chunkWeAreVisiting);
-				if(findVisited == visitedHash.end()) { // if the chunk hasnt been visited already
-					// technically this check is wrong and will result in errors, but its infrequent
-					// todo: properly
+				if(findVisited == visitedHash.end() || (findVisited!=visitedHash.end() && findVisited->second<6)) { // if the chunk hasnt been visited already
+					// this check is wrong and results in errors
+					// todo: properly implement correct filters
 
-					visitedHash[chunkWeAreVisiting] = 0; // register as crossed chunk
+					visitedHash[chunkWeAreVisiting]++; // register as crossed chunk
 
 					Chunk* pChunkWeAreVisiting = nullptr;
 					auto findVisit = chunkMap.find(chunkWeAreVisiting);
