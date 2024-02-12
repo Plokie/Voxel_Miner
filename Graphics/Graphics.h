@@ -64,6 +64,10 @@ private:
 
 	VertexShader shadowVertexShader;
 	PixelShader shadowPixelShader;
+
+	ID3D11Buffer* vsCbuffer_Light;
+	ID3D11Buffer* vsCbuffer_Camera;
+
 	//ID3D11Buffer* shadowCbuffer;
 	//ID3D10Blob* shadowBuffer;
 	//XMMATRIX shadowMx;
@@ -95,6 +99,8 @@ private:
 	bool SetupSamplerStatePoint();
 	bool SetupBlendState();
 	bool SetupSpriteBatch();
+	bool SetupDefaultCbuffers();
+
 
 	void InitializeShadowmapSampler();
 	bool SetupShadowmapBuffer(ID3D11Texture2D** depthTex, ID3D11DepthStencilView** depthStencilView, ID3D11ShaderResourceView** depthResourceView, D3D11_VIEWPORT* shadowViewport, int resX, int resY);
@@ -114,6 +120,7 @@ public:
 	SRWLOCK gRenderingMutex;
 	Camera camera;
 
+	static bool CreateBuffer(D3D11_USAGE usage, SIZE_T stride, UINT bindFlags, UINT CPUAccessFlags, ID3D11Buffer** targetBuffer, void* arrSrc = nullptr);
 
 	Camera* shadowCameras[MAX_SHADOW_CASCADES];
 

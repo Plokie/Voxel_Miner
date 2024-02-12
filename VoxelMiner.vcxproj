@@ -217,6 +217,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio\Audio.h" />
+    <ClInclude Include="Graphics\DefaultCbuffers.h" />
     <ClInclude Include="Game\CreativeUI.h" />
     <ClInclude Include="Game\BlockAction.h" />
     <ClInclude Include="Game\BlockData.h" />

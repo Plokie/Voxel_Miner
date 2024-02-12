@@ -314,6 +314,38 @@ bool Graphics::SetupSpriteBatch() {
 	return true;
 }
 
+bool Graphics::CreateBuffer(D3D11_USAGE usage, SIZE_T stride, UINT bindFlags, UINT CPUAccessFlags, ID3D11Buffer** targetBuffer, void* arrSrc) {
+	//BUFFER
+	D3D11_BUFFER_DESC desc;
+	ZeroMemory(&desc, sizeof(D3D11_BUFFER_DESC)); // Clear out any garbage
+	desc.Usage = usage;
+	desc.ByteWidth = (UINT)stride;
+	desc.BindFlags = bindFlags;
+	desc.CPUAccessFlags = CPUAccessFlags;
+	desc.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA data;
+	ZeroMemory(&data, sizeof(D3D11_SUBRESOURCE_DATA));
+	if(arrSrc != nullptr) {
+		data.pSysMem = arrSrc;
+	}
+
+	HRESULT hr = Graphics::Get()->device->CreateBuffer(&desc, arrSrc == nullptr ? 0 : &data, targetBuffer);
+	if(FAILED(hr)) {
+		exit(42);
+		return false;
+	}// Failed to create buffer
+	return true;
+}
+
+bool Graphics::SetupDefaultCbuffers()
+{
+	CreateBuffer(D3D11_USAGE_DYNAMIC, sizeof(VSCbuffer_Camera) + (16 - (sizeof(VSCbuffer_Camera) % 16)), D3D11_BIND_CONSTANT_BUFFER, D3D11_CPU_ACCESS_WRITE, &vsCbuffer_Camera);
+	CreateBuffer(D3D11_USAGE_DYNAMIC, sizeof(VSCbuffer_Light) + (16 - (sizeof(VSCbuffer_Light) % 16)), D3D11_BIND_CONSTANT_BUFFER, D3D11_CPU_ACCESS_WRITE, &vsCbuffer_Light);
+
+	return true;
+}
+
 void Graphics::InitializeShadowmapSampler()
 {
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -454,6 +486,7 @@ bool Graphics::InitDX(HWND hwnd) {
 
 	SetupAlphaDepthStencil();
 
+	SetupDefaultCbuffers();
 	SetupSamplerStateLinear();
 	SetupSamplerStatePoint();
 
@@ -609,15 +642,39 @@ void Graphics::RenderShadowMap(Scene* scene)
 	deviceCtx->PSSetShader(shadowPixelShader.GetShader(), nullptr, 0);
 	deviceCtx->VSSetShader(shadowVertexShader.GetShader(), nullptr, 0);
 
+	D3D11_MAPPED_SUBRESOURCE resMap;
+
+	VSCbuffer_Light lightData;
+	ZeroMemory(&lightData, sizeof(VSCbuffer_Light));
+
 	//shadowCamera.transform.position = camera.transform.position;
 
 	sun.position = camera.transform.position;
 
+	int index = 0;
 	for(auto pShadowCam : shadowCameras) {
 		if(pShadowCam == nullptr) continue;
 		pShadowCam->transform.position = sun.position + (sun.back() * 400.f);
 		pShadowCam->transform.rotation = sun.rotation;
 		pShadowCam->UpdateViewFrustum();
+		
+		if(pShadowCam != nullptr) {
+			lightData.lightViewMx[index] = XMMatrixTranspose(pShadowCam->transform.mxView());
+			lightData.lightProjMx[index] = XMMatrixTranspose(pShadowCam->GetProjectionMatrix());
+		}
+		else break;
+		index++;
+
+
+		// CAMERA DATA
+		//VSCbuffer_Camera camData;
+		//ZeroMemory(&camData, sizeof(VSCbuffer_Camera));
+		//camData.viewMx = XMMatrixTranspose(pShadowCam->transform.mxView());
+		//camData.projMx = XMMatrixTranspose(pShadowCam->GetProjectionMatrix());
+		//HRESULT hr = deviceCtx->Map(vsCbuffer_Camera, 0, D3D11_MAP_WRITE_DISCARD, 0, &resMap);
+		//CopyMemory(resMap.pData, &camData, sizeof(VSCbuffer_Camera));
+		//deviceCtx->Unmap(vsCbuffer_Camera, 0);
+		//deviceCtx->VSSetConstantBuffers(1, 1, &vsCbuffer_Camera);
 
 		for(auto it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); it++) {
 			if(it->second == nullptr) continue;
@@ -627,6 +684,10 @@ void Graphics::RenderShadowMap(Scene* scene)
 		}
 	}
 
+	HRESULT hr = deviceCtx->Map(vsCbuffer_Light, 0, D3D11_MAP_WRITE_DISCARD, 0, &resMap);
+	CopyMemory(resMap.pData, &lightData, sizeof(VSCbuffer_Light));
+	deviceCtx->Unmap(vsCbuffer_Light, 0);
+	deviceCtx->VSSetConstantBuffers(2, 1, &vsCbuffer_Light);
 
 
 
@@ -634,6 +695,7 @@ void Graphics::RenderShadowMap(Scene* scene)
 
 
 void Graphics::Render(Scene* scene) {
+	D3D11_MAPPED_SUBRESOURCE resMap;
 	unique_lock<std::mutex> lock(scene->createObjectMutex);
 
 	deviceCtx->IASetInputLayout(defaultVertexShader.GetInputLayout());
@@ -653,6 +715,7 @@ void Graphics::Render(Scene* scene) {
 
 	deviceCtx->OMSetDepthStencilState(depthStencilState, 0);
 	deviceCtx->OMSetBlendState(blendState, NULL, 0xFFFFFFFF);
+
 
 	RenderShadowMap(scene);
 
@@ -677,7 +740,20 @@ void Graphics::Render(Scene* scene) {
 
 	deviceCtx->PSSetShaderResources(0, 1, &errTex);
 	deviceCtx->PSSetShaderResources(1, 1, &shadowResourceView);
-	
+
+	// set cbuffers for this frame
+
+	// CAMERA DATA didnt work, but i feel like it could in the future, so leaving here for now
+	//VSCbuffer_Camera camData;
+	//ZeroMemory(&camData, sizeof(VSCbuffer_Camera));
+	//camData.viewMx = XMMatrixTranspose(camera.transform.mxView());
+	//camData.projMx = XMMatrixTranspose(camera.GetProjectionMatrix());
+	//HRESULT hr = deviceCtx->Map(vsCbuffer_Camera, 0, D3D11_MAP_WRITE_DISCARD, 0, &resMap);
+	//CopyMemory(resMap.pData, &camData, sizeof(VSCbuffer_Camera));
+	//deviceCtx->Unmap(vsCbuffer_Camera, 0);
+	//deviceCtx->VSSetConstantBuffers(1, 1, &vsCbuffer_Camera);
+
+	//
 
 	XMMATRIX worldMx = XMMatrixIdentity();
 

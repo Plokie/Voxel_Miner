@@ -1,14 +1,19 @@
-cbuffer c_buffer : register(b0)
-{
+cbuffer cbuffer_model : register(b0) {
     float4x4 model;
     float4x4 view;
     float4x4 proj;
-    float4x4 lightView[4];
-    float4x4 lightProj[4];
-    //float4 lightPos;
-    //float4 eyePos;
     float time;
 };
+
+cbuffer cbuffer_camera : register(b1) {
+    float4x4 view2;
+    float4x4 proj2;
+}
+
+cbuffer cbuffer_light : register(b2) {
+    float4x4 lightView[4];
+    float4x4 lightProj[4];
+}
 
 struct VS_INPUT
 {
