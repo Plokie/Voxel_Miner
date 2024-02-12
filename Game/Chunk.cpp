@@ -15,6 +15,8 @@ void Chunk::Generate()
 }
 
 void Chunk::Finalize() {
+	BuildVisibilityGraph();
+
 	BuildMesh();
 	
 
@@ -87,6 +89,98 @@ void Chunk::GenerateBlockData()
 				BlockID newBlock = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, static_cast<int>(heightSample), biome, moistSample);
 
 				blockData[x][y][z] = newBlock;
+			}
+		}
+	}
+}
+
+// based on https://tomcc.github.io/2014/08/31/visibility-1.html
+void Chunk::TryFloodFillGraph(int x, int y, int z) {
+	if(fillIndices[x][y][z] == 0 && blockData[x][y][z]==AIR) {
+
+		//if(indexPosition == Vector3Int(-4, -1, 0))
+		//	__nop();
+
+		//vector<tuple<int, int, int>> chunkNeighboursMet = {};
+		map<tuple<int, int, int>, void*> chunkNeighboursMet = {};
+		std::queue<tuple<int, int, int>> fillQueue;
+
+		fillQueue.push({ x,y,z });
+		// populate chunkNeighboursMet map with keys of chunkIndices of neighbouring chunks
+		// we met on this flood fill
+		while(!fillQueue.empty()) {
+			tuple<int, int, int> currentIndex = fillQueue.front();
+			Vector3Int currentIndexv3 = currentIndex;
+
+			if(fillIndices[currentIndexv3.x][currentIndexv3.y][currentIndexv3.z] == 0 && blockData[currentIndexv3.x][currentIndexv3.y][currentIndexv3.z] == AIR) { // If this index is unvisited
+				fillIndices[currentIndexv3.x][currentIndexv3.y][currentIndexv3.z] = currentFillindex;
+
+				if(currentIndexv3.x <= 0) {
+					chunkNeighboursMet[indexPosition + Vector3Int(-1, 0, 0)] = 0;
+				}
+				else {
+					fillQueue.push(currentIndexv3 + Vector3Int(-1, 0, 0));
+					if(currentIndexv3.x >= CHUNKSIZE_X - 1) {
+						chunkNeighboursMet[indexPosition + Vector3Int(1, 0, 0)] = 0;
+					}
+					else fillQueue.push(currentIndexv3 + Vector3Int(1, 0, 0));
+
+				}
+
+				if(currentIndexv3.y <= 0) {
+					chunkNeighboursMet[indexPosition + Vector3Int(0, -1, 0)] = 0;
+				}
+				else {
+					fillQueue.push(currentIndexv3 + Vector3Int(0, -1, 0));
+					if(currentIndexv3.y >= CHUNKSIZE_Y - 1) {
+						chunkNeighboursMet[indexPosition + Vector3Int(0, 1, 0)] = 0;
+					}
+					else fillQueue.push(currentIndexv3 + Vector3Int(0, 1, 0));
+				}
+
+				if(currentIndexv3.z <= 0) {
+					chunkNeighboursMet[indexPosition + Vector3Int(0, 0, -1)] = 0;
+				}
+				else {
+					fillQueue.push(currentIndexv3 + Vector3Int(0, 0, -1));
+					if(currentIndexv3.z >= CHUNKSIZE_Z - 1) {
+						chunkNeighboursMet[indexPosition + Vector3Int(0, 0, 1)] = 0;
+					}
+					else fillQueue.push(currentIndexv3 + Vector3Int(0, 0, 1));
+				}
+			}
+			
+			fillQueue.pop();
+		}
+
+		for(auto& kvp : chunkNeighboursMet) {
+			tuple<int, int, int> incomingDir = kvp.first;
+
+			for(auto& otherKvp : chunkNeighboursMet) {
+				if(otherKvp.first == incomingDir) continue;
+
+				visibilityGraph[incomingDir][otherKvp.first] = 0;
+			}
+		}
+
+		currentFillindex++;
+	}
+}
+
+void Chunk::BuildVisibilityGraph()
+{
+	currentFillindex = 1;
+	ZeroMemory(fillIndices, sizeof(fillIndices));
+
+	for(int z = 0; z < CHUNKSIZE_Z; z++) {
+		for(int x = 0; x < CHUNKSIZE_X; x++) {
+			for(int y = 0; y < CHUNKSIZE_Y; y++) {
+				bool xEdge = x == 0 || x == CHUNKSIZE_X - 1;
+				bool yEdge = y == 0 || y == CHUNKSIZE_Y - 1;
+				bool zEdge = z == 0 || z == CHUNKSIZE_Z - 1;
+
+				if(xEdge||yEdge||zEdge)
+					TryFloodFillGraph(x, y, z);
 			}
 		}
 	}

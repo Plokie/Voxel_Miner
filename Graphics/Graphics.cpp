@@ -693,9 +693,13 @@ void Graphics::Render(Scene* scene) {
 	for(map<string, Object3D*>::iterator it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); ++it) {
 
 		// if object has an AABB, and is visible by the camera
-		if(it->second != nullptr)
-		if((it->second->cullBox.GetHalfSize().magnitude() == 0.0f || camera.IsAABBInFrustum(it->second->cullBox)) && it->second->doRender )
-			objects.push_back(it->second);
+		if(it->second != nullptr) {
+			if((it->second->cullBox.GetHalfSize().magnitude() == 0.0f || camera.IsAABBInFrustum(it->second->cullBox)) && it->second->doRender) {
+				if(it->second->renderType == ONCE_PER_FRAME) it->second->doRender = false;
+				objects.push_back(it->second);
+			}
+		}
+
 
 		// aka: dont queue objects hidden to the camera to be drawn
 	}

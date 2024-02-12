@@ -38,6 +38,7 @@ void ChunkManager::CreateChunk(const int x, const int y, const int z)
 
 		newChunk->transform.position = Vector3(static_cast<float>(CHUNKSIZE_X * x), static_cast<float>(CHUNKSIZE_Y * y), static_cast<float>(CHUNKSIZE_Z * z));
 		newChunk->indexPosition = Vector3Int(x, y, z);
+		//newChunk->renderType = ONCE_PER_FRAME;
 		//newChunkQueue.push(newChunk);
 
 		QueueChunkToGenerationPhase(newChunk, BLOCKDATA);
@@ -59,7 +60,8 @@ void ChunkManager::Update(float dTime) {
 }
 
 void ChunkManager::Thread() {
-
+	Vector3Int prevCamIndex = ChunkFloorPosForPositionCalculation(camTrans->position);
+	bool forceRegenerateVisibility = false;
 	while(isRunning) {
 		Vector3Int camIndex = ChunkFloorPosForPositionCalculation(camTrans->position);
 
@@ -121,12 +123,14 @@ void ChunkManager::Thread() {
 			while(!meshPendingQueue.empty()) {
 			
 				Chunk* chunk = meshPendingQueue.front();
-				threadPool->Queue([=] {
+				threadPool->Queue([=, &forceRegenerateVisibility] {
 					chunk->Finalize();
 
 					unique_lock<mutex> lock(this->_numChunksLoadedMutex);
 					this->_numChunksLoaded++;
 					chunk->currentGenerationPhase = DONE;
+
+					forceRegenerateVisibility = true;
 				});
 
 				meshPendingQueue.pop();
@@ -140,6 +144,7 @@ void ChunkManager::Thread() {
 					if(queuePair.first == nullptr || queuePair.first->pendingDeletion) return;
 
 					unique_lock<std::mutex> lock(queuePair.first->gAccessMutex);
+					queuePair.first->BuildVisibilityGraph();
 					queuePair.first->BuildMesh();
 				}, queuePair.second);
 				regenQueue.pop();
@@ -179,7 +184,72 @@ void ChunkManager::Thread() {
 			}
 		}
 
-		
+		//
+
+		// Chunk visibility occlusion recalculation
+		if(prevCamIndex != camIndex || forceRegenerateVisibility) { // only do it if the camera crosses a chunk border
+			//Vector3 camFwd = camTrans->forward(); // maybe use in future for dot product calc
+
+			map<tuple<int, int, int>, UINT8> visitedHash = {}; // list of chunks that have been crossed
+			queue<pair<tuple<int, int, int>, tuple<int, int, int>>> visibilityBfs; // queue of target chunk : chunk we came from
+			visibilityBfs.push({ camIndex, camIndex }); // add the current chunk to the queue
+
+			const Vector3Int neighbourOffsets[] = {
+				Vector3Int(1,0,0),
+				Vector3Int(-1,0,0),
+				Vector3Int(0,1,0),
+				Vector3Int(0,-1,0),
+				Vector3Int(0,0,1),
+				Vector3Int(0,0,-1),
+			};
+
+			while(!visibilityBfs.empty()) {
+				// get information then pop queue
+				auto& front = visibilityBfs.front();
+				Vector3Int chunkWeAreVisiting = front.first;
+				Vector3Int chunkWeCameFrom = front.second;
+				visibilityBfs.pop();
+
+				auto findVisited = visitedHash.find(chunkWeAreVisiting);
+				if(findVisited == visitedHash.end()) { // if the chunk hasnt been visited already
+					// technically this check is wrong and will result in errors, but its infrequent
+					// todo: properly
+
+					visitedHash[chunkWeAreVisiting] = 0; // register as crossed chunk
+
+					Chunk* pChunkWeAreVisiting = nullptr;
+					auto findVisit = chunkMap.find(chunkWeAreVisiting);
+					if(findVisit != chunkMap.end()) { // get the chunk pointer
+						pChunkWeAreVisiting = findVisit->second;
+
+						// skip incomplete chunks
+						if(pChunkWeAreVisiting == nullptr || pChunkWeAreVisiting->pendingDeletion || !pChunkWeAreVisiting->hasRanStartFunction) continue;
+
+						//todo: add more filters
+						for(const Vector3Int& offset : neighbourOffsets) { // check all neighbours
+							if(pChunkWeAreVisiting->IsChunkVisibleFromChunk(chunkWeAreVisiting + offset, chunkWeCameFrom)) {
+								visibilityBfs.push({ chunkWeAreVisiting + offset, chunkWeAreVisiting });
+							}
+						}
+					}
+				}
+			}
+
+			for(auto& kvp : chunkMap) {
+				if(kvp.second == nullptr || kvp.second->pendingDeletion || !kvp.second->hasRanStartFunction) {
+					continue;
+				}
+
+				auto findVisited = visitedHash.find(kvp.second->indexPosition);
+				kvp.second->doRender = findVisited != visitedHash.end();
+			}
+		}
+
+
+
+		//
+		forceRegenerateVisibility = false;
+		prevCamIndex = camIndex;
 	}
 }
 

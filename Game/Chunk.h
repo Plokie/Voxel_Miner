@@ -27,6 +27,10 @@ private:
 
 	UINT8 lightLevel[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};
 
+	unsigned int fillIndices[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};
+	unsigned int currentFillindex = 1;
+
+
 	const float secondsPerTick = 0.05f;
 	float tickTimer = 0.f;
 
@@ -36,14 +40,21 @@ private:
 	void MakeVoxel(const BlockID blockID, const int x, const int y, const int z, vector<Vertex>& vertices, vector<DWORD>& indices);
 	void CorrectIndexForNeighbours(const int& x, const int& y, const int& z, Chunk** outChunk, Vector3Int* outIndex);
 	void CorrectIndexForNeighbours(const Vector3Int& index, Chunk** outChunk, Vector3Int* outIndex);
+
+	void TryFloodFillGraph(int x, int y, int z);
 	//Vector3Int LocalToWorld(const int x, const int y, const int z);
 public:
+	// input direction :: hash map of output directions visible from input direction
+	map<tuple<int, int, int>, map<tuple<int, int, int>,UINT8>> visibilityGraph;
 	//bool hasLoadedBlockData = false;
 
 	GENERATION_PHASE currentGenerationPhase = BLOCKDATA;
 
 	void GenerateBlockData();
+	void BuildVisibilityGraph();
 	void BuildMesh();
+
+	bool IsChunkVisibleFromChunk(Vector3Int tryFindThisChunk, Vector3Int fromChunk);
 
 	void Generate();
 	void Finalize();

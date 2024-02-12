@@ -361,3 +361,26 @@ void Chunk::BuildMesh() {
 	this->PushChunkMesh(waterVertices, waterIndices, Chunk::MESHFLAG::LIQUID);
 	this->PushChunkMesh(leavesVertices, leavesIndices, Chunk::MESHFLAG::LEAVES);
 }
+
+bool Chunk::IsChunkVisibleFromChunk(Vector3Int tryFindThisChunk, Vector3Int fromChunk)
+{
+	if(fromChunk == indexPosition) {
+		auto find = visibilityGraph.find(tryFindThisChunk);
+		if(find != visibilityGraph.end()) {
+			return true;
+		}
+	}
+	else {
+		auto findFrom = visibilityGraph.find(fromChunk);
+		if(findFrom != visibilityGraph.end()) {
+
+			auto findTarget = findFrom->second.find(tryFindThisChunk);
+			if(findTarget != findFrom->second.end()) {
+				return true;
+			}
+
+		}
+	}
+
+	return false;
+}

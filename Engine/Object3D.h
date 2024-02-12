@@ -6,6 +6,11 @@
 #include "..\Graphics\Model.h"
 #include "AABB.h"
 
+enum OBJ_RENDER_TYPE : unsigned char {
+	NORMAL,
+	ONCE_PER_FRAME
+};
+
 class Object3D {
 public:
 	std::mutex gAccessMutex = {};
@@ -14,6 +19,7 @@ public:
 	bool doRender = true;
 	bool pendingDeletion = false;
 	bool importantRenderPass = false;
+	OBJ_RENDER_TYPE renderType = OBJ_RENDER_TYPE::NORMAL;
 
 	// The general AABB box describing the max area of the object
 	// Used for frustum culling
