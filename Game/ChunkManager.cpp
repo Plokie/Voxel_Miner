@@ -125,12 +125,12 @@ void ChunkManager::Thread() {
 				Chunk* chunk = meshPendingQueue.front();
 				threadPool->Queue([=, &forceRegenerateVisibility] {
 					chunk->Finalize();
+					forceRegenerateVisibility = true;
 
 					unique_lock<mutex> lock(this->_numChunksLoadedMutex);
 					this->_numChunksLoaded++;
 					chunk->currentGenerationPhase = DONE;
 
-					forceRegenerateVisibility = true;
 				});
 
 				meshPendingQueue.pop();
@@ -186,9 +186,10 @@ void ChunkManager::Thread() {
 
 		//
 
+#if 0
 		// Chunk visibility occlusion recalculation
 		if(prevCamIndex != camIndex || forceRegenerateVisibility) { // only do it if the camera crosses a chunk border
-			//Vector3 camFwd = camTrans->forward(); // maybe use in future for dot product calc
+			Vector3 camFwd = camTrans->forward(); // maybe use in future for dot product calc
 
 			map<tuple<int, int, int>, UINT8> visitedHash = {}; // list of chunks that have been crossed
 			queue<pair<tuple<int, int, int>, tuple<int, int, int>>> visibilityBfs; // queue of target chunk : chunk we came from
@@ -210,29 +211,42 @@ void ChunkManager::Thread() {
 				Vector3Int chunkWeCameFrom = front.second;
 				visibilityBfs.pop();
 
-				auto findVisited = visitedHash.find(chunkWeAreVisiting);
-				if(findVisited == visitedHash.end() || (findVisited!=visitedHash.end() && findVisited->second<6)) { // if the chunk hasnt been visited already
+				//auto findVisited = visitedHash.find(chunkWeAreVisiting);
+				//if(findVisited == visitedHash.end() || (findVisited!=visitedHash.end() && findVisited->second<6)) { // if the chunk hasnt been visited already
 					// this check is wrong and results in errors
 					// todo: properly implement correct filters
 
-					visitedHash[chunkWeAreVisiting]++; // register as crossed chunk
+				visitedHash[chunkWeAreVisiting]++; // register as crossed chunk
 
-					Chunk* pChunkWeAreVisiting = nullptr;
-					auto findVisit = chunkMap.find(chunkWeAreVisiting);
-					if(findVisit != chunkMap.end()) { // get the chunk pointer
-						pChunkWeAreVisiting = findVisit->second;
+				Chunk* pChunkWeAreVisiting = nullptr;
+				auto findVisit = chunkMap.find(chunkWeAreVisiting);
+				if(findVisit != chunkMap.end()) { // get the chunk pointer
+					pChunkWeAreVisiting = findVisit->second;
 
-						// skip incomplete chunks
-						if(pChunkWeAreVisiting == nullptr || pChunkWeAreVisiting->pendingDeletion || !pChunkWeAreVisiting->hasRanStartFunction) continue;
+					// skip incomplete chunks
+					if(pChunkWeAreVisiting == nullptr || pChunkWeAreVisiting->pendingDeletion || !pChunkWeAreVisiting->hasRanStartFunction) continue;
 
-						//todo: add more filters
-						for(const Vector3Int& offset : neighbourOffsets) { // check all neighbours
-							if(pChunkWeAreVisiting->IsChunkVisibleFromChunk(chunkWeAreVisiting + offset, chunkWeCameFrom)) {
-								visibilityBfs.push({ chunkWeAreVisiting + offset, chunkWeAreVisiting });
-							}
+
+
+					//todo: add more filters
+					for(const Vector3Int& offset : neighbourOffsets) { // check all neighbours
+						if(chunkWeAreVisiting + offset == chunkWeCameFrom) continue; // Dont go back
+						
+						float dirDotView = Vector3::dot(Vector3(chunkWeAreVisiting + offset) - Vector3(chunkWeCameFrom), camFwd);
+						if(dirDotView < 0.f) continue;
+
+						const Vector3 chunkSize = Vector3(static_cast<float>(CHUNKSIZE_X), static_cast<float>(CHUNKSIZE_Y), static_cast<float>(CHUNKSIZE_Z));
+						Vector3 chunkWorldPos = Vector3(Vector3(chunkWeAreVisiting) + Vector3(offset)) ^ chunkSize;
+
+						if(!Graphics::Get()->camera.IsAABBInFrustum(AABB(chunkWorldPos + (Vector3(0.5f, 0.5f, 0.5f) ^ chunkSize), (Vector3(0.5f, 0.5f, 0.5f) ^ chunkSize))))
+							continue;
+
+						if(pChunkWeAreVisiting->IsChunkVisibleFromChunk(chunkWeAreVisiting + offset, chunkWeCameFrom)) {
+							visibilityBfs.push({ chunkWeAreVisiting + offset, chunkWeAreVisiting });
 						}
 					}
 				}
+				//}
 			}
 
 			for(auto& kvp : chunkMap) {
@@ -244,7 +258,7 @@ void ChunkManager::Thread() {
 				kvp.second->doRender = findVisited != visitedHash.end();
 			}
 		}
-
+#endif
 
 
 		//
