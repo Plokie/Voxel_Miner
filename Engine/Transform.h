@@ -19,9 +19,9 @@ public:
 	Vector3 rotation; //todo: make quaternion to avoid gimbal lock
 	Vector3 scale;
 
-	Vector3 GetPosition();
-	Vector3 GetRotation();
-	Vector3 GetScale();
+	Vector3 GetPosition() const;
+	Vector3 GetRotation() const;
+	Vector3 GetScale() const;
 
 	void SetParent(Transform* p);
 	Transform* GetParent();
@@ -32,8 +32,8 @@ public:
 		scale = Vector3(1.0f, 1.0f, 1.0f);
 	}
 
-	XMMATRIX mxView(); // For camera
-	XMMATRIX mx();
+	XMMATRIX mxView() const; // For camera
+	XMMATRIX mx() const;
 
 	Vector3 basis(const float& x, const float& y, const float& z) const;
 	Vector3 basis(const Vector3& v) const;

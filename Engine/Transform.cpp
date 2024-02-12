@@ -1,13 +1,13 @@
 #include "Transform.h"
 
-Vector3 Transform::GetPosition() {
+Vector3 Transform::GetPosition() const {
 	if(parent != nullptr) {
 		return parent->GetPosition() + parent->basis(position);
 	}
 	return position;
 }
 
-Vector3 Transform::GetRotation() {
+Vector3 Transform::GetRotation() const {
 	if(parent != nullptr) {
 		//todo: to proper rotation, change transforms to use quaternions.... ughhhh.....
 		return parent->GetRotation();
@@ -16,7 +16,7 @@ Vector3 Transform::GetRotation() {
 	return rotation;
 }
 
-Vector3 Transform::GetScale() {
+Vector3 Transform::GetScale() const {
 	if(parent != nullptr) {
 		return parent->GetScale() * scale;
 	}
@@ -32,7 +32,7 @@ Transform* Transform::GetParent()
 	return parent;
 }
 
-XMMATRIX Transform::mxView() {
+XMMATRIX Transform::mxView() const {
 	XMMATRIX mx = XMMatrixIdentity();
 
 	mx *= XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z);
@@ -45,7 +45,7 @@ XMMATRIX Transform::mxView() {
 	return XMMatrixLookAtLH(position, fwdTarget, upDir);
 }
 
-XMMATRIX Transform::mx() {
+XMMATRIX Transform::mx() const {
 	XMMATRIX mx = XMMatrixIdentity();
 
 	Vector3 scale = GetScale();
@@ -60,7 +60,8 @@ XMMATRIX Transform::mx() {
 }
 
 Vector3 Transform::basis(const float& x, const float& y, const float& z) const {
-	return Vector3(XMVector3TransformCoord(XMVectorSet(x, y, z, 0.f), XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z)));
+	//return Vector3(XMVector3TransformCoord(XMVectorSet(x, y, z, 0.f), XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z)));
+	return Vector3(XMVector4Transform(XMVectorSet(x, y, z, 1.0f), XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z)));
 }
 
 Vector3 Transform::basis(const Vector3& v) const {

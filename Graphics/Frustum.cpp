@@ -7,38 +7,36 @@ Frustum Frustum::CreateFrustumFromCamera(const Camera& cam, float aspect, float 
 {
 	Frustum newFrustum;
 
-	/*const float halfVside = farZ * tanf(FOV * 0.5f);
-	const float halfHside = halfVside * aspect;
-	const Vector3 frontMultFar = farZ * cam.transform.forward();*/
-	const Vector3 frontMultFar = farZ * cam.transform.forward();
+	Vector3 farCenter = farZ * cam.transform.forward();
+	Vector3 nearCenter = nearZ * cam.transform.forward();
 
-	const float hh = tanf(FOV * 0.5f) * nearZ;
-	const float hw = hh * aspect;
+	newFrustum.nearPlane = { cam.transform.forward(), cam.transform.position + nearCenter };
+	newFrustum.farPlane = { cam.transform.back(), cam.transform.position + farCenter };
 
-	const Vector3 nw = Vector3(-hw, hh, 1.f);
-	const Vector3 ne = Vector3(hw, hh, 1.f);
-	const Vector3 se = Vector3(hw, -hh, 1.f);
-	const Vector3 sw = Vector3(-hw, -hh, 1.0f);
+	XMMATRIX invProj = XMMatrixInverse(nullptr, cam.GetProjectionMatrix());
 
-	newFrustum.nearPlane = { cam.transform.forward(), cam.transform.position + nearZ * cam.transform.forward() };
-	newFrustum.farPlane = { -cam.transform.forward(), cam.transform.position + frontMultFar };
+	XMVECTOR XMTL = XMVector4Transform(XMVectorSet(-1.f, 1.f, 0.f, 1.f), invProj);
+	XMTL /= XMVectorGetW(XMTL);
+	Vector3 TL = XMTL;
 
-	newFrustum.left = { Vector3::cross(sw, nw).normalized(), cam.transform.position };
+	XMVECTOR XMBL = XMVector4Transform(XMVectorSet(-1.f, -1.f, 0.f, 1.f), invProj);
+	XMBL /= XMVectorGetW(XMBL);
+	Vector3 BL = XMBL;
 
-	//newFrustum.left = { cam.transform.right(), cam.transform.position };
+	newFrustum.left = { cam.transform.basis(Vector3::cross(TL, BL).normalized()), cam.transform.position};
 
-	//newFrustum.left = {
-	//	//Vector3::cross(frontMultFar - cam.transform.right() * halfHside, cam.transform.up()).normalized(),
-	//	Vector3::cross()
-	//	cam.transform.position
-	//};
+	XMVECTOR XMTR = XMVector4Transform(XMVectorSet(1.f, 1.f, 0.f, 1.f), invProj);
+	XMTR /= XMVectorGetW(XMTR);
+	Vector3 TR = XMTR;
 
-	//newFrustum.left = { Vector3::cross(frontMultFar - cam.transform.right() * halfHside, cam.transform.up()), cam.transform.position};
-	//newFrustum.left = { Vector3::cross(cam.transform.up(), frontMultFar + cam.transform.right() * halfHside), cam.transform.position };
-	//newFrustum.top = { Vector3::cross(cam.transform.right(), frontMultFar - cam.transform.up() * halfVside), cam.transform.position };
-	//newFrustum.bottom = { Vector3::cross(frontMultFar + cam.transform.up() * halfVside, cam.transform.right()), cam.transform.position };
+	XMVECTOR XMBR = XMVector4Transform(XMVectorSet(1.f, -1.f, 0.f, 1.f), invProj);
+	XMBR /= XMVectorGetW(XMBR);
+	Vector3 BR = XMBR;
 
-	//newFrustum.left 
+	newFrustum.right = { cam.transform.basis(Vector3::cross(BR, TR).normalized()), cam.transform.position };
+
+	newFrustum.top = { cam.transform.basis(Vector3::cross(TL, TR).normalized()), cam.transform.position };
+	newFrustum.bottom = { cam.transform.basis(Vector3::cross(BR, BL).normalized()), cam.transform.position };
 
 
 	return newFrustum;

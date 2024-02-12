@@ -21,7 +21,8 @@ void Camera::SetProjectionValues(float fovDegrees, float aspectRatio, float near
 bool Camera::IsAABBInFrustum(const AABB& aabb)
 {
 	//return aabb.IntersectsPlane(viewFrustum.nearPlane);
-	return aabb.IsOnOrForwardPlane(viewFrustum.nearPlane);
+	return aabb.IsOnOrForwardPlane(viewFrustum.nearPlane) && aabb.IsOnOrForwardPlane(viewFrustum.left) && aabb.IsOnOrForwardPlane(viewFrustum.right);
+	//return aabb.IsOnOrForwardPlane(viewFrustum.nearPlane) && aabb.IsOnOrForwardPlane(viewFrustum.left);
 	//return aabb.IsOnOrForwardPlane(viewFrustum.left);
 	//return aabb.IsOnOrForwardPlane(viewFrustum.left);
 	//return aabb.IntersectsPlane(viewFrustum.right) || aabb.IntersectsPlane(viewFrustum.left);
