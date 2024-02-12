@@ -96,7 +96,8 @@ void Chunk::GenerateBlockData()
 
 // based on https://tomcc.github.io/2014/08/31/visibility-1.html
 void Chunk::TryFloodFillGraph(int x, int y, int z) {
-	if(fillIndices[x][y][z] == 0 && blockData[x][y][z]==AIR) {
+	const Block& parentBlockDef = BlockDef::GetDef(blockData[x][y][z]);
+	if(fillIndices[x][y][z] == 0 && !parentBlockDef.GetDrawType()==DRAW_TYPE::B_OPAQUE) {
 
 		//if(indexPosition == Vector3Int(-4, -1, 0))
 		//	__nop();
@@ -112,7 +113,9 @@ void Chunk::TryFloodFillGraph(int x, int y, int z) {
 			tuple<int, int, int> currentIndex = fillQueue.front();
 			Vector3Int currentIndexv3 = currentIndex;
 
-			if(fillIndices[currentIndexv3.x][currentIndexv3.y][currentIndexv3.z] == 0 && blockData[currentIndexv3.x][currentIndexv3.y][currentIndexv3.z] == AIR) { // If this index is unvisited
+			const Block& def = BlockDef::GetDef(blockData[currentIndexv3.x][currentIndexv3.y][currentIndexv3.z]);
+
+			if(fillIndices[currentIndexv3.x][currentIndexv3.y][currentIndexv3.z] == 0 && !def.GetDrawType()==B_OPAQUE) { // If this index is unvisited
 				fillIndices[currentIndexv3.x][currentIndexv3.y][currentIndexv3.z] = currentFillindex;
 
 				if(currentIndexv3.x <= 0) {
