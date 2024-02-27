@@ -93,12 +93,31 @@ void ChunkManager::Thread() {
 
 				chunk->InitSkyLight();
 
-				chunk->currentGenerationPhase = LIGHTING;
-				this->QueueChunkToGenerationPhase(chunk, LIGHTING);
+				chunk->currentGenerationPhase = VISIBILITY_GRAPH;
+				this->QueueChunkToGenerationPhase(chunk, VISIBILITY_GRAPH);
 
 			}, chunk->indexPosition.y == CHUNKLOAD_FIXED_PY); // If the chunk is at the TOP, the higher priority value means it will be completed last (or it should be...)
 
 			blockdataPendingQueue.pop();
+		}
+
+		if(CanServiceQueue(VISIBILITY_GRAPH)) { // Makes it wait until the queues preceeding this phase are empty
+			queue<Chunk*>& visPendingQueue = chunkGenerationQueues[VISIBILITY_GRAPH].second;
+			while(!visPendingQueue.empty()) {
+				Chunk* chunk = visPendingQueue.front();
+
+				if(chunk != nullptr) {
+					
+					threadPool->Queue([=] {
+						chunk->BuildVisibilityGraph();
+
+						chunk->currentGenerationPhase = LIGHTING;
+						this->QueueChunkToGenerationPhase(chunk, LIGHTING);
+					});
+
+				}
+				visPendingQueue.pop();
+			}
 		}
 
 
@@ -113,8 +132,8 @@ void ChunkManager::Thread() {
 					chunk->currentGenerationPhase = MESH;
 					QueueChunkToGenerationPhase(chunk, MESH);
 			
-					lightingPendingQueue.pop();
 				}
+				lightingPendingQueue.pop();
 			}
 		}
 
@@ -312,14 +331,14 @@ ChunkManager::~ChunkManager()
 	//ChunkDatabase::Get()->SaveWorldData();
 	ChunkDatabase::Get()->Close();
 
+	threadPool->Stop();
+
 	isRunning = false;
 	for(auto& thread : chnkMgrThread) {
 		thread.join();
 	}
 
-	threadPool->Stop();
 	delete threadPool;
-
 	if(lighting) delete lighting;
 
 	ChunkDatabase::Get()->Release();

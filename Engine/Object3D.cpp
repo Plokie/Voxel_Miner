@@ -37,7 +37,7 @@ const float Object3D::GetClosestDistance(const Vector3& otherPos)
 	//}
 }
 
-bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX projMx, vector<tuple<Model*, XMMATRIX, Object3D*>>* transparentModels) {
+bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, const XMMATRIX& viewMx, const XMMATRIX& projMx, vector<tuple<Model*, XMMATRIX, Object3D*>>* transparentModels) {
 	//AcquireSRWLockExclusive(&this->gAccessMutex);
 	bool didDraw = false;
 
@@ -54,7 +54,7 @@ bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX pr
 			else //if objects contains transparency, queue to be rendered after opaque geometry
 			{
 				if(transparentModels!=nullptr)
-				transparentModels->push_back(tuple<Model*, XMMATRIX, Object3D*>(model, transform.mx(), this));
+					transparentModels->push_back({ model, transform.mx(), this });
 			}
 		}
 	}
@@ -65,7 +65,7 @@ bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX pr
 	return didDraw;
 }
 
-bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX projMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs, unsigned int modelFlagFilter = 0) {
+bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, const XMMATRIX& viewMx, const XMMATRIX& projMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs, unsigned int modelFlagFilter = 0) {
 	for(Model* model : models) {
 
 		if(model == nullptr) continue;
@@ -73,6 +73,21 @@ bool Object3D::Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX pr
 		//if(!model->IsTransparent())
 		if(!model->IsTransparent() && !model->HasFlag(static_cast<MODEL_FLAG>(modelFlagFilter)))
 			model->Draw(deviceCtx, transform.mx(), viewMx, projMx, ps, vs);
+	}
+
+	return true;
+}
+
+bool Object3D::DrawShadows(ID3D11DeviceContext* deviceCtx, ID3D11PixelShader* ps, ID3D11VertexShader* vs, unsigned int modelFlagFilter, Camera** cameras, ID3D11DepthStencilView** stencils, D3D11_VIEWPORT* viewports, int amount)
+{
+	for(Model* model : models) {
+
+		if(model == nullptr) continue;
+
+		//if(!model->IsTransparent())
+		if(!model->IsTransparent() && !model->HasFlag(static_cast<MODEL_FLAG>(modelFlagFilter)))
+			model->DrawShadows(deviceCtx, transform.mx(), ps, vs, cameras, stencils, viewports, amount);
+			//model->Draw(deviceCtx, transform.mx(), viewMx, projMx, ps, vs);
 	}
 
 	return true;

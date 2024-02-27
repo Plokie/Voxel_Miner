@@ -418,7 +418,7 @@ bool Graphics::SetupShadowmapBuffer(ID3D11Texture2D** depthTex, ID3D11DepthStenc
 	stencilDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	stencilDesc.Texture2D.MipSlice = 0;
 
-	hr = device->CreateDepthStencilView(shadowDepthTex, &stencilDesc, depthStencilView);
+	hr = device->CreateDepthStencilView(*depthTex, &stencilDesc, depthStencilView);
 	//hr = device->CreateDepthStencilView(shadowDepthTex, 0, &shadowDepthView);
 	if(FAILED(hr)) exit(51);
 
@@ -431,7 +431,7 @@ bool Graphics::SetupShadowmapBuffer(ID3D11Texture2D** depthTex, ID3D11DepthStenc
 	resDesc.Texture2D.MipLevels = desc.MipLevels;
 	resDesc.Texture2D.MostDetailedMip = 0;
 
-	hr = device->CreateShaderResourceView(shadowDepthTex, &resDesc, depthResourceView);
+	hr = device->CreateShaderResourceView(*depthTex, &resDesc, depthResourceView);
 	if(FAILED(hr)) exit(52);
 
 	ZeroMemory(viewport, sizeof(D3D11_VIEWPORT));
@@ -443,11 +443,12 @@ bool Graphics::SetupShadowmapBuffer(ID3D11Texture2D** depthTex, ID3D11DepthStenc
 	return true;
 }
 
-void Graphics::AddShadowCamera(XMMATRIX projection)
+void Graphics::AddShadowCamera(float size)
 {
 	Camera* newShadowCam = new Camera();
 
-	newShadowCam->SetProjectionMatrix(projection);
+	newShadowCam->SetProjectionOthographic(size, 1.f, 800.f);
+	//newShadowCam->SetProjectionMatrix(projection);
 
 	for(auto& pCam : shadowCameras) {
 		if(pCam == nullptr) {
@@ -496,7 +497,20 @@ bool Graphics::InitDX(HWND hwnd) {
 
 
 	InitializeShadowmapSampler();
-	SetupShadowmapBuffer(&shadowDepthTex, &shadowDepthView, &shadowResourceView, &shadowViewport, 8000, 8000);
+	
+
+	// move to setup shadow cameras function
+
+	const int shadowRes[] = {
+		8000, 2000, 1000, 500
+	};
+
+	for(int i = 0; i < ARRAYSIZE(shadowRes); i++) {
+		SetupShadowmapBuffer(&shadowDepthTex[i], &shadowDepthView[i], &shadowResourceView[i], &shadowViewport[i], shadowRes[i], shadowRes[i]);
+	}
+	//SetupShadowmapBuffer(&shadowDepthTex[0], &shadowDepthView[0], &shadowResourceView[0], &shadowViewport[0], 4000, 4000);
+	
+
 	
 	return true;
 }
@@ -567,7 +581,10 @@ bool Graphics::InitScene() {
 	sun.rotation = Vector3(45.f, 45.f, 0.f);
 
 	//shadowCamera.SetProjectionMatrix(XMMatrixOrthographicLH(100.f, 100.f, 0.01f, 800.f));
-	AddShadowCamera(XMMatrixOrthographicLH(100.f, 100.f, 0.01f, 800.f));
+	AddShadowCamera(100.f);
+	//AddShadowCamera(30.f);
+	//AddShadowCamera(100.f);
+	//AddShadowCamera(500.f);
 
 	
 	
@@ -631,16 +648,7 @@ bool Graphics::OnResize(HWND hwnd, int width, int height) {
 
 void Graphics::RenderShadowMap(Scene* scene)
 {
-	const float bg[] = {0.f, 0.f, 0.f, 1.0f};
-	deviceCtx->ClearDepthStencilView(shadowDepthView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	deviceCtx->OMSetRenderTargets(0, nullptr, shadowDepthView);
-	
-	deviceCtx->RSSetViewports(1, &shadowViewport);
-	deviceCtx->RSSetState(shadowRastState);
-
-
-	deviceCtx->PSSetShader(shadowPixelShader.GetShader(), nullptr, 0);
-	deviceCtx->VSSetShader(shadowVertexShader.GetShader(), nullptr, 0);
+	const float bg[] = { 0.f, 0.f, 0.f, 1.0f };
 
 	D3D11_MAPPED_SUBRESOURCE resMap;
 
@@ -654,35 +662,52 @@ void Graphics::RenderShadowMap(Scene* scene)
 	int index = 0;
 	for(auto pShadowCam : shadowCameras) {
 		if(pShadowCam == nullptr) continue;
+
+		deviceCtx->ClearDepthStencilView(shadowDepthView[index], D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		deviceCtx->OMSetRenderTargets(0, nullptr, shadowDepthView[index]);
+
+		deviceCtx->RSSetViewports(1, &shadowViewport[index]);
+		deviceCtx->RSSetState(shadowRastState);
+
+
+		deviceCtx->PSSetShader(shadowPixelShader.GetShader(), nullptr, 0);
+		deviceCtx->VSSetShader(shadowVertexShader.GetShader(), nullptr, 0);
+
 		pShadowCam->transform.position = sun.position + (sun.back() * 400.f);
 		pShadowCam->transform.rotation = sun.rotation;
 		pShadowCam->UpdateViewFrustum();
+
+		lightData.lightViewMx[index] = XMMatrixTranspose(pShadowCam->transform.mxView());
+		lightData.lightProjMx[index] = XMMatrixTranspose(pShadowCam->GetProjectionMatrix());
+		lightData.lightSizes[index] = pShadowCam->GetOrthographicSize();
 		
-		if(pShadowCam != nullptr) {
-			lightData.lightViewMx[index] = XMMatrixTranspose(pShadowCam->transform.mxView());
-			lightData.lightProjMx[index] = XMMatrixTranspose(pShadowCam->GetProjectionMatrix());
-		}
-		else break;
 		index++;
-
-
-		// CAMERA DATA
-		//VSCbuffer_Camera camData;
-		//ZeroMemory(&camData, sizeof(VSCbuffer_Camera));
-		//camData.viewMx = XMMatrixTranspose(pShadowCam->transform.mxView());
-		//camData.projMx = XMMatrixTranspose(pShadowCam->GetProjectionMatrix());
-		//HRESULT hr = deviceCtx->Map(vsCbuffer_Camera, 0, D3D11_MAP_WRITE_DISCARD, 0, &resMap);
-		//CopyMemory(resMap.pData, &camData, sizeof(VSCbuffer_Camera));
-		//deviceCtx->Unmap(vsCbuffer_Camera, 0);
-		//deviceCtx->VSSetConstantBuffers(1, 1, &vsCbuffer_Camera);
-
-		for(auto it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); it++) {
-			if(it->second == nullptr) continue;
-			//if((it->second->cullBox.GetHalfSize().magnitude() == 0.0f || shadowCamera.IsAABBInFrustum(it->second->cullBox)) && it->second->doRender)
-			if(it->second->doRender)
-				it->second->Draw(deviceCtx, pShadowCam->transform.mxView(), pShadowCam->GetProjectionMatrix(), nullptr, nullptr, MF_DO_NOT_WRITE_TO_SUN_DEPTH);
-		}
 	}
+
+	for(auto it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); it++) {
+		if(it->second == nullptr) continue;
+		if(/*(it->second->cullBox.GetHalfSize().magnitude() == 0.0f || shadowCameras[index-1]->IsAABBInFrustum(it->second->cullBox)) &&*/ it->second->doRender)
+			it->second->DrawShadows(deviceCtx, nullptr, nullptr, MF_DO_NOT_WRITE_TO_SUN_DEPTH, shadowCameras, shadowDepthView, shadowViewport, index);
+
+	}
+
+
+	//	// CAMERA DATA
+	//	//VSCbuffer_Camera camData;
+	//	//ZeroMemory(&camData, sizeof(VSCbuffer_Camera));
+	//	//camData.viewMx = XMMatrixTranspose(pShadowCam->transform.mxView());
+	//	//camData.projMx = XMMatrixTranspose(pShadowCam->GetProjectionMatrix());
+	//	//HRESULT hr = deviceCtx->Map(vsCbuffer_Camera, 0, D3D11_MAP_WRITE_DISCARD, 0, &resMap);
+	//	//CopyMemory(resMap.pData, &camData, sizeof(VSCbuffer_Camera));
+	//	//deviceCtx->Unmap(vsCbuffer_Camera, 0);
+	//	//deviceCtx->VSSetConstantBuffers(1, 1, &vsCbuffer_Camera);
+
+	//	for(auto it = scene->GetSceneObjects3D()->begin(); it != scene->GetSceneObjects3D()->end(); it++) {
+	//		if(it->second == nullptr) continue;
+	//		//if((it->second->cullBox.GetHalfSize().magnitude() == 0.0f || pShadowCam->IsAABBInFrustum(it->second->cullBox)) && it->second->doRender)
+	//			//it->second->Draw(deviceCtx, pShadowCam->transform.mxView(), pShadowCam->GetProjectionMatrix(), nullptr, nullptr, MF_DO_NOT_WRITE_TO_SUN_DEPTH);
+	//	}
+	//}
 
 	HRESULT hr = deviceCtx->Map(vsCbuffer_Light, 0, D3D11_MAP_WRITE_DISCARD, 0, &resMap);
 	CopyMemory(resMap.pData, &lightData, sizeof(VSCbuffer_Light));
@@ -719,12 +744,8 @@ void Graphics::Render(Scene* scene) {
 
 	RenderShadowMap(scene);
 
-	if(Input::IsKeyHeld('J')) {
-		deviceCtx->OMSetRenderTargets(1, &renderTargetView, shadowDepthView);
-	}
-	else {
-		deviceCtx->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
-	}
+	deviceCtx->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	
 	
 	/*ID3D11RenderTargetView* targets[] = {renderTargetView, shadowRenderTarget};
 	deviceCtx->OMSetRenderTargets(2, targets, depthStencilView);*/
@@ -739,7 +760,7 @@ void Graphics::Render(Scene* scene) {
 	deviceCtx->PSSetShader(defaultPixelShader.GetShader(), NULL, 0);
 
 	deviceCtx->PSSetShaderResources(0, 1, &errTex);
-	deviceCtx->PSSetShaderResources(1, 1, &shadowResourceView);
+	deviceCtx->PSSetShaderResources(1, MAX_SHADOW_CASCADES, &shadowResourceView[0]);
 
 	// set cbuffers for this frame
 
@@ -761,7 +782,7 @@ void Graphics::Render(Scene* scene) {
 
 	camera.UpdateViewFrustum();
 
-	vector<tuple<Model*,XMMATRIX, Object3D*>> transparentModels = {}; // Transparent meshes to be drawn AFTER the opaque geometry
+	vector<tuple<Model*, XMMATRIX, Object3D*>> transparentModels = {}; // Transparent meshes to be drawn AFTER the opaque geometry
 	vector<Object3D*> objects = {};
 	objects.reserve(scene->GetSceneObjects3D()->size());
 
@@ -782,7 +803,7 @@ void Graphics::Render(Scene* scene) {
 
 	Sort3DObjects(objects, 0, (int)(objects.size() - 1));
 
-	for(vector<Object3D*>::iterator it = objects.begin(); it != objects.end(); ++it) {
+	for(auto it = objects.begin(); it != objects.end(); ++it) {
 
 		{	unique_lock<std::mutex> lock((*it)->gAccessMutex);
 			if ((*it)->Draw(deviceCtx, camera.transform.mxView(), camera.GetProjectionMatrix(), &transparentModels)) {
@@ -798,7 +819,7 @@ void Graphics::Render(Scene* scene) {
 	deviceCtx->OMSetDepthStencilState(alphaDepthStencilState, 0);
 
 	//Draw alpha geometry
-	for(vector<tuple<Model*, XMMATRIX, Object3D*>>::iterator it = transparentModels.begin(); it!=transparentModels.end(); ++it) {
+	for(auto it = transparentModels.begin(); it!=transparentModels.end(); ++it) {
 		//AcquireSRWLockExclusive(it->first)
 		Model*& model = get<0>(*it);
 		Object3D*& obj = get<2>(*it);
@@ -947,12 +968,29 @@ Graphics::~Graphics()
 
 	if(rasterizerState) rasterizerState->Release();
 
-	if(shadowDepthTex) shadowDepthTex->Release();
-	if(shadowDepthView) shadowDepthView->Release();
-	if(shadowResourceView) shadowResourceView->Release();
+	for(auto& pShadowDepthTex : shadowDepthTex) {
+		if(pShadowDepthTex == nullptr) continue;
+		pShadowDepthTex->Release();
+		//delete pShadowDepthTex;
+		pShadowDepthTex = nullptr;
+	}
+
+	for(auto& pShadowDepthView : shadowDepthView) {
+		if(pShadowDepthView == nullptr) continue;
+		pShadowDepthView->Release();
+		//delete pShadowDepthView;
+		pShadowDepthView = nullptr;
+	}
+
+	for(auto& pShadowResourceView : shadowResourceView) {
+		if(pShadowResourceView == nullptr) continue;
+		pShadowResourceView->Release();
+		//delete pShadowResourceView;
+		pShadowResourceView = nullptr;
+	}
+
 	if(shadowSamplerState) shadowSamplerState->Release();
 	if(shadowRastState) shadowRastState->Release();
-	if(shadowRenderTarget) shadowRenderTarget->Release();
 
 	for(auto& shadowCam : shadowCameras) {
 		delete shadowCam;

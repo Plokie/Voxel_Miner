@@ -14,7 +14,17 @@ void Camera::SetProjectionValues(float fovDegrees, float aspectRatio, float near
 
 	this->projectionMatrix = XMMatrixPerspectiveFovLH(fovRadians, aspectRatio, nearZ, farZ);
 
-	this->viewFrustum = Frustum::CreateFrustumFromCamera(*this, aspectRatio, fovRadians, nearZ, farZ);
+	this->viewFrustum = Frustum::CreateFrustumFromCamera(*this, nearZ, farZ);
+}
+
+void Camera::SetProjectionOthographic(float size, float nearZ, float farZ)
+{
+	this->orthoSize = size;
+	this->nearZ = nearZ;
+	this->farZ = farZ;
+
+	this->projectionMatrix = XMMatrixOrthographicLH(size, size, nearZ, farZ);
+	this->viewFrustum = Frustum::CreateFrustumFromCamera(*this, nearZ, farZ);
 }
 
 //https://learnopengl.com/Guest-Articles/2021/Scene/Frustum-Culling
@@ -36,7 +46,12 @@ bool Camera::IsAABBInFrustum(const AABB& aabb)
 
 void Camera::UpdateViewFrustum()
 {
-	this->viewFrustum = Frustum::CreateFrustumFromCamera(*this, aspectRatio, fovRadians, nearZ, farZ);
+	this->viewFrustum = Frustum::CreateFrustumFromCamera(*this, nearZ, farZ);
+}
+
+const float Camera::GetOrthographicSize() const
+{
+	return this->orthoSize;
 }
 
 const XMMATRIX& Camera::GetProjectionMatrix() const

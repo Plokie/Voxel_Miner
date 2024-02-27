@@ -60,7 +60,7 @@ float4 main(PS_INPUT input) : SV_TARGET
         input.lPos.y = input.lPos.y / -2 + 0.5;
         input.lPos.z -= 0.00001f;
         
-        input.lPos.xyz += input.normal * 0.00001f;
+        //input.lPos.xyz += input.normal * 0.00001f;
         
         //float pcfSum = 0;
         //float x, y;

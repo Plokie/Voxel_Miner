@@ -266,13 +266,8 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 }
 
 void Chunk::BuildMesh() {
-	for(Model*& model : this->models) {
-		model->ReleaseMesh();
-		model = nullptr;
-		//delete model;
-	}
-	this->models.clear();
-	this->models.reserve(5);
+	
+	//this->models.reserve(5);
 
 	const int reserveSizeSolid = (CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z) / 2;
 	const int reserveSizeTrans = (CHUNKSIZE_X * CHUNKSIZE_Y * CHUNKSIZE_Z) / 4;
@@ -352,6 +347,13 @@ void Chunk::BuildMesh() {
 			}
 		}
 	}
+
+	for(Model*& model : this->models) {
+		model->ReleaseMesh();
+		model = nullptr;
+		//delete model;
+	}
+	this->models.clear();
 
 	this->PushChunkMesh(solidVertices, solidIndices);
 

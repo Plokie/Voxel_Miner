@@ -56,7 +56,6 @@ public:
 
 	bool IsChunkVisibleFromChunk(Vector3Int tryFindThisChunk, Vector3Int fromChunk);
 
-	void Generate();
 	void Finalize();
 
 	Vector3Int indexPosition = { 0,0,0 };

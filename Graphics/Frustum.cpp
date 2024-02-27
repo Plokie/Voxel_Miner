@@ -3,7 +3,7 @@
 #include "Camera.h"
 
 // http://davidlively.com/programming/graphics/frustum-calculation-and-culling-hopefully-demystified/
-Frustum Frustum::CreateFrustumFromCamera(const Camera& cam, float aspect, float FOV, float nearZ, float farZ)
+Frustum Frustum::CreateFrustumFromCamera(const Camera& cam, float nearZ, float farZ)
 {
 	Frustum newFrustum;
 

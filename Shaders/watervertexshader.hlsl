@@ -16,6 +16,7 @@ cbuffer cbuffer_light : register(b2)
 {
     float4x4 lightView[4];
     float4x4 lightProj[4];
+    float lightSizes[4];
 }
 
 struct VS_INPUT

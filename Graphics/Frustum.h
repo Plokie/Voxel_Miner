@@ -16,5 +16,5 @@ public:
 
 	Frustum() {}
 
-	static Frustum CreateFrustumFromCamera(const Camera& cam, float aspect, float FOV, float nearZ, float farZ);
+	static Frustum CreateFrustumFromCamera(const Camera& cam, float nearZ, float farZ);
 };

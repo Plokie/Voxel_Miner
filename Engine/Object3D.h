@@ -37,8 +37,9 @@ public:
 	// Finds the closest distance to another position (takes into account AABB)
 	const float GetClosestDistance(const Vector3& otherPos);
 
-	bool Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX projMx, vector<tuple<Model*, XMMATRIX, Object3D*>>* transparentModels);
-	bool Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX viewMx, XMMATRIX projMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs, unsigned int modelFlagFilter);
+	bool Draw(ID3D11DeviceContext* deviceCtx, const XMMATRIX& viewMx, const XMMATRIX& projMx, vector<tuple<Model*, XMMATRIX, Object3D*>>* transparentModels);
+	bool Draw(ID3D11DeviceContext* deviceCtx, const XMMATRIX& viewMx, const XMMATRIX& projMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs, unsigned int modelFlagFilter);
+	bool DrawShadows(ID3D11DeviceContext* deviceCtx, ID3D11PixelShader* ps, ID3D11VertexShader* vs, unsigned int modelFlagFilter, Camera** cameras, ID3D11DepthStencilView** stencils, D3D11_VIEWPORT* viewports, int amount);
 
 	Model* AddModel(ID3D11Device* device);
 

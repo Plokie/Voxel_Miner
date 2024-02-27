@@ -53,13 +53,12 @@ private:
 	ID3D11DepthStencilView* depthStencilView = nullptr;
 	ID3D11Texture2D* depthBuffer = nullptr;
 
-	ID3D11Texture2D* shadowDepthTex = nullptr;
-	ID3D11DepthStencilView* shadowDepthView = nullptr;
-	ID3D11ShaderResourceView* shadowResourceView = nullptr;
+	ID3D11Texture2D* shadowDepthTex[MAX_SHADOW_CASCADES] = {};
+	ID3D11DepthStencilView* shadowDepthView[MAX_SHADOW_CASCADES] = {};
+	ID3D11ShaderResourceView* shadowResourceView[MAX_SHADOW_CASCADES] = {};
 	ID3D11SamplerState* shadowSamplerState = nullptr;
 	ID3D11RasterizerState* shadowRastState = nullptr;
-	D3D11_VIEWPORT shadowViewport;
-	ID3D11RenderTargetView* shadowRenderTarget = nullptr;
+	D3D11_VIEWPORT shadowViewport[MAX_SHADOW_CASCADES] = {};
 	//ShadowMap_CBuff shadowCbufferData;
 
 	VertexShader shadowVertexShader;
@@ -104,7 +103,7 @@ private:
 
 	void InitializeShadowmapSampler();
 	bool SetupShadowmapBuffer(ID3D11Texture2D** depthTex, ID3D11DepthStencilView** depthStencilView, ID3D11ShaderResourceView** depthResourceView, D3D11_VIEWPORT* shadowViewport, int resX, int resY);
-	void AddShadowCamera(XMMATRIX projection);
+	void AddShadowCamera(float size);
 
 	bool InitResolution(HWND hwnd);
 
@@ -142,9 +141,9 @@ public:
 	void Sort3DObjects(vector<Object3D*>& objects, int startIndex, int endIndex);
 	void Sort2DObjects(vector<Object2D*>& objects, int startIndex, int endIndex);
 
-	ID3D11ShaderResourceView* GetShadowResourceView() const {
-		return shadowResourceView;
-	}
+	//ID3D11ShaderResourceView* GetShadowResourceView() const {
+	//	return shadowResourceView;
+	//}
 
 	ID3D11Device* GetDevice() { return device; }
 

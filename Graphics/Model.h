@@ -18,6 +18,8 @@
 
 using namespace DirectX;
 
+class Camera;
+
 enum MODEL_FLAG : unsigned int {
 	MF_NONE = 0,
 	MF_TRANSPARENT = 1,
@@ -69,6 +71,8 @@ private:
 	Vector2 uvOffset = { 0.f, 0.f };
 	unsigned int flags = 0;
 
+	void SetupCbuffers(ID3D11DeviceContext* deviceCtx, const XMMATRIX& modelMx, const XMMATRIX& viewMx, const XMMATRIX& projMx);
+
 public:
 	//SRWLOCK gAcquireMutex;
 	//SIZE_T indexCount = 0;
@@ -111,8 +115,9 @@ public:
 	/// <param name="worldMx">cam view mx * cam proj mx</param>
 	//void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX worldMx);
 
-	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX viewMx, XMMATRIX projMx);
-	void Draw(ID3D11DeviceContext* deviceCtx, XMMATRIX modelMx, XMMATRIX viewMx, XMMATRIX projMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs);
+	void Draw(ID3D11DeviceContext* deviceCtx, const XMMATRIX& modelMx, const XMMATRIX& viewMx, const XMMATRIX& projMx);
+	void Draw(ID3D11DeviceContext* deviceCtx, const XMMATRIX& modelMx, const XMMATRIX& viewMx, const XMMATRIX& projMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs);
+	void DrawShadows(ID3D11DeviceContext* deviceCtx, const XMMATRIX& modelMx, ID3D11PixelShader* ps, ID3D11VertexShader* vs, Camera** cameras, ID3D11DepthStencilView** stencils, D3D11_VIEWPORT* viewports, int amount);
 
 	void SetTexture(int idx, ID3D11ShaderResourceView* tex) {
 		this->tex = tex;

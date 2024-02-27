@@ -16,6 +16,7 @@ using namespace DirectX;
 struct VSCbuffer_Light {
 	XMMATRIX lightViewMx[MAX_SHADOW_CASCADES];
 	XMMATRIX lightProjMx[MAX_SHADOW_CASCADES];
+	float lightSizes[MAX_SHADOW_CASCADES];
 };
 
 struct VSCbuffer_Model {

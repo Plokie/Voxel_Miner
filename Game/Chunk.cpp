@@ -6,17 +6,7 @@
 #include "ChunkDatabase.h"
 #include "BlockData.h"
 
-void Chunk::Generate()
-{
-	//GenerateBlockData();
-	BuildMesh();
-
-	Engine::Get()->GetCurrentScene()->CreateObject3D(this, "c_" + indexPosition.ToString());
-}
-
 void Chunk::Finalize() {
-	BuildVisibilityGraph();
-
 	BuildMesh();
 	
 
