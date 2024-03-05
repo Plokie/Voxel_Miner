@@ -1,0 +1,12 @@
+C:\Users\c2015437.SHU\source\repos\Voxel_Miner\Scripts\bin\Debug\net6.0\Scripting.deps.json
+C:\Users\c2015437.SHU\source\repos\Voxel_Miner\Scripts\bin\Debug\net6.0\Scripting.dll
+C:\Users\c2015437.SHU\source\repos\Voxel_Miner\Scripts\bin\Debug\net6.0\Scripting.pdb
+C:\Users\c2015437.SHU\source\repos\Voxel_Miner\Scripts\obj\Debug\net6.0\Scripting.csproj.AssemblyReference.cache
+C:\Users\c2015437.SHU\source\repos\Voxel_Miner\Scripts\obj\Debug\net6.0\Scripting.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\c2015437.SHU\source\repos\Voxel_Miner\Scripts\obj\Debug\net6.0\Scripting.AssemblyInfoInputs.cache
+C:\Users\c2015437.SHU\source\repos\Voxel_Miner\Scripts\obj\Debug\net6.0\Scripting.AssemblyInfo.cs
+C:\Users\c2015437.SHU\source\repos\Voxel_Miner\Scripts\obj\Debug\net6.0\Scripting.csproj.CoreCompileInputs.cache
+C:\Users\c2015437.SHU\source\repos\Voxel_Miner\Scripts\obj\Debug\net6.0\Scripting.dll
+C:\Users\c2015437.SHU\source\repos\Voxel_Miner\Scripts\obj\Debug\net6.0\refint\Scripting.dll
+C:\Users\c2015437.SHU\source\repos\Voxel_Miner\Scripts\obj\Debug\net6.0\Scripting.pdb
+C:\Users\c2015437.SHU\source\repos\Voxel_Miner\Scripts\obj\Debug\net6.0\ref\Scripting.dll

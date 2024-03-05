@@ -8,6 +8,7 @@
 #pragma comment(lib)
 
 #include "SimpleMath.h"
+#include "Engine/Scripting/Scripting.h"
 
 #include "Engine/Engine.h"
 #include "Engine/Timer.h"
@@ -28,6 +29,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	//if(FAILED(hr)) {					// COM library or something i think... hopefully its not important
 	//	return 999;						// it kept breaking miniaudio (or miniaudio kept breaking *it*)
 	//}
+
+	Scripting::Init();
 
 	// Load default textures
 	Resources::LoadTexture(L"Data\\Textures\\err.dds", "err");
