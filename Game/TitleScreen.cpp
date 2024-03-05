@@ -304,9 +304,12 @@ Controller input is also supported. In UI, Left click is Right Trigger, Right cl
 		i++;
 	}
 
-	AddButton(engine, titleLoad, "Back", 200.f, [] {
+	Button* backButton = AddButton(engine, titleLoad, "Back", 200.f, [] {
 		Engine::Get()->SetScene("titlePlay");
 	});
+	backButton->SetPivot(0.5f, 0.5f);
+	backButton->SetAnchor(0.5f, 1.f);
+	backButton->SetPosition(0.0f, -100.f);
 
 	engine->AddScene(titleLoad, "titleLoad");
 
