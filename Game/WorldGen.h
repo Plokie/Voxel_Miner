@@ -49,7 +49,10 @@ private:
 
 	//FastNoiseLite noiseSampler_Height1;
 	FastNoiseLite noiseSampler_Caves1;
-	FastNoiseLite noiseSampler_CavesTunnels;
+	FastNoiseLite noiseSampler_CavesTunnelsN0;
+	FastNoiseLite noiseSampler_CavesTunnelsN1;
+
+	FastNoiseLite noiseSampler_Rivers;
 
 	//FastNoiseLite noiseSampler_Sky_Under;
 	//FastNoiseLite noiseSampler_Sky_Top;
@@ -61,6 +64,8 @@ private:
 
 	FastNoiseLite noiseSampler_treeValue;
 	FastNoiseLite noiseSampler_treeDist;
+
+	//FastNoiseLite noiseSampler_C
 
 	//vector<TerrainFeature*> _pendingFeatures;
 

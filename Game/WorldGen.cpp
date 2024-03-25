@@ -186,15 +186,15 @@ void WorldGen::Init()
 	noiseSampler_Caves1.SetFrequency(0.035f);
 	noiseSampler_Caves1.SetFractalType(FastNoiseLite::FractalType_FBm);
 
-	noiseSampler_CavesTunnels = FastNoiseLite(seed);
-	noiseSampler_CavesTunnels.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
-	noiseSampler_CavesTunnels.SetFrequency(0.03f);
-	//noiseSampler_CavesTunnels.SetCellularDistanceFunction(FastNoiseLite::CellularDistanceFunction_EuclideanSq);
-	//noiseSampler_CavesTunnels.SetCellularReturnType(FastNoiseLite::CellularReturnType_Distance2Div);
+	//noiseSampler_CavesTunnels = FastNoiseLite(seed);
+	//noiseSampler_CavesTunnels.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+	//noiseSampler_CavesTunnels.SetFrequency(0.03f);
+	////noiseSampler_CavesTunnels.SetCellularDistanceFunction(FastNoiseLite::CellularDistanceFunction_EuclideanSq);
+	////noiseSampler_CavesTunnels.SetCellularReturnType(FastNoiseLite::CellularReturnType_Distance2Div);
 
-	noiseSampler_CavesTunnels.SetFractalType(FastNoiseLite::FractalType_PingPong);
-	noiseSampler_CavesTunnels.SetFractalOctaves(1);
-	noiseSampler_CavesTunnels.SetFractalPingPongStrength(1.95f);
+	//noiseSampler_CavesTunnels.SetFractalType(FastNoiseLite::FractalType_PingPong);
+	//noiseSampler_CavesTunnels.SetFractalOctaves(1);
+	//noiseSampler_CavesTunnels.SetFractalPingPongStrength(1.95f);
 
 	//noiseSampler_Sky_Top = FastNoiseLite(seed);
 	//noiseSampler_Sky_Top.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2S);
@@ -229,6 +229,25 @@ void WorldGen::Init()
 	noiseSampler_treeValue.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
 	noiseSampler_treeValue.SetFrequency(0.155f);
 	noiseSampler_treeValue.SetCellularReturnType(FastNoiseLite::CellularReturnType_CellValue);
+
+	//noiseSampler_Rivers = FastNoiseLite(seed);
+	//noiseSampler_Rivers.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
+	//noiseSampler_Rivers.SetFrequency(0.1f);
+	//noiseSampler_Rivers.SetDomainWarpType(FastNoiseLite::DomainWarpType_OpenSimplex2);
+	//noiseSampler_Rivers.SetDomainWarpAmp(280.f);
+	//noiseSampler_Rivers.SetFractalType(FastNoiseLite::FractalType_DomainWarpIndependent);
+	//noiseSampler_Rivers.SetFractalOctaves(5);
+	//noiseSampler_Rivers.SetFractalLacunarity(2.0f);
+	//noiseSampler_Rivers.SetFractalGain(0.5f);
+
+	noiseSampler_CavesTunnelsN0 = FastNoiseLite(seed+3);
+	noiseSampler_CavesTunnelsN0.SetFrequency(0.03f);
+	noiseSampler_CavesTunnelsN0.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+
+	noiseSampler_CavesTunnelsN1 = FastNoiseLite(seed+4);
+	noiseSampler_CavesTunnelsN1.SetFrequency(0.03f);
+	noiseSampler_CavesTunnelsN1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+	//noiseSampler_CavesTunnels.SetCellularReturnType(FastNoiseLite::CellularReturnType_Distance);
 }
 
 inline float clamp(float x, float minX, float maxX) {
@@ -246,11 +265,13 @@ inline float lerptab(float t, float a, float b) {
 
 float WorldGen::SampleWorldHeight(const int& x, const int& z)
 {
+	float height = 0.0f;
+
 #if 0 //Old world gen (keeping for legacy worlds)
 	float rawNoiseSample = _Instance->noiseSampler_Height1.GetNoise((float)x, (float)z);
 	//rawNoiseSample = DeNormalizeNoise(smoothstep(0.2f, 0.8f, NormalizeNoise(rawNoiseSample)));
 
-	return rawNoiseSample * 30.f;
+	height = rawNoiseSample * 30.f;
 #else
 	// Sample point
 	Vector2 samp = Vector2((float)x, (float)z);
@@ -270,8 +291,11 @@ float WorldGen::SampleWorldHeight(const int& x, const int& z)
 	// Clamp height and then offset by base height
 	float mountainHeight = (clamp(rawMountainSample, 0, 3.f) * 30.f) - mountainHeightOffset;
 
-	return lerptab(mountains, basicHeight, mountainHeight);
+	height = lerptab(mountains, basicHeight, mountainHeight);
 #endif
+
+
+	return height;
 }
 
 float WorldGen::SampleTemperature(const int& x, const int& z) {
@@ -294,6 +318,9 @@ BlockID WorldGen::GetBlockAt(const int& x, const int& y, const int& z) {
 
 bool WorldGen::IsBlockCave(const int& x, const int& y, const int& z) {
 	float sample = _Instance->noiseSampler_Caves1.GetNoise(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
+
+	float sample0 = abs(_Instance->noiseSampler_CavesTunnelsN0.GetNoise((float)x, (float)y * 1.2f, (float)z));
+	float sample1 = abs(_Instance->noiseSampler_CavesTunnelsN1.GetNoise((float)x, (float)y * 1.2f, (float)z));
 	//float sampleTunnels = _Instance->noiseSampler_CavesTunnels.GetNoise(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
 
 	//return sample > 
@@ -302,7 +329,8 @@ bool WorldGen::IsBlockCave(const int& x, const int& y, const int& z) {
 	//return (sample > 0.25f) || (sampleTunnels > 0.4f && sampleTunnels < 0.6f);
 	//return (sample > 0.25f) || (abs(sampleTunnels) > 0.4f && abs(sampleTunnels) < 0.6f);
 
-	return sample > 0.25f;
+	//return sample > 0.25f;
+	return (sample0 < 0.08f && sample1 < 0.08f) || sample > 0.25f;
 }
 
 

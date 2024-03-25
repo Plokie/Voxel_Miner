@@ -77,8 +77,10 @@ void ChunkManager::Thread() {
 		queue<Chunk*>& blockdataPendingQueue = chunkGenerationQueues[BLOCKDATA].second;
 		while(!blockdataPendingQueue.empty()) {
 			Chunk* chunk = blockdataPendingQueue.front();
+			chunk->SetBusy(true);
 
 			threadPool->Queue([=] {
+
 				if(ChunkDatabase::Get()->DoesDataExistForChunk(chunk->indexPosition)) {
 					ChunkDatabase::Get()->LoadChunkDataInto(chunk->indexPosition, chunk);
 
@@ -95,6 +97,8 @@ void ChunkManager::Thread() {
 
 				chunk->currentGenerationPhase = VISIBILITY_GRAPH;
 				this->QueueChunkToGenerationPhase(chunk, VISIBILITY_GRAPH);
+
+				chunk->SetBusy(false);
 
 			}, chunk->indexPosition.y == CHUNKLOAD_FIXED_PY); // If the chunk is at the TOP, the higher priority value means it will be completed last (or it should be...)
 
@@ -120,7 +124,7 @@ void ChunkManager::Thread() {
 			}
 		}
 
-
+		//0xF ends up in the queue sometimes on release builds hmm
 		if(CanServiceQueue(LIGHTING)) { // Makes it wait until the queues preceeding this phase are empty
 			queue<Chunk*>& lightingPendingQueue = chunkGenerationQueues[LIGHTING].second;
 			while(!lightingPendingQueue.empty()) {
@@ -185,6 +189,7 @@ void ChunkManager::Thread() {
 				abs(indexPos.z - camIndex.z) > CHUNKLOAD_AREA_Z
 				) { // Erase chunk from map (it is out of range)
 
+				if(!pair.second->IsBusy()) { //if chunk isnt busy
 					{
 						//unique_lock<std::mutex> lock(pair.second->gAccessMutex);
 						unique_lock<std::mutex> destroyLock(*Engine::Get()->GetDestroyObjectsMutex());
@@ -197,6 +202,7 @@ void ChunkManager::Thread() {
 						//.lock();
 						chunkMap.erase(it++);
 					}
+				}
 			}
 			else { // Increment iterator 
 				++it;

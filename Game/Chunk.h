@@ -33,6 +33,7 @@ private:
 
 	const float secondsPerTick = 0.05f;
 	float tickTimer = 0.f;
+	bool busy = false;
 
 
 	void PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESHFLAG isTransparent = SOLID);
@@ -44,6 +45,9 @@ private:
 	void TryFloodFillGraph(int x, int y, int z);
 	//Vector3Int LocalToWorld(const int x, const int y, const int z);
 public:
+
+	bool IsBusy() const { return busy; }
+	void SetBusy(bool busy) { this->busy = busy; }
 	// input direction :: hash map of output directions visible from input direction
 	map<tuple<int, int, int>, map<tuple<int, int, int>,UINT8>> visibilityGraph;
 	//bool hasLoadedBlockData = false;
