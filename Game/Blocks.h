@@ -5,6 +5,7 @@
 #include "ItemTypes.h"
 #include "ItemCategory.h"
 #include "../Engine/MathUtil.h"
+#include "BlockShape.h"
 
 using namespace std;
 
@@ -81,6 +82,8 @@ private:
 	int topUvIdX, topUvIdY;
 	int bottUvIdX, bottUvIdY;
 	int sideUvIdX, sideUvIdY;
+
+	BlockShapeID blockShapeID;
 	//int tier;
 
 	//bool hasShell = false;
@@ -92,21 +95,21 @@ private:
 	
 public:
 
-	Block(string name, ITEM_CATEGORY category, int UvIdX, int UvIdY, uint32_t tags, int lightValue=0, const string& lootTable = "") :
-		name(name), category(category), 
+	Block(string name, BlockShapeID blockShapeID, ITEM_CATEGORY category, int UvIdX, int UvIdY, uint32_t tags, int lightValue=0, const string& lootTable = "") :
+		name(name), blockShapeID(blockShapeID), category(category), 
 		topUvIdX(UvIdX), topUvIdY(UvIdY),
 		bottUvIdX(UvIdX), bottUvIdY(UvIdY),
 		sideUvIdX(UvIdX), sideUvIdY(UvIdY),
 		tags((BLOCK_TAGS)tags), lightValue(lightValue),
 		lootTable(lootTable){}
 
-	Block(string name, ITEM_CATEGORY category,
+	Block(string name, BlockShapeID blockShapeID, ITEM_CATEGORY category,
 		int TopUvIdX, int TopUvIdY,
 		int SideUvIdX, int SideUvIdY,
 		int BottUvIdX, int BottUvIdY,
 		uint32_t tags, int lightValue = 0,
 		const string& lootTable = "") :
-		name(name), category(category),
+		name(name), blockShapeID(blockShapeID), category(category),
 		topUvIdX(TopUvIdX), topUvIdY(TopUvIdY),
 		sideUvIdX(SideUvIdX), sideUvIdY(SideUvIdY),
 		bottUvIdX(BottUvIdX), bottUvIdY(BottUvIdY),
@@ -181,6 +184,7 @@ public:
 	//const bool IsSolid() const { return isSolid; }
 	const bool HasTag(uint32_t tag) const { return tags & tag; }
 	const ITEM_CATEGORY GetCategory() const { return category; }
+	BlockShapeID GetBlockShapeID() const { return blockShapeID; }
 
 	const int GetTopUVidx() const;
 	const int GetTopUVidy() const;

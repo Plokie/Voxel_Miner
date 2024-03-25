@@ -100,6 +100,27 @@ void PushFace(vector<Vertex>& vertices,
 	vertices.push_back(Vertex((float)x + dx, (float)y + dy, (float)z + dz, normal.x, normal.y, normal.z, uvTileSize, uvTileSize, uv.x, uv.y));
 }
 
+
+void Chunk::PushBlockShapeFaces(const BlockID blockID, const Vector3Int& pos, const Vector3Int& lightSampleDir, const vector<BlockFace>& faces, vector<Vertex>& vertices, vector<DWORD>& indices) {
+	short rawLight = GetRawLightIncludingNeighbours(pos.x + lightSampleDir.x, pos.y + lightSampleDir.y, pos.z + lightSampleDir.z);
+	int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
+
+	for(const BlockFace& face : faces) {
+		PushIndices(vertices.size(), indices);
+		PushFace(vertices, blockID,
+			(float)pos.x, (float)pos.y, (float)pos.z,
+			face.a.x, face.a.y, face.a.z,
+			face.b.x, face.b.y, face.b.z,
+			face.c.x, face.c.y, face.c.z,
+			face.d.x, face.d.y, face.d.z,
+
+			face.normal.x, face.normal.y, face.normal.z,
+			light
+		);
+	}
+}
+
+
 void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int z, vector<Vertex>& vertices, vector<DWORD>& indices) {
 	// positive x and negative x IsBlockSolid condition
 	bool px = RenderBlockFaceAgainst(blockID, x + 1, y, z);
@@ -113,105 +134,29 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 
 	// If all blocks surrounding this block are solid, we dont want to build a mesh
 	// and can exit immediately
-	//if(px && nx && py && ny && pz && nz) return; 
+	if(!px && !nx && !py && !ny && !pz && !nz) return; 
+
+	BlockShape& shape = BlockShape::blockShapes[BlockDef::GetDef(blockID).GetBlockShapeID()];
 
 	if(px) {
-		//int light = max(GetBlockLightIncludingNeighbours(x+1, y, z), GetSkyLightIncludingNeighbours(x+1, y, z));
-		short rawLight = GetRawLightIncludingNeighbours(x + 1, y, z);
-		int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
-
-		PushIndices(vertices.size(), indices);
-		PushFace(vertices, blockID,
-			(float)x, (float)y, (float)z,
-			1, 0, 0,
-			1, 1, 0,
-			1, 1, 1,
-			1, 0, 1,
-
-			1, 0, 0,
-			light
-		);
+		PushBlockShapeFaces(blockID, { x,y,z }, { 1,0,0 }, shape.GetFaces(PX), vertices, indices);
 	}
 	if(nx) {
-		short rawLight = GetRawLightIncludingNeighbours(x - 1, y, z);
-		int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
-
-		PushIndices(vertices.size(), indices);
-		PushFace(vertices, blockID,
-			(float)x, (float)y, (float)z,
-			0, 0, 1,
-			0, 1, 1,
-			0, 1, 0,
-			0, 0, 0,
-
-			-1, 0, 0,
-			light
-		);
+		PushBlockShapeFaces(blockID, { x,y,z }, { -1,0,0 }, shape.GetFaces(NX), vertices, indices);
 	}
 	if(py) {
-		short rawLight = GetRawLightIncludingNeighbours(x, y + 1, z);
-		int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
-
-		PushIndices(vertices.size(), indices);
-		PushFace(vertices, blockID,
-			(float)x, (float)y, (float)z,
-			0, 1, 0,
-			0, 1, 1,
-			1, 1, 1,
-			1, 1, 0,
-
-			0, 1, 0,
-			light
-		);
+		PushBlockShapeFaces(blockID, { x,y,z }, { 0,1,0 }, shape.GetFaces(PY), vertices, indices);
 	}
 	if(ny) {
-		short rawLight = GetRawLightIncludingNeighbours(x, y - 1, z);
-		int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
-
-		PushIndices(vertices.size(), indices);
-		PushFace(vertices, blockID,
-			(float)x, (float)y, (float)z,
-			0, 0, 1,
-			0, 0, 0,
-			1, 0, 0,
-			1, 0, 1,
-
-			0, -1, 0,
-			light
-		);
+		PushBlockShapeFaces(blockID, { x,y,z }, { 0,-1,0 }, shape.GetFaces(NY), vertices, indices);
 	}
 	if(pz) {
-		short rawLight = GetRawLightIncludingNeighbours(x, y, z + 1);
-		int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
-
-		PushIndices(vertices.size(), indices);
-		PushFace(vertices, blockID,
-			(float)x, (float)y, (float)z,
-			1, 0, 1,
-			1, 1, 1,
-			0, 1, 1,
-			0, 0, 1,
-
-			0, 0, 1,
-			light
-		);
+		PushBlockShapeFaces(blockID, { x,y,z }, { 0,0,1 }, shape.GetFaces(PZ), vertices, indices);
 	}
 	if(nz) {
-		short rawLight = GetRawLightIncludingNeighbours(x, y, z - 1);
-		int light = max((rawLight & 0xF0) >> 4, rawLight & 0x0F); // sky, block
-
-		PushIndices(vertices.size(), indices);
-		PushFace(vertices, blockID,
-			(float)x, (float)y, (float)z,
-			0, 0, 0,
-			0, 1, 0,
-			1, 1, 0,
-			1, 0, 0,
-
-			0, 0, -1,
-			light
-		);
+		PushBlockShapeFaces(blockID, { x,y,z }, { 0,0,-1 }, shape.GetFaces(NZ), vertices, indices);
 	}
+	PushBlockShapeFaces(blockID, { x,y,z }, { 0,0,0 }, shape.GetFaces(UNDEFINED), vertices, indices);
 }
 
 void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESHFLAG meshFlag)

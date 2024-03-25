@@ -38,6 +38,7 @@ private:
 
 	void PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESHFLAG isTransparent = SOLID);
 	bool RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z);
+	void PushBlockShapeFaces(const BlockID blockID, const Vector3Int& pos, const Vector3Int& lightSampleDir, const vector<BlockFace>& faces, vector<Vertex>& vertices, vector<DWORD>& indices);
 	void MakeVoxel(const BlockID blockID, const int x, const int y, const int z, vector<Vertex>& vertices, vector<DWORD>& indices);
 	void CorrectIndexForNeighbours(const int& x, const int& y, const int& z, Chunk** outChunk, Vector3Int* outIndex);
 	void CorrectIndexForNeighbours(const Vector3Int& index, Chunk** outChunk, Vector3Int* outIndex);

@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio\Audio.cpp" />
+    <ClCompile Include="Game\BlockShape.cpp" />
     <ClCompile Include="Game\CreativeUI.cpp" />
     <ClCompile Include="Game\BlockAction.cpp" />
     <ClCompile Include="Game\BlockData.cpp" />
@@ -218,6 +219,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio\Audio.h" />
+    <ClInclude Include="Game\BlockShape.h" />
     <ClInclude Include="Graphics\DefaultCbuffers.h" />
     <ClInclude Include="Game\CreativeUI.h" />
     <ClInclude Include="Game\BlockAction.h" />
