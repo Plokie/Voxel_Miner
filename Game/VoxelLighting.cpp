@@ -135,7 +135,7 @@ void VoxelLighting::TryFloodBlockLightTo(const Vector3Int& neighbourIndex, const
 	const Block& def = BlockDef::GetDef(block);
 
 	// Checks if the neighbour block is transparent and if neighbour light level +2 is less than current level
-	if((!(def.GetDrawType() == B_OPAQUE) || def.LightValue()) && light + 2 <= currentLevel)
+	if((!(!def.HasTag(BT_DRAW_TRANSPARENT) && !def.HasTag(BT_DRAW_CLIP)) || def.LightValue()) && light + 2 <= currentLevel)
 	{
 		// Spreads light to the available neighbour, but with a light level decreased from the current tile
 		// This function appends even more to the lightBfsQueue, continuuing the while loop until all light has spread
@@ -173,7 +173,7 @@ void VoxelLighting::TryFloodSkyLightTo(const Vector3Int& neighbourIndex, const i
 
 	// Checks if the neighbour block is transparent and if neighbour light level +2 is less than current level
 	//if((!def.IsOpaque() || def.LightValue()) && ((light + 2 <= currentLevel) || isDown))
-	if((!(def.GetDrawType() == B_OPAQUE) || def.LightValue()) && (light + 2 <= currentLevel))
+	if((!(!def.HasTag(BT_DRAW_TRANSPARENT) && !def.HasTag(BT_DRAW_CLIP)) || def.LightValue()) && (light + 2 <= currentLevel))
 	{
 		// Spreads light to the available neighbour, but with a light level decreased from the current tile
 		// This function appends even more to the lightBfsQueue, continuuing the while loop until all light has spread

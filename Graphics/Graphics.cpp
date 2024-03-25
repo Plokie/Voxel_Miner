@@ -648,6 +648,7 @@ bool Graphics::OnResize(HWND hwnd, int width, int height) {
 
 void Graphics::RenderShadowMap(Scene* scene)
 {
+	return;
 	const float bg[] = { 0.f, 0.f, 0.f, 1.0f };
 
 	D3D11_MAPPED_SUBRESOURCE resMap;

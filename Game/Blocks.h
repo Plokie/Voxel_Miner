@@ -11,6 +11,17 @@ using namespace std;
 #define ATLAS_SIZE 256
 #define ATLAS_TILE_SIZE 16
 
+#define MINEABLE_MASK (unsigned int)0b00000000000000000000000000011100
+
+enum BLOCK_TAGS : unsigned int { 
+	BT_DRAW_TRANSPARENT=1, BT_DRAW_CLIP=2,
+	BT_MINEABLE_PICKAXE=4, BT_MINEABLE_AXE=8, BT_MINEABLE_SHOVEL=16,
+	BT_NONSOLID=32,
+	BT_SHELL=64,
+	BT_SPAWNABLE_ANIMALS=128, BT_SPAWNABLE_ENEMIES=256,
+	BT_INDESTRUCTIBLE=512, BT_MINEABLE_ALL=1024
+};
+
 enum DRAW_TYPE : unsigned char { B_OPAQUE, B_TRANSPARENT, B_CLIP };
 
 enum BLOCK_FACE_TEX : unsigned char { FT_TOP, FT_SIDE, FT_BOTTOM };
@@ -63,84 +74,112 @@ private:
 	string name;
 
 	ITEM_CATEGORY category;
-	DRAW_TYPE draw_type; // Is the block opaque, transparent, or clip
-	bool isSolid = true;
+	//DRAW_TYPE draw_type; // Is the block opaque, transparent, or clip
+	//bool isSolid = true;
 	int lightValue = 0;
 
 	int topUvIdX, topUvIdY;
 	int bottUvIdX, bottUvIdY;
 	int sideUvIdX, sideUvIdY;
-	int tier;
+	//int tier;
 
-	bool hasShell = false;
-	ItemType mineType = ItemType::BASICITEM;
+	//bool hasShell = false;
+	//ItemType mineType = ItemType::BASICITEM;
 	string lootTable = "";
+
+	BLOCK_TAGS tags;
 
 	
 public:
 
-	Block(string _Name,
-		ITEM_CATEGORY category,
-		DRAW_TYPE draw_type,
-		bool isSolid,
-		int _lightValue,
-		int UvIdX, int UvIdY,
-		//bool isSolid = true,
-		bool hasShell = false,
-		ItemType mineType = ItemType::BASICITEM,
-		int tier=0,
-		const string& lootTable = ""
-	) :
-		name(_Name),
-		category(category),
-		draw_type(draw_type),
-		isSolid(isSolid),
-		lightValue(_lightValue),
+	Block(string name, ITEM_CATEGORY category, int UvIdX, int UvIdY, uint32_t tags, int lightValue=0, const string& lootTable = "") :
+		name(name), category(category), 
 		topUvIdX(UvIdX), topUvIdY(UvIdY),
 		bottUvIdX(UvIdX), bottUvIdY(UvIdY),
 		sideUvIdX(UvIdX), sideUvIdY(UvIdY),
-		hasShell(hasShell),
-		mineType(mineType),
-		tier(tier),
-		lootTable(lootTable)
-	{}
+		tags((BLOCK_TAGS)tags), lightValue(lightValue),
+		lootTable(lootTable){}
 
-	Block(string _Name,
-		ITEM_CATEGORY category,
-		DRAW_TYPE draw_type,
-		bool isSolid,
-		int _lightValue,
+	Block(string name, ITEM_CATEGORY category,
 		int TopUvIdX, int TopUvIdY,
 		int SideUvIdX, int SideUvIdY,
 		int BottUvIdX, int BottUvIdY,
-		//bool isSolid = true,
-		bool hasShell = false,
-		ItemType mineType = ItemType::BASICITEM,
-		int tier = 0,
-		const string& lootTable = ""
-	) :
-		name(_Name),
-		category(category),
-		draw_type(draw_type),
-		isSolid(isSolid),
-		lightValue(_lightValue),
+		uint32_t tags, int lightValue = 0,
+		const string& lootTable = "") :
+		name(name), category(category),
 		topUvIdX(TopUvIdX), topUvIdY(TopUvIdY),
 		sideUvIdX(SideUvIdX), sideUvIdY(SideUvIdY),
 		bottUvIdX(BottUvIdX), bottUvIdY(BottUvIdY),
-		hasShell(hasShell),
-		mineType(mineType),
-		tier(tier),
-		lootTable(lootTable)
-	{}
+		tags((BLOCK_TAGS)tags), lightValue(lightValue),
+		lootTable(lootTable) {}
+
+	//Block(string _Name,
+	//	ITEM_CATEGORY category,
+	//	DRAW_TYPE draw_type,
+	//	bool isSolid,
+	//	int _lightValue,
+	//	int UvIdX, int UvIdY,
+	//	//bool isSolid = true,
+	//	bool hasShell = false,
+	//	ItemType mineType = ItemType::BASICITEM,
+	//	int tier=0,
+	//	const string& lootTable = ""
+	//) :
+	//	name(_Name),
+	//	category(category),
+	//	draw_type(draw_type),
+	//	isSolid(isSolid),
+	//	lightValue(_lightValue),
+	//	topUvIdX(UvIdX), topUvIdY(UvIdY),
+	//	bottUvIdX(UvIdX), bottUvIdY(UvIdY),
+	//	sideUvIdX(UvIdX), sideUvIdY(UvIdY),
+	//	hasShell(hasShell),
+	//	mineType(mineType),
+	//	tier(tier),
+	//	lootTable(lootTable)
+	//{}
+
+	//Block(string _Name,
+	//	ITEM_CATEGORY category,
+	//	DRAW_TYPE draw_type,
+	//	bool isSolid,
+	//	int _lightValue,
+	//	int TopUvIdX, int TopUvIdY,
+	//	int SideUvIdX, int SideUvIdY,
+	//	int BottUvIdX, int BottUvIdY,
+	//	//bool isSolid = true,
+	//	bool hasShell = false,
+	//	ItemType mineType = ItemType::BASICITEM,
+	//	int tier = 0,
+	//	const string& lootTable = ""
+	//) :
+	//	name(_Name),
+	//	category(category),
+	//	draw_type(draw_type),
+	//	isSolid(isSolid),
+	//	lightValue(_lightValue),
+	//	topUvIdX(TopUvIdX), topUvIdY(TopUvIdY),
+	//	sideUvIdX(SideUvIdX), sideUvIdY(SideUvIdY),
+	//	bottUvIdX(BottUvIdX), bottUvIdY(BottUvIdY),
+	//	hasShell(hasShell),
+	//	mineType(mineType),
+	//	tier(tier),
+	//	lootTable(lootTable)
+	//{}
 
 	const string& GetName() const { return name; }
-	const DRAW_TYPE GetDrawType() const { return draw_type; }
+	//const DRAW_TYPE GetDrawType() const { return draw_type; }
+	//const DRAW_TYPE GetDrawType() const { 
+		
+		//return draw_type; 
+	//}
 	const int LightValue() const;
-	const bool HasShell() const { return hasShell; }
-	const ItemType GetMineType() const { return mineType; }
+	//const bool HasShell() const { return hasShell; }
+	//const ItemType GetMineType() const { return mineType; }
 	const string& GetLootTableName() const { return lootTable; }
-	const int GetTier() const { return tier; }
-	const bool IsSolid() const { return isSolid; }
+	const int GetTier() const { return tags>>28; }
+	//const bool IsSolid() const { return isSolid; }
+	const bool HasTag(uint32_t tag) const { return tags & tag; }
 	const ITEM_CATEGORY GetCategory() const { return category; }
 
 	const int GetTopUVidx() const;

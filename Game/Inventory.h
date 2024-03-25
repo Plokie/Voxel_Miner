@@ -33,7 +33,7 @@ private:
 public:
 	
 
-	vector<InventoryItem*> GetToolsOfType(ItemType itemType);
+	vector<InventoryItem*> GetItemsWithTags(UINT32 tags);
 	const Vector2Int GetFreeSpot() const;
 
 	bool GetHeldItem(InventoryItem** out);

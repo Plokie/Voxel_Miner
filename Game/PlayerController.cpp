@@ -88,7 +88,7 @@ vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager, vector
 				BlockID block = chunkManager->GetBlockAtWorldPos(blockPos);
 				AABB blockAABB = AABB(Vector3(static_cast<float>(blockPos.x), static_cast<float>(blockPos.y), static_cast<float>(blockPos.z)) + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
 
-				if(BlockDef::GetDef(block).IsSolid()) {
+				if(!BlockDef::GetDef(block).HasTag(BT_NONSOLID)) {
 					ret.push_back(blockAABB);
 				}
 
@@ -165,9 +165,9 @@ void PlayerController::Update(float dTime)
 			if(!_pCurrentPlayerData->IsCreative())
 			if(heldItem->type == InventoryItem::ITEM  ) {
 				Item itemDef = ItemDef::Get(static_cast<ItemID>(heldItem->ID));
-				if(itemDef.GetItemType() != BASICITEM && itemDef.GetItemType() != FOOD) { //todo: special item type check
+				if(itemDef.GetTags() & 0b11100) { //todo: special item type check
 
-					if(inv->GetToolsOfType(itemDef.GetItemType()).size() <= 1) {
+					if(inv->GetItemsWithTags(itemDef.GetTags() & 0b11100).size() <= 1) {
 						goto passdrop; // skip item drop logic since the player only has one tool of this type
 						// we dont want the player to drop their only pickaxe for example
 					}
@@ -381,11 +381,13 @@ void PlayerController::Update(float dTime)
 					itemDef = (invItem->type == InventoryItem::Type::BLOCK)?ItemDef::Get((ItemID)0):ItemDef::Get((ItemID)invItem->ID);
 				}
 
-				if(_pCurrentPlayerData->IsCreative() || blockDef.GetMineType() == BASICITEM || (itemDef.GetItemType() == blockDef.GetMineType() && itemDef.GetTier() >= blockDef.GetTier() )) {
+				int minableMasked = itemDef.GetTags() & MINEABLE_MASK;
+
+				if(_pCurrentPlayerData->IsCreative() || blockDef.HasTag(BT_MINEABLE_ALL | (itemDef.GetTags() & MINEABLE_MASK))) {
 					Audio::Play("hit", 1.f);
 					chunkManager->SetBlockAtWorldPos(lookHitPoint, AIR);
 						
-					_pCurrentPlayerData->ChangeScore(blockDef.GetTier());
+					//_pCurrentPlayerData->ChangeScore(blockDef.GetTier());
 
 					if(blockDef.GetLootTableName() != "") {
 						const InventoryItem loot = LootTable::Choose(blockDef.GetLootTableName());
@@ -482,7 +484,7 @@ void PlayerController::Update(float dTime)
 
 	BlockID currentHeadBlockID = chunkManager->GetBlockAtWorldPos(camBlockPos);
 	Block currentHeadBlock = BlockDef::GetDef(currentHeadBlockID);
-	if(currentHeadBlockID==AIR || (freeCam && currentHeadBlock.IsSolid())) {
+	if(currentHeadBlockID==AIR || (freeCam && !currentHeadBlock.HasTag(BT_NONSOLID))) {
 		insideBlock->doRender = false;
 		_pCurrentPlayerData->isSuffocating = false;
 	}

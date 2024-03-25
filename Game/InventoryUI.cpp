@@ -369,7 +369,7 @@ void InventoryUI::TableReload(Vector3Int tablePosition) {
 }
 
 void InventoryUI::Update(const float dTime) {
-	if(canClose &&(Input::IsKeyPressed(VK_TAB) || Input::IsKeyPressed('I')) && (Input::IsMouseLocked() || isOpen)) {
+	if(canClose &&(Input::IsKeyPressed('E') || Input::IsKeyPressed('I')) && (Input::IsMouseLocked() || isOpen)) {
 		isOpen = !isOpen;
 		if(isOpen) Open();
 		else if(canClose) Close();

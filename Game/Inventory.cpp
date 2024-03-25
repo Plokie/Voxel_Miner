@@ -13,14 +13,13 @@
 //	{HDS_JUMP, false},
 //};
 
-vector<InventoryItem*> Inventory::GetToolsOfType(ItemType itemType)
-{
+vector<InventoryItem*> Inventory::GetItemsWithTags(UINT32 tags) {
 	vector<InventoryItem*> retVec = {};
 
 	for(InventoryItem* invItem : items) {
 		if(invItem->type == InventoryItem::ITEM) {
 			Item itemDef = ItemDef::Get(static_cast<ItemID>(invItem->ID));
-			if(itemDef.GetItemType() == itemType) {
+			if(itemDef.GetTags() & tags) {
 				retVec.push_back(invItem);
 			}
 		}

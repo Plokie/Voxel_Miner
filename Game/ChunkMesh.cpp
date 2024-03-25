@@ -3,9 +3,9 @@
 #include "ChunkManager.h"
 
 bool Chunk::RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z) {
-	const bool isCurrentBlockSolid = BlockDef::GetDef(currentBlock).GetDrawType() == B_OPAQUE;
+	const bool isCurrentBlockSolid = !BlockDef::GetDef(currentBlock).HasTag(BT_DRAW_TRANSPARENT | BT_DRAW_CLIP);
 	BlockID neighborBlock = GetBlockIncludingNeighbours(x, y, z);
-	bool isNeighborSolid = BlockDef::GetDef(neighborBlock).GetDrawType() == B_OPAQUE;
+	bool isNeighborSolid = BlockDef::GetDef(neighborBlock).HasTag(BT_DRAW_TRANSPARENT | BT_DRAW_CLIP) == B_OPAQUE;
 	return (isCurrentBlockSolid && !isNeighborSolid) || (!isCurrentBlockSolid && neighborBlock == AIR);
 }
 
@@ -311,14 +311,14 @@ void Chunk::BuildMesh() {
 				{
 					this->MakeVoxel(blockid, x, y, z, waterVertices, waterIndices);
 				}
-				else if(def.GetDrawType() == B_OPAQUE || def.GetDrawType() == B_CLIP) {
+				else if((!def.HasTag(BT_DRAW_TRANSPARENT)) || def.HasTag(BT_DRAW_CLIP)) {
 					if(blockid == BlockID::OAK_LEAVES || blockid == BlockID::BIRCH_LEAVES || blockid == BlockID::SPRUCE_LEAVES || blockid == BlockID::CHERRY_LEAVES) 
 						this->MakeVoxel(blockid, x, y, z, leavesVertices, leavesIndices);
 					else
 						this->MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
 
 #if 1
-					if(def.HasShell() && this->RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
+					if(def.HasTag(BT_SHELL) && this->RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
 						//int light = chunkManager->GetBlockLightAtWorldPos(x, y + 1, z);
 						short rawLight = this->GetRawLightIncludingNeighbours(x, y + 1, z);
 						int light = max(

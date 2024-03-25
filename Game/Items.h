@@ -17,7 +17,14 @@ class ChunkManager;
 #define ITEM_ATLAS_TILE_SIZE 16
 #define MAX_STACK 100
 
+#define TIER_TAG 28
+
 using namespace std;
+
+enum ITEM_TAGS : unsigned int {
+	IT_FOOD = 1, IT_UNUSED = 2,
+	IT_PICKAXE = 4, IT_AXE = 8, IT_SHOVEL=16,
+};
 
 enum ItemID : unsigned short {
 	ITEMERR, COAL, RAW_COPPER, RAW_GOLD, AMETHYST, RAW_TITANIUM,
@@ -42,20 +49,25 @@ private:
 	ITEM_CATEGORY category;
 
 	int uvX, uvY;
-	int maxStack;
-	int tier;
-	ItemType itemType = ItemType::BASICITEM;
+	unsigned short maxStack;
+	ITEM_TAGS tags;
 
 	static map<ItemID, BlockAction> itemActions;
 public:
-	Item(string name, ITEM_CATEGORY category, int uvX, int uvY, int maxStack=MAX_STACK, ItemType itemType = ItemType::BASICITEM, int tier = 0) : name(name), category(category), uvX(uvX), uvY(uvY), maxStack(maxStack), itemType(itemType), tier(tier) {}
+	Item(string name, ITEM_CATEGORY category, int uvX, int uvY, unsigned short maxStack = MAX_STACK, unsigned int tags = 0) :
+		name(name), category(category), uvX(uvX), uvY(uvY), tags((ITEM_TAGS)tags), maxStack(maxStack) {}
+
+	//Item(string name, ITEM_CATEGORY category, int uvX, int uvY, ItemType itemType, unsigned short maxStack=MAX_STACK) :
+	//	name(name), category(category), uvX(uvX), uvY(uvY), itemType(itemType), maxStack(maxStack) {}
 
 	const string& GetName() const { return name; }
 	const int UVx() const { return uvX; }
 	const int UVy() const { return uvY; }
-	const int GetMaxStack() const { return maxStack; }
-	const ItemType GetItemType() const { return itemType; }
-	const int GetTier() const { return tier; }
+	const unsigned short GetMaxStack() const { return maxStack; }
+	//const ItemType GetItemType() const { return itemType; }
+	const ITEM_TAGS GetTags() const { return tags; }
+	const bool HasTag(unsigned int tag) { return tags & tag; }
+	const int GetTier() const { return tags>>TIER_TAG; }
 	const ITEM_CATEGORY GetCategory() const { return category; }
 
 	static bool CallItemAction(ItemID itemID, PlayerController* playerController, PlayerData* inv, ChunkManager* chunkManager, Vector3Int targetBlockPos);

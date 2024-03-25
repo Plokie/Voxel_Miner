@@ -17,7 +17,7 @@ vector<AABB> Entity::GetNearbyAABBs(ChunkManager* chunkManager, vector<AABB>* li
 				BlockID block = chunkManager->GetBlockAtWorldPos(blockPos);
 				AABB blockAABB = AABB(Vector3(static_cast<float>(blockPos.x), static_cast<float>(blockPos.y), static_cast<float>(blockPos.z)) + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
 
-				if(BlockDef::GetDef(block).IsSolid()) {
+				if(!BlockDef::GetDef(block).HasTag(BT_NONSOLID)) {
 					ret.push_back(blockAABB);
 				}
 
