@@ -15,6 +15,8 @@ enum BlockShapeDirection : unsigned short {
 	PX, NX, PY, NY, PZ, NZ, UNDEFINED
 };
 
+
+
 enum BlockShapeAxis : unsigned short {
 	Y, X, Z //Y=0 as default
 };
@@ -39,12 +41,21 @@ struct BlockFace {
 
 class BlockShape {
 private:
+	static map<tuple<int,int,int>, BlockShapeDirection> directionMap;
+
 	map<BlockShapeDirection, vector<BlockFace>> _faceMap = {};
+	map<BlockShapeDirection, bool> _obscures = {};
 public:
+
+	static BlockShapeDirection ToDirection(Vector3Int dir) {
+		if(abs(dir.x) + abs(dir.y) + abs(dir.z) != 1) return UNDEFINED;
+		return directionMap[dir];
+	}
 
 	static map<BlockShapeID, BlockShape> blockShapes;
 
 	const vector<BlockFace>& GetFaces(BlockShapeDirection dir) const { return _faceMap.at(dir); }
+	const bool ObscuresDirection(BlockShapeDirection dir) const { return _obscures.at(dir); }
 
 	BlockShape() {
 		_faceMap = {
@@ -57,7 +68,7 @@ public:
 			{UNDEFINED, {}},
 		};
 	}
-	BlockShape(map<BlockShapeDirection, vector<BlockFace>> faceMap) : _faceMap(faceMap) {
+	BlockShape(map<BlockShapeDirection, vector<BlockFace>> faceMap, map<BlockShapeDirection, bool> obscures) : _faceMap(faceMap), _obscures(obscures) {
 
 	}
 };

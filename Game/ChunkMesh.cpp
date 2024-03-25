@@ -2,11 +2,28 @@
 
 #include "ChunkManager.h"
 
-bool Chunk::RenderBlockFaceAgainst(BlockID currentBlock, const int x, const int y, const int z) {
-	const bool isCurrentBlockSolid = !BlockDef::GetDef(currentBlock).HasTag(BT_DRAW_TRANSPARENT | BT_DRAW_CLIP);
-	BlockID neighborBlock = GetBlockIncludingNeighbours(x, y, z);
-	bool isNeighborSolid = BlockDef::GetDef(neighborBlock).HasTag(BT_DRAW_TRANSPARENT | BT_DRAW_CLIP) == B_OPAQUE;
-	return (isCurrentBlockSolid && !isNeighborSolid) || (!isCurrentBlockSolid && neighborBlock == AIR);
+bool Chunk::RenderBlockFaceAgainst(BlockID currentBlock, Vector3Int pos, Vector3Int dir) {
+	const Block& currentBlockDef = BlockDef::GetDef(currentBlock);
+	const bool isCurrentBlockOpaque = !currentBlockDef.HasTag(BT_DRAW_TRANSPARENT | BT_DRAW_CLIP);
+	
+	BlockID neighborBlock = GetBlockIncludingNeighbours(pos.x + dir.x, pos.y + dir.y, pos.z + dir.z);
+	const Block& neighborBlockDef = BlockDef::GetDef(neighborBlock);
+	bool isNeighborOpaque = !neighborBlockDef.HasTag(BT_DRAW_TRANSPARENT | BT_DRAW_CLIP);
+
+	bool neighborObscuresThisFace = true;
+	
+	// if either of the blocks arent normal blocks
+	if(neighborBlockDef.GetBlockShapeID() != BLOCKSHAPE_BLOCK || currentBlockDef.GetBlockShapeID() != BLOCKSHAPE_BLOCK)
+		// check if the neighbours face obscures this face
+		neighborObscuresThisFace = BlockShape::blockShapes[neighborBlockDef.GetBlockShapeID()].ObscuresDirection(BlockShape::ToDirection(dir * -1));
+	// we can assume that it does obscure this face in the case where both blocks are normal blocks (99% of the time)
+
+
+	return
+		(!isCurrentBlockOpaque && neighborBlock == AIR) 
+		|| (isCurrentBlockOpaque && !isNeighborOpaque) 
+		|| (isCurrentBlockOpaque && isNeighborOpaque && !neighborObscuresThisFace)
+		;
 }
 
 
@@ -122,15 +139,17 @@ void Chunk::PushBlockShapeFaces(const BlockID blockID, const Vector3Int& pos, co
 
 
 void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int z, vector<Vertex>& vertices, vector<DWORD>& indices) {
+	Vector3Int pos = { x,y,z };
+
 	// positive x and negative x IsBlockSolid condition
-	bool px = RenderBlockFaceAgainst(blockID, x + 1, y, z);
-	bool nx = RenderBlockFaceAgainst(blockID, x - 1, y, z);
+	bool px = RenderBlockFaceAgainst(blockID, pos, { 1, 0, 0});
+	bool nx = RenderBlockFaceAgainst(blockID, pos, {-1, 0, 0});
 
-	bool py = RenderBlockFaceAgainst(blockID, x, y + 1, z);
-	bool ny = RenderBlockFaceAgainst(blockID, x, y - 1, z);
+	bool py = RenderBlockFaceAgainst(blockID, pos, { 0, 1, 0});
+	bool ny = RenderBlockFaceAgainst(blockID, pos, { 0,-1, 0});
 
-	bool pz = RenderBlockFaceAgainst(blockID, x, y, z + 1);
-	bool nz = RenderBlockFaceAgainst(blockID, x, y, z - 1);
+	bool pz = RenderBlockFaceAgainst(blockID, pos, { 0, 0, 1});
+	bool nz = RenderBlockFaceAgainst(blockID, pos, { 0, 0,-1});
 
 	// If all blocks surrounding this block are solid, we dont want to build a mesh
 	// and can exit immediately
@@ -139,24 +158,24 @@ void Chunk::MakeVoxel(const BlockID blockID, const int x, const int y, const int
 	BlockShape& shape = BlockShape::blockShapes[BlockDef::GetDef(blockID).GetBlockShapeID()];
 
 	if(px) {
-		PushBlockShapeFaces(blockID, { x,y,z }, { 1,0,0 }, shape.GetFaces(PX), vertices, indices);
+		PushBlockShapeFaces(blockID, pos, { 1,0,0 }, shape.GetFaces(PX), vertices, indices);
 	}
 	if(nx) {
-		PushBlockShapeFaces(blockID, { x,y,z }, { -1,0,0 }, shape.GetFaces(NX), vertices, indices);
+		PushBlockShapeFaces(blockID, pos, { -1,0,0 }, shape.GetFaces(NX), vertices, indices);
 	}
 	if(py) {
-		PushBlockShapeFaces(blockID, { x,y,z }, { 0,1,0 }, shape.GetFaces(PY), vertices, indices);
+		PushBlockShapeFaces(blockID, pos, { 0,1,0 }, shape.GetFaces(PY), vertices, indices);
 	}
 	if(ny) {
-		PushBlockShapeFaces(blockID, { x,y,z }, { 0,-1,0 }, shape.GetFaces(NY), vertices, indices);
+		PushBlockShapeFaces(blockID, pos, { 0,-1,0 }, shape.GetFaces(NY), vertices, indices);
 	}
 	if(pz) {
-		PushBlockShapeFaces(blockID, { x,y,z }, { 0,0,1 }, shape.GetFaces(PZ), vertices, indices);
+		PushBlockShapeFaces(blockID, pos, { 0,0,1 }, shape.GetFaces(PZ), vertices, indices);
 	}
 	if(nz) {
-		PushBlockShapeFaces(blockID, { x,y,z }, { 0,0,-1 }, shape.GetFaces(NZ), vertices, indices);
+		PushBlockShapeFaces(blockID, pos, { 0,0,-1 }, shape.GetFaces(NZ), vertices, indices);
 	}
-	PushBlockShapeFaces(blockID, { x,y,z }, { 0,0,0 }, shape.GetFaces(UNDEFINED), vertices, indices);
+	PushBlockShapeFaces(blockID, pos, { 0,0,0 }, shape.GetFaces(UNDEFINED), vertices, indices);
 }
 
 void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESHFLAG meshFlag)
@@ -263,7 +282,7 @@ void Chunk::BuildMesh() {
 						this->MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
 
 #if 1
-					if(def.HasTag(BT_SHELL) && this->RenderBlockFaceAgainst(blockid, x, y + 1, z)) {
+					if(def.HasTag(BT_SHELL) && this->RenderBlockFaceAgainst(blockid, {x,y,z}, {0, 1, 0})) {
 						//int light = chunkManager->GetBlockLightAtWorldPos(x, y + 1, z);
 						short rawLight = this->GetRawLightIncludingNeighbours(x, y + 1, z);
 						int light = max(
