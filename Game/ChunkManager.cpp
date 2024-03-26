@@ -108,6 +108,8 @@ void ChunkManager::Thread() {
 		if(CanServiceQueue(VISIBILITY_GRAPH)) { // Makes it wait until the queues preceeding this phase are empty
 			queue<Chunk*>& visPendingQueue = chunkGenerationQueues[VISIBILITY_GRAPH].second;
 			while(!visPendingQueue.empty()) {
+				unique_lock<mutex> lock(chunkGenerationQueues[VISIBILITY_GRAPH].first);
+
 				Chunk* chunk = visPendingQueue.front();
 
 				if(chunk != nullptr) {
@@ -128,6 +130,7 @@ void ChunkManager::Thread() {
 		if(CanServiceQueue(LIGHTING)) { // Makes it wait until the queues preceeding this phase are empty
 			queue<Chunk*>& lightingPendingQueue = chunkGenerationQueues[LIGHTING].second;
 			while(!lightingPendingQueue.empty()) {
+				unique_lock<mutex> lock(chunkGenerationQueues[LIGHTING].first);
 				Chunk* chunk = lightingPendingQueue.front();
 
 				if(chunk != nullptr) {
@@ -144,7 +147,7 @@ void ChunkManager::Thread() {
 		if(CanServiceQueue(MESH)) {
 			queue<Chunk*>& meshPendingQueue = chunkGenerationQueues[MESH].second;
 			while(!meshPendingQueue.empty()) {
-			
+				unique_lock<mutex> lock(chunkGenerationQueues[MESH].first);
 				Chunk* chunk = meshPendingQueue.front();
 				threadPool->Queue([=, &forceRegenerateVisibility] {
 					chunk->Finalize();
@@ -437,6 +440,14 @@ void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, 
 			auto findIt = chunk->blockDataData.find({ x,y,z });
 			if(findIt != chunk->blockDataData.end()) { // if blockData exists for this block
 				findIt->second->TryDropItems({ (float)x,(float)y,(float)z });
+			}
+
+			BlockID blockAbove = chunk->GetBlockIncludingNeighbours(localVoxelPos.x, localVoxelPos.y + 1, localVoxelPos.z);
+			if(blockAbove != AIR) {
+				const Block& blockDefAbove = BlockDef::GetDef(blockAbove);
+				if(blockDefAbove.HasTag(BT_GROUNDED)) {
+					SetBlockAtWorldPos(x, y+1, z, AIR);
+				}
 			}
 		}
 

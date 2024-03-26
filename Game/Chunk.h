@@ -14,13 +14,7 @@ class BlockData;
 
 class Chunk : public Object3D {
 public:
-	enum MESHFLAG {
-		SOLID,
-		TRANS,
-		LIQUID,
-		SHELL,
-		LEAVES
-	};
+	
 
 private:
 	ChunkManager* chunkManager = nullptr;

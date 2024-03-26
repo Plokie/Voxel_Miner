@@ -86,18 +86,25 @@ vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager, vector
 				Vector3Int playerBlockPos = Vector3Int::FloorToInt(transform.position);
 				Vector3Int blockPos = playerBlockPos + offset;
 				BlockID block = chunkManager->GetBlockAtWorldPos(blockPos);
-				AABB blockAABB = AABB(Vector3(static_cast<float>(blockPos.x), static_cast<float>(blockPos.y), static_cast<float>(blockPos.z)) + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
+				const Block& blockDef = BlockDef::GetDef(block);
+				const BlockShape& blockShape = BlockShape::blockShapes[blockDef.GetBlockShapeID()];
 
-				if(!BlockDef::GetDef(block).HasTag(BT_NONSOLID)) {
-					ret.push_back(blockAABB);
-				}
+				for(AABB blockAABB : blockShape.GetAABBs()) {
+					//AABB blockAABB = AABB(Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
+					
+					blockAABB.MovePosition(Vector3(static_cast<float>(blockPos.x), static_cast<float>(blockPos.y), static_cast<float>(blockPos.z)));
 
-				if(outDamageAABBs && block == LAVA) {
-					outDamageAABBs->push_back(blockAABB);
-				}
+					if(!blockDef.HasTag(BT_NONSOLID)) {
+						ret.push_back(blockAABB);
+					}
 
-				if(outLiquidAABBs && (block == WATER || block == LAVA)) {
-					outLiquidAABBs->push_back(blockAABB);
+					if(outDamageAABBs && block == LAVA) {
+						outDamageAABBs->push_back(blockAABB);
+					}
+
+					if(outLiquidAABBs && (block == WATER || block == LAVA)) {
+						outLiquidAABBs->push_back(blockAABB);
+					}
 				}
 			}
 		}
@@ -184,6 +191,9 @@ void PlayerController::Update(float dTime)
 		
 	}
 
+	Vector2 input = Input::GetInputVector().normalized();
+	Vector3 moveAxis = transform.basis(input.x, 0, input.y);
+
 	if(Input::IsMouseLocked()) {
 		bool isSprinting = false;
 		if(Input::IsKeyHeld(VK_SHIFT) || Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_LEFT_THUMB)) {
@@ -198,8 +208,6 @@ void PlayerController::Update(float dTime)
 			movementSpeed = 10.0f;
 		}
 
-		Vector2 input = Input::GetInputVector().normalized();
-		Vector3 moveAxis = transform.basis(input.x, 0, input.y);
 		moveAxis.y = 0.0;
 		moveAxis = moveAxis.normalized();
 		moveAxis *= movementSpeed * dTime;
@@ -273,11 +281,16 @@ void PlayerController::Update(float dTime)
 		bool isGrounded = false;
 		for(const AABB& blockAABB : blocks) {
 			for(const Vector3& v : groundCheckPoints) {
+				
 				if(blockAABB.IsPointWithin(transform.position - v)) {
 					isGrounded = true;
 					break;
 				}
 			}
+			//if(aabb.Intersects(blockAABB)) {
+			//	isGrounded = true;
+			//	break;
+			//}
 		}
 
 		if(!isGrounded) {
@@ -292,7 +305,7 @@ void PlayerController::Update(float dTime)
 				_pCurrentPlayerData->ChangeHealth(static_cast<int>((velocity.y * 1.5f) / 5.f));
 			}
 
-			velocity.y = -3.0f * dTime; //Small nudge to ground level, nothing noticable
+			velocity.y = -5.0f * dTime; //Small nudge to ground level, nothing noticable
 			if(!inLiquid) {
 				if((Input::IsKeyHeld(VK_SPACE) || Input::IsPadButtonHeld(0, XINPUT_GAMEPAD_A)) && Input::IsMouseLocked())
 				{
@@ -300,6 +313,32 @@ void PlayerController::Update(float dTime)
 					velocity.y = jumpVelocity;
 				}
 			}
+
+			// Calculate slab step-up velocity offset
+			bool isBottomHalfInBlock = false;
+			bool isTopHalfInBlock = false;
+			Vector3 velDirFlat = (moveAxis /*^ Vector3(1, 0, 1)*/).normalized();
+			float magDebug = velDirFlat.magnitude();
+
+			Vector3 bottomPoint = (transform.position - Vector3(0, 1.6f, 0)) + Vector3(0.f, 0.1f, 0.f) + (velDirFlat * sqrtf((playerHalfExtents.x * playerHalfExtents.x) + (playerHalfExtents.z*playerHalfExtents.z)));
+			Vector3 topPoint = bottomPoint + Vector3(0.f, 0.5f, 0.f);
+
+			for(const AABB& blockAABB : blocks) {
+				if(!isBottomHalfInBlock) {
+					isBottomHalfInBlock = blockAABB.IsPointWithin(bottomPoint);
+				}
+				if(!isTopHalfInBlock) {
+					isTopHalfInBlock = blockAABB.IsPointWithin(topPoint);
+				}
+			}
+
+			if(isBottomHalfInBlock && !isTopHalfInBlock) {
+				//velocity.y = 1500.f * dTime;
+				//transform.position += Vector3(0.f, 0.5f, 0.f);
+				velocity.y = 8.f;
+			}
+
+			
 		}
 
 		if(inLiquid) {
@@ -420,13 +459,23 @@ void PlayerController::Update(float dTime)
 					InventoryItem* invItem;
 					if(inv->GetHeldItem(&invItem) && invItem->type == InventoryItem::Type::BLOCK) {
 						AABB targetBlockAABB = AABB(lookHitPointf + lookHitNormalf + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
-						if(!targetBlockAABB.Intersects(aabb) || freeCam) {
-							chunkManager->SetBlockAtWorldPos(lookHitPoint + lookHitNormal, (BlockID)invItem->ID);
-							//inv->SubItem((BlockID)invItem->ID);
-							/*invItem->amount -= 1;
-							if(invItem->amount<=0) inv->ClearEmptyItems();*/
-							if(!_pCurrentPlayerData->IsCreative())
-								inv->SubHeldItem(1, invItem);
+						if(!targetBlockAABB.Intersects(aabb) || freeCam) { // check if target placement is in the way of the player
+							const Block& blockDef = BlockDef::GetDef((BlockID)invItem->ID);
+
+							bool isGroundedBlock = blockDef.HasTag(BT_GROUNDED);
+							BlockID blockBelow = chunkManager->GetBlockAtWorldPos(lookHitPoint + lookHitNormal + Vector3Int(0, -1, 0));
+							const Block& blockDefBelow = BlockDef::GetDef(blockBelow);
+
+							if(!(isGroundedBlock && (blockBelow == AIR || blockDefBelow.HasTag(BT_FOLIAGE)) )) {
+								chunkManager->SetBlockAtWorldPos(lookHitPoint + lookHitNormal, (BlockID)invItem->ID);
+								//inv->SubItem((BlockID)invItem->ID);
+								/*invItem->amount -= 1;
+								if(invItem->amount<=0) inv->ClearEmptyItems();*/
+								if(!_pCurrentPlayerData->IsCreative())
+									inv->SubHeldItem(1, invItem);
+
+							}
+							
 						}
 					}
 				}

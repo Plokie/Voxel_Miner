@@ -56,9 +56,11 @@ public:
 
 	void SetPosition(const Vector3& pos) {
 		this->center = pos;
+		RecalculateMinMax();
 	}
 	void MovePosition(const Vector3& pos) {
 		this->center += pos;
+		RecalculateMinMax();
 	}
 	Vector3 GetPosition() const {
 		return this->center;

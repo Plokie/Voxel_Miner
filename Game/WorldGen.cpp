@@ -27,7 +27,7 @@ map<BiomeID, Biome> Biome::def = {
 		SNOW_GRASS,
 		DIRT,
 		DIRT,
-		BLACKSTONE,
+		STONE,
 
 		SNOW_GRASS, // Shore
 		DIRT, // Water bed
@@ -57,7 +57,7 @@ map<BiomeID, Biome> Biome::def = {
 		TAIGA_GRASS,
 		DIRT,
 		DIRT,
-		BLACKSTONE,
+		STONE,
 
 		TAIGA_GRASS,
 		DIRT,
@@ -425,31 +425,35 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 
 	bool isInCave = IsBlockCave(x, y, z);
 	if(isInCave) {
-		if(y < -77) return LAVA;
+		if(y < -140) return LAVA;
 		else return AIR;
 	}
+
+	BlockID stoneType = biome.stone;
+
+	if(y <= -80) stoneType = BLACKSTONE;
 
 	// Value represents rarity
 	float valueSample = _Instance->noiseSampler_treeValue.GetNoise((float)x, (float)y, (float)z);
 	float distSample = _Instance->noiseSampler_treeDist.GetNoise((float)x, (float)y, (float)z);
 
 	if(valueSample < -0.85f && distSample < -0.9f) {
-		return static_cast<BlockID>(COAL_ORE + ((biome.stone == BLACKSTONE) * 6));
+		return static_cast<BlockID>(COAL_ORE + ((stoneType == BLACKSTONE) * 6));
 	}
 	if(valueSample < -0.7f && distSample < -0.95f) {
-		return static_cast<BlockID>(COPPER_ORE + ((biome.stone == BLACKSTONE) * 6));
+		return static_cast<BlockID>(COPPER_ORE + ((stoneType == BLACKSTONE) * 6));
 	}
 	if(y < -30 && valueSample < -0.55f && distSample < -0.96f) {
-		return static_cast<BlockID>(GOLD_ORE + ((biome.stone == BLACKSTONE) * 6));
+		return static_cast<BlockID>(GOLD_ORE + ((stoneType == BLACKSTONE) * 6));
 	}
 	if(y < -45 && valueSample < -0.45f && distSample < -0.97f) {
-		return static_cast<BlockID>(AMETHYST_ORE + ((biome.stone == BLACKSTONE) * 6));
+		return static_cast<BlockID>(AMETHYST_ORE + ((stoneType == BLACKSTONE) * 6));
 	}
 	if(y < -61 && valueSample < -0.35f && distSample < -0.97f) {
-		return static_cast<BlockID>(TITANIUM_ORE + ((biome.stone == BLACKSTONE) * 6));
+		return static_cast<BlockID>(TITANIUM_ORE + ((stoneType == BLACKSTONE) * 6));
 	}
 
-	return biome.stone;
+	return stoneType;
 }
 
 const Biome& Biome::Get(float temperature, float moisture)

@@ -4,11 +4,12 @@
 #include <vector>
 
 #include "../Engine/MathUtil.h"
+#include "../Engine/AABB.h"
 
 using namespace std;
 
 enum BlockShapeID {
-	BLOCKSHAPE_BLOCK
+	BLOCKSHAPE_BLOCK, BLOCKSHAPE_X, BLOCKSHAPE_SLAB
 };
 
 enum BlockShapeDirection : unsigned short {
@@ -45,7 +46,12 @@ private:
 
 	map<BlockShapeDirection, vector<BlockFace>> _faceMap = {};
 	map<BlockShapeDirection, bool> _obscures = {};
+	vector<AABB> _aabbs = {};
+	AABB maxAABB;
 public:
+
+	const AABB& GetMaxAABB() const { return maxAABB; }
+	const vector<AABB>& GetAABBs() const { return _aabbs; }
 
 	static BlockShapeDirection ToDirection(Vector3Int dir) {
 		if(abs(dir.x) + abs(dir.y) + abs(dir.z) != 1) return UNDEFINED;
@@ -68,7 +74,5 @@ public:
 			{UNDEFINED, {}},
 		};
 	}
-	BlockShape(map<BlockShapeDirection, vector<BlockFace>> faceMap, map<BlockShapeDirection, bool> obscures) : _faceMap(faceMap), _obscures(obscures) {
-
-	}
+	BlockShape(map<BlockShapeDirection, vector<BlockFace>> faceMap, map<BlockShapeDirection, bool> obscures, vector<AABB> aabbs);
 };

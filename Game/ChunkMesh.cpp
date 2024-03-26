@@ -13,9 +13,14 @@ bool Chunk::RenderBlockFaceAgainst(BlockID currentBlock, Vector3Int pos, Vector3
 	bool neighborObscuresThisFace = true;
 	
 	// if either of the blocks arent normal blocks
-	if(neighborBlockDef.GetBlockShapeID() != BLOCKSHAPE_BLOCK || currentBlockDef.GetBlockShapeID() != BLOCKSHAPE_BLOCK)
+	if(neighborBlockDef.GetBlockShapeID() != BLOCKSHAPE_BLOCK || currentBlockDef.GetBlockShapeID() != BLOCKSHAPE_BLOCK) {
+		const BlockShape& shape = BlockShape::blockShapes[neighborBlockDef.GetBlockShapeID()];
+		BlockShapeDirection reverseDirection = BlockShape::ToDirection(dir * -1);
+		
 		// check if the neighbours face obscures this face
-		neighborObscuresThisFace = BlockShape::blockShapes[neighborBlockDef.GetBlockShapeID()].ObscuresDirection(BlockShape::ToDirection(dir * -1));
+		neighborObscuresThisFace = shape.ObscuresDirection(reverseDirection);
+
+	}
 	// we can assume that it does obscure this face in the case where both blocks are normal blocks (99% of the time)
 
 
@@ -271,12 +276,12 @@ void Chunk::BuildMesh() {
 				if(blockid == BlockID::AIR) continue;
 				const Block& def = BlockDef::GetDef(blockid);
 				
-				if(blockid == BlockID::WATER || blockid == LAVA)
+				if(def.GetMeshFlag() == MESHFLAG::LIQUID)
 				{
 					this->MakeVoxel(blockid, x, y, z, waterVertices, waterIndices);
 				}
 				else if((!def.HasTag(BT_DRAW_TRANSPARENT)) || def.HasTag(BT_DRAW_CLIP)) {
-					if(blockid == BlockID::OAK_LEAVES || blockid == BlockID::BIRCH_LEAVES || blockid == BlockID::SPRUCE_LEAVES || blockid == BlockID::CHERRY_LEAVES) 
+					if(def.GetMeshFlag() == MESHFLAG::LEAVES) 
 						this->MakeVoxel(blockid, x, y, z, leavesVertices, leavesIndices);
 					else
 						this->MakeVoxel(blockid, x, y, z, solidVertices, solidIndices);
@@ -321,11 +326,11 @@ void Chunk::BuildMesh() {
 
 	this->PushChunkMesh(solidVertices, solidIndices);
 
-	this->PushChunkMesh(grassShellVertices, grassShellIndices, Chunk::MESHFLAG::SHELL);
+	this->PushChunkMesh(grassShellVertices, grassShellIndices, MESHFLAG::SHELL);
 
 	//this->PushChunkMesh(transVertices, transIndices, Chunk::MESHFLAG::TRANS);
-	this->PushChunkMesh(waterVertices, waterIndices, Chunk::MESHFLAG::LIQUID);
-	this->PushChunkMesh(leavesVertices, leavesIndices, Chunk::MESHFLAG::LEAVES);
+	this->PushChunkMesh(waterVertices, waterIndices, MESHFLAG::LIQUID);
+	this->PushChunkMesh(leavesVertices, leavesIndices, MESHFLAG::LEAVES);
 }
 
 bool Chunk::IsChunkVisibleFromChunk(Vector3Int tryFindThisChunk, Vector3Int fromChunk)
