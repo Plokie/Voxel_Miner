@@ -20,7 +20,8 @@ map<BiomeID, Biome> Biome::def = {
 		CLAY, // Clay layer under sand
 
 		OAK_LOG,
-		OAK_LEAVES
+		OAK_LEAVES,
+		true
 	}},
 	{BiomeID::SNOW, {
 		"Snow",
@@ -35,7 +36,8 @@ map<BiomeID, Biome> Biome::def = {
 		CLAY, // Clay layer under sand
 
 		SPRUCE_LOG,
-		SPRUCE_LEAVES
+		SPRUCE_LEAVES,
+		false
 	}},
 	{BiomeID::DESERT, {
 		"Desert",
@@ -50,7 +52,8 @@ map<BiomeID, Biome> Biome::def = {
 		CLAY, // Clay layer under sand
 
 		CACTUS,
-		AIR
+		AIR,
+		false
 	}},
 	{BiomeID::TAIGA, {
 		"Taiga",
@@ -65,7 +68,8 @@ map<BiomeID, Biome> Biome::def = {
 		DIRT,
 
 		SPRUCE_LOG,
-		SPRUCE_LEAVES
+		SPRUCE_LEAVES,
+		true
 	}},
 	{BiomeID::CHERRY, {
 		"Cherry",
@@ -80,7 +84,8 @@ map<BiomeID, Biome> Biome::def = {
 		CLAY,
 
 		CHERRY_LOG,
-		CHERRY_LEAVES
+		CHERRY_LEAVES,
+		true
 	}},
 	{BiomeID::MAPLE, {
 		"Maple",
@@ -95,7 +100,24 @@ map<BiomeID, Biome> Biome::def = {
 		CLAY,
 
 		BIRCH_LOG,
-		BIRCH_LEAVES
+		BIRCH_LEAVES,
+		true
+	}},
+	{BiomeID::GRANITE_VALLEY, {
+		"Granite Valley",
+		MAPLE_GRASS,
+		DIRT,
+		DIRT,
+		STONE,
+
+		MAPLE_GRASS,
+		GRAVEL,
+		DIRT,
+		CLAY,
+
+		BIRCH_LOG,
+		BIRCH_LEAVES,
+		true
 	}},
 };
 
@@ -210,11 +232,29 @@ void WorldGen::Init()
 	noiseSampler_Temperature.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	noiseSampler_Temperature.SetFrequency(0.0015f);
 	noiseSampler_Temperature.SetFractalType(FastNoiseLite::FractalType_None);
+	//noiseSampler_Temperature.SetNoiseType(FastNoiseLite::NoiseType_Value);
+	//noiseSampler_Temperature.SetFrequency(0.0015f);
+	//noiseSampler_Temperature.SetFractalType(FastNoiseLite::FractalType_None);
+	//noiseSampler_Temperature.SetDomainWarpType(FastNoiseLite::DomainWarpType_OpenSimplex2);
+	//noiseSampler_Temperature.SetDomainWarpAmp(208.5f);
+	//noiseSampler_Temperature.SetFractalType(FastNoiseLite::FractalType_DomainWarpIndependent);
+	//noiseSampler_Temperature.SetFractalOctaves(5);
+	//noiseSampler_Temperature.SetFractalLacunarity(2.f);
+	//noiseSampler_Temperature.SetFractalGain(1.00f);
 
 	noiseSampler_Moisture = FastNoiseLite(seed + 2);
 	noiseSampler_Moisture.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	noiseSampler_Moisture.SetFrequency(0.0015f);
 	noiseSampler_Moisture.SetFractalType(FastNoiseLite::FractalType_None);
+	//noiseSampler_Moisture.SetNoiseType(FastNoiseLite::NoiseType_Value);
+	//noiseSampler_Moisture.SetFrequency(0.0015f);
+	//noiseSampler_Moisture.SetFractalType(FastNoiseLite::FractalType_None);
+	//noiseSampler_Moisture.SetDomainWarpType(FastNoiseLite::DomainWarpType_OpenSimplex2);
+	//noiseSampler_Moisture.SetDomainWarpAmp(208.5f);
+	//noiseSampler_Moisture.SetFractalType(FastNoiseLite::FractalType_DomainWarpIndependent);
+	//noiseSampler_Moisture.SetFractalOctaves(5);
+	//noiseSampler_Moisture.SetFractalLacunarity(2.f);
+	//noiseSampler_Moisture.SetFractalGain(1.00f);
 
 	noiseSampler_Mountains = FastNoiseLite(seed);
 	noiseSampler_Mountains.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
@@ -230,24 +270,47 @@ void WorldGen::Init()
 	noiseSampler_treeValue.SetFrequency(0.155f);
 	noiseSampler_treeValue.SetCellularReturnType(FastNoiseLite::CellularReturnType_CellValue);
 
-	//noiseSampler_Rivers = FastNoiseLite(seed);
+	noiseSampler_Rivers = FastNoiseLite(seed);
 	//noiseSampler_Rivers.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
-	//noiseSampler_Rivers.SetFrequency(0.1f);
+	//noiseSampler_Rivers.SetFrequency(0.01f);
 	//noiseSampler_Rivers.SetDomainWarpType(FastNoiseLite::DomainWarpType_OpenSimplex2);
 	//noiseSampler_Rivers.SetDomainWarpAmp(280.f);
 	//noiseSampler_Rivers.SetFractalType(FastNoiseLite::FractalType_DomainWarpIndependent);
 	//noiseSampler_Rivers.SetFractalOctaves(5);
 	//noiseSampler_Rivers.SetFractalLacunarity(2.0f);
 	//noiseSampler_Rivers.SetFractalGain(0.5f);
+	//noiseSampler_Rivers.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
+	//noiseSampler_Rivers.SetFrequency(0.01f);
+	//noiseSampler_Rivers.SetFractalType(FastNoiseLite::FractalType_None);
+	//noiseSampler_Rivers.set
 
-	noiseSampler_CavesTunnelsN0 = FastNoiseLite(seed+3);
+	noiseSampler_CavesTunnelsN0 = FastNoiseLite(seed + 3);
 	noiseSampler_CavesTunnelsN0.SetFrequency(0.03f);
 	noiseSampler_CavesTunnelsN0.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 
-	noiseSampler_CavesTunnelsN1 = FastNoiseLite(seed+4);
+	noiseSampler_CavesTunnelsN1 = FastNoiseLite(seed + 4);
 	noiseSampler_CavesTunnelsN1.SetFrequency(0.03f);
 	noiseSampler_CavesTunnelsN1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	//noiseSampler_CavesTunnels.SetCellularReturnType(FastNoiseLite::CellularReturnType_Distance);
+
+	noiseSampler_Oceans = FastNoiseLite(seed + 1);
+	noiseSampler_Oceans.SetFrequency(0.0003f);
+	noiseSampler_Oceans.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+	noiseSampler_Oceans.SetFractalType(FastNoiseLite::FractalType_FBm);
+	noiseSampler_Oceans.SetFractalOctaves(5);
+	noiseSampler_Oceans.SetFractalLacunarity(2.f);
+	noiseSampler_Oceans.SetFractalGain(0.4f);
+
+
+	noiseSampler_Cobbled = FastNoiseLite(seed);
+	noiseSampler_Cobbled.SetFrequency(1.f);
+	noiseSampler_Cobbled.SetNoiseType(FastNoiseLite::NoiseType_Value);
+	noiseSampler_Cobbled.SetFractalType(FastNoiseLite::FractalType_None);
+
+	noiseSampler_CobbledPresence = FastNoiseLite(seed);
+	noiseSampler_CobbledPresence.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+	noiseSampler_CobbledPresence.SetFrequency(0.1f);
+	noiseSampler_CobbledPresence.SetFractalType(FastNoiseLite::FractalType_None);
 }
 
 inline float clamp(float x, float minX, float maxX) {
@@ -294,6 +357,21 @@ float WorldGen::SampleWorldHeight(const int& x, const int& z)
 	height = lerptab(mountains, basicHeight, mountainHeight);
 #endif
 
+	//oceans
+	float smoothedOceanSample = smoothstep(0.25f, 1.f, clamp(_Instance->noiseSampler_Oceans.GetNoise((float)x, (float)z), 0.f, 1.f));
+	height *= 1.f - smoothedOceanSample;
+	height -= smoothedOceanSample * 30.f;
+
+	//height = 10.f;
+
+	////rivers
+	//float rawRiverSamp = _Instance->noiseSampler_Rivers.GetNoise((float)x, (float)z);//-1f to 0.121f
+	//float riverSamp = clamp(rawRiverSamp + 0.76f, 0.f, 1.f);
+	////riverSamp = smoothstep(0.f, 0.121f, riverSamp);
+
+	//height -= riverSamp * 30.f;
+	//height *= 1.f - riverSamp;
+	//height -= riverSamp * 30.f;
 
 	return height;
 }
@@ -319,8 +397,13 @@ BlockID WorldGen::GetBlockAt(const int& x, const int& y, const int& z) {
 bool WorldGen::IsBlockCave(const int& x, const int& y, const int& z) {
 	float sample = _Instance->noiseSampler_Caves1.GetNoise(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
 
+#if 0
 	float sample0 = abs(_Instance->noiseSampler_CavesTunnelsN0.GetNoise((float)x, (float)y * 1.2f, (float)z));
 	float sample1 = abs(_Instance->noiseSampler_CavesTunnelsN1.GetNoise((float)x, (float)y * 1.2f, (float)z));
+#else
+	float sample0 = 1.f;
+	float sample1 = 1.f;
+#endif
 	//float sampleTunnels = _Instance->noiseSampler_CavesTunnels.GetNoise(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
 
 	//return sample > 
@@ -392,9 +475,22 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 
 	if(y > heightSample) {
 		if(y < SEA_LEVEL - 1) return WATER;
+
+		//if(biome.hasFoliage) {
+
+		//	if(y == heightSample + 1) {
+		//		float grassValue = _Instance->noiseSampler_Cobbled.GetNoise((float)x, (float)z);
+		//		float grassPresence = _Instance->noiseSampler_CobbledPresence.GetNoise((float)x, (float)z);
+		//		if(grassPresence > 0.2f) {
+		//			if(grassValue > 0.9f) return ROSE;
+		//			if(grassValue > 0.8f) return DANDELION;
+		//			if(grassValue > 0.3f ) return TALL_GRASS;
+		//		}
+		//	}
+		//}
+
 		return AIR;
 	}
-
 
 	if(y == heightSample) {
 		if(y < SEA_LEVEL) {
@@ -431,7 +527,9 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 
 	BlockID stoneType = biome.stone;
 
-	if(y <= -80) stoneType = BLACKSTONE;
+	if(y <= -80 + (_Instance->noiseSampler_CobbledPresence.GetNoise((float)x, (float)z)*2.f)) stoneType = BLACKSTONE;
+
+	
 
 	// Value represents rarity
 	float valueSample = _Instance->noiseSampler_treeValue.GetNoise((float)x, (float)y, (float)z);
@@ -451,6 +549,16 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 	}
 	if(y < -61 && valueSample < -0.35f && distSample < -0.97f) {
 		return static_cast<BlockID>(TITANIUM_ORE + ((stoneType == BLACKSTONE) * 6));
+	}
+
+	float cobbledValue = _Instance->noiseSampler_Cobbled.GetNoise((float)x, (float)y, (float)z);
+	float cobbledPresence = _Instance->noiseSampler_CobbledPresence.GetNoise((float)x, (float)y, (float)z);
+
+	if(cobbledValue > 0.35f && cobbledPresence > 0.2f) {
+		switch(stoneType) {
+		case BLACKSTONE: stoneType = BLACK_COBBLESTONE; break;
+		case STONE: stoneType = COBBLESTONE; break;
+		}
 	}
 
 	return stoneType;

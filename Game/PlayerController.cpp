@@ -404,16 +404,24 @@ void PlayerController::Update(float dTime)
 	if(VoxelRay::Cast(&ray, chunkManager, 10.f, &lookHitPoint, &lookHitBlock, &lookHitNormal)) {
 		Vector3 lookHitPointf = Vector3((float)lookHitPoint.x, (float)lookHitPoint.y, (float)lookHitPoint.z);
 		Vector3 lookHitNormalf = Vector3((float)lookHitNormal.x, (float)lookHitNormal.y, (float)lookHitNormal.z);
+
+		BlockID targetBlock = chunkManager->GetBlockAtWorldPos(lookHitPoint);
+		const Block& targetBlockDef = BlockDef::GetDef(targetBlock);
+		const BlockShape& targetBlockShape = BlockShape::blockShapes[targetBlockDef.GetBlockShapeID()];
+
 		blockSelectRef->models[0]->alpha = 0.99f; // fails sometimes?
-		blockSelectRef->transform.position = lookHitPointf +Vector3(0.5f, 0.5f, 0.5f);// +Vector3((float)lookHitNormal.x, (float)lookHitNormal.y, (float)lookHitNormal.z);
+		//blockSelectRef->transform.position = lookHitPointf +Vector3(0.5f, 0.5f, 0.5f);// +Vector3((float)lookHitNormal.x, (float)lookHitNormal.y, (float)lookHitNormal.z);
+		blockSelectRef->transform.position = lookHitPointf + targetBlockShape.GetMaxAABB().GetPosition();
+		blockSelectRef->transform.scale = targetBlockShape.GetMaxAABB().GetHalfSize() * 2.05f;
+		
 
 
 		// INPUT MODIFY
 		if(Input::IsMouseLocked()) {
 			if(Input::IsMouseKeyPressed(MOUSE_L) || Input::IsRightTriggerPressed(0)) { // Mine
 				InventoryItem* invItem;
-				BlockID targetBlock = chunkManager->GetBlockAtWorldPos(lookHitPoint);
-				Block blockDef = BlockDef::GetDef(targetBlock);
+				
+				
 				
 				Item itemDef = ItemDef::Get(COAL);
 				if(inv->GetHeldItem(&invItem)) {
@@ -422,14 +430,14 @@ void PlayerController::Update(float dTime)
 
 				int minableMasked = itemDef.GetTags() & MINEABLE_MASK;
 
-				if(_pCurrentPlayerData->IsCreative() || blockDef.HasTag(BT_MINEABLE_ALL | (itemDef.GetTags() & MINEABLE_MASK))) {
+				if(_pCurrentPlayerData->IsCreative() || targetBlockDef.HasTag(BT_MINEABLE_ALL | (itemDef.GetTags() & MINEABLE_MASK))) {
 					Audio::Play("hit", 1.f);
 					chunkManager->SetBlockAtWorldPos(lookHitPoint, AIR);
 						
 					//_pCurrentPlayerData->ChangeScore(blockDef.GetTier());
 
-					if(blockDef.GetLootTableName() != "") {
-						const InventoryItem loot = LootTable::Choose(blockDef.GetLootTableName());
+					if(targetBlockDef.GetLootTableName() != "") {
+						const InventoryItem loot = LootTable::Choose(targetBlockDef.GetLootTableName());
 
 						InventoryItem* newDroppedItem = new InventoryItem(loot.type, loot.ID, -1, -1, loot.amount);
 

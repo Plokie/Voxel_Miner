@@ -66,7 +66,7 @@ public:
 		return this->center;
 	}
 
-	const Vector3& GetHalfSize() {
+	Vector3 GetHalfSize() const {
 		return this->halfSize;
 	}
 
@@ -111,6 +111,8 @@ public:
 		}
 		return false;
 	}
+
+	bool IntersectsRay(const Vector3& origin, const Vector3& direction);
 
 
 	bool IsPointWithin(const Vector3& p) const {

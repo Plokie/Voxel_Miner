@@ -12,7 +12,8 @@ enum BiomeID {
 	DESERT,
 	TAIGA,
 	CHERRY,
-	MAPLE
+	MAPLE,
+	GRANITE_VALLEY
 };
 class Biome {
 public:
@@ -30,9 +31,11 @@ public:
 	BlockID wood = ERR;
 	BlockID leaves = ERR;
 
+	bool hasFoliage = true;
+
 	Biome() = default;
-	Biome(const string& name, BlockID surface, BlockID earthTop, BlockID earthBottom, BlockID stone, BlockID shore, BlockID waterBed, BlockID sandBottom, BlockID clayType, BlockID wood, BlockID leaves) :
-		name(name), surface(surface), earthTop(earthTop), earthBottom(earthBottom), stone(stone), shore(shore), waterBed(waterBed), sandTypeBottom(sandBottom), clayType(clayType), wood(wood), leaves(leaves) {}
+	Biome(const string& name, BlockID surface, BlockID earthTop, BlockID earthBottom, BlockID stone, BlockID shore, BlockID waterBed, BlockID sandBottom, BlockID clayType, BlockID wood, BlockID leaves, bool hasFoliage) :
+		name(name), surface(surface), earthTop(earthTop), earthBottom(earthBottom), stone(stone), shore(shore), waterBed(waterBed), sandTypeBottom(sandBottom), clayType(clayType), wood(wood), leaves(leaves), hasFoliage(hasFoliage) {}
 
 	static map<BiomeID, Biome> def;
 	static vector<pair<BiomeID, AABB>> range;
@@ -64,6 +67,11 @@ private:
 
 	FastNoiseLite noiseSampler_treeValue;
 	FastNoiseLite noiseSampler_treeDist;
+
+	FastNoiseLite noiseSampler_Oceans;
+
+	FastNoiseLite noiseSampler_Cobbled;
+	FastNoiseLite noiseSampler_CobbledPresence;
 
 	//FastNoiseLite noiseSampler_C
 

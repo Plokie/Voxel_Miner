@@ -45,12 +45,34 @@ bool VoxelRay::Cast(const VoxelRay* ray, ChunkManager* chunkManager, float max_d
 
 	while(true) {
 		BlockID currentBlock = chunkManager->GetBlockAtWorldPos(pos);
-		if(currentBlock != AIR && currentBlock != WATER) { // If hit a block that is solid
+		if(currentBlock != AIR && currentBlock != WATER) { // If hit a block that isnt replaceable or air
+			const Block& def = BlockDef::GetDef(currentBlock);
+			
+			if(def.GetBlockShapeID() != BLOCKSHAPE_BLOCK) {
+				// perform ray-aabb intersection test with block's custom AABBs
+				const BlockShape& blockShape = BlockShape::blockShapes[def.GetBlockShapeID()];
+				bool collides = false;
+				
+				for(AABB aabb : blockShape.GetAABBs()) {
+					aabb.MovePosition(pos);
+					if(aabb.IntersectsRay(ray->origin, ray->direction)) {
+						collides = true;
+						break;
+					}
+				}
+				
+				if(!collides) //if ray doesnt intersect with block's aabbs
+					goto skip; //skip the return and continue
+				
+			}
+			
 			// set available output variables 
 			if(outPosition != nullptr) *outPosition = pos;
 			if(outBlock != nullptr) *outBlock = currentBlock;
 			if(outNormal != nullptr) *outNormal = normal;
 			return true;
+
+			skip: __nop();
 		}
 
 		if(t.x <= t.y && t.x <= t.z) {

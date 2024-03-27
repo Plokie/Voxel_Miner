@@ -230,7 +230,9 @@ void Chunk::PushChunkMesh(vector<Vertex>& vertices, vector<DWORD>& indices, MESH
 
 		newModel->SetMesh(newMesh);
 		models.push_back(newModel);
-		//ReleaseSRWLockExclusive(&modelsMutex);
+
+		//somethins going wrong here on release builds but i have no idea what
+		//!TODO IMPORTANT
 	}
 }
 

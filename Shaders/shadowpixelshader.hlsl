@@ -23,6 +23,8 @@ void main(SHADOW_PS_INPUT input)
 {
     float4 texCol = tex.Sample(samplerState, input.texCoord);
     clip(texCol.a - 0.2f);
+    //if (texCol.a < 0.5f)
+    //    discard;
 }
 
 //float4 main(SHADOW_PS_INPUT input) : SV_TARGET

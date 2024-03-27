@@ -38,7 +38,7 @@ const map<BlockID, Block> BlockDef::def = {
 		1, 9,
 		0, 9,
 		3, 0,
-		BT_MINEABLE_SHOVEL
+		BT_MINEABLE_SHOVEL | BT_SHELL
 	)},
 
 	{BlockID::TAIGA_GRASS, Block("Taiga Grass", BLOCKSHAPE_BLOCK, CAT_NATURE,
