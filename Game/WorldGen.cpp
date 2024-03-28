@@ -124,12 +124,14 @@ void WorldGen::Init()
 	//noiseSampler_Rivers.set
 
 	noiseSampler_CavesTunnelsN0 = FastNoiseLite(seed + 3);
-	noiseSampler_CavesTunnelsN0.SetFrequency(0.03f);
-	noiseSampler_CavesTunnelsN0.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+	noiseSampler_CavesTunnelsN0.SetFrequency(0.01f);
+	noiseSampler_CavesTunnelsN0.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+	noiseSampler_CavesTunnelsN0.SetFractalType(FastNoiseLite::FractalType_FBm);
 
 	noiseSampler_CavesTunnelsN1 = FastNoiseLite(seed + 4);
-	noiseSampler_CavesTunnelsN1.SetFrequency(0.03f);
-	noiseSampler_CavesTunnelsN1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+	noiseSampler_CavesTunnelsN1.SetFrequency(0.01f);
+	noiseSampler_CavesTunnelsN1.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+	noiseSampler_CavesTunnelsN1.SetFractalType(FastNoiseLite::FractalType_FBm);
 	//noiseSampler_CavesTunnels.SetCellularReturnType(FastNoiseLite::CellularReturnType_Distance);
 
 
@@ -244,6 +246,7 @@ BlockID WorldGen::GetBlockAt(const int& x, const int& y, const int& z) {
 }
 
 bool WorldGen::IsBlockCave(const int& x, const int& y, const int& z) {
+	const float tunnelIntersection = 0.08f;
 	float sample = _Instance->noiseSampler_Caves1.GetNoise(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
 
 #if 0
@@ -262,7 +265,7 @@ bool WorldGen::IsBlockCave(const int& x, const int& y, const int& z) {
 	//return (sample > 0.25f) || (abs(sampleTunnels) > 0.4f && abs(sampleTunnels) < 0.6f);
 
 	//return sample > 0.25f;
-	return (sample0 < 0.08f && sample1 < 0.08f) || sample > 0.25f;
+	return (sample0 < tunnelIntersection && sample1 < tunnelIntersection) || sample > 0.25f;
 }
 
 
