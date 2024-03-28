@@ -245,7 +245,8 @@ void ChunkManager::Thread() {
 					Vector3Int& targetChunk = front.first;
 					Vector3Int& previousChunk = front.second;
 
-					if(targetChunk != camIndex) {
+					if(targetChunk != camIndex ) {
+					//if(Vector3::Distance(targetChunk, camIndex) > 2.f) {
 						auto find = renderedHash.find(targetChunk);
 						if(find != renderedHash.end()) continue;
 					}

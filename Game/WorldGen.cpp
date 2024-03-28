@@ -387,11 +387,15 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 		}
 	}
 
-	if(y == heightSample + 1 && biome.biomeFoliage.foliageWeights.size() > 0 && !IsBlockCave(x, y-1, z)) {
+	if((y == heightSample + 1 || y <= SEA_LEVEL + 4) && biome.biomeFoliage.foliageWeights.size() > 0 && !IsBlockCave(x, y - 1, z)) {
 		float foliageValue = _Instance->noiseSampler_Cobbled.GetNoise((float)x, (float)z);
 		float foliagePresence = _Instance->noiseSampler_CobbledPresence.GetNoise((float)x, (float)z);
 
+
 		if(foliagePresence > biome.biomeFoliage.foliagePresence) {
+			if(heightSample <= SEA_LEVEL && y <= SEA_LEVEL + 4 && foliageValue > 0.95f && heightSample>=SEA_LEVEL) return SUGAR_CANE;
+			
+			if(y == heightSample + 1)
 			return Utility::WeightedRandomPick<BlockID>(biome.biomeFoliage.foliageWeights, foliageValue);
 		}
 	}

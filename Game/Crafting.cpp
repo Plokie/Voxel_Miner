@@ -23,8 +23,8 @@ vector<Category> Crafting::workbenchCategories = {
 	{"Blocks", {
 		{"OAK_PLANKS", "SPRUCE_PLANKS", "BIRCH_PLANKS", "CHERRY_PLANKS"},
 		{"COAL_BLOCK", "COPPER_BLOCK", "GOLD_BLOCK", "AMETHYST_BLOCK"},
-		{"TITANIUM_BLOCK"},
-		{"STONE_BRICKS","BLACKSTONE_BRICKS"},
+		{"TITANIUM_BLOCK", "COBBLESTONE_SLAB"},
+		{"STONE_BRICKS","BLACKSTONE_BRICKS", "GRANITE_BRICKS"},
 	}},
 	{"Tools", {
 		{"OAK_STICKS","CHERRY_STICKS","SPRUCE_STICKS","BIRCH_STICKS"},
@@ -420,6 +420,18 @@ map<string, Recipe> Recipe::recipes = {
 		{BLACKSTONE_BRICKS, 1},
 		{
 			{BLACKSTONE,2}
+		}
+	} },
+	{ "GRANITE_BRICKS",{
+		{GRANITE_BRICKS, 1},
+		{
+			{GRANITE,2}
+		}
+	} },
+	{ "COBBLESTONE_SLAB",{
+		{COBBLESTONE_SLAB, 2},
+		{
+			{COBBLESTONE,1}
 		}
 	} },
 };
