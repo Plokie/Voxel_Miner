@@ -5,6 +5,7 @@
 #include "BlockAction.h"
 #include "ChunkDatabase.h"
 #include "BlockData.h"
+#include "Biome.h"
 
 void Chunk::Finalize() {
 	BuildMesh();
@@ -64,8 +65,9 @@ void Chunk::GenerateBlockData()
 			float heightSample = WorldGen::SampleWorldHeight(worldX, worldZ);
 			float tempSample = WorldGen::SampleTemperature(worldX, worldZ);
 			float moistSample = WorldGen::SampleMoisture(worldX, worldZ);
+			float oceanSample = WorldGen::SampleOceanMap(worldX, worldZ);
 
-			const Biome& biome = Biome::Get(tempSample, moistSample);
+			const Biome& biome = Biome::Get(tempSample, moistSample, oceanSample);
 
 
 			for(int y = 0; y < CHUNKSIZE_Y; y ++) {
@@ -77,6 +79,7 @@ void Chunk::GenerateBlockData()
 				}
 
 				BlockID newBlock = WorldGen::GetBlockGivenHeight(worldX, worldY, worldZ, static_cast<int>(heightSample), biome, moistSample);
+				//BlockID newBlock = WorldGen::GetBlockAt(worldX, worldY, worldZ)
 
 				blockData[x][y][z] = newBlock;
 			}

@@ -1,0 +1,63 @@
+{
+  "chunkHash": [
+    [
+      1,
+      0,
+      -14
+    ],
+    [
+      19,
+      0,
+      -72
+    ],
+    [
+      20,
+      0,
+      -72
+    ],
+    [
+      23,
+      -3,
+      -69
+    ],
+    [
+      25,
+      0,
+      -76
+    ],
+    [
+      28,
+      0,
+      -51
+    ]
+  ],
+  "chunksWithBlockData": [],
+  "playerData": [
+    {
+      "gamemode": 1,
+      "health": 20,
+      "hunger": 20,
+      "inventory": {
+        "items": [
+          {
+            "ID": 58,
+            "amount": 1,
+            "posX": 0,
+            "posY": 0,
+            "type": 1
+          }
+        ]
+      },
+      "oxygen": 20,
+      "position": [
+        365.4248352050781,
+        30.57111930847168,
+        -1072.8648681640625
+      ],
+      "saturation": 10,
+      "score": 0
+    }
+  ],
+  "seed": 22446,
+  "worldName": "biometest"
+}

@@ -28,19 +28,25 @@
 //}
 
 Vector2 vec2fnl(const Vector2& p, FastNoiseLite& fnl0, FastNoiseLite& fnl1) {
-    return Vector2( (fnl0.GetNoise(p.x, p.y) + 1.f) / 2.f, (fnl1.GetNoise(p.x, p.y)+1.f) / 2.f);
+    //return Vector2( (fnl0.GetNoise(p.x, p.y) + 1.f) / 2.f, (fnl1.GetNoise(p.x, p.y)+1.f) / 2.f);
+    return Vector2( abs(fnl0.GetNoise(p.x, p.y)), abs(fnl1.GetNoise(p.x, p.y)));
 }
 
+inline float shardFrac(float x) {
+    return x - floor(x);
+}
+
+
 float shard_noise(const Vector2& p, const float sharpness, FastNoiseLite& fnl0, FastNoiseLite& fnl1, const float verticality = 0.0f) {
-	Vector2 ip = Vector2(floor(p.x), floor(p.y));
-	Vector2 fp = Vector2(frac(p.x), frac(p.y));
+    Vector2 ip = Vector2(floor(p.x), floor(p.y));
+	Vector2 fp = Vector2(shardFrac(p.x), shardFrac(p.y));
 
     // if u set this v value to 1 it makes pretty cool mountains
 	float v = verticality;
 	float t = 0.f;
 	for(int y = -1; y <= 1; y++) {
         for(int x = -1; x <= 1; x++) {
-            Vector2 o = Vector2((float)x, (float)y);
+            Vector2 o = Vector2(static_cast<float>(x), static_cast<float>(y));
             Vector2 io = ip + o;
             //Vector2 h = phash(io);
             Vector2 h = vec2fnl(io, fnl0, fnl1);

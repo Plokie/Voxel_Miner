@@ -2,6 +2,7 @@
 
 #include <string>
 #include <tuple>
+#include <vector>
 #include <DirectXMath.h>
 
 using namespace DirectX;
@@ -23,6 +24,36 @@ inline float frac(float f) {
 inline float lerp(float a, float b, float t) {
 	return a + t * (b - a);
 }
+//
+//namespace Utility {
+//	template<typename T>
+//	T WeightedRandomPick(std::vector<pair<T, float>> weights) {
+//
+//	}
+//
+//};
+
+class Utility {
+public:
+	template<typename T>
+	static T WeightedRandomPick(const std::vector<pair<T, int>>& weights, float randomValue = -999.f) {
+		if(randomValue == -999.f) {
+			randomValue = (rand() % 1000) / 1000.f;
+		}
+
+		int sumOfWeights = 0;
+		for(const pair<T, int>& pair : weights) {
+			sumOfWeights += pair.second;
+		}
+
+		int rand = static_cast<int>(sumOfWeights * randomValue);
+		for(const pair<T, int>& pair : weights) {
+			if(rand < pair.second) return pair.first;
+			rand -= pair.second;
+		}
+		return weights[0].first;
+	}
+};
 
 struct Vector3 {
 public:

@@ -13,6 +13,8 @@
 #include "Entity.h"
 #include "DroppedItem.h"
 #include "BlockAction.h"
+
+#include "Biome.h"
 //#include "ChunkDatabase.h"
 
 #include "../Audio/Audio.h"
@@ -532,7 +534,25 @@ void PlayerController::Update(float dTime)
 //#else
 	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
 	Vector3Int footPos = camBlockPos - Vector3Int(0, 1, 0);
-	worldPosLabel->SetText(footPos.ToString());
+
+	float tempSample = WorldGen::SampleTemperature(footPos.x, footPos.z);
+	float moistSample = WorldGen::SampleMoisture(footPos.x, footPos.z);
+	float oceanSample = WorldGen::SampleOceanMap(footPos.x, footPos.z);
+	float biomeConfidence = -1.f;
+	float steepness = WorldGen::SampleWorldSteepness(footPos.x, footPos.z);
+
+	const Biome& biome = Biome::Get(tempSample, moistSample, oceanSample, &biomeConfidence);
+
+
+	worldPosLabel->SetText(
+		footPos.ToString()+"\n"
+		+"temp: "+to_string(tempSample)+"\n"
+		+"moist: "+to_string(moistSample) + "\n"
+		//+"ocean: "+to_string(oceanSample) + "\n"
+		+"biome: "+biome.name + "\n"
+		+"confidence: "+to_string(biomeConfidence) + "\n"
+		+"steepness: "+to_string(steepness) + "\n"
+	);
 //#endif
 
 	// KEEP AT END

@@ -3,157 +3,9 @@
 #include <time.h>
 
 #include "ShardGen.h"
+#include "Biome.h"
 
 WorldGen* WorldGen::_Instance = new WorldGen();
-
-map<BiomeID, Biome> Biome::def = {
-	{BiomeID::GRASSLANDS, {
-		"Grasslands",
-		GRASS,
-		DIRT,
-		DIRT,
-		STONE,
-
-		SAND, // Shore
-		SAND, // Water bed
-		SAND, // Sand under surface
-		CLAY, // Clay layer under sand
-
-		OAK_LOG,
-		OAK_LEAVES,
-		true
-	}},
-	{BiomeID::SNOW, {
-		"Snow",
-		SNOW_GRASS,
-		DIRT,
-		DIRT,
-		STONE,
-
-		SNOW_GRASS, // Shore
-		DIRT, // Water bed
-		DIRT, // Sand under surface
-		CLAY, // Clay layer under sand
-
-		SPRUCE_LOG,
-		SPRUCE_LEAVES,
-		false
-	}},
-	{BiomeID::DESERT, {
-		"Desert",
-		SAND,
-		SAND,
-		SAND,
-		STONE,
-
-		SAND, // Shore
-		SAND, // Water bed
-		SAND, // Sand under surface
-		CLAY, // Clay layer under sand
-
-		CACTUS,
-		AIR,
-		false
-	}},
-	{BiomeID::TAIGA, {
-		"Taiga",
-		TAIGA_GRASS,
-		DIRT,
-		DIRT,
-		STONE,
-
-		TAIGA_GRASS,
-		DIRT,
-		DIRT,
-		DIRT,
-
-		SPRUCE_LOG,
-		SPRUCE_LEAVES,
-		true
-	}},
-	{BiomeID::CHERRY, {
-		"Cherry",
-		CHERRY_GRASS,
-		DIRT,
-		DIRT,
-		STONE,
-
-		SAND,
-		SAND,
-		DIRT,
-		CLAY,
-
-		CHERRY_LOG,
-		CHERRY_LEAVES,
-		true
-	}},
-	{BiomeID::MAPLE, {
-		"Maple",
-		MAPLE_GRASS,
-		DIRT,
-		DIRT,
-		STONE,
-
-		MAPLE_GRASS,
-		GRAVEL,
-		DIRT,
-		CLAY,
-
-		BIRCH_LOG,
-		BIRCH_LEAVES,
-		true
-	}},
-	{BiomeID::GRANITE_VALLEY, {
-		"Granite Valley",
-		MAPLE_GRASS,
-		DIRT,
-		DIRT,
-		STONE,
-
-		MAPLE_GRASS,
-		GRAVEL,
-		DIRT,
-		CLAY,
-
-		BIRCH_LOG,
-		BIRCH_LEAVES,
-		true
-	}},
-};
-
-// AABB lookup is based on bottom left to top right
-// X = Moisture 0.0f to 1.0f
-// Y = Temperature 0.0f to 1.0f
-vector<pair<BiomeID, AABB>> Biome::range = {
-	//{WorldGen::BiomeID::SNOW, AABB({0.5f, 0.5f}, {0.5f, 0.5f})},
-	{	 BiomeID::SNOW, AABB::FromMinMax(
-		{0.0f, 0.0f}, {0.5f, 0.35f}
-	)},
-	{	 BiomeID::TAIGA, AABB::FromMinMax(
-		{0.5f, 0.0f}, {1.0f, 0.35f}
-	)},
-	{	 BiomeID::CHERRY, AABB::FromMinMax(
-		{0.6f, 0.5f}, {1.0f, 1.0f}
-	)},
-	{ BiomeID::DESERT, AABB::FromMinMax(
-		{0.0f, 0.51f}, {0.5f, 1.0f}
-	)},
-	{	 BiomeID::MAPLE, AABB::FromMinMax(
-		{0.35f, 0.5f}, {1.0f, 1.0f}
-	)},
-
-
-	//JUNGLE / RAINFOREST
-	/*{	 BiomeID::TAIGA, AABB::FromMinMax(
-		{0.6f, 0.66666f}, {1.0f, 1.0f}
-	)},*/
-
-
-	// GRASSLANDS is a default fallbakc when calling Get()
-	//{ BiomeID::GRASSLANDS, AABB( // Final fallback. Defaults to grasslands
-	//	{0.5f, 0.5f}, {0.5f, 0.5f}
-	//)},
-};
 
 
 float NormalizeNoise(const float& noise) {
@@ -232,29 +84,16 @@ void WorldGen::Init()
 	noiseSampler_Temperature.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	noiseSampler_Temperature.SetFrequency(0.0015f);
 	noiseSampler_Temperature.SetFractalType(FastNoiseLite::FractalType_None);
-	//noiseSampler_Temperature.SetNoiseType(FastNoiseLite::NoiseType_Value);
-	//noiseSampler_Temperature.SetFrequency(0.0015f);
-	//noiseSampler_Temperature.SetFractalType(FastNoiseLite::FractalType_None);
-	//noiseSampler_Temperature.SetDomainWarpType(FastNoiseLite::DomainWarpType_OpenSimplex2);
-	//noiseSampler_Temperature.SetDomainWarpAmp(208.5f);
-	//noiseSampler_Temperature.SetFractalType(FastNoiseLite::FractalType_DomainWarpIndependent);
-	//noiseSampler_Temperature.SetFractalOctaves(5);
-	//noiseSampler_Temperature.SetFractalLacunarity(2.f);
-	//noiseSampler_Temperature.SetFractalGain(1.00f);
 
 	noiseSampler_Moisture = FastNoiseLite(seed + 2);
 	noiseSampler_Moisture.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	noiseSampler_Moisture.SetFrequency(0.0015f);
 	noiseSampler_Moisture.SetFractalType(FastNoiseLite::FractalType_None);
-	//noiseSampler_Moisture.SetNoiseType(FastNoiseLite::NoiseType_Value);
-	//noiseSampler_Moisture.SetFrequency(0.0015f);
-	//noiseSampler_Moisture.SetFractalType(FastNoiseLite::FractalType_None);
-	//noiseSampler_Moisture.SetDomainWarpType(FastNoiseLite::DomainWarpType_OpenSimplex2);
-	//noiseSampler_Moisture.SetDomainWarpAmp(208.5f);
-	//noiseSampler_Moisture.SetFractalType(FastNoiseLite::FractalType_DomainWarpIndependent);
-	//noiseSampler_Moisture.SetFractalOctaves(5);
-	//noiseSampler_Moisture.SetFractalLacunarity(2.f);
-	//noiseSampler_Moisture.SetFractalGain(1.00f);
+
+	noiseSampler_Oceans = FastNoiseLite(seed + 1);
+	noiseSampler_Oceans.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+	noiseSampler_Oceans.SetFrequency(0.00175f);
+	noiseSampler_Oceans.SetFractalType(FastNoiseLite::FractalType_None);
 
 	noiseSampler_Mountains = FastNoiseLite(seed);
 	noiseSampler_Mountains.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
@@ -293,13 +132,6 @@ void WorldGen::Init()
 	noiseSampler_CavesTunnelsN1.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	//noiseSampler_CavesTunnels.SetCellularReturnType(FastNoiseLite::CellularReturnType_Distance);
 
-	noiseSampler_Oceans = FastNoiseLite(seed + 1);
-	noiseSampler_Oceans.SetFrequency(0.0003f);
-	noiseSampler_Oceans.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
-	noiseSampler_Oceans.SetFractalType(FastNoiseLite::FractalType_FBm);
-	noiseSampler_Oceans.SetFractalOctaves(5);
-	noiseSampler_Oceans.SetFractalLacunarity(2.f);
-	noiseSampler_Oceans.SetFractalGain(0.4f);
 
 
 	noiseSampler_Cobbled = FastNoiseLite(seed);
@@ -328,70 +160,87 @@ inline float lerptab(float t, float a, float b) {
 
 float WorldGen::SampleWorldHeight(const int& x, const int& z)
 {
+	float biomeConfidence = 1.0f;
+	const Biome& biome = Biome::Get(SampleTemperature(x, z), SampleMoisture(x, z), SampleOceanMap(x,z), &biomeConfidence);
 	float height = 0.0f;
 
-#if 0 //Old world gen (keeping for legacy worlds)
-	float rawNoiseSample = _Instance->noiseSampler_Height1.GetNoise((float)x, (float)z);
-	//rawNoiseSample = DeNormalizeNoise(smoothstep(0.2f, 0.8f, NormalizeNoise(rawNoiseSample)));
-
-	height = rawNoiseSample * 30.f;
-#else
 	// Sample point
 	Vector2 samp = Vector2((float)x, (float)z);
 	samp /= 450.f; // Frequency
 
 	// The basic non-mountainous heightmap
 	float basicHeight = DeNormalizeNoise(layered_shard_noise(samp, _Instance->noiseSampler_HeightVal0, _Instance->noiseSampler_HeightVal1, 0.f, 4.f, 5)) * 30.f;
+	basicHeight += 4;
 
-	// Mountainous presence map (not height sample)
-	float mountains = NormalizeNoise(_Instance->noiseSampler_Mountains.GetNoise((float)x, (float)z));
-	mountains = clamp(smoothstep(0.5f, 1.f, mountains), 0.f, 1.f); // Smoothstep and clamp to reduce spots
+	float privateHeight = basicHeight;
 
-	// Since increasing the inital v value of shard_noise offsets the base height, we need to account for that here
-	float mountainHeightOffset = lerptab(mountains, 0.f, 22.f);
-	// Sample raw height before offset base height
-	float rawMountainSample = DeNormalizeNoise(layered_shard_noise(samp, _Instance->noiseSampler_HeightVal0, _Instance->noiseSampler_HeightVal1, 1.f, 4.f, 5));
-	// Clamp height and then offset by base height
-	float mountainHeight = (clamp(rawMountainSample, 0, 3.f) * 30.f) - mountainHeightOffset;
+	switch(biome.noiseType) {
+	case NOISETYPE_DEFAULT: break;
+	case NOISETYPE_MOUNTAINS: {
+		// Mountainous presence map (not height sample)
+		float mountains = NormalizeNoise(_Instance->noiseSampler_Mountains.GetNoise((float)x, (float)z));
+		mountains = clamp(smoothstep(0.275f, 1.f, mountains), 0.f, 1.f); // Smoothstep and clamp to reduce spots
 
-	height = lerptab(mountains, basicHeight, mountainHeight);
-#endif
+		float mountainHeightOffset = lerptab(0.95f, 0.f, 22.f);
+		// Sample raw height before offset base height
+		float rawMountainSample = DeNormalizeNoise(layered_shard_noise(samp, _Instance->noiseSampler_HeightVal0, _Instance->noiseSampler_HeightVal1, 1.f, 4.f, 5));
+		// Clamp height and then offset by base height
+		float mountainHeight = (clamp(rawMountainSample, 0, 3.f) * 30.f) - mountainHeightOffset;
 
-	//oceans
-	float smoothedOceanSample = smoothstep(0.25f, 1.f, clamp(_Instance->noiseSampler_Oceans.GetNoise((float)x, (float)z), 0.f, 1.f));
-	height *= 1.f - smoothedOceanSample;
-	height -= smoothedOceanSample * 30.f;
+		privateHeight = lerptab(mountains, basicHeight, mountainHeight);
+		}
+		break;
+	case NOISETYPE_OCEAN: 
+		privateHeight = (basicHeight / 2.f) - 30;
+		break;
+	case NOISETYPE_BEACH:
+		privateHeight = basicHeight / 3.0f;
+		break;
+	case NOISETYPE_PLATEAU: {
+		privateHeight = (float)fmin(ceil((basicHeight * ((basicHeight > 0) ? 7.f : -2.f)) / 7.0f) * 7.0f, 78);
+	}	
+		break;
+	}
 
-	//height = 10.f;
-
-	////rivers
-	//float rawRiverSamp = _Instance->noiseSampler_Rivers.GetNoise((float)x, (float)z);//-1f to 0.121f
-	//float riverSamp = clamp(rawRiverSamp + 0.76f, 0.f, 1.f);
-	////riverSamp = smoothstep(0.f, 0.121f, riverSamp);
-
-	//height -= riverSamp * 30.f;
-	//height *= 1.f - riverSamp;
-	//height -= riverSamp * 30.f;
+	return lerp(basicHeight, privateHeight, biomeConfidence);
 
 	return height;
 }
 
+float WorldGen::SampleWorldSteepness(int x, int z)
+{
+	float px = SampleWorldHeight(x + 1, z);
+	float nx = SampleWorldHeight(x - 1, z);
+	float pz = SampleWorldHeight(x, z + 1);
+	float nz = SampleWorldHeight(x, z - 1);
+
+	float dX = abs(px - nx);
+	float dZ = abs(pz - nz);
+
+	return max(dX,dZ);
+}
+
+float WorldGen::SampleOceanMap(int x, int z) {
+	return NormalizeNoise(_Instance->noiseSampler_Oceans.GetNoise((float)x, (float)z));
+}
+
 float WorldGen::SampleTemperature(const int& x, const int& z) {
-	return NormalizeNoise(_Instance->noiseSampler_Temperature.GetNoise((float)x, (float)z));
+	return NormalizeNoise(_Instance->noiseSampler_Temperature.GetNoise((float)x, (float)z) * 1.08f);
 }
 
 float WorldGen::SampleMoisture(const int& x, const int& z) {
-	return NormalizeNoise(_Instance->noiseSampler_Moisture.GetNoise((float)x, (float)z));
+	return NormalizeNoise(_Instance->noiseSampler_Moisture.GetNoise((float)x, (float)z) * 1.08f);
 }
 
 BlockID WorldGen::GetBlockAt(const int& x, const int& y, const int& z) {
 	float heightSample = SampleWorldHeight(x, z);
 	float temperatureSample = SampleTemperature(x, z);
 	float moistureSample = SampleMoisture(x, z);
+	float oceanSample = SampleOceanMap(x, z);
 
 
 
-	return GetBlockGivenHeight(x, y, z, static_cast<int>(heightSample), Biome::Get(temperatureSample, moistureSample), moistureSample);
+	return GetBlockGivenHeight(x, y, z, static_cast<int>(heightSample), Biome::Get(temperatureSample, moistureSample, oceanSample), moistureSample);
 }
 
 bool WorldGen::IsBlockCave(const int& x, const int& y, const int& z) {
@@ -426,32 +275,95 @@ bool WorldGen::IsBlockCave(const int& x, const int& y, const int& z) {
 BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, const int& heightSample, const Biome& biome, const float moisture)
 {
 	const int SEA_LEVEL = 0;
-	const int SKY_LEVEL = 200;
 
-	//const Biome& biome = Biome::Get(tempSample, moistSample);
+	//if(y <= heightSample) return biome.testBlock;
+	if(y <= heightSample) {
+		bool isInCave = IsBlockCave(x, y, z);
+		if(isInCave) {
+			if(y < -140) return LAVA;
+			else return AIR;
+		}
 
-	//const BlockID SURFACE = biome.surface;
-	//const BlockID EARTH_TOP = biome.earthTop;
-	//const BlockID EARTH_BOTTOM = biome.earthBottom;
+		if(y >= heightSample - 2) {
+			float steepness = SampleWorldSteepness(x, z);
 
-	//const BlockID SAND_TYPE_TOP = biome.sandTypeTop;
-	//const BlockID SAND_TYPE_BOTTOM = biome.sandTypeBottom;
-	//const BlockID CLAY_TYPE = biome.clayType;
+			if(steepness < biome.biomeSurface.maxTopSteepness) {
+				if(y == heightSample) {
+					if(y < SEA_LEVEL) return biome.biomeSurface.sea_floor;
+					return biome.biomeSurface.top;
+				}
+				
+				return biome.biomeSurface.mid;
+			}
+		}
+		
+		{ // stone
+			BlockID stoneType = biome.biomeSurface.foundation;
 
-	//const BlockID STONE_TYPE = biome.stone;
+			if(y <= -80 + (_Instance->noiseSampler_CobbledPresence.GetNoise((float)x, (float)z)*2.f)) stoneType = BLACKSTONE;
 
-	//const BlockID LOG_TYPE = biome.wood;
-	//const BlockID LEAVES_TYPE = biome.leaves;
+			
 
-	//todo: this doesnt feel right, there HAS HAS HAS to be a better way to do this
-	// I know the bunch of if statements look weird, but if we follow it like the computer does, its actually faster than precomputing the individual conditions
+			// Value represents rarity
+			float valueSample = _Instance->noiseSampler_treeValue.GetNoise((float)x, (float)y, (float)z);
+			float distSample = _Instance->noiseSampler_treeDist.GetNoise((float)x, (float)y, (float)z);
 
-	// maybe tree structure?
+			if(valueSample < -0.85f && distSample < -0.9f) {
+				switch(stoneType) {
+				case BLACKSTONE: return BLACK_COAL_ORE;
+				case GRANITE: return GRANITE_COAL_ORE;
+				default: return COAL_ORE;
+				}
+			}
+			if(valueSample < -0.7f && distSample < -0.95f) {
+				switch(stoneType) {
+				case BLACKSTONE: return BLACK_COPPER_ORE;
+				case GRANITE: return GRANITE_COPPER_ORE;
+				default: return COPPER_ORE;
+				}
+			}
+			if(y < -30 && valueSample < -0.55f && distSample < -0.96f) {
+				switch(stoneType) {
+				case BLACKSTONE: return BLACK_GOLD_ORE;
+				case GRANITE: return GRANITE_GOLD_ORE;
+				default: return GOLD_ORE;
+				}
+			}
+			if(y < -45 && valueSample < -0.45f && distSample < -0.97f) {
+				switch(stoneType) {
+				case BLACKSTONE: return BLACK_AMETHYST_ORE;
+				case GRANITE: return GRANITE_AMETHYST_ORE;
+				default: return AMETHYST_ORE;
+				}
+			}
+			if(y < -61 && valueSample < -0.35f && distSample < -0.97f) {
+				switch(stoneType) {
+				case BLACKSTONE: return BLACK_TITANIUM_ORE;
+				case GRANITE: return GRANITE_TITANIUM_ORE;
+				default: return TITANIUM_ORE;
+				}
+			}
 
-	// this sucks, i just want something that gets wood in the world
-	// todo: use terrain features
+			float cobbledValue = _Instance->noiseSampler_Cobbled.GetNoise((float)x, (float)y, (float)z);
+			float cobbledPresence = _Instance->noiseSampler_CobbledPresence.GetNoise((float)x, (float)y, (float)z);
 
-	if(heightSample >= SEA_LEVEL) {
+			if(cobbledValue > 0.35f && cobbledPresence > 0.2f) {
+				switch(stoneType) {
+				case BLACKSTONE: stoneType = BLACK_COBBLESTONE; break;
+				case GRANITE: stoneType = SANDSTONE; break;
+				case STONE: stoneType = COBBLESTONE; break;
+				}
+			}
+
+			return stoneType;
+		}
+		
+	}
+
+
+	if(y <= SEA_LEVEL) return WATER;
+
+	if(biome.treeWeights.size() > 0 && heightSample >= SEA_LEVEL) {
 		const float moistureSlope = moisture / 1.15f;
 		const float treeDensity = clamp(moistureSlope * moistureSlope * moistureSlope + 0.1f, 0.f, 1.f);
 
@@ -462,115 +374,139 @@ BlockID WorldGen::GetBlockGivenHeight(const int& x, const int& y, const int& z, 
 				float distSamp = _Instance->noiseSampler_treeDist.GetNoise((float)x, (float)z);
 
 				if(distSamp < -0.989f && y < heightSample + 6) {
-					return biome.wood;
+					return biome.treeWeights[0].first.wood;
 				}
 
 				if(distSamp < -0.9f && y > heightSample + 3) {
-					return biome.leaves;
+					return biome.treeWeights[0].first.leaves;
 				}
 			}
-
 		}
 	}
 
-	if(y > heightSample) {
-		if(y < SEA_LEVEL - 1) return WATER;
+	if(y == heightSample + 1 && biome.biomeFoliage.foliageWeights.size() > 0 && !IsBlockCave(x, y-1, z)) {
+		float foliageValue = _Instance->noiseSampler_Cobbled.GetNoise((float)x, (float)z);
+		float foliagePresence = _Instance->noiseSampler_CobbledPresence.GetNoise((float)x, (float)z);
 
-		//if(biome.hasFoliage) {
-
-		//	if(y == heightSample + 1) {
-		//		float grassValue = _Instance->noiseSampler_Cobbled.GetNoise((float)x, (float)z);
-		//		float grassPresence = _Instance->noiseSampler_CobbledPresence.GetNoise((float)x, (float)z);
-		//		if(grassPresence > 0.2f) {
-		//			if(grassValue > 0.9f) return ROSE;
-		//			if(grassValue > 0.8f) return DANDELION;
-		//			if(grassValue > 0.3f ) return TALL_GRASS;
-		//		}
-		//	}
-		//}
-
-		return AIR;
-	}
-
-	if(y == heightSample) {
-		if(y < SEA_LEVEL) {
-			if(y >= SEA_LEVEL - 2) return biome.shore;
-			return biome.waterBed;
-		}
-		bool isInCave = IsBlockCave(x, y, z);
-		if(isInCave) return AIR;
-		return biome.surface;
-	}
-
-	if(y == heightSample - 1) { // Just below the surface
-		if(y < SEA_LEVEL) return biome.sandTypeBottom;
-		bool isInCave = IsBlockCave(x, y, z);
-		if(isInCave) return AIR;
-		return biome.earthTop;
-
-	}
-
-	if(y == heightSample - 2) { // Bottom of crust
-		if(y < SEA_LEVEL) return biome.clayType;
-		bool isInCave = IsBlockCave(x, y, z);
-		if(isInCave) return AIR;
-		return biome.earthBottom;
-	}
-
-
-
-	bool isInCave = IsBlockCave(x, y, z);
-	if(isInCave) {
-		if(y < -140) return LAVA;
-		else return AIR;
-	}
-
-	BlockID stoneType = biome.stone;
-
-	if(y <= -80 + (_Instance->noiseSampler_CobbledPresence.GetNoise((float)x, (float)z)*2.f)) stoneType = BLACKSTONE;
-
-	
-
-	// Value represents rarity
-	float valueSample = _Instance->noiseSampler_treeValue.GetNoise((float)x, (float)y, (float)z);
-	float distSample = _Instance->noiseSampler_treeDist.GetNoise((float)x, (float)y, (float)z);
-
-	if(valueSample < -0.85f && distSample < -0.9f) {
-		return static_cast<BlockID>(COAL_ORE + ((stoneType == BLACKSTONE) * 6));
-	}
-	if(valueSample < -0.7f && distSample < -0.95f) {
-		return static_cast<BlockID>(COPPER_ORE + ((stoneType == BLACKSTONE) * 6));
-	}
-	if(y < -30 && valueSample < -0.55f && distSample < -0.96f) {
-		return static_cast<BlockID>(GOLD_ORE + ((stoneType == BLACKSTONE) * 6));
-	}
-	if(y < -45 && valueSample < -0.45f && distSample < -0.97f) {
-		return static_cast<BlockID>(AMETHYST_ORE + ((stoneType == BLACKSTONE) * 6));
-	}
-	if(y < -61 && valueSample < -0.35f && distSample < -0.97f) {
-		return static_cast<BlockID>(TITANIUM_ORE + ((stoneType == BLACKSTONE) * 6));
-	}
-
-	float cobbledValue = _Instance->noiseSampler_Cobbled.GetNoise((float)x, (float)y, (float)z);
-	float cobbledPresence = _Instance->noiseSampler_CobbledPresence.GetNoise((float)x, (float)y, (float)z);
-
-	if(cobbledValue > 0.35f && cobbledPresence > 0.2f) {
-		switch(stoneType) {
-		case BLACKSTONE: stoneType = BLACK_COBBLESTONE; break;
-		case STONE: stoneType = COBBLESTONE; break;
+		if(foliagePresence > biome.biomeFoliage.foliagePresence) {
+			return Utility::WeightedRandomPick<BlockID>(biome.biomeFoliage.foliageWeights, foliageValue);
 		}
 	}
 
-	return stoneType;
-}
+	return AIR;
 
-const Biome& Biome::Get(float temperature, float moisture)
-{
-	Vector3 point = Vector3(moisture, temperature, 0.0f);
-	for(auto& p : Biome::range) {
-		if(p.second.IsPointWithin(point)) {
-			return Biome::def[p.first];
-		}
-	}
-	return Biome::def[GRASSLANDS];
+	//const Biome& biome = Biome::Get(tempSample, moistSample);
+
+
+	//if(heightSample >= SEA_LEVEL) {
+	//	const float moistureSlope = moisture / 1.15f;
+	//	const float treeDensity = clamp(moistureSlope * moistureSlope * moistureSlope + 0.1f, 0.f, 1.f);
+
+	//	if(_Instance->noiseSampler_treeValue.GetNoise((float)x, (float)z) < -(0.9f - treeDensity)) {
+
+
+	//		if(y > heightSample && y < heightSample + 9) {
+	//			float distSamp = _Instance->noiseSampler_treeDist.GetNoise((float)x, (float)z);
+
+	//			if(distSamp < -0.989f && y < heightSample + 6) {
+	//				return biome.wood;
+	//			}
+
+	//			if(distSamp < -0.9f && y > heightSample + 3) {
+	//				return biome.leaves;
+	//			}
+	//		}
+
+	//	}
+	//}
+
+	//if(y > heightSample) {
+	//	if(y < SEA_LEVEL - 1) return WATER;
+
+	//	//if(biome.hasFoliage) {
+
+	//	//	if(y == heightSample + 1) {
+	//	//		float grassValue = _Instance->noiseSampler_Cobbled.GetNoise((float)x, (float)z);
+	//	//		float grassPresence = _Instance->noiseSampler_CobbledPresence.GetNoise((float)x, (float)z);
+	//	//		if(grassPresence > 0.2f) {
+	//	//			if(grassValue > 0.9f) return ROSE;
+	//	//			if(grassValue > 0.8f) return DANDELION;
+	//	//			if(grassValue > 0.3f ) return TALL_GRASS;
+	//	//		}
+	//	//	}
+	//	//}
+
+	//	return AIR;
+	//}
+
+	//if(y == heightSample) {
+	//	if(y < SEA_LEVEL) {
+	//		if(y >= SEA_LEVEL - 2) return biome.shore;
+	//		return biome.waterBed;
+	//	}
+	//	bool isInCave = IsBlockCave(x, y, z);
+	//	if(isInCave) return AIR;
+	//	return biome.surface;
+	//}
+
+	//if(y == heightSample - 1) { // Just below the surface
+	//	if(y < SEA_LEVEL) return biome.sandTypeBottom;
+	//	bool isInCave = IsBlockCave(x, y, z);
+	//	if(isInCave) return AIR;
+	//	return biome.earthTop;
+
+	//}
+
+	//if(y == heightSample - 2) { // Bottom of crust
+	//	if(y < SEA_LEVEL) return biome.clayType;
+	//	bool isInCave = IsBlockCave(x, y, z);
+	//	if(isInCave) return AIR;
+	//	return biome.earthBottom;
+	//}
+
+
+
+	//bool isInCave = IsBlockCave(x, y, z);
+	//if(isInCave) {
+	//	if(y < -140) return LAVA;
+	//	else return AIR;
+	//}
+
+	//BlockID stoneType = biome.stone;
+
+	//if(y <= -80 + (_Instance->noiseSampler_CobbledPresence.GetNoise((float)x, (float)z)*2.f)) stoneType = BLACKSTONE;
+
+	//
+
+	//// Value represents rarity
+	//float valueSample = _Instance->noiseSampler_treeValue.GetNoise((float)x, (float)y, (float)z);
+	//float distSample = _Instance->noiseSampler_treeDist.GetNoise((float)x, (float)y, (float)z);
+
+	//if(valueSample < -0.85f && distSample < -0.9f) {
+	//	return static_cast<BlockID>(COAL_ORE + ((stoneType == BLACKSTONE) * 6));
+	//}
+	//if(valueSample < -0.7f && distSample < -0.95f) {
+	//	return static_cast<BlockID>(COPPER_ORE + ((stoneType == BLACKSTONE) * 6));
+	//}
+	//if(y < -30 && valueSample < -0.55f && distSample < -0.96f) {
+	//	return static_cast<BlockID>(GOLD_ORE + ((stoneType == BLACKSTONE) * 6));
+	//}
+	//if(y < -45 && valueSample < -0.45f && distSample < -0.97f) {
+	//	return static_cast<BlockID>(AMETHYST_ORE + ((stoneType == BLACKSTONE) * 6));
+	//}
+	//if(y < -61 && valueSample < -0.35f && distSample < -0.97f) {
+	//	return static_cast<BlockID>(TITANIUM_ORE + ((stoneType == BLACKSTONE) * 6));
+	//}
+
+	//float cobbledValue = _Instance->noiseSampler_Cobbled.GetNoise((float)x, (float)y, (float)z);
+	//float cobbledPresence = _Instance->noiseSampler_CobbledPresence.GetNoise((float)x, (float)y, (float)z);
+
+	//if(cobbledValue > 0.35f && cobbledPresence > 0.2f) {
+	//	switch(stoneType) {
+	//	case BLACKSTONE: stoneType = BLACK_COBBLESTONE; break;
+	//	case STONE: stoneType = COBBLESTONE; break;
+	//	}
+	//}
+
+	//return stoneType;
 }

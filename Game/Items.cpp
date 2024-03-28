@@ -25,20 +25,20 @@ const map<ItemID, Item> ItemDef::defs = {
 	{GOLD_BAR, Item("Gold Bar", CAT_MISC, 2, 1)},
 	{TITANIUM_BAR, Item("Titanium Bar", CAT_MISC, 4, 1)},
 
-	{COPPER_PICKAXE, Item("Copper Pickaxe", CAT_TOOLS, 1, 2, 1, IT_PICKAXE | (1<<TIER_TAG)) },
-	{GOLD_PICKAXE, Item("Gold Pickaxe", CAT_TOOLS, 2, 2, 1, IT_PICKAXE | (2 << TIER_TAG))},
-	{AMETHYST_PICKAXE, Item("Amethyst Pickaxe", CAT_TOOLS, 3, 2, 1, IT_PICKAXE | (3 << TIER_TAG))},
-	{TITANIUM_PICKAXE, Item("Titanium Pickaxe", CAT_TOOLS, 4, 2, 1, IT_PICKAXE | (4 << TIER_TAG))},
+	{COPPER_PICKAXE, Item("Copper Pickaxe", CAT_UTILITY, 1, 2, 1, IT_PICKAXE | (1<<TIER_TAG)) },
+	{GOLD_PICKAXE, Item("Gold Pickaxe", CAT_UTILITY, 2, 2, 1, IT_PICKAXE | (2 << TIER_TAG))},
+	{AMETHYST_PICKAXE, Item("Amethyst Pickaxe", CAT_UTILITY, 3, 2, 1, IT_PICKAXE | (3 << TIER_TAG))},
+	{TITANIUM_PICKAXE, Item("Titanium Pickaxe", CAT_UTILITY, 4, 2, 1, IT_PICKAXE | (4 << TIER_TAG))},
 
-	{COPPER_AXE, Item("Copper Axe", CAT_TOOLS, 1, 3, 1, IT_PICKAXE | (1 << TIER_TAG))},
-	{GOLD_AXE, Item("Gold Axe", CAT_TOOLS, 2, 3, 1, IT_PICKAXE | (2 << TIER_TAG))},
-	{AMETHYST_AXE, Item("Amethyst Axe", CAT_TOOLS, 3, 3, 1, IT_PICKAXE | (3 << TIER_TAG))},
-	{TITANIUM_AXE, Item("Titanium Axe", CAT_TOOLS, 4, 3, 1, IT_PICKAXE | (4 << TIER_TAG))},
+	{COPPER_AXE, Item("Copper Axe", CAT_UTILITY, 1, 3, 1, IT_PICKAXE | (1 << TIER_TAG))},
+	{GOLD_AXE, Item("Gold Axe", CAT_UTILITY, 2, 3, 1, IT_PICKAXE | (2 << TIER_TAG))},
+	{AMETHYST_AXE, Item("Amethyst Axe", CAT_UTILITY, 3, 3, 1, IT_PICKAXE | (3 << TIER_TAG))},
+	{TITANIUM_AXE, Item("Titanium Axe", CAT_UTILITY, 4, 3, 1, IT_PICKAXE | (4 << TIER_TAG))},
 
-	{COPPER_SHOVEL, Item("Copper Shovel", CAT_TOOLS, 1, 4, 1, IT_SHOVEL | (1 << TIER_TAG))},
-	{GOLD_SHOVEL, Item("Gold Shovel", CAT_TOOLS, 2, 4, 1, IT_SHOVEL | (2 << TIER_TAG))},
-	{AMETHYST_SHOVEL, Item("Amethyst Shovel", CAT_TOOLS, 3, 4, 1, IT_SHOVEL | (3 << TIER_TAG))},
-	{TITANIUM_SHOVEL, Item("Titanium Shovel", CAT_TOOLS, 4, 4, 1, IT_SHOVEL | (4 << TIER_TAG))},
+	{COPPER_SHOVEL, Item("Copper Shovel", CAT_UTILITY, 1, 4, 1, IT_SHOVEL | (1 << TIER_TAG))},
+	{GOLD_SHOVEL, Item("Gold Shovel", CAT_UTILITY, 2, 4, 1, IT_SHOVEL | (2 << TIER_TAG))},
+	{AMETHYST_SHOVEL, Item("Amethyst Shovel", CAT_UTILITY, 3, 4, 1, IT_SHOVEL | (3 << TIER_TAG))},
+	{TITANIUM_SHOVEL, Item("Titanium Shovel", CAT_UTILITY, 4, 4, 1, IT_SHOVEL | (4 << TIER_TAG))},
 
 	{STICK, Item("Stick", CAT_MISC, 0, 2)},
 
