@@ -184,6 +184,14 @@ public:
 		);
 	}
 
+	static Vector3 vecLerp(const Vector3& a, const Vector3& b, float t) {
+		return {
+			lerp(a.x, b.x, t),
+			lerp(a.y, b.y, t),
+			lerp(a.z, b.z, t)
+		};
+	}
+
 	/*const XMVECTOR& xmVec() {
 		return XMVectorSet(x, y, z, 0.0f);
 	}*/

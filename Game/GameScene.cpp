@@ -21,8 +21,8 @@ Scene* GameScene::Setup(Engine* engine, Scene* gameScene)
 	PlayerData* playerData = (PlayerData*)gameScene->CreateObject3D(new PlayerData(), "PlayerData");
 	playerData->GetInventory()->LoadDefaultItems();
 
-	PlayerController* pc = (PlayerController*)gameScene->CreateObject3D(new PlayerController(), "PlayerController");
 	HeldItem* heldItem = (HeldItem*)gameScene->CreateObject3D(new HeldItem(), "HeldItem");
+	PlayerController* pc = (PlayerController*)gameScene->CreateObject3D(new PlayerController(), "PlayerController");
 	heldItem->transform.SetParent(&pc->transform);
 	heldItem->transform.position = { .7f, -0.3f, 0.5f };
 

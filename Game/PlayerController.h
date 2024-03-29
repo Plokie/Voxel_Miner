@@ -8,6 +8,7 @@ class Label;
 class ChunkManager;
 class Inventory;
 class PlayerData;
+class HeldItem;
 
 class PlayerController : public Object3D {
 	bool enabled = false;
@@ -17,6 +18,7 @@ class PlayerController : public Object3D {
 	const float terminalVelocity = -78.4f;
 	const float liquidTerminalVelocity = -2.f;
 	const float jumpHeight = 1.25f;
+	const float walkingSpeed = 4.317f;
 	const float jumpVelocity = static_cast<float>(sqrt(2.0f * abs(gravity) * jumpHeight));
 	const Vector3 playerHalfExtents = Vector3(0.3f, 0.9f, 0.3f);
 	Object3D* blockSelectRef = nullptr;
@@ -24,6 +26,7 @@ class PlayerController : public Object3D {
 	Label* fpsCounter = nullptr;
 	Label* worldPosLabel = nullptr;
 	PlayerData* _pCurrentPlayerData = nullptr;
+	Object3D* _pHeldItem = nullptr;
 
 	float currentTerminalVelocity = terminalVelocity;
 

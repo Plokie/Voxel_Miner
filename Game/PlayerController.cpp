@@ -70,6 +70,8 @@ void PlayerController::Start()
 	//engine->GetCurrentScene()->GetObject3D("cam_bounds")->models[0]->SetTransparent(true);
 	//engine->GetCurrentScene()->GetObject3D("cam_bounds")->transform.scale = Vector3(playerHalfExtents);
 
+	_pHeldItem = engine->GetCurrentScene()->GetObject3D("HeldItem");
+
 	aabb = AABB(transform.position, playerHalfExtents);
 
 	chunkManager = engine->GetCurrentScene()->GetObject3D<ChunkManager>("AChunkManager");
@@ -115,6 +117,16 @@ vector<AABB> PlayerController::GetNearbyAABBs(ChunkManager* chunkManager, vector
 	return ret;
 }
 
+Vector3 bobOffset = Vector3::Zero();
+Vector3 rotOffset = Vector3::Zero();
+Vector3 heldItemOffset = { .7f, -0.3f, 0.5f };
+
+float BobFunction(float x) {
+	x = frac(x);
+	x -= 0.5f;
+	return 4.f*(x * x);
+}
+
 void PlayerController::Update(float dTime)
 {
 	bool didDoubleTapJump = false;
@@ -146,7 +158,7 @@ void PlayerController::Update(float dTime)
 	Engine* engine = Engine::Get();
 	Camera* camera = &engine->GetGraphics()->camera;
 
-	float movementSpeed = 4.317f;
+	float movementSpeed = walkingSpeed;
 
 #ifdef _DEBUG
 	if(Input::IsMouseLocked())
@@ -509,54 +521,45 @@ void PlayerController::Update(float dTime)
 	// DEBUG INFO
 	fpsCounter->SetText(to_string(static_cast<int>(roundf(1.f / dTime))));
 	
-
-//#ifdef _DEBUG
-	//Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
-	//Vector3Int footPos = camBlockPos - Vector3Int(0, 1, 0);
-	//Vector3Int chunkIndex = ChunkManager::ToChunkIndexPositionTuple(footPos.x, footPos.y, footPos.z);
-
-	//float temp = WorldGen::SampleTemperature(footPos.x, footPos.z);
-	//float moist = WorldGen::SampleMoisture(footPos.x, footPos.z);
-
-
-	// this debug info freezes release builds often
-	// 
-	//worldPosLabel->SetText(
-	//	footPos.ToString() + "\n"
-	//	+ chunkIndex.ToString() + "\n"
-	//	+ Vector3Int(FloorMod(camBlockPos.x, CHUNKSIZE_X), FloorMod(camBlockPos.y, CHUNKSIZE_Y), FloorMod(camBlockPos.z, CHUNKSIZE_Z)).ToString() + "\n"
-	//	+ to_string(chunkManager->GetBlockLightAtWorldPos(footPos)) + "\n"
-	//	+ to_string(chunkManager->GetSkyLightAtWorldPos(footPos)) + "\n"
-	//	+ "T: " + to_string(temp) + "\n"
-	//	+ "M: " + to_string(moist) + "\n"
-	//	+ "B: " + Biome::Get(temp, moist).name + "\n"
-	//);
-//#else
 	Vector3Int camBlockPos = Vector3Int::FloorToInt(transform.position);
 	Vector3Int footPos = camBlockPos - Vector3Int(0, 1, 0);
 
-	float tempSample = WorldGen::SampleTemperature(footPos.x, footPos.z);
-	float moistSample = WorldGen::SampleMoisture(footPos.x, footPos.z);
-	float oceanSample = WorldGen::SampleOceanMap(footPos.x, footPos.z);
-	float biomeConfidence = -1.f;
-	float steepness = WorldGen::SampleWorldSteepness(footPos.x, footPos.z);
-
-	const Biome& biome = Biome::Get(tempSample, moistSample, oceanSample, &biomeConfidence);
-
-
 	worldPosLabel->SetText(
-		footPos.ToString()+"\n"
-		+"temp: "+to_string(tempSample)+"\n"
-		+"moist: "+to_string(moistSample) + "\n"
-		//+"ocean: "+to_string(oceanSample) + "\n"
-		+"biome: "+biome.name + "\n"
-		+"confidence: "+to_string(biomeConfidence) + "\n"
-		+"steepness: "+to_string(steepness) + "\n"
+		footPos.ToString() + "\n"
 	);
-//#endif
 
 	// KEEP AT END
+
+	Vector3 targetBobOffset = { 0.f, 0.f, 0.f };
+	const float frequency = 2.2f;
+	const float amplitude = 0.175f;
+	const float bobMatchSpeed = 12.f;
+	const float verticalVelocityInfluence = 0.025f;
+
+	float movementInfluence = (moveAxis.magnitude() / dTime / walkingSpeed);
+
+	targetBobOffset.y = ((BobFunction(movementInfluence * engine->GetTotalElapsedTime() * frequency) - 0.5f) * amplitude);
+	targetBobOffset.y += velocity.y * verticalVelocityInfluence;
+
+	bobOffset = Vector3::vecLerp(bobOffset, targetBobOffset, dTime * bobMatchSpeed);
+
+	Vector3 targetItemOffset = { .7f, -0.3f, 0.5f };
+	targetItemOffset.x -= ((sinf(movementInfluence * engine->GetTotalElapsedTime() * frequency * 3.141592654f) - 0.5f) * 0.03f);
+	
+	_pHeldItem->transform.position = Vector3::vecLerp(_pHeldItem->transform.position, targetItemOffset, dTime * bobMatchSpeed);
+
+	Vector3 targetRotation = {
+		input.y * 0.05f,
+		0.f,
+		-input.x * 0.05f
+	};
+
+	rotOffset = Vector3::vecLerp(rotOffset, targetRotation, dTime* bobMatchSpeed);
+
 	camera->transform = transform;
+	camera->transform.position += bobOffset;
+	camera->transform.rotation += rotOffset;
+
 	insideBlock->transform = transform;
 
 	BlockID currentHeadBlockID = chunkManager->GetBlockAtWorldPos(camBlockPos);

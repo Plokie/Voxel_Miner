@@ -199,7 +199,12 @@ float WorldGen::SampleWorldHeight(const int& x, const int& z)
 		privateHeight = basicHeight / 3.0f;
 		break;
 	case NOISETYPE_PLATEAU: {
-		privateHeight = (float)fmin(ceil((basicHeight * ((basicHeight > 0) ? 7.f : -2.f)) / 7.0f) * 7.0f, 78);
+		float height = round((basicHeight * ((basicHeight > 0) ? 7.f : -2.f)) / 7.0f);
+
+		privateHeight = (float)fmin(((height > 5) ? (height * 7.f)-16 : height * 4.0f), 78);
+		//if(privateHeight > 23) privateHeight *= 1.75f;
+		//if(privateHeight > 23) privateHeight += 3;
+
 	}	
 		break;
 	}

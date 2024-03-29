@@ -253,6 +253,18 @@ void ChunkManager::Thread() {
 
 					renderedHash[targetChunk]=true;
 
+					if(Input::IsKeyHeld('N')) {
+						for(auto& kvp : chunkMap) {
+							if(kvp.second == nullptr || kvp.second->pendingDeletion || !kvp.second->hasRanStartFunction) {
+								continue;
+							}
+
+							auto findVisited = renderedHash.find(kvp.second->indexPosition);
+							kvp.second->doRender = findVisited != renderedHash.end();
+						}
+						__nop();
+					}
+
 					for(const Vector3& offset : neighbourOffsets) {
 						Vector3Int nextChunk = targetChunk + offset;
 						Vector3 direction = Vector3(Vector3(nextChunk.x, nextChunk.y, nextChunk.z) - Vector3(camIndex.x, camIndex.y, camIndex.z)).normalized();
