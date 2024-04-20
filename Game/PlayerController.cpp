@@ -560,7 +560,7 @@ void PlayerController::Update(float dTime)
 	camera->transform.position += bobOffset;
 	camera->transform.rotation += rotOffset;
 
-	insideBlock->transform = transform;
+	insideBlock->transform = camera->transform;
 
 	BlockID currentHeadBlockID = chunkManager->GetBlockAtWorldPos(camBlockPos);
 	Block currentHeadBlock = BlockDef::GetDef(currentHeadBlockID);

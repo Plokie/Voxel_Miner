@@ -198,7 +198,7 @@
     <ClCompile Include="Game\PauseScreen.cpp" />
     <ClCompile Include="Game\PlayerData.cpp" />
     <ClCompile Include="Game\TableInterface.cpp" />
-    <ClCompile Include="Game\VoxelLighting.cpp" />
+    <ClCompile Include="Game\VoxelLightingOld.cpp" />
     <ClCompile Include="Game\PlayerController.cpp" />
     <ClCompile Include="Game\TitleScreen.cpp" />
     <ClCompile Include="Game\VoxelRaycast.cpp" />
@@ -269,7 +269,7 @@
     <ClInclude Include="Game\PauseScreen.h" />
     <ClInclude Include="Game\PlayerData.h" />
     <ClInclude Include="Game\TableInterface.h" />
-    <ClInclude Include="Game\VoxelLighting.h" />
+    <ClInclude Include="Game\VoxelLightingOld.h" />
     <ClInclude Include="Game\PlayerController.h" />
     <ClInclude Include="Game\ShardGen.h" />
     <ClInclude Include="Game\TitleScreen.h" />

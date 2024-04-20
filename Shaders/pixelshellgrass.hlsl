@@ -78,7 +78,7 @@ float4 main(PS_INPUT input) : SV_TARGET
     //todo: implement frosty grass in areas
     //return pixCol + (heightRatio * 0.25f); // this actually looks really cool for frosty grass
     
-    float4 outCol = pixCol * brightness * shadowFac;
+    float4 outCol = pixCol * brightness * shadowFac * length(input.normal);
     outCol.a = 1.0f;
     
     return outCol;

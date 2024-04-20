@@ -24,14 +24,11 @@
 constexpr int minLoadCount = CHUNKLOAD_AREA_X * CHUNKLOAD_AREA_Z * (CHUNKLOAD_FIXED_PY + CHUNKLOAD_FIXED_NY);
 
 class Chunk;
-class VoxelLighting;
 
 class ChunkManager : public Object3D {
 private:
 	Engine* engine = nullptr;
 	Transform* camTrans = nullptr;
-
-	VoxelLighting* lighting = nullptr;
 
 	ThreadPool* threadPool = nullptr;
 
@@ -88,8 +85,6 @@ public:
 	map<tuple<int, int, int>, Chunk*>& GetChunkMap() {
 		return chunkMap;
 	}
-
-	VoxelLighting* GetLighting() { return lighting; }
 
 	// long name because really shouldnt use this in most cases, but it /does/ have its use
 	static Vector3Int ChunkFloorPosForPositionCalculation(Vector3 worldPosition);

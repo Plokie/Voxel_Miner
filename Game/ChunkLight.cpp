@@ -1,22 +1,34 @@
 #include "Chunk.h"
 
 #include "ChunkManager.h"
-#include "VoxelLighting.h"
+//#include "VoxelLighting.h"
 
 void Chunk::InitSkyLight() {
-	for(int x = 0; x < CHUNKSIZE_X; x++) {
-		for(int y = 0; y < CHUNKSIZE_Y; y++) {
-			for(int z = 0; z < CHUNKSIZE_Z; z++) {
-				SetSkyLight(x, y, z, 15);
-			}
-		}
-	}
+	//for(int x = 0; x < CHUNKSIZE_X; x++) {
+	//	for(int y = 0; y < CHUNKSIZE_Y; y++) {
+	//		for(int z = 0; z < CHUNKSIZE_Z; z++) {
+	//			SetSkyLight(x, y, z, 15);
+	//		}
+	//	}
+	//}
+
+	//for(int x = 0; x < CHUNKSIZE_X; x++) {
+	//	for(int y = 0; y < CHUNKSIZE_Y; y++) {
+	//		for(int z = 0; z < CHUNKSIZE_Z; z++) {
+	//			SetBlockLight(x, y, z, 2);
+	//		}
+	//	}
+	//}
 
 
 	//if(indexPosition.y < -1) return; // meh
 
 	//if(indexPosition.y == CHUNKLOAD_FIXED_PY) {
-
+	//	for(int x = 0; x < CHUNKSIZE_X; x++) {
+	//		for(int z=0; z<CHUNKSIZE_Z; z++) {
+	//			SetSkyLight(0, CHUNKSIZE_Y-1, 0, )
+	//		}
+	//	}
 	//}
 
 	//Chunk* top = chunkManager->GetChunk(Vector3Int(indexPosition.x, CHUNKLOAD_FIXED_PY, indexPosition.z));
@@ -114,7 +126,150 @@ void Chunk::InitSkyLight() {
 	//		}
 	//	}
 	//}
+
+	if(indexPosition.y == CHUNKLOAD_FIXED_PY) {
+		for(int x = 0; x < CHUNKSIZE_X; x++) {
+			for(int y = 0; y < CHUNKSIZE_Y; y++) {
+				for(int z=0; z<CHUNKSIZE_Z; z++) {
+					BlockID block = blockData[x][y][z];
+					const Block& blockDef = BlockDef::GetDef(block);
+
+					//SetBlockLight(x,y,z,blockDef.LightValue());
+					SetBlockLight(x,y,z,15);
+				}
+			}
+		}
+	}
+
+	//RecalculateBlockLighting(false);
 }
+
+const Vector3Int neighbourIndices[] = {
+	{1, 0, 0},
+	{-1, 0, 0},
+	{0, 1, 0},
+	{0, -1, 0},
+	{0, 0, 1},
+	{0, 0, -1},
+};
+
+//const Vector3Int totalNeighbourIndices[] = {
+//	{1, 0, 0},
+//};
+
+void Chunk::RecalculateBlockLighting(bool rootChunk) {
+	for(int x = 0; x < CHUNKSIZE_X; x++) {
+		for(int y = 0; y < CHUNKSIZE_Y; y++) {
+			for(int z = 0; z < CHUNKSIZE_Z; z++) {
+				//SetBlockLight(x, y, z, 0);
+				int light = GetBlockLight(x, y, z);
+				
+				BlockID block = GetBlockIncludingNeighbours(x, y, z);
+				const Block& blockDef = BlockDef::GetDef(block);
+
+				if(!blockDef.HasTag(BT_DRAW_CLIP | BT_DRAW_TRANSPARENT)) continue;
+
+				for(const Vector3Int& offset : neighbourIndices) {
+					Vector3Int pos = Vector3Int(x, y, z) + offset;
+
+					BlockID nblock = GetBlockIncludingNeighbours(pos.x, pos.y, pos.z);
+					const Block& nblockDef = BlockDef::GetDef(block);
+
+					if(!nblockDef.HasTag(BT_DRAW_CLIP | BT_DRAW_TRANSPARENT)) continue;
+
+					int neighbourLight = GetBlockLightIncludingNeighbours(pos.x, pos.y, pos.z);
+					if(fabs(light - neighbourLight) > 1) {
+						//Chunk* actualOwner;
+						//Vector3Int correctedIndex;
+						//CorrectIndexForNeighbours(pos, &actualOwner, &correctedIndex);
+						
+						lightBlockQueue.emplace(pos, this);
+
+						//lightBlockQueue.emplace(pos, this);
+					}
+
+					//Vector3Int pos = Vector3Int(x, y, z) + offset;
+
+
+				}
+			}
+		}
+	}
+
+	//map<Chunk*, bool> hitNeighbours = {};
+
+	while(!lightBlockQueue.empty()) {
+		LightNode& node = lightBlockQueue.front();
+
+		Vector3Int index = node.index;
+		//Chunk* owner = node.owner;
+
+		lightBlockQueue.pop();
+
+		if(index.x < 0 || index.y < 0 || index.z < 0 || index.x >= CHUNKSIZE_X || index.y >= CHUNKSIZE_Y || index.z >= CHUNKSIZE_Z) continue;
+
+		int light = GetBlockLightIncludingNeighbours(index.x, index.y, index.z);
+
+		for(const Vector3Int& offset : neighbourIndices) {
+			Vector3Int pos = index + offset;
+			
+			BlockID block = GetBlockIncludingNeighbours(pos.x, pos.y, pos.z);
+			const Block& blockDef = BlockDef::GetDef(block);
+
+			int currentLight = GetBlockLightIncludingNeighbours(pos.x, pos.y, pos.z); 
+
+			if(blockDef.HasTag(BT_DRAW_CLIP | BT_DRAW_TRANSPARENT) && currentLight+2<light) {
+				Chunk* newOwner;
+				Vector3Int newIndex;
+				CorrectIndexForNeighbours(pos, &newOwner, &newIndex);
+				
+				if(newOwner == this) {
+					SetBlockLightIncludingNeighbours(pos.x, pos.y, pos.z, light - 1);
+					lightBlockQueue.emplace(pos, this);
+				}
+				//else {
+				//	hitNeighbours[newOwner] = true;
+				//}
+			}
+		}
+
+	}
+
+	if(rootChunk) {
+		for(int ox = -1; ox < 2; ox++) {
+			for(int oy = -1; oy < 2; oy++) {
+				for(int oz = -1; oz < 2; oz++) {
+					if(ox == 0 && oy == 0 && oz == 0) continue;
+
+					Vector3Int offset = { ox,oy,oz };
+					Chunk* neighbour = chunkManager->GetChunk(indexPosition + offset);
+					if(neighbour && neighbour->hasRanStartFunction && !neighbour->pendingDeletion) {
+						neighbour->RecalculateBlockLighting(false);
+						chunkManager->QueueRegen(indexPosition + offset);
+					}
+				}
+			}
+		}
+		//for(const Vector3Int& offset : neighbourIndices) {
+		//	Chunk* neighbour = chunkManager->GetChunk(indexPosition + offset);
+		//	if(neighbour && neighbour->hasRanStartFunction && !neighbour->pendingDeletion) {
+		//		neighbour->RecalculateBlockLighting(false);
+		//	}
+		//}
+		//for(const auto& kvp : hitNeighbours) {
+		//	if(kvp.first && kvp.first->hasRanStartFunction && !kvp.first->pendingDeletion) {
+		//		kvp.first->RecalculateBlockLighting(false);
+		//	}
+		//}
+	}
+
+}
+
+void Chunk::RecalculateSkyLighting()
+{
+}
+
+
 
 int Chunk::GetBlockLight(const int& x, const int& y, const int& z)
 {
@@ -149,7 +304,8 @@ void Chunk::SetBlockLight(const int& x, const int& y, const int& z, const int& v
 {
 	this->lightLevel[x][y][z] = (this->lightLevel[x][y][z] & 0xF0) | val;
 
-	chunkManager->GetLighting()->QueueBlockLight(LightNode(x, y, z, this));
+	//chunkManager->GetLighting()->QueueBlockLight(LightNode(x, y, z, this));
+	//lightBlockQueue.emplace(Vector3Int(x,y,z), this);
 }
 
 void Chunk::SetBlockLightNoUpdate(const int& x, const int& y, const int& z, const int& val) {

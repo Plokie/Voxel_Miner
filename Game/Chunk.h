@@ -11,6 +11,15 @@
 
 class ChunkManager;
 class BlockData;
+class Chunk;
+
+struct LightNode {
+	Vector3Int index;
+	Chunk* owner;
+
+	LightNode(){}
+	LightNode(Vector3Int index, Chunk* owner) : index(index), owner(owner){}
+};
 
 class Chunk : public Object3D {
 public:
@@ -23,6 +32,9 @@ private:
 
 	unsigned int fillIndices[CHUNKSIZE_X][CHUNKSIZE_Y][CHUNKSIZE_Z] = {};
 	unsigned int currentFillindex = 1;
+
+	queue<LightNode> lightBlockQueue = {};
+	queue<LightNode> lightSunQueue = {};
 
 
 	const float secondsPerTick = 0.05f;
@@ -78,6 +90,9 @@ public:
 	void SetSkyLight(const int& x, const int& y, const int& z, const int& val, bool update=true);
 
 	void InitSkyLight();
+
+	void RecalculateBlockLighting(bool rootChunk=true);
+	void RecalculateSkyLighting();
 
 
 	// World 

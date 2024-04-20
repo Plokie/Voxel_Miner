@@ -37,7 +37,7 @@ void Chunk::CorrectIndexForNeighbours(const int& x, const int& y, const int& z, 
 	if(x < 0 || x>CHUNKSIZE_X - 1 || y < 0 || y>CHUNKSIZE_Y - 1 || z < 0 || z>CHUNKSIZE_Z - 1) // sample from another chunk
 	{
 		Vector3Int chunkPosition = Vector3Int(indexPosition.x * CHUNKSIZE_X, indexPosition.y * CHUNKSIZE_Y, indexPosition.z * CHUNKSIZE_Z);
-		tuple<int, int, int> chunkIndex = ChunkManager::ToChunkIndexPositionTuple(x, y, z);
+		tuple<int, int, int> chunkIndex = ChunkManager::ToChunkIndexPositionTuple(chunkPosition.x + x, chunkPosition.y + y, chunkPosition.z + z);
 		if(chunkManager->GetChunkMap().find(chunkIndex) != chunkManager->GetChunkMap().end()) {
 			*outIndex = Vector3Int(FloorMod(x + chunkPosition.x, CHUNKSIZE_X), FloorMod(y + chunkPosition.y, CHUNKSIZE_Y), FloorMod(z + chunkPosition.z, CHUNKSIZE_Z));
 			*outChunk = chunkManager->GetChunk(chunkIndex);
