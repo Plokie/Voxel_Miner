@@ -6,6 +6,8 @@
 #include "ChunkDatabase.h"
 #include "../Engine/ThreadUtil.h"
 
+#include <tuple>
+
 #include "BlockData.h"
 
 bool ChunkManager::CanServiceQueue(GENERATION_PHASE phase)
@@ -56,13 +58,128 @@ Vector3Int ChunkManager::ChunkFloorPosForPositionCalculation(Vector3 worldPositi
 void ChunkManager::Update(float dTime) {
 
 	ChunkDatabase::Get()->Update(dTime); // Handles autosaving
+
+	Vector3Int camIndex = ChunkFloorPosForPositionCalculation(cam->transform.position);
+
+
+	//auto findIt = chunkMap.find(camIndex);
+
+	//map<tuple<int, int, int>, bool> renderedHash = {};
+	//renderedHash[camIndex];
+
+	//if(findIt != chunkMap.end()) {
+	//	
+	//	Vector3 samplePoint = cam->transform.position - (cam->transform.forward() * 16.f);
+	//	Vector3Int behindChunk = ChunkFloorPosForPositionCalculation(samplePoint);
+
+	//	auto findMap = findIt->second->visibilityGraph.find(behindChunk);
+	//	if(findMap != findIt->second->visibilityGraph.end()) {
+
+	//		for(const auto& pair : findMap->second) {
+	//			renderedHash[pair.first];
+	//		}
+	//	}
+	//	
+	//	/*for(const auto& pairMapHash : findIt->second->visibilityGraph) {
+	//		
+	//	}*/
+
+	//}
+
+	//for(auto& kvp : chunkMap) {
+	//	if(kvp.second == nullptr || kvp.second->pendingDeletion || !kvp.second->hasRanStartFunction) {
+	//		continue;
+	//	}
+
+	//	auto findVisited = renderedHash.find(kvp.second->indexPosition);
+	//	kvp.second->doRender = findVisited != renderedHash.end();
+
+	//}
+	//return;
+
+
+
+	// https://tomcc.github.io/2014/08/31/visibility-2.html
+	//	 navigate visiblity graphs
+	
+
+	map<tuple<int, int, int>, bool> renderedHash = {};
+
+	const Vector3Int neighbourOffsets[] = {
+		Vector3Int(1,0,0),
+		Vector3Int(-1,0,0),
+		Vector3Int(0,0,1),
+		Vector3Int(0,0,-1),
+		Vector3Int(0,1,0),
+		Vector3Int(0,-1,0),
+	};
+
+	//queue of steps { chunk we want to visit : chunk we came from }
+	queue<pair<Vector3Int, Vector3Int>> bfs;
+	bfs.push({ camIndex, camIndex });
+
+	while(!bfs.empty()) {
+		pair<Vector3Int, Vector3Int> front = bfs.front();
+		bfs.pop();
+		Vector3Int& targetChunk = front.first;
+		Vector3Int& previousChunk = front.second;
+
+		Chunk* pTargetChunk;
+		auto findIt = chunkMap.find(targetChunk);
+		if(findIt == chunkMap.end()) {
+			continue;
+		}
+		pTargetChunk = findIt->second;
+
+		renderedHash[targetChunk] = true;
+
+		//Vector3 delta = ((Vector3)(targetChunk - previousChunk)).normalized();
+
+		for(const Vector3Int& offset : neighbourOffsets) {
+			Vector3Int nextIndex = (targetChunk + offset);
+
+			Vector3 delta = ((Vector3)(nextIndex - previousChunk)).normalized();
+
+			float dot = Vector3::dot(offset, cam->transform.forward());
+
+			if(dot > 0.0f) {
+					
+
+				if(pTargetChunk->IsChunkVisibleFromChunk(nextIndex, previousChunk)) {
+					auto findIt = chunkMap.find(nextIndex);
+					if(findIt != chunkMap.end()) {
+						
+						if(cam->IsAABBInFrustum(findIt->second->cullBox)) {
+							
+							if(renderedHash.find(nextIndex) == renderedHash.end()) {
+								bfs.push({nextIndex, targetChunk});
+							}
+						}
+
+					}
+				}
+			}
+		}
+
+		
+	}
+
+	for(auto& kvp : chunkMap) {
+		if(kvp.second == nullptr || kvp.second->pendingDeletion || !kvp.second->hasRanStartFunction) {
+			continue;
+		}
+
+		auto findVisited = renderedHash.find(kvp.second->indexPosition);
+		kvp.second->doRender = findVisited != renderedHash.end();
+
+	}
 }
 
 void ChunkManager::Thread() {
-	Vector3Int prevCamIndex = ChunkFloorPosForPositionCalculation(camTrans->position);
+	Vector3Int prevCamIndex = ChunkFloorPosForPositionCalculation(cam->transform.position);
 	bool forceRegenerateVisibility = false;
 	while(isRunning) {
-		Vector3Int camIndex = ChunkFloorPosForPositionCalculation(camTrans->position);
+		Vector3Int camIndex = ChunkFloorPosForPositionCalculation(cam->transform.position);
 
 		//if(newChunkQueue.empty())
 		for(int y = 1 - CHUNKLOAD_FIXED_NY; y < CHUNKLOAD_FIXED_PY + 1; y++) {
@@ -215,96 +332,97 @@ void ChunkManager::Thread() {
 		//
 
 
-		// https://tomcc.github.io/2014/08/31/visibility-2.html
-		// navigate visiblity graphs
-		if(prevCamIndex != camIndex || forceRegenerateVisibility) {
+		
+		 
+		
+		//if(prevCamIndex != camIndex || forceRegenerateVisibility) {
 
-			const Vector3Int neighbourOffsets[] = {
-				Vector3Int(1,0,0),
-				Vector3Int(-1,0,0),
-				Vector3Int(0,0,1),
-				Vector3Int(0,0,-1),
-				Vector3Int(0,1,0),
-				Vector3Int(0,-1,0),
-			};
+		//	const Vector3Int neighbourOffsets[] = {
+		//		Vector3Int(1,0,0),
+		//		Vector3Int(-1,0,0),
+		//		Vector3Int(0,0,1),
+		//		Vector3Int(0,0,-1),
+		//		Vector3Int(0,1,0),
+		//		Vector3Int(0,-1,0),
+		//	};
 
-			map<tuple<int, int, int>, bool> renderedHash = {};
+		//	map<tuple<int, int, int>, bool> renderedHash = {};
 
-			//Vector3 forward = camTrans->forward();
-			
-			for(const Vector3& forward : neighbourOffsets) {
-				//queue of steps { chunk we want to visit : chunk we came from }
-				queue<pair<Vector3Int, Vector3Int>> bfs;
+		//	//Vector3 forward = camTrans->forward();
+		//	
+		//	for(const Vector3& forward : neighbourOffsets) {
+		//		//queue of steps { chunk we want to visit : chunk we came from }
+		//		queue<pair<Vector3Int, Vector3Int>> bfs;
 
-				bfs.push({ camIndex, camIndex });
+		//		bfs.push({ camIndex, camIndex });
 
-				while(!bfs.empty()) {
-					pair<Vector3Int, Vector3Int> front = bfs.front();
-					bfs.pop();
-					Vector3Int& targetChunk = front.first;
-					Vector3Int& previousChunk = front.second;
+		//		while(!bfs.empty()) {
+		//			pair<Vector3Int, Vector3Int> front = bfs.front();
+		//			bfs.pop();
+		//			Vector3Int& targetChunk = front.first;
+		//			Vector3Int& previousChunk = front.second;
 
-					if(targetChunk != camIndex ) {
-					//if(Vector3::Distance(targetChunk, camIndex) > 2.f) {
-						auto find = renderedHash.find(targetChunk);
-						if(find != renderedHash.end()) continue;
-					}
+		//			if(targetChunk != camIndex ) {
+		//			//if(Vector3::Distance(targetChunk, camIndex) > 2.f) {
+		//				auto find = renderedHash.find(targetChunk);
+		//				if(find != renderedHash.end()) continue;
+		//			}
 
-					renderedHash[targetChunk]=true;
+		//			renderedHash[targetChunk]=true;
 
-					if(Input::IsKeyHeld('N')) {
-						for(auto& kvp : chunkMap) {
-							if(kvp.second == nullptr || kvp.second->pendingDeletion || !kvp.second->hasRanStartFunction) {
-								continue;
-							}
+		//			if(Input::IsKeyHeld('N')) {
+		//				for(auto& kvp : chunkMap) {
+		//					if(kvp.second == nullptr || kvp.second->pendingDeletion || !kvp.second->hasRanStartFunction) {
+		//						continue;
+		//					}
 
-							auto findVisited = renderedHash.find(kvp.second->indexPosition);
-							kvp.second->doRender = findVisited != renderedHash.end();
-						}
-						__nop();
-					}
+		//					auto findVisited = renderedHash.find(kvp.second->indexPosition);
+		//					kvp.second->doRender = findVisited != renderedHash.end();
+		//				}
+		//				__nop();
+		//			}
 
-					for(const Vector3& offset : neighbourOffsets) {
-						Vector3Int nextChunk = targetChunk + offset;
-						Vector3 direction = Vector3(Vector3(nextChunk.x, nextChunk.y, nextChunk.z) - Vector3(camIndex.x, camIndex.y, camIndex.z)).normalized();
-						
-						//float OdotV = Vector3::dot(offset, forward);
-						float OdotV = Vector3::dot(direction, forward);
+		//			for(const Vector3& offset : neighbourOffsets) {
+		//				Vector3Int nextChunk = targetChunk + offset;
+		//				Vector3 direction = Vector3(Vector3(nextChunk.x, nextChunk.y, nextChunk.z) - Vector3(camIndex.x, camIndex.y, camIndex.z)).normalized();
+		//				
+		//				//float OdotV = Vector3::dot(offset, forward);
+		//				float OdotV = Vector3::dot(direction, forward);
 
-						if(OdotV > 0.501f) { // 1.
-
-
-							Chunk* pTargetChunk = nullptr;
-							auto findChunk = chunkMap.find(targetChunk);
-							if(findChunk != chunkMap.end()) {
-								pTargetChunk = findChunk->second;
-
-								// skip incomplete chunks
-								if(pTargetChunk == nullptr || pTargetChunk->pendingDeletion || !pTargetChunk->hasRanStartFunction) continue;
+		//				if(OdotV > 0.501f) { // 1.
 
 
-								if(pTargetChunk->IsChunkVisibleFromChunk(nextChunk, previousChunk)) { //2.
-									
-									
+		//					Chunk* pTargetChunk = nullptr;
+		//					auto findChunk = chunkMap.find(targetChunk);
+		//					if(findChunk != chunkMap.end()) {
+		//						pTargetChunk = findChunk->second;
 
-									bfs.push({ targetChunk + offset, targetChunk });
-								}
-							}
-						}
-					}
-				}
-			}
+		//						// skip incomplete chunks
+		//						if(pTargetChunk == nullptr || pTargetChunk->pendingDeletion || !pTargetChunk->hasRanStartFunction) continue;
 
 
-			for(auto& kvp : chunkMap) {
-				if(kvp.second == nullptr || kvp.second->pendingDeletion || !kvp.second->hasRanStartFunction) {
-					continue;
-				}
+		//						if(pTargetChunk->IsChunkVisibleFromChunk(nextChunk, previousChunk)) { //2.
+		//							
+		//							
 
-				auto findVisited = renderedHash.find(kvp.second->indexPosition);
-				kvp.second->doRender = findVisited != renderedHash.end();
-			}
-		}
+		//							bfs.push({ targetChunk + offset, targetChunk });
+		//						}
+		//					}
+		//				}
+		//			}
+		//		}
+		//	}
+
+
+		//	for(auto& kvp : chunkMap) {
+		//		if(kvp.second == nullptr || kvp.second->pendingDeletion || !kvp.second->hasRanStartFunction) {
+		//			continue;
+		//		}
+
+		//		auto findVisited = renderedHash.find(kvp.second->indexPosition);
+		//		kvp.second->doRender = findVisited != renderedHash.end();
+		//	}
+		//}
 
 #if 0
 		// Chunk visibility occlusion recalculation
@@ -413,7 +531,7 @@ void ChunkManager::Start()
 	threadPool->Init();
 
 	engine = Engine::Get();
-	camTrans = &Graphics::Get()->camera.transform;
+	cam = &Graphics::Get()->camera;
 
 	//chnkMgrThread = thread(ChunkManager::Thread, this);
 	chnkMgrThread.emplace_back([&] {

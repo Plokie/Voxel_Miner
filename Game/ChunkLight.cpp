@@ -127,7 +127,7 @@ void Chunk::InitSkyLight() {
 	//	}
 	//}
 
-	if(indexPosition.y == CHUNKLOAD_FIXED_PY) {
+	//if(indexPosition.y == CHUNKLOAD_FIXED_PY) {
 		for(int x = 0; x < CHUNKSIZE_X; x++) {
 			for(int y = 0; y < CHUNKSIZE_Y; y++) {
 				for(int z=0; z<CHUNKSIZE_Z; z++) {
@@ -136,10 +136,11 @@ void Chunk::InitSkyLight() {
 
 					//SetBlockLight(x,y,z,blockDef.LightValue());
 					SetBlockLight(x,y,z,15);
+					SetSkyLight(x, y, z, 15);
 				}
 			}
 		}
-	}
+	//}
 
 	//RecalculateBlockLighting(false);
 }
@@ -158,6 +159,7 @@ const Vector3Int neighbourIndices[] = {
 //};
 
 void Chunk::RecalculateBlockLighting(bool rootChunk) {
+	return;
 	for(int x = 0; x < CHUNKSIZE_X; x++) {
 		for(int y = 0; y < CHUNKSIZE_Y; y++) {
 			for(int z = 0; z < CHUNKSIZE_Z; z++) {

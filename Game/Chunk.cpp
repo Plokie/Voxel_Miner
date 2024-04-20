@@ -103,46 +103,52 @@ void Chunk::TryFloodFillGraph(int x, int y, int z) {
 		// populate chunkNeighboursMet map with keys of chunkIndices of neighbouring chunks
 		// we met on this flood fill
 		while(!fillQueue.empty()) {
-			tuple<int, int, int> currentIndex = fillQueue.front();
-			Vector3Int currentIndexv3 = currentIndex;
+			Vector3Int currentIndex = fillQueue.front();
+			//Vector3Int currentIndexv3 = currentIndex;
 
-			const Block& def = BlockDef::GetDef(blockData[currentIndexv3.x][currentIndexv3.y][currentIndexv3.z]);
+			const Block& def = BlockDef::GetDef(blockData[currentIndex.x][currentIndex.y][currentIndex.z]);
 
-			if(fillIndices[currentIndexv3.x][currentIndexv3.y][currentIndexv3.z] == 0 && def.HasTag(BT_DRAW_CLIP | BT_DRAW_TRANSPARENT)) { // If this index is unvisited
-				fillIndices[currentIndexv3.x][currentIndexv3.y][currentIndexv3.z] = currentFillindex;
+			if(fillIndices[currentIndex.x][currentIndex.y][currentIndex.z] == 0 && def.HasTag(BT_DRAW_CLIP | BT_DRAW_TRANSPARENT)) { // If this index is unvisited
+				fillIndices[currentIndex.x][currentIndex.y][currentIndex.z] = currentFillindex;
 
-				if(currentIndexv3.x <= 0) {
+				if(currentIndex.x <= 0) {
 					chunkNeighboursMet[indexPosition + Vector3Int(-1, 0, 0)] = 0;
+					fillQueue.push(currentIndex + Vector3Int(1, 0, 0));
 				}
 				else {
-					fillQueue.push(currentIndexv3 + Vector3Int(-1, 0, 0));
-					if(currentIndexv3.x >= CHUNKSIZE_X - 1) {
+					fillQueue.push(currentIndex + Vector3Int(-1, 0, 0));
+
+					if(currentIndex.x >= CHUNKSIZE_X - 1) {
 						chunkNeighboursMet[indexPosition + Vector3Int(1, 0, 0)] = 0;
 					}
-					else fillQueue.push(currentIndexv3 + Vector3Int(1, 0, 0));
+					else fillQueue.push(currentIndex + Vector3Int(1, 0, 0));
 
 				}
 
-				if(currentIndexv3.y <= 0) {
+				if(currentIndex.y <= 0) {
 					chunkNeighboursMet[indexPosition + Vector3Int(0, -1, 0)] = 0;
+					fillQueue.push(currentIndex + Vector3Int(0, 1, 0));
 				}
 				else {
-					fillQueue.push(currentIndexv3 + Vector3Int(0, -1, 0));
-					if(currentIndexv3.y >= CHUNKSIZE_Y - 1) {
+					fillQueue.push(currentIndex + Vector3Int(0, -1, 0));
+
+					if(currentIndex.y >= CHUNKSIZE_Y - 1) {
 						chunkNeighboursMet[indexPosition + Vector3Int(0, 1, 0)] = 0;
 					}
-					else fillQueue.push(currentIndexv3 + Vector3Int(0, 1, 0));
+					else fillQueue.push(currentIndex + Vector3Int(0, 1, 0));
 				}
 
-				if(currentIndexv3.z <= 0) {
+				if(currentIndex.z <= 0) {
 					chunkNeighboursMet[indexPosition + Vector3Int(0, 0, -1)] = 0;
+					fillQueue.push(currentIndex + Vector3Int(0, 0, 1));
 				}
 				else {
-					fillQueue.push(currentIndexv3 + Vector3Int(0, 0, -1));
-					if(currentIndexv3.z >= CHUNKSIZE_Z - 1) {
+					fillQueue.push(currentIndex + Vector3Int(0, 0, -1));
+
+					if(currentIndex.z >= CHUNKSIZE_Z - 1) {
 						chunkNeighboursMet[indexPosition + Vector3Int(0, 0, 1)] = 0;
 					}
-					else fillQueue.push(currentIndexv3 + Vector3Int(0, 0, 1));
+					else fillQueue.push(currentIndex + Vector3Int(0, 0, 1));
 				}
 			}
 			

@@ -408,7 +408,7 @@ void PlayerController::Update(float dTime)
 	}
 
 	// PLAYER RAYCAST
-	VoxelRay ray(transform.position, transform.forward());
+	VoxelRay ray(camera->transform.position, camera->transform.forward());
 
 	Vector3Int lookHitPoint = Vector3Int(0, 0, 0);
 	Vector3Int lookHitNormal;

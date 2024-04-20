@@ -24,11 +24,13 @@
 constexpr int minLoadCount = CHUNKLOAD_AREA_X * CHUNKLOAD_AREA_Z * (CHUNKLOAD_FIXED_PY + CHUNKLOAD_FIXED_NY);
 
 class Chunk;
+class Camera;
 
 class ChunkManager : public Object3D {
 private:
 	Engine* engine = nullptr;
-	Transform* camTrans = nullptr;
+	//Transform* camTrans = nullptr;
+	Camera* cam = nullptr;
 
 	ThreadPool* threadPool = nullptr;
 
