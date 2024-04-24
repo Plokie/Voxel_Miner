@@ -2,9 +2,7 @@
 #  Voxel Miner 
 ### A C++ DX11 Minecraft clone
 ## Info
-This was originally started as  university project, but I kept working on it and decided to make the code public. There's probably some iffy code in places but I'm overall pretty happy with it!
-
-(P.S. The entire lighting system is old and bad and doesn't work, it's overdue a complete remake. Try to ignore it for now :p)
+This was originally started as a university project, but I kept working on it and decided to make the code public. There's probably some iffy code in places but I'm overall pretty happy with it!
 
 ## Todo / Roadmap
 You can see the roadmap at https://trello.com/b/w3MwgsMt/programming
