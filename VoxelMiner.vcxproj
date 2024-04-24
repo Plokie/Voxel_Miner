@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Audio\Audio.cpp" />
+    <ClCompile Include="Engine\Scripting.cpp" />
     <ClCompile Include="Game\Biome.cpp" />
     <ClCompile Include="Game\BlockShape.cpp" />
     <ClCompile Include="Game\CreativeUI.cpp" />
@@ -220,6 +221,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Audio\Audio.h" />
+    <ClInclude Include="Engine\Scripting.h" />
     <ClInclude Include="Game\Biome.h" />
     <ClInclude Include="Game\BlockShape.h" />
     <ClInclude Include="Graphics\DefaultCbuffers.h" />
