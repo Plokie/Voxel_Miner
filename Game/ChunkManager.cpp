@@ -61,7 +61,7 @@ void ChunkManager::Update(float dTime) {
 
 	Vector3Int camIndex = ChunkFloorPosForPositionCalculation(cam->transform.position);
 
-
+	return;
 	//auto findIt = chunkMap.find(camIndex);
 
 	//map<tuple<int, int, int>, bool> renderedHash = {};
@@ -335,94 +335,94 @@ void ChunkManager::Thread() {
 		
 		 
 		
-		//if(prevCamIndex != camIndex || forceRegenerateVisibility) {
+		if(prevCamIndex != camIndex || forceRegenerateVisibility) {
 
-		//	const Vector3Int neighbourOffsets[] = {
-		//		Vector3Int(1,0,0),
-		//		Vector3Int(-1,0,0),
-		//		Vector3Int(0,0,1),
-		//		Vector3Int(0,0,-1),
-		//		Vector3Int(0,1,0),
-		//		Vector3Int(0,-1,0),
-		//	};
+			const Vector3Int neighbourOffsets[] = {
+				Vector3Int(1,0,0),
+				Vector3Int(-1,0,0),
+				Vector3Int(0,0,1),
+				Vector3Int(0,0,-1),
+				Vector3Int(0,1,0),
+				Vector3Int(0,-1,0),
+			};
 
-		//	map<tuple<int, int, int>, bool> renderedHash = {};
+			map<tuple<int, int, int>, bool> renderedHash = {};
 
-		//	//Vector3 forward = camTrans->forward();
-		//	
-		//	for(const Vector3& forward : neighbourOffsets) {
-		//		//queue of steps { chunk we want to visit : chunk we came from }
-		//		queue<pair<Vector3Int, Vector3Int>> bfs;
+			//Vector3 forward = camTrans->forward();
+			
+			for(const Vector3& forward : neighbourOffsets) {
+				//queue of steps { chunk we want to visit : chunk we came from }
+				queue<pair<Vector3Int, Vector3Int>> bfs;
 
-		//		bfs.push({ camIndex, camIndex });
+				bfs.push({ camIndex, camIndex });
 
-		//		while(!bfs.empty()) {
-		//			pair<Vector3Int, Vector3Int> front = bfs.front();
-		//			bfs.pop();
-		//			Vector3Int& targetChunk = front.first;
-		//			Vector3Int& previousChunk = front.second;
+				while(!bfs.empty()) {
+					pair<Vector3Int, Vector3Int> front = bfs.front();
+					bfs.pop();
+					Vector3Int& targetChunk = front.first;
+					Vector3Int& previousChunk = front.second;
 
-		//			if(targetChunk != camIndex ) {
-		//			//if(Vector3::Distance(targetChunk, camIndex) > 2.f) {
-		//				auto find = renderedHash.find(targetChunk);
-		//				if(find != renderedHash.end()) continue;
-		//			}
+					if(targetChunk != camIndex ) {
+					//if(Vector3::Distance(targetChunk, camIndex) > 2.f) {
+						auto find = renderedHash.find(targetChunk);
+						if(find != renderedHash.end()) continue;
+					}
 
-		//			renderedHash[targetChunk]=true;
+					renderedHash[targetChunk]=true;
 
-		//			if(Input::IsKeyHeld('N')) {
-		//				for(auto& kvp : chunkMap) {
-		//					if(kvp.second == nullptr || kvp.second->pendingDeletion || !kvp.second->hasRanStartFunction) {
-		//						continue;
-		//					}
+					if(Input::IsKeyHeld('N')) {
+						for(auto& kvp : chunkMap) {
+							if(kvp.second == nullptr || kvp.second->pendingDeletion || !kvp.second->hasRanStartFunction) {
+								continue;
+							}
 
-		//					auto findVisited = renderedHash.find(kvp.second->indexPosition);
-		//					kvp.second->doRender = findVisited != renderedHash.end();
-		//				}
-		//				__nop();
-		//			}
+							auto findVisited = renderedHash.find(kvp.second->indexPosition);
+							kvp.second->doRender = findVisited != renderedHash.end();
+						}
+						__nop();
+					}
 
-		//			for(const Vector3& offset : neighbourOffsets) {
-		//				Vector3Int nextChunk = targetChunk + offset;
-		//				Vector3 direction = Vector3(Vector3(nextChunk.x, nextChunk.y, nextChunk.z) - Vector3(camIndex.x, camIndex.y, camIndex.z)).normalized();
-		//				
-		//				//float OdotV = Vector3::dot(offset, forward);
-		//				float OdotV = Vector3::dot(direction, forward);
+					for(const Vector3& offset : neighbourOffsets) {
+						Vector3Int nextChunk = targetChunk + offset;
+						Vector3 direction = Vector3(Vector3(nextChunk.x, nextChunk.y, nextChunk.z) - Vector3(camIndex.x, camIndex.y, camIndex.z)).normalized();
+						
+						//float OdotV = Vector3::dot(offset, forward);
+						float OdotV = Vector3::dot(direction, forward);
 
-		//				if(OdotV > 0.501f) { // 1.
-
-
-		//					Chunk* pTargetChunk = nullptr;
-		//					auto findChunk = chunkMap.find(targetChunk);
-		//					if(findChunk != chunkMap.end()) {
-		//						pTargetChunk = findChunk->second;
-
-		//						// skip incomplete chunks
-		//						if(pTargetChunk == nullptr || pTargetChunk->pendingDeletion || !pTargetChunk->hasRanStartFunction) continue;
+						if(OdotV > 0.501f) { // 1.
 
 
-		//						if(pTargetChunk->IsChunkVisibleFromChunk(nextChunk, previousChunk)) { //2.
-		//							
-		//							
+							Chunk* pTargetChunk = nullptr;
+							auto findChunk = chunkMap.find(targetChunk);
+							if(findChunk != chunkMap.end()) {
+								pTargetChunk = findChunk->second;
 
-		//							bfs.push({ targetChunk + offset, targetChunk });
-		//						}
-		//					}
-		//				}
-		//			}
-		//		}
-		//	}
+								// skip incomplete chunks
+								if(pTargetChunk == nullptr || pTargetChunk->pendingDeletion || !pTargetChunk->hasRanStartFunction) continue;
 
 
-		//	for(auto& kvp : chunkMap) {
-		//		if(kvp.second == nullptr || kvp.second->pendingDeletion || !kvp.second->hasRanStartFunction) {
-		//			continue;
-		//		}
+								if(pTargetChunk->IsChunkVisibleFromChunk(nextChunk, previousChunk)) { //2.
+									
+									
 
-		//		auto findVisited = renderedHash.find(kvp.second->indexPosition);
-		//		kvp.second->doRender = findVisited != renderedHash.end();
-		//	}
-		//}
+									bfs.push({ targetChunk + offset, targetChunk });
+								}
+							}
+						}
+					}
+				}
+			}
+
+
+			for(auto& kvp : chunkMap) {
+				if(kvp.second == nullptr || kvp.second->pendingDeletion || !kvp.second->hasRanStartFunction) {
+					continue;
+				}
+
+				auto findVisited = renderedHash.find(kvp.second->indexPosition);
+				kvp.second->doRender = findVisited != renderedHash.end();
+			}
+		}
 
 #if 0
 		// Chunk visibility occlusion recalculation
