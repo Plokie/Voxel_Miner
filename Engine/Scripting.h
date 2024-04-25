@@ -7,6 +7,9 @@
 
 // so i gave up, and caved in... fineeee, ill do luaaaa !
 
+#pragma warning( push )
+#pragma warning( disable : 28020)
+
 extern "C" {
 	#include "../lua/include/lua.hpp"
 	#include "../lua/include/lualib.h"
@@ -30,36 +33,22 @@ typedef int (*lua_CFunction)(lua_State* L);
 
 bool LuaOK(lua_State* state, int id);
 
-//class Object3D;
-
-//struct LuaObject3DRef {
-//	const string& name = "NA";
-//	int updateFuncIdx = 0;
-//	int objectIdx = 0;
-//
-//	LuaObject3DRef(const string& name, int updateFuncIdx, int objectIdx) : name(name), updateFuncIdx(updateFuncIdx), objectIdx(objectIdx) {}
-//};
-
 class Scripting {
 private:
 	static Scripting* Instance;
 	lua_State* state = nullptr;
 
-	//vector<LuaObject3DRef> luaObject3Ds;
-
 private:
 	//Lua-called functions
 	static int CreateObject3D(lua_State* state);
 	static int SetObject3DPos(lua_State* state);
-	static int MoveObject3DPos(lua_State* state);
 	static int SetObject3DRot(lua_State* state);
-	static int RotObject3DRot(lua_State* state);
 	static int AddObject3DModel(lua_State* state);
 
 public:
 	static void CallOnSceneLoad(const string& sceneName);
 
-	void Update(const float deltaTime);
+	void Update(float deltaTime);
 
 	int GetInt(lua_State* state, const string& name);
 	
@@ -76,7 +65,7 @@ public:
 		va_start(ptr, argCount);
 
 
-		lua_getglobal(state, name.c_str()); // get global by procedure name
+		lua_getglobal(state, name.c_str()); // push global function to stack
 		if(!lua_isfunction(state, -1)) // made sure its a function
 			assert(false);
 
@@ -109,9 +98,11 @@ public:
 		if(!LuaOK(state, lua_pcall(state, argCount, 0, 0)))
 			assert(false);
 
-		lua_pop(state, argCount); //pop parameters
+		//lua_pop(state, argCount); //pop parameters
 	}
 
 	Scripting();
 	~Scripting();
 };
+
+#pragma warning( pop )

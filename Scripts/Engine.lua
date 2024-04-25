@@ -12,22 +12,23 @@ function newObject3D(nameArg)
 	local object = {
 		name = nameArg,
 		position = {x=0,y=0,z=0},
-		rotation = {x=0,y=0,z=0}
+		rotation = {x=0,y=0,z=0},
+		created = false
 	}
 
 	function object:testFunc()
 		testVar = testVar + 1
 	end
 
-	function object:SetPosition(posX, posY, posZ)
-		self.position = Vector3(posX,posY,posZ)
-		Engine_SetObject3DPos(self.name, posX, posY, posZ)
+	function object:SetPosition(x, y, z)
+		self.position = Vector3(x,y,z)
+		Engine_SetObject3DPos(self.name, x, y, z)
 	end
 	function object:Move(x,y,z)
 		self.position.x = self.position.x + x
 		self.position.y = self.position.y + y
 		self.position.z = self.position.z + z
-		Engine_SetObject3DPos(self.name, x,y,z)
+		Engine_SetObject3DPos(self.name, self.position.x, self.position.y, self.position.z)
 	end
 	function object:SetRotation(x,y,z)
 		self.rotation = Vector3(x,y,z)
@@ -37,20 +38,16 @@ function newObject3D(nameArg)
 		self.rotation.x = self.rotation.x + x
 		self.rotation.y = self.rotation.y + y
 		self.rotation.z = self.rotation.z + z
-		Engine_SetObject3DRot(self.name, x,y,z)
+		Engine_SetObject3DRot(self.name, self.rotation.x, self.rotation.y, self.rotation.z)
 	end
 
 	function object:AddModel(modelName)
 		Engine_AddObject3DModel(self.name, modelName)
 	end
 
-	function object:EngineCall_Update()
-		self:Rotate(0, 0.001, 0)
-		self:Move(0.001, 0, 0)
-	end
-
 	function object:Create()
-		Engine_CreateObject3D(self.name, EngineCall_Update)
+		self.created = true
+		Engine_CreateObject3D(self.name)
 	end
 	
 
@@ -60,20 +57,17 @@ end
 TestObject = newObject3D("TestObject")
 
 function Update(deltaTime)
-	
-end
-
-
-function testFunction()
-	return 100
+	if TestObject.created then
+		TestObject:Move(0.01, 0, 0)
+	end
 end
 
 function OnSceneLoad(sceneName)
 	if (sceneName == "game") then
 		TestObject:Create()
 		TestObject:AddModel("cube")
-		TestObject:SetPosition(0,5,0)
-		TestObject:Rotate(0, pi/2, 0)
+		TestObject:Move(0,5,0)
+		TestObject:Rotate(0, pi/4, 0)
 	end
 end
 

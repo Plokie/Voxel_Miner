@@ -6,18 +6,6 @@
 
 Scripting* Scripting::Instance = nullptr;
 
-static void* l_alloc(void* ud, void* ptr, size_t osize,
-    size_t nsize) {
-    (void)ud;  (void)osize;  /* not used */
-    if(nsize == 0) {
-        free(ptr);
-        return NULL;
-    }
-    else
-        return realloc(ptr, nsize);
-}
-
-
 bool LuaOK(lua_State* state, int id)
 {
 	if(id != LUA_OK) {
@@ -33,18 +21,9 @@ int Scripting::CreateObject3D(lua_State* state)
 	int argCount = lua_gettop(state);
 	
 	string name = lua_tostring(state, 1);
-	//void* updateFunc = lua_tocfunction(state, 2);
-	//void* func = luaL_ref(state, 2);
-	//int updateFuncIdx = luaL_ref(state, LUA_REGISTRYINDEX);
-	//lua_pop(state, 1); // pop name
-	//int objIdx = luaL_ref(state, LUA_REGISTRYINDEX);
-
-	//int test = lua_rawgeti(state, 2, 0);
 
 	Object3D* newObj = new Object3D();
 	Engine::Get()->GetCurrentScene()->CreateObject3D(newObj, name);
-
-	//Instance->luaObject3Ds.emplace_back(name, updateFuncIdx, objIdx);
 
 	return 0;
 }
@@ -64,18 +43,6 @@ int Scripting::SetObject3DPos(lua_State* state)
 	return 0;
 }
 
-int Scripting::MoveObject3DPos(lua_State* state)
-{
-	string name = lua_tostring(state, 1);
-	float x = (float)lua_tonumber(state, 2);
-	float y = (float)lua_tonumber(state, 3);
-	float z = (float)lua_tonumber(state, 4);
-
-	Engine::Get()->GetCurrentScene()->GetObject3D(name)->transform.position += { x,y,z };
-
-	return 0;
-}
-
 int Scripting::SetObject3DRot(lua_State* state)
 {
 	string name = lua_tostring(state, 1);
@@ -84,18 +51,6 @@ int Scripting::SetObject3DRot(lua_State* state)
 	float z = (float)lua_tonumber(state, 4);
 
 	Engine::Get()->GetCurrentScene()->GetObject3D(name)->transform.rotation = { x, y, z };
-
-	return 0;
-}
-
-int Scripting::RotObject3DRot(lua_State* state)
-{
-	string name = lua_tostring(state, 1);
-	float x = (float)lua_tonumber(state, 2);
-	float y = (float)lua_tonumber(state, 3);
-	float z = (float)lua_tonumber(state, 4);
-
-	Engine::Get()->GetCurrentScene()->GetObject3D(name)->transform.rotation += { x, y, z };
 
 	return 0;
 }
@@ -116,24 +71,11 @@ void Scripting::CallOnSceneLoad(const string& sceneName)
 	Instance->CallProc<string>(Instance->state, "OnSceneLoad", 1, sceneName);
 }
 
-void Scripting::Update(const float deltaTime)
+void Scripting::Update(float deltaTime)
 {
-	//for(LuaObject3DRef obj : luaObject3Ds) {
-	//	int testFunc = lua_rawgeti(state, LUA_REGISTRYINDEX, obj.updateFuncIdx);
-	//	int testObj = lua_rawgeti(state, LUA_REGISTRYINDEX, obj.objectIdx);
-
-	//	lua_pcall(state, 1, 0, 0);
-
-	//	lua_pop(state, 2);
-	//	/*lua_getglobal(state, pair.first.c_str());
-	//	lua_getfield(state, -1, "EngineCall_Update");
-	//	lua_pushvalue(state, -2);
-	//	lua_pushnumber(state, deltaTime);
-	//	lua_pcall(state, 2, 0, 0);*/
-	//	//pair.second->Update(deltaTime);
-	//	
-	//	//CallProc<float>(state, pair.first + ":EngineCall_Update", 1, deltaTime);
-	//}
+	/*CallProc<float>(state, "Update", 1, deltaTime);*/
+	if(Input::IsKeyHeld('V')) 
+		CallProc<float>(state, "Update", 1, deltaTime);
 }
 
 int Scripting::GetInt(lua_State* state, const string& name)
@@ -154,17 +96,12 @@ Scripting::Scripting() {
 	//register functions
 	lua_register(state, "Engine_CreateObject3D", CreateObject3D);
 	lua_register(state, "Engine_SetObject3DPos", SetObject3DPos);
-	lua_register(state, "Engine_MoveObject3DPos", MoveObject3DPos);
 	lua_register(state, "Engine_SetObject3DRot", SetObject3DRot);
-	lua_register(state, "Engine_RotObject3DRot", RotObject3DRot);
 
 	lua_register(state, "Engine_AddObject3DModel", AddObject3DModel);
 
-	//if(ERRCHECK(state, luaL_dofile("Scripts\\Test.lua")))
 	if(!LuaOK(state, luaL_dofile(state, "Scripts\\Engine.lua")))
 		assert(false);
-	
-	
 }
 
 
