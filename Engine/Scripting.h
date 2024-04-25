@@ -44,10 +44,14 @@ private:
 	lua_State* state = nullptr;
 
 
-private://Lua-called functions
-
-	// string:name
+private:
+	//Lua-called functions
 	static int CreateObject3D(lua_State* state);
+	static int SetObject3DPos(lua_State* state);
+	static int MoveObject3DPos(lua_State* state);
+	static int SetObject3DRot(lua_State* state);
+	static int RotObject3DRot(lua_State* state);
+	static int AddObject3DModel(lua_State* state);
 
 public:
 	static void CallOnSceneLoad(const string& sceneName);
@@ -58,7 +62,7 @@ public:
 	size_t GetTypeId() {
 		return typeid(T).hash_code();
 	}
-	template<typename... Ts>
+	template<typename... Ts> //Variad template of types
 	void CallProc(lua_State* state, const string& name, int argCount, ...) {
 		auto arr = std::array<size_t, sizeof...(Ts)>{ GetTypeId<Ts>()...  };
 
@@ -74,22 +78,23 @@ public:
 			switch(arr[i]) {
 			case 12638226781420530164: {
 				float argF = va_arg(ptr, float); //float
-				lua_pushnumber(state, argF); break; 
+				lua_pushnumber(state, argF); break;
 			}
 			case 12638232278978672507: { //int
 				int arg = va_arg(ptr, int);
-				lua_pushnumber(state, arg); break; 
+				lua_pushnumber(state, arg); break;
 			}
 			case 17648624087129316105: {
 				const char* argCC = va_arg(ptr, const char*); //const char*
-				lua_pushstring(state, argCC); break; 
+				lua_pushstring(state, argCC); break;
 			}
 			case 10283618467285603348: {//string
-				lua_pushstring(state, va_arg(ptr, string).c_str()); break;
+				const string& arg = va_arg(ptr, string);
+				lua_pushstring(state, arg.c_str()); break;
 			}
 			}
-			
-			
+
+
 		}
 
 		va_end(ptr);

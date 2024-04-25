@@ -73,7 +73,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ExecutablePath>..\..\DirectXTK\Bin\Desktop_2022_Win10\x64\Debug;$(VC_ExecutablePath_x64);$(CommonExecutablePath)</ExecutablePath>
-    <IncludePath>C:\Users\Plokie\source\repos\VoxelMiner\lua\include;..\..\DirectXTK\Inc;$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)lua\include;..\..\DirectXTK\Inc;$(WindowsSDK_IncludePath)</IncludePath>
     <LibraryPath>..\..\DirectXTK\Bin\Desktop_2022_Win10\x64\Debug;$(LibraryPath);$(VC_LibraryPath_x64);C:\Users\Plokie\source\repos\VoxelMiner\lua;$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -87,7 +87,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>..\..\DirectXTK\Inc;$(SolutionDir)lua\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <ExecutablePath>..\..\DirectXTK\Bin\Desktop_2022_Win10\x64\Release;$(VC_ExecutablePath_x64);$(CommonExecutablePath)</ExecutablePath>
-    <LibraryPath>..\..\DirectXTK\Bin\Desktop_2022_Win10\x64\Release;..\..\FMOD\lib\x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <LibraryPath>..\..\DirectXTK\Bin\Desktop_2022_Win10\x64\Release;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -125,13 +125,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\DirectXTK\DirectX_Desktop_2022.vcxproj;C:\Users\Plokie\source\repos\VoxelMiner\lua\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\DirectXTK\DirectX_Desktop_2022.vcxproj;$(SolutionDir)lua\include</AdditionalIncludeDirectories>
       <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Plokie\source\repos\VoxelMiner\lua;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)lua;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>lua54.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -143,16 +143,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\DirectXTK\DirectX_Desktop_2022.vcxproj</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\DirectXTK\DirectX_Desktop_2022.vcxproj;$(SolutionDir)lua\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)lua;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>lua54.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
