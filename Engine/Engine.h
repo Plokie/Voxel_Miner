@@ -14,6 +14,7 @@
 #include "Scene.h"
 
 class Audio;
+class Scripting;
 
 using namespace std;
 
@@ -31,6 +32,7 @@ private:
 
 	map<string, Scene*> scenes = {};
 	Scene* currentScene = nullptr;
+	Scripting* scripting = nullptr;
 
 	//map<void*, bool> dbg_deletedObjects = {};
 

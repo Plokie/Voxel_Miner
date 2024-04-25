@@ -5,6 +5,8 @@
 #include <vector>
 #include <DirectXMath.h>
 
+struct lua_State;
+
 using namespace DirectX;
 using namespace std;
 
@@ -75,6 +77,8 @@ public:
 	static const Vector3 Zero() {
 		return Vector3(0.f, 0.f, 0.f);
 	}
+
+	static Vector3 FromLua(lua_State* state, const string& name);
 
 	Vector3 operator+(Vector3& a) {
 		return Vector3(x + a.x, y + a.y, z + a.z);

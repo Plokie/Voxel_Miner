@@ -7,15 +7,21 @@
 
 // so i gave up, and caved in... fineeee, ill do luaaaa !
 
-#include <lua.h>
+extern "C" {
+	#include "../lua/include/lua.h"
+	#include "../lua/include/lualib.h"
+	#include "../lua/include/lauxlib.h"
+}
+
+//#include <lua.h>
 //#include <lua.h>
 //#include <lualib.h>
 ////#include "../lua/include/lauxlib.h" //why wont <luaxlib.h> work??
 ////#include <luaxlib.h>
 #include <string>
-//#include <assert.h>
+#include <assert.h>
 //
-#pragma comment(lib, "lua/lua54.lib")
+//#pragma comment(lib, "lua54.lib")
 
 
 //#define ERRCHECK(L, id) L!=LUA_OK
@@ -26,6 +32,8 @@ typedef void* (*lua_Alloc) (void* ud,
 	void* ptr,
 	size_t osize,
 	size_t nsize);
+
+bool LuaOK(lua_State* state, int id);
 
 class Scripting {
 private:
@@ -39,4 +47,5 @@ public:
 	
 
 	Scripting();
+	~Scripting();
 };

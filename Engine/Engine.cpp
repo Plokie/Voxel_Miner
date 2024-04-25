@@ -4,6 +4,8 @@
 
 #include "../Audio/Audio.h"
 
+#include "Scripting.h"
+
 Engine* Engine::_Instance;
 
 void Engine::Init(_In_ HINSTANCE hInstance) {
@@ -28,7 +30,7 @@ void Engine::Init(_In_ HINSTANCE hInstance) {
 	
 	Resources::Init(gfx->GetDevice(), gfx->GetDeviceCtx(), gfx->GetLayout(), LAYOUTSIZE);
 
-	
+	scripting = new Scripting();
 }
 
 void Engine::Render(float dTime) {
@@ -232,7 +234,7 @@ bool Engine::Service() {
 }
 
 Engine::~Engine() {
-	
+	delete scripting;
 
 	for(pair<const string, Scene*>& pair : scenes) {
 		delete pair.second;
