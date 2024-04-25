@@ -27,7 +27,7 @@ function newObject3D(nameArg)
 		self.position.x = self.position.x + x
 		self.position.y = self.position.y + y
 		self.position.z = self.position.z + z
-		Engine_MoveObject3DPos(self.name, x,y,z)
+		Engine_SetObject3DPos(self.name, x,y,z)
 	end
 	function object:SetRotation(x,y,z)
 		self.rotation = Vector3(x,y,z)
@@ -37,16 +37,30 @@ function newObject3D(nameArg)
 		self.rotation.x = self.rotation.x + x
 		self.rotation.y = self.rotation.y + y
 		self.rotation.z = self.rotation.z + z
-		Engine_RotObject3DRot(self.name, x,y,z)
+		Engine_SetObject3DRot(self.name, x,y,z)
 	end
 
 	function object:AddModel(modelName)
 		Engine_AddObject3DModel(self.name, modelName)
 	end
 
-	Engine_CreateObject3D(object.name)
+	function object:EngineCall_Update()
+		self:Rotate(0, 0.001, 0)
+		self:Move(0.001, 0, 0)
+	end
+
+	function object:Create()
+		Engine_CreateObject3D(self.name, EngineCall_Update)
+	end
+	
 
 	return object
+end
+
+TestObject = newObject3D("TestObject")
+
+function Update(deltaTime)
+	
 end
 
 
@@ -56,10 +70,10 @@ end
 
 function OnSceneLoad(sceneName)
 	if (sceneName == "game") then
-		TestObject = newObject3D("testname")
+		TestObject:Create()
 		TestObject:AddModel("cube")
 		TestObject:SetPosition(0,5,0)
-		TestObject:Rotate(0, 2*pi, 0)
+		TestObject:Rotate(0, pi/2, 0)
 	end
 end
 

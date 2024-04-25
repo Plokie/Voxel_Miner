@@ -13,19 +13,11 @@ extern "C" {
 	#include "../lua/include/lauxlib.h"
 }
 
-//#include <lua.h>
-//#include <lua.h>
-//#include <lualib.h>
-////#include "../lua/include/lauxlib.h" //why wont <luaxlib.h> work??
-////#include <luaxlib.h>
 #include <string>
 #include <array>
 #include <assert.h>
-//
-//#pragma comment(lib, "lua54.lib")
-
-
-//#define ERRCHECK(L, id) L!=LUA_OK
+#include <vector>
+#include <map>
 
 using namespace std;
 
@@ -38,11 +30,22 @@ typedef int (*lua_CFunction)(lua_State* L);
 
 bool LuaOK(lua_State* state, int id);
 
+//class Object3D;
+
+//struct LuaObject3DRef {
+//	const string& name = "NA";
+//	int updateFuncIdx = 0;
+//	int objectIdx = 0;
+//
+//	LuaObject3DRef(const string& name, int updateFuncIdx, int objectIdx) : name(name), updateFuncIdx(updateFuncIdx), objectIdx(objectIdx) {}
+//};
+
 class Scripting {
 private:
 	static Scripting* Instance;
 	lua_State* state = nullptr;
 
+	//vector<LuaObject3DRef> luaObject3Ds;
 
 private:
 	//Lua-called functions
@@ -56,6 +59,8 @@ private:
 public:
 	static void CallOnSceneLoad(const string& sceneName);
 
+	void Update(const float deltaTime);
+
 	int GetInt(lua_State* state, const string& name);
 	
 	template<typename T>
@@ -64,28 +69,29 @@ public:
 	}
 	template<typename... Ts> //Variad template of types
 	void CallProc(lua_State* state, const string& name, int argCount, ...) {
+		// turn type inputs into array of hash types
 		auto arr = std::array<size_t, sizeof...(Ts)>{ GetTypeId<Ts>()...  };
 
-		va_list ptr;
+		va_list ptr; // start variad iterator pointer
 		va_start(ptr, argCount);
 
 
-		lua_getglobal(state, name.c_str());
-		if(!lua_isfunction(state, -1))
+		lua_getglobal(state, name.c_str()); // get global by procedure name
+		if(!lua_isfunction(state, -1)) // made sure its a function
 			assert(false);
 
 		for(int i = 0; i < argCount; i++) {
-			switch(arr[i]) {
-			case 12638226781420530164: {
-				float argF = va_arg(ptr, float); //float
+			switch(arr[i]) { //check against valid hash codes
+			case 12638226781420530164: { //float
+				float argF = va_arg(ptr, float); 
 				lua_pushnumber(state, argF); break;
 			}
 			case 12638232278978672507: { //int
 				int arg = va_arg(ptr, int);
 				lua_pushnumber(state, arg); break;
 			}
-			case 17648624087129316105: {
-				const char* argCC = va_arg(ptr, const char*); //const char*
+			case 17648624087129316105: { //const char*
+				const char* argCC = va_arg(ptr, const char*); 
 				lua_pushstring(state, argCC); break;
 			}
 			case 10283618467285603348: {//string
@@ -99,8 +105,11 @@ public:
 
 		va_end(ptr);
 
+		// call function
 		if(!LuaOK(state, lua_pcall(state, argCount, 0, 0)))
 			assert(false);
+
+		lua_pop(state, argCount); //pop parameters
 	}
 
 	Scripting();

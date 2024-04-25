@@ -148,6 +148,8 @@ void Engine::Update(float dTime) {
 		pair.second->Update(dTime);
 	}
 
+	scripting->Update(dTime);
+
 	// Keep at end
 	Input::EndUpdate(dTime);
 	audio->Update();
