@@ -395,7 +395,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Scripts\Test.lua" />
+    <None Include="Scripts\Engine.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

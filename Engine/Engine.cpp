@@ -91,7 +91,11 @@ Scene* Engine::AddScene(Scene* scene, string name)
 {
 	this->scenes[name] = scene;
 	scene->Init(gfx, this);
-	if(currentScene == nullptr) currentScene = scene;
+	if(currentScene == nullptr) 
+	{
+		currentScene = scene;
+		Scripting::CallOnSceneLoad(name);
+	}
 	return scene;
 }
 
@@ -103,8 +107,10 @@ Scene* Engine::GetScene(string name)
 
 void Engine::SetScene(string name)
 {
-	if(scenes.count(name))
+	if(scenes.count(name)) {
 		currentScene = scenes[name];
+		Scripting::CallOnSceneLoad(name);
+	}
 #ifdef _DEBUG
 	else assert(false); // SCENE BY NAME DOES NOT EXIST
 #endif

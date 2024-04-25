@@ -1,6 +1,8 @@
 #include "Scripting.h"
 
 #include "MathUtil.h"
+#include "Engine.h"
+#include "Scene.h"
 
 Scripting* Scripting::Instance = nullptr;
 
@@ -26,6 +28,23 @@ bool LuaOK(lua_State* state, int id)
 }
 
 
+int Scripting::CreateObject3D(lua_State* state)
+{
+	int argCount = lua_gettop(state);
+	
+	string name = lua_tostring(state, 1);
+
+	Object3D* newObj = new Object3D();
+	Engine::Get()->GetCurrentScene()->CreateObject3D(newObj, name);
+
+	return 0;
+}
+
+void Scripting::CallOnSceneLoad(const string& sceneName)
+{
+	Instance->CallProc<const char*>(Instance->state, "Root_OnSceneLoad", 1, sceneName.c_str());
+}
+
 int Scripting::GetInt(lua_State* state, const string& name)
 {
 	lua_getglobal(state, name.c_str());
@@ -38,22 +57,21 @@ Scripting::Scripting() {
 	if(Instance) return;
 	Instance = this;
 
-	
-
 	state = luaL_newstate();
 	luaL_openlibs(state);
 
+	lua_register(state, "Engine_CreateObject3D", CreateObject3D);
+
 	//if(ERRCHECK(state, luaL_dofile("Scripts\\Test.lua")))
-	if(!LuaOK(state, luaL_dofile(state, "Scripts\\Test.lua")))
+	if(!LuaOK(state, luaL_dofile(state, "Scripts\\Engine.lua")))
 		assert(false);
 
-	//int test_var = GetInt(state, "testVar");
+	//CallProc<const char*>(state, "Root_OnSceneLoad", 1, "game");
 	
 	Vector3 testVar = Vector3::FromLua(state, "testVar");
 	
 
 	__noop();
-	//state = lua_newstate(l_alloc, nullptr);
 }
 
 

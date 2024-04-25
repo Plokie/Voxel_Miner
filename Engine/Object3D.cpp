@@ -1,5 +1,11 @@
 #include "Object3D.h"
 
+#include "../Graphics/Graphics.h"
+
+Object3D::Object3D() {
+	AddModel(Graphics::Get()->GetDevice());
+}
+
 Object3D::Object3D(ID3D11Device* device) {
 	//deviceRef = device;
 

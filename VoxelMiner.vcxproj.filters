@@ -489,6 +489,6 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Scripts\Test.lua" />
+    <None Include="Scripts\Engine.lua" />
   </ItemGroup>
 </Project>

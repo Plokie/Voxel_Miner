@@ -31,7 +31,7 @@ public:
 
 	vector<Model*> models = {};
 
-	Object3D(){}
+	Object3D();
 	Object3D(ID3D11Device* device);
 
 	// Finds the closest distance to another position (takes into account AABB)
