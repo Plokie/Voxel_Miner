@@ -1,5 +1,6 @@
 testVar = { x=1, y=2, z=3 }
 pi = 3.141592654
+elapsedTime = 0.0
 
 --engine = {}
 --function engine:set
@@ -54,20 +55,30 @@ function newObject3D(nameArg)
 	return object
 end
 
-TestObject = newObject3D("TestObject")
+
+SinObject = newObject3D("SinObject")
+CosObject = newObject3D("TestObject")
+
 
 function Update(deltaTime)
-	if TestObject.created then
-		TestObject:Move(0.01, 0, 0)
+	elapsedTime = elapsedTime + deltaTime
+	if SinObject.created then
+		--TestObject:Move(deltaTime, 0, 0)
+		SinObject:Rotate(0, deltaTime, 0)
+		SinObject:SetPosition(0, math.sin(elapsedTime) * 5.0 + 5.0, 0)
+
+		CosObject:SetPosition(math.cos(elapsedTime) * 5.0, 5.0, 0)
+		CosObject:Rotate(deltaTime, 0, 0)
 	end
 end
 
 function OnSceneLoad(sceneName)
 	if (sceneName == "game") then
-		TestObject:Create()
-		TestObject:AddModel("cube")
-		TestObject:Move(0,5,0)
-		TestObject:Rotate(0, pi/4, 0)
+		SinObject:Create()
+		SinObject:AddModel("cube")
+
+		CosObject:Create()
+		CosObject:AddModel("cube")
 	end
 end
 

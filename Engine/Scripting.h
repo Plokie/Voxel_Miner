@@ -72,21 +72,25 @@ public:
 		for(int i = 0; i < argCount; i++) {
 			switch(arr[i]) { //check against valid hash codes
 			case 12638226781420530164: { //float
-				float argF = va_arg(ptr, float); 
-				lua_pushnumber(state, argF); break;
-			}
+				double arg = static_cast<double>(va_arg(ptr, float));
+				lua_pushnumber(state, arg); 
+			} break;
+			case 12638230079955414429: {
+				double arg = va_arg(ptr, double);
+				lua_pushnumber(state, arg);
+			} break;
 			case 12638232278978672507: { //int
 				int arg = va_arg(ptr, int);
-				lua_pushnumber(state, arg); break;
-			}
+				lua_pushnumber(state, arg); 
+			} break;
 			case 17648624087129316105: { //const char*
 				const char* argCC = va_arg(ptr, const char*); 
-				lua_pushstring(state, argCC); break;
-			}
+				lua_pushstring(state, argCC); 
+			} break;
 			case 10283618467285603348: {//string
 				const string& arg = va_arg(ptr, string);
-				lua_pushstring(state, arg.c_str()); break;
-			}
+				lua_pushstring(state, arg.c_str()); 
+			} break;
 			}
 
 

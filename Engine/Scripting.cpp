@@ -38,9 +38,13 @@ int Scripting::SetObject3DPos(lua_State* state)
 	float z = (float)lua_tonumber(state, 4);
 	//Vector3 pos = Vector3::FromLua()
 
-	Engine::Get()->GetCurrentScene()->GetObject3D(name)->transform.position = { x,y,z };
+	Object3D* obj = Engine::Get()->GetCurrentScene()->GetObject3D(name);
+	if(obj) {
+		obj->transform.position = { x,y,z };
+	}
+	else return 0;
 
-	return 0;
+	return 1;
 }
 
 int Scripting::SetObject3DRot(lua_State* state)
@@ -50,9 +54,13 @@ int Scripting::SetObject3DRot(lua_State* state)
 	float y = (float)lua_tonumber(state, 3);
 	float z = (float)lua_tonumber(state, 4);
 
-	Engine::Get()->GetCurrentScene()->GetObject3D(name)->transform.rotation = { x, y, z };
+	Object3D* obj = Engine::Get()->GetCurrentScene()->GetObject3D(name);
+	if(obj) {
+		obj->transform.rotation = { x, y, z };
+	}
+	else return 0;
 
-	return 0;
+	return 1;
 }
 
 int Scripting::AddObject3DModel(lua_State* state)
@@ -74,8 +82,8 @@ void Scripting::CallOnSceneLoad(const string& sceneName)
 void Scripting::Update(float deltaTime)
 {
 	/*CallProc<float>(state, "Update", 1, deltaTime);*/
-	if(Input::IsKeyHeld('V')) 
-		CallProc<float>(state, "Update", 1, deltaTime);
+	//if(Input::IsKeyHeld('V')) 
+		CallProc<double>(state, "Update", 1, deltaTime);
 }
 
 int Scripting::GetInt(lua_State* state, const string& name)
