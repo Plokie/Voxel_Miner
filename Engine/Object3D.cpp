@@ -3,7 +3,7 @@
 #include "../Graphics/Graphics.h"
 
 Object3D::Object3D() {
-	AddModel(Graphics::Get()->GetDevice());
+	//AddModel(Graphics::Get()->GetDevice());
 }
 
 Object3D::Object3D(ID3D11Device* device) {

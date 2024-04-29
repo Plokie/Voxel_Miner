@@ -38,12 +38,21 @@ private:
 	static Scripting* Instance;
 	lua_State* state = nullptr;
 
+	/// <summary>
+	/// Updates the Lua-side Engine variable containing information
+	/// </summary>
+	void UpdateLuaEngineInformation(lua_State* state);
+
 private:
 	//Lua-called functions
 	static int CreateObject3D(lua_State* state);
 	static int SetObject3DPos(lua_State* state);
 	static int SetObject3DRot(lua_State* state);
 	static int AddObject3DModel(lua_State* state);
+	static int SetModelTexture(lua_State* state);
+	static int LoadMesh(lua_State* state);
+	static int LoadTexture(lua_State* state);
+
 
 public:
 	static void CallOnSceneLoad(const string& sceneName);
@@ -72,10 +81,10 @@ public:
 		for(int i = 0; i < argCount; i++) {
 			switch(arr[i]) { //check against valid hash codes
 			case 12638226781420530164: { //float
-				double arg = static_cast<double>(va_arg(ptr, float));
+				float arg = va_arg(ptr, float);
 				lua_pushnumber(state, arg); 
 			} break;
-			case 12638230079955414429: {
+			case 12638230079955414429: { //double
 				double arg = va_arg(ptr, double);
 				lua_pushnumber(state, arg);
 			} break;

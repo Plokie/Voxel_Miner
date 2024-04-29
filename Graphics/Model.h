@@ -81,6 +81,7 @@ public:
 
 	void SetFlags(unsigned int flags);
 	bool HasFlag(MODEL_FLAG flag) const;
+	bool IsMeshNullptr() const { return mesh == nullptr; }
 
 
 	Model* Init(ID3D11Device* device);

@@ -1,9 +1,31 @@
 testVar = { x=1, y=2, z=3 }
 pi = 3.141592654
-elapsedTime = 0.0
 
---engine = {}
---function engine:set
+Engine = {
+	elapsedTime = 0.0
+}
+function Engine:LoadTexture(path, name)
+	Engine_LoadTexture(path, name)
+end
+
+function Engine:LoadMesh(indices, vertices, name)
+	Engine_LoadMesh(indices, vertices, name)
+end
+
+
+indices = {0,2,1, 1,2,3, 0,1,2, 1,3,2}
+
+--pos, uv, normal
+vertices = {
+	{-1.0,-1.0,0.0,		0.0,1.0,	0.0,0.0,1.0},
+	{1.0,-1.0,0.0,		1.0,1.0,	0.0,0.0,1.0},
+	{-1.0,1.0,0.0,		0.0,0.0,	0.0,0.0,1.0},
+
+	{1.0,1.0,0.0,		1.0,0.0,	0.0,0.0,1.0},
+}
+
+Engine:LoadMesh(indices, vertices, "LuaTestMesh")
+Engine:LoadTexture("Data\\Textures\\lua.dds", "LuaTestTexture")
 
 function Vector3(Px,Py,Pz)
 	return {x=Px,y=Py,z=Pz}
@@ -45,6 +67,9 @@ function newObject3D(nameArg)
 	function object:AddModel(modelName)
 		Engine_AddObject3DModel(self.name, modelName)
 	end
+	function object:SetModelTexture(idx, textureName)
+		Engine_SetModelTexture(self.name, idx, textureName)
+	end
 
 	function object:Create()
 		self.created = true
@@ -55,20 +80,21 @@ function newObject3D(nameArg)
 	return object
 end
 
-
 SinObject = newObject3D("SinObject")
-CosObject = newObject3D("TestObject")
-
+CosObject = newObject3D("CosObject")
+TestObject = newObject3D("TestObject")
 
 function Update(deltaTime)
-	elapsedTime = elapsedTime + deltaTime
 	if SinObject.created then
-		--TestObject:Move(deltaTime, 0, 0)
 		SinObject:Rotate(0, deltaTime, 0)
-		SinObject:SetPosition(0, math.sin(elapsedTime) * 5.0 + 5.0, 0)
-
-		CosObject:SetPosition(math.cos(elapsedTime) * 5.0, 5.0, 0)
+		SinObject:SetPosition(0, math.sin(Engine.elapsedTime) * 5.0 + 5.0, 0)
+	end
+	if CosObject.created then
+		CosObject:SetPosition(math.cos(Engine.elapsedTime) * 5.0, 5.0, 0)
 		CosObject:Rotate(deltaTime, 0, 0)
+	end
+	if TestObject.created then
+		TestObject:Rotate(0, deltaTime * 0.5, 0)
 	end
 end
 
@@ -79,6 +105,11 @@ function OnSceneLoad(sceneName)
 
 		CosObject:Create()
 		CosObject:AddModel("cube")
+
+		TestObject:Create()
+		TestObject:Move(0, 2, 0)
+		TestObject:AddModel("LuaTestMesh")
+		TestObject:SetModelTexture(0, "LuaTestTexture")
 	end
 end
 

@@ -16,6 +16,24 @@ bool LuaOK(lua_State* state, int id)
 }
 
 
+void Scripting::UpdateLuaEngineInformation(lua_State* state)
+{
+	lua_getglobal(state, "Engine");
+	if(!lua_istable(state, -1)) 
+		return;
+	lua_pushstring(state, "elapsedTime");
+	lua_pushnumber(state, Engine::Get()->GetTotalElapsedTime());
+	lua_settable(state, -3);
+	lua_pop(state, 1);
+
+	//lua_getglobal(state, "Engine");
+	//lua_pushlstring(state, "elapsedTime", 12);
+	//lua_pushnumber(state, Engine::Get()->GetTotalElapsedTime());
+	//lua_settable(state, -3);
+	//lua_pop(state, 1);
+	//
+}
+
 int Scripting::CreateObject3D(lua_State* state)
 {
 	int argCount = lua_gettop(state);
@@ -68,10 +86,131 @@ int Scripting::AddObject3DModel(lua_State* state)
 	string name = lua_tostring(state, 1);
 	string modelName = lua_tostring(state, 2);
 
-	Model* model = Engine::Get()->GetCurrentScene()->GetObject3D(name)->AddModel(Graphics::Get()->GetDevice());
-	model->SetMesh(modelName);
+	Object3D* obj = Engine::Get()->GetCurrentScene()->GetObject3D(name);
+	if(obj) {
+		Model* model = obj->AddModel(Graphics::Get()->GetDevice());
+		model->SetMesh(modelName);
+	}
+	//Engine::Get()->GetCurrentScene()->GetObject3D(name)->AddModel(Graphics::Get()->GetDevice());
+	//model->SetMesh(modelName);
 
 	return 0;
+}
+
+// object name, idx, texture name
+int Scripting::SetModelTexture(lua_State* state)
+{
+	string name = lua_tostring(state, 1);
+	int idx = (int)lua_tonumber(state, 2);
+	string texName = lua_tostring(state, 3);
+
+	Object3D* obj = Engine::Get()->GetCurrentScene()->GetObject3D(name);
+	ID3D11ShaderResourceView* tex = Resources::GetTexture(texName);
+
+	if(obj && tex && obj->models.size() > idx) {
+		obj->models[idx]->SetTexture(0, tex);
+	}
+	else return 0;
+
+	return 1;
+}
+
+// indices table, vertices table, name
+int Scripting::LoadMesh(lua_State* state)
+{
+	vector<DWORD> indices;
+	vector<Vertex> vertices;
+
+	if(lua_istable(state, 1)) {
+		unsigned int size = (unsigned int)lua_rawlen(state, 1);
+		indices.resize(size);
+
+		for(unsigned int i = 0; i < size; i++) {
+			lua_rawgeti(state, 1, i + 1);
+			indices[i] = (DWORD)lua_tonumber(state, -1);
+			lua_pop(state, 1);
+		}
+	}
+
+	if(lua_istable(state, 2)) {
+		unsigned int size = (unsigned int)lua_rawlen(state, 2);
+		vertices.resize(size);
+
+		for(unsigned int i = 0; i < size; i++) {
+			lua_rawgeti(state, 2, i + 1);
+			int top = lua_gettop(state);
+
+			Vertex v;
+			if(lua_istable(state, top)) {
+				Vector3 pos;
+				Vector2 uv;
+				Vector3 norm;
+
+				//
+
+				lua_rawgeti(state, -1, 1);
+				pos.x = (float)lua_tonumber(state, -1);
+				lua_pop(state, 1);
+
+				lua_rawgeti(state, -1, 2);
+				pos.y = (float)lua_tonumber(state, -1);
+				lua_pop(state, 1);
+
+				lua_rawgeti(state, -1, 3);
+				pos.z = (float)lua_tonumber(state, -1);
+				lua_pop(state, 1);
+
+				//
+
+				lua_rawgeti(state, -1, 4);
+				uv.x = (float)lua_tonumber(state, -1);
+				lua_pop(state, 1);
+
+				lua_rawgeti(state, -1, 5);
+				uv.y = (float)lua_tonumber(state, -1);
+				lua_pop(state, 1);
+
+				//
+
+				lua_rawgeti(state, -1, 6);
+				norm.x = (float)lua_tonumber(state, -1);
+				lua_pop(state, 1);
+
+				lua_rawgeti(state, -1, 7);
+				norm.y = (float)lua_tonumber(state, -1);
+				lua_pop(state, 1);
+
+				lua_rawgeti(state, -1, 8);
+				norm.z = (float)lua_tonumber(state, -1);
+				lua_pop(state, 1);
+
+				v = Vertex(pos.x, pos.y, pos.z, norm.x, norm.y, norm.z, uv.x, uv.y);
+			}
+
+			vertices[i] = v;
+
+			lua_pop(state, 1);
+			//vertices
+		}
+	}
+
+	string meshName = lua_tostring(state, 3);
+
+	Resources::LoadMesh(&vertices[0], vertices.size(), &indices[0], indices.size(), meshName);
+
+	return 1;
+}
+
+//path, name
+int Scripting::LoadTexture(lua_State* state)
+{
+	string path = lua_tostring(state, 1);
+	string name = lua_tostring(state, 2);
+
+	wstring wpath(path.begin(), path.end()); //todo: this is bad, and will mangle non-ASCII path / file names
+
+	Resources::LoadTexture(wpath.c_str(), name);
+	return 1;
 }
 
 void Scripting::CallOnSceneLoad(const string& sceneName)
@@ -81,9 +220,12 @@ void Scripting::CallOnSceneLoad(const string& sceneName)
 
 void Scripting::Update(float deltaTime)
 {
-	/*CallProc<float>(state, "Update", 1, deltaTime);*/
-	//if(Input::IsKeyHeld('V')) 
-		CallProc<double>(state, "Update", 1, deltaTime);
+	// Calls the Update function in Lua
+	// needs to be passed as double because i think the variad converts it to a double as a default
+	CallProc<double>(state, "Update", 1, deltaTime);
+
+
+	UpdateLuaEngineInformation(state);
 }
 
 int Scripting::GetInt(lua_State* state, const string& name)
@@ -107,6 +249,9 @@ Scripting::Scripting() {
 	lua_register(state, "Engine_SetObject3DRot", SetObject3DRot);
 
 	lua_register(state, "Engine_AddObject3DModel", AddObject3DModel);
+	lua_register(state, "Engine_SetModelTexture", SetModelTexture);
+	lua_register(state, "Engine_LoadMesh", LoadMesh);
+	lua_register(state, "Engine_LoadTexture", LoadTexture);
 
 	if(!LuaOK(state, luaL_dofile(state, "Scripts\\Engine.lua")))
 		assert(false);
