@@ -143,7 +143,3 @@ The events defined are:
 	No arguments
 
 	Called when the player is fully loaded into the world (its safe to edit world data after this is called)
-
-"ChunkLoaded" :
-	3 Args:
-		cx, cy, cz - 3 int arguments of the chunk's index in chunk-based coordinates

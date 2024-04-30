@@ -50,6 +50,8 @@ private:
 	std::mutex regenQueueMutex;
 	queue<pair<Chunk*,int>> regenQueue;
 
+	queue<Chunk*> loadedEventQueue;
+
 	vector<thread> chnkMgrThread;
 
 	bool isRunning = true; //well then you better go catch it

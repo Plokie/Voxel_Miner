@@ -61,6 +61,17 @@ void ChunkManager::Update(float dTime) {
 
 	ChunkDatabase::Get()->Update(dTime); // Handles autosaving
 
+	while(!loadedEventQueue.empty()) {
+		Chunk* chunk = loadedEventQueue.front();
+		loadedEventQueue.pop();
+		if(chunk == nullptr || chunk->pendingDeletion) continue;
+		Scripting::CallEvent<int, int, int>("ChunkLoaded", 3, chunk->indexPosition.x, chunk->indexPosition.y, chunk->indexPosition.z);
+	}
+
+
+
+
+
 	Vector3Int camIndex = ChunkFloorPosForPositionCalculation(cam->transform.position);
 
 	return;
@@ -292,9 +303,10 @@ void ChunkManager::Thread() {
 					queuePair.first->BuildVisibilityGraph();
 					queuePair.first->BuildMesh();
 
-					Scripting::CallEvent<int,int,int>("ChunkLoaded", 3, queuePair.first->indexPosition.x, queuePair.first->indexPosition.y, queuePair.first->indexPosition.z);
 				}, queuePair.second);
 				regenQueue.pop();
+
+				loadedEventQueue.push(queuePair.first);
 			}
 		}
 
@@ -546,10 +558,10 @@ void ChunkManager::Start()
 
 
 	Scripting::RegisterLuaFunc("SetBlockAt", [this](lua_State* s) {
-		int x = lua_tonumber(s, 2);
-		int y = lua_tonumber(s, 3);
-		int z = lua_tonumber(s, 4);
-		int id = lua_tonumber(s, 5);
+		int x = (int)lua_tonumber(s, 2);
+		int y = (int)lua_tonumber(s, 3);
+		int z = (int)lua_tonumber(s, 4);
+		int id = (int)lua_tonumber(s, 5);
 
 		SetBlockAtWorldPos(x, y, z, (BlockID)id);
 
@@ -557,9 +569,9 @@ void ChunkManager::Start()
 	});
 
 	Scripting::RegisterLuaFunc("GetBlockAt", [this](lua_State* s) {
-		int x = lua_tonumber(s, 2);
-		int y = lua_tonumber(s, 3);
-		int z = lua_tonumber(s, 4);
+		int x = (int)lua_tonumber(s, 2);
+		int y = (int)lua_tonumber(s, 3);
+		int z = (int)lua_tonumber(s, 4);
 
 		int id = (int)GetBlockAtWorldPos(x, y, z);
 

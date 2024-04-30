@@ -86,6 +86,7 @@ Engine.SubscribeEvent["Player.Loaded"] = function()
 end
 
 Engine.SubscribeEvent["Player.Use"] = function(x,y,z,id)
-	Game:SetBlockAt(x,y+1,z,Game:GetBlockAt(x,y,z))
+	local id = Game:GetBlockAt(x,y,z)
+	Game:SetBlockAt(x,y+1,z,id)
 	Game:SetBlockAt(x,y,z,1)
 end
