@@ -288,6 +288,8 @@ void ChunkManager::Thread() {
 
 				});
 
+				loadedEventQueue.push(chunk);
+
 				meshPendingQueue.pop();
 			}
 		}
@@ -306,7 +308,6 @@ void ChunkManager::Thread() {
 				}, queuePair.second);
 				regenQueue.pop();
 
-				loadedEventQueue.push(queuePair.first);
 			}
 		}
 

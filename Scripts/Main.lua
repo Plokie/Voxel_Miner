@@ -90,3 +90,15 @@ Engine.SubscribeEvent["Player.Use"] = function(x,y,z,id)
 	Game:SetBlockAt(x,y+1,z,id)
 	Game:SetBlockAt(x,y,z,1)
 end
+
+Engine.SubscribeEvent["ChunkLoaded"] = function(cx,cy,cz)
+	if(cx==1 and cy==1 and cz==1) then
+		for x=0,15 do
+			for z=0,15 do
+				Game:SetBlockAt(cx*16 + x, cy*16, cz*16 + z, 5)
+			end
+		end
+
+	end
+
+end
