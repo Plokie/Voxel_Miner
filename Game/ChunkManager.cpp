@@ -543,6 +543,30 @@ void ChunkManager::Start()
 	});
 
 	SetThreadName(&chnkMgrThread[0], "ChunkManager Master");
+
+
+	Scripting::RegisterLuaFunc("SetBlockAt", [this](lua_State* s) {
+		int x = lua_tonumber(s, 2);
+		int y = lua_tonumber(s, 3);
+		int z = lua_tonumber(s, 4);
+		int id = lua_tonumber(s, 5);
+
+		SetBlockAtWorldPos(x, y, z, (BlockID)id);
+
+		return 0;
+	});
+
+	Scripting::RegisterLuaFunc("GetBlockAt", [this](lua_State* s) {
+		int x = lua_tonumber(s, 2);
+		int y = lua_tonumber(s, 3);
+		int z = lua_tonumber(s, 4);
+
+		int id = (int)GetBlockAtWorldPos(x, y, z);
+
+		lua_pushnumber(s, id);
+
+		return 1;
+	});
 }
 
 ChunkManager::~ChunkManager()

@@ -33,6 +33,8 @@ CosObject = Engine:NewObject3D("CosObject")
 TestObject = Engine:NewObject3D("TestObject")
 -- Dont forget to :Create() objects when theyre needed!!
 
+loaded=false
+
 -- Called whenever a scene is loaded.
 -- Use the sceneName to execute when desired
 function OnSceneLoad(sceneName)
@@ -77,4 +79,13 @@ end
 -- TestEvent is an example debug event that is called when the 'G' key is pressed
 Engine.SubscribeEvent["TestEvent"] = function()
 	SinObject:SetModelTexture(0, "LuaTestTexture")
+end
+
+Engine.SubscribeEvent["Player.Loaded"] = function()
+	loaded = true
+end
+
+Engine.SubscribeEvent["Player.Use"] = function(x,y,z,id)
+	Game:SetBlockAt(x,y+1,z,Game:GetBlockAt(x,y,z))
+	Game:SetBlockAt(x,y,z,1)
 end

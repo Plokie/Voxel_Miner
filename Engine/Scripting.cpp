@@ -294,6 +294,8 @@ Scripting::Scripting() {
 
 	lua_register(state, "Engine_DebugMessage", DebugMessage);
 
+	lua_register(state, "CallGameFunction", CallGameFunction);
+
 	if(!LuaOK(state, luaL_dofile(state, "Scripts\\Main.lua")))
 		assert(false);
 }

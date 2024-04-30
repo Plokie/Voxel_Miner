@@ -113,7 +113,7 @@ end
 
 function Backend_EventCall(eventName, ...)
 	if(Engine.SubscribeEvent[eventName] ~= nil) then
-		Engine.SubscribeEvent[eventName]()
+		Engine.SubscribeEvent[eventName](...)
 	end
 end
 

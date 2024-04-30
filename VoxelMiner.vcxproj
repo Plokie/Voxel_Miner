@@ -201,6 +201,7 @@
     <ClCompile Include="Game\GameStart.cpp" />
     <ClCompile Include="Game\PauseScreen.cpp" />
     <ClCompile Include="Game\PlayerData.cpp" />
+    <ClCompile Include="Game\ScriptingGameFuncs.cpp" />
     <ClCompile Include="Game\TableInterface.cpp" />
     <ClCompile Include="Game\VoxelLightingOld.cpp" />
     <ClCompile Include="Game\PlayerController.cpp" />
@@ -397,6 +398,9 @@
     <None Include="Scripts\Engine.lua" />
     <None Include="Scripts\Game.lua" />
     <None Include="Scripts\Main.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Scripts\README.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

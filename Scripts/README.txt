@@ -105,7 +105,7 @@ There are some callable functions that allow manipulation / probing of the game 
 
 Game:GetBlock(x,y,z)
 
-
+Game:SetBlock(x,y,z,id)
 
 Events_______________________________________
 
@@ -127,12 +127,23 @@ The events defined are:
 	Called when the player presses the Jump key (Usually space bar)
 
 "Player.Hurt" :
-	Args:
-		hurtAmt - The damage taken
-		cause - The reason for the damage
+	1 Arg:
+		hurtAmt - The damage taken (int)
 
 	Called when the player is hurt
 
+"Player.Use" :
+	4 Args:
+		x,y,z - The int positions of the block the player is looking at
+		id - The int id of the item being held / used
+
+	Called when the player right clicks with an item while looking at a block
+
+"Player.Loaded" :
+	No arguments
+
+	Called when the player is fully loaded into the world (its safe to edit world data after this is called)
+
 "ChunkLoaded" :
-	Args:
-		cx, cy, cz - 3 float arguments of the chunk's index in chunk-based coordinates
+	3 Args:
+		cx, cy, cz - 3 int arguments of the chunk's index in chunk-based coordinates

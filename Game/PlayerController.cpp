@@ -151,6 +151,7 @@ void PlayerController::Update(float dTime)
 		if(chunkManager->HasLoadedMinArea()) {
 			enabled = true;
 			Input::SetMouseLocked(true);
+			Scripting::CallEvent("Player.Loaded", 0);
 		}
 		
 		return;
@@ -518,6 +519,8 @@ void PlayerController::Update(float dTime)
 		InventoryItem* invItem; // should get it again here since actions are called before this. Item in hand COULD disappear
 		if(inv->GetHeldItem(&invItem) && invItem->type == InventoryItem::ITEM) {
 			Item::CallItemAction((ItemID)invItem->ID, this, _pCurrentPlayerData, chunkManager, lookHitPoint);
+
+			Scripting::CallEvent<int,int,int,int>("Player.Use", 4, lookHitPoint.x, lookHitPoint.y, lookHitPoint.z, (int)lookHitBlock);
 		}
 	}
 

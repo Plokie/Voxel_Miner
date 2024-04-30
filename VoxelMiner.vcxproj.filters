@@ -234,6 +234,9 @@
     <ClCompile Include="Engine\MathUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Game\ScriptingGameFuncs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\AABB.h">
@@ -492,5 +495,8 @@
     <None Include="Scripts\Engine.lua" />
     <None Include="Scripts\Main.lua" />
     <None Include="Scripts\Game.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Scripts\README.txt" />
   </ItemGroup>
 </Project>

@@ -20,6 +20,7 @@ extern "C" {
 #include <array>
 #include <assert.h>
 #include <vector>
+#include <functional>
 #include <map>
 
 using namespace std;
@@ -59,15 +60,20 @@ private:
 	static int DebugMessage(lua_State* state);
 
 
+	map<string, function<int(lua_State*)>> funcs = {};
+	static int CallGameFunction(lua_State* state);
+
 public:
 	static void CallOnSceneLoad(const string& sceneName);
+
+	static void RegisterLuaFunc(const string& name, function<int(lua_State*)> func);
 
 	void Update(float deltaTime);
 
 	int GetInt(lua_State* state, const string& name);
 	
 	template<typename T>
-	size_t GetTypeId() {
+	static size_t GetTypeId() {
 		return typeid(T).hash_code();
 	}
 	template<typename... Ts> //Variad template of types
