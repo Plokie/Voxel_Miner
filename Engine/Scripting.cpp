@@ -26,12 +26,11 @@ void Scripting::UpdateLuaEngineInformation(lua_State* state)
 	lua_settable(state, -3);
 	lua_pop(state, 1);
 
-	//lua_getglobal(state, "Engine");
-	//lua_pushlstring(state, "elapsedTime", 12);
-	//lua_pushnumber(state, Engine::Get()->GetTotalElapsedTime());
-	//lua_settable(state, -3);
-	//lua_pop(state, 1);
-	//
+	lua_getglobal(state, "Engine");
+	lua_pushstring(state, "currentScene");
+	lua_pushstring(state, currentScene.c_str());
+	lua_settable(state, -3);
+	lua_pop(state, 1);
 }
 
 int Scripting::CreateObject3D(lua_State* state)
@@ -196,7 +195,7 @@ int Scripting::LoadMesh(lua_State* state)
 
 	string meshName = lua_tostring(state, 3);
 
-	Resources::LoadMesh(&vertices[0], vertices.size(), &indices[0], indices.size(), meshName);
+	Resources::LoadMesh(&vertices[0], (int)vertices.size(), &indices[0], (int)indices.size(), meshName);
 
 	return 1;
 }
@@ -213,19 +212,58 @@ int Scripting::LoadTexture(lua_State* state)
 	return 1;
 }
 
+int Scripting::GetObject3D(lua_State* state)
+{
+	string name = lua_tostring(state, 1);
+
+	Object3D* obj = Engine::Get()->GetCurrentScene()->GetObject3D(name);
+	if(obj) {
+		lua_pushboolean(state, true);
+		lua_pushnumber(state, obj->transform.position.x);
+		lua_pushnumber(state, obj->transform.position.y);
+		lua_pushnumber(state, obj->transform.position.z);
+		lua_pushnumber(state, obj->transform.rotation.x);
+		lua_pushnumber(state, obj->transform.rotation.y);
+		lua_pushnumber(state, obj->transform.rotation.z);
+	}
+	else {
+		lua_pushboolean(state, false);
+		lua_pushnumber(state, 0);
+		lua_pushnumber(state, 0);
+		lua_pushnumber(state, 0);
+		lua_pushnumber(state, 0);
+		lua_pushnumber(state, 0);
+		lua_pushnumber(state, 0);
+	}
+
+
+	return 7;
+}
+
+int Scripting::DebugMessage(lua_State* state)
+{
+	string message = lua_tostring(state, 1);
+	
+	
+	return 0;
+}
+
 void Scripting::CallOnSceneLoad(const string& sceneName)
 {
+	Instance->currentScene = sceneName;
 	Instance->CallProc<string>(Instance->state, "OnSceneLoad", 1, sceneName);
+	Instance->UpdateLuaEngineInformation(Instance->state);
 }
 
 void Scripting::Update(float deltaTime)
 {
+	UpdateLuaEngineInformation(state);
+
 	// Calls the Update function in Lua
 	// needs to be passed as double because i think the variad converts it to a double as a default
 	CallProc<double>(state, "Update", 1, deltaTime);
 
-
-	UpdateLuaEngineInformation(state);
+	if(Input::IsKeyPressed('G')) CallEvent("TestEvent", 0);
 }
 
 int Scripting::GetInt(lua_State* state, const string& name)
@@ -252,8 +290,11 @@ Scripting::Scripting() {
 	lua_register(state, "Engine_SetModelTexture", SetModelTexture);
 	lua_register(state, "Engine_LoadMesh", LoadMesh);
 	lua_register(state, "Engine_LoadTexture", LoadTexture);
+	lua_register(state, "Engine_GetObject3D", GetObject3D);
 
-	if(!LuaOK(state, luaL_dofile(state, "Scripts\\Engine.lua")))
+	lua_register(state, "Engine_DebugMessage", DebugMessage);
+
+	if(!LuaOK(state, luaL_dofile(state, "Scripts\\Main.lua")))
 		assert(false);
 }
 

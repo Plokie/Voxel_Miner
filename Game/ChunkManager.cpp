@@ -6,6 +6,8 @@
 #include "ChunkDatabase.h"
 #include "../Engine/ThreadUtil.h"
 
+#include "../Engine/Scripting.h"
+
 #include <tuple>
 
 #include "BlockData.h"
@@ -289,6 +291,8 @@ void ChunkManager::Thread() {
 					unique_lock<std::mutex> lock(queuePair.first->gAccessMutex);
 					queuePair.first->BuildVisibilityGraph();
 					queuePair.first->BuildMesh();
+
+					Scripting::CallEvent<int,int,int>("ChunkLoaded", 3, queuePair.first->indexPosition.x, queuePair.first->indexPosition.y, queuePair.first->indexPosition.z);
 				}, queuePair.second);
 				regenQueue.pop();
 			}

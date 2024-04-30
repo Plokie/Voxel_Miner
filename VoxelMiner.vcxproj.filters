@@ -490,5 +490,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\Engine.lua" />
+    <None Include="Scripts\Main.lua" />
+    <None Include="Scripts\Game.lua" />
   </ItemGroup>
 </Project>

@@ -4,6 +4,8 @@
 #include "Inventory.h"
 #include "../Audio/Audio.h"
 
+#include "../Engine/Scripting.h"
+
 map<HUNGER_DECREMENT_STATE, float> PlayerData::_hungerDecrementValues = {
 	{HDS_WALK, 0.000001f},
 	{HDS_SPRINT, 0.000001f},
@@ -21,6 +23,7 @@ void PlayerData::ChangeHealth(int amt) {
 	InvokeOnHealthChange();
 	if(amt < 0) {
 		Audio::Play("hurt", 1.f);
+		Scripting::CallEvent<int>("Player.Hurt", 1, amt);
 	}
 
 	if(health <= 0) {

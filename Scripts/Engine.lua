@@ -1,8 +1,21 @@
-testVar = { x=1, y=2, z=3 }
+--
+-- This is the scripting frontend to be communicated with
+--	NOT TO BE EDITED
+--
+--
+--
+--
+--
+
+
 pi = 3.141592654
 
 Engine = {
-	elapsedTime = 0.0
+	elapsedTime = 0.0,
+	currentScene = "",
+	SubscribeEvent = {
+
+	}
 }
 function Engine:LoadTexture(path, name)
 	Engine_LoadTexture(path, name)
@@ -12,26 +25,13 @@ function Engine:LoadMesh(indices, vertices, name)
 	Engine_LoadMesh(indices, vertices, name)
 end
 
-
-indices = {0,2,1, 1,2,3, 0,1,2, 1,3,2}
-
---pos, uv, normal
-vertices = {
-	{-1.0,-1.0,0.0,		0.0,1.0,	0.0,0.0,1.0},
-	{1.0,-1.0,0.0,		1.0,1.0,	0.0,0.0,1.0},
-	{-1.0,1.0,0.0,		0.0,0.0,	0.0,0.0,1.0},
-
-	{1.0,1.0,0.0,		1.0,0.0,	0.0,0.0,1.0},
-}
-
-Engine:LoadMesh(indices, vertices, "LuaTestMesh")
-Engine:LoadTexture("Data\\Textures\\lua.dds", "LuaTestTexture")
-
 function Vector3(Px,Py,Pz)
 	return {x=Px,y=Py,z=Pz}
 end
 
-function newObject3D(nameArg)
+
+
+function Engine:NewObject3D(nameArg)
 	local object = {
 		name = nameArg,
 		position = {x=0,y=0,z=0},
@@ -72,45 +72,51 @@ function newObject3D(nameArg)
 	end
 
 	function object:Create()
-		self.created = true
-		Engine_CreateObject3D(self.name)
+		if(self.created == false) then
+			Engine_CreateObject3D(self.name)
+			self.created = true
+		end
 	end
 	
 
 	return object
 end
 
-SinObject = newObject3D("SinObject")
-CosObject = newObject3D("CosObject")
-TestObject = newObject3D("TestObject")
+function Engine:GetObject3D(name)
+	local object = Engine:NewObject3D(name)
+	success, px, py, pz, rx, ry, rz = Engine_GetObject3D(name)
 
-function Update(deltaTime)
-	if SinObject.created then
-		SinObject:Rotate(0, deltaTime, 0)
-		SinObject:SetPosition(0, math.sin(Engine.elapsedTime) * 5.0 + 5.0, 0)
+	if(success) then
+		object.position.x = px
+		object.position.y = py
+		object.position.z = pz
+		object.rotation.x = rx
+		object.rotation.y = ry
+		object.rotation.z = rz
+		object.created = true
+	else
+		object.name = "ERROR"
+		object.position.x = 0
+		object.position.y = 0
+		object.position.z = 0
+		object.rotation.x = 0
+		object.rotation.y = 0
+		object.rotation.z = 0
+		object.created = false
 	end
-	if CosObject.created then
-		CosObject:SetPosition(math.cos(Engine.elapsedTime) * 5.0, 5.0, 0)
-		CosObject:Rotate(deltaTime, 0, 0)
-	end
-	if TestObject.created then
-		TestObject:Rotate(0, deltaTime * 0.5, 0)
-	end
-end
+	
 
-function OnSceneLoad(sceneName)
-	if (sceneName == "game") then
-		SinObject:Create()
-		SinObject:AddModel("cube")
-
-		CosObject:Create()
-		CosObject:AddModel("cube")
-
-		TestObject:Create()
-		TestObject:Move(0, 2, 0)
-		TestObject:AddModel("LuaTestMesh")
-		TestObject:SetModelTexture(0, "LuaTestTexture")
-	end
+	return object
 end
 
 
+
+function Backend_EventCall(eventName, ...)
+	if(Engine.SubscribeEvent[eventName] ~= nil) then
+		Engine.SubscribeEvent[eventName]()
+	end
+end
+
+function Engine:UnsubscribeEvent(eventName)
+	Engine.SubscribeEvent[eventName] = nil
+end

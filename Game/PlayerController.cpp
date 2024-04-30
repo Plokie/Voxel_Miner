@@ -20,6 +20,8 @@
 #include "../Audio/Audio.h"
 #include "PauseScreen.h"
 
+#include "../Engine/Scripting.h"
+
 void PlayerController::Start()
 {
 	Engine* engine = Engine::Get();
@@ -325,6 +327,7 @@ void PlayerController::Update(float dTime)
 				{
 					_pCurrentPlayerData->DecrementHungerFlag(HDS_JUMP);
 					velocity.y = jumpVelocity;
+					Scripting::CallEvent("Player.Jump", 0);
 				}
 			}
 

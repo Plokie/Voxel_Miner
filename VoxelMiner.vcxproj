@@ -395,6 +395,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\Engine.lua" />
+    <None Include="Scripts\Game.lua" />
+    <None Include="Scripts\Main.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

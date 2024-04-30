@@ -38,6 +38,8 @@ private:
 	static Scripting* Instance;
 	lua_State* state = nullptr;
 
+	string currentScene;
+
 	/// <summary>
 	/// Updates the Lua-side Engine variable containing information
 	/// </summary>
@@ -52,6 +54,9 @@ private:
 	static int SetModelTexture(lua_State* state);
 	static int LoadMesh(lua_State* state);
 	static int LoadTexture(lua_State* state);
+	static int GetObject3D(lua_State* state);
+
+	static int DebugMessage(lua_State* state);
 
 
 public:
@@ -75,7 +80,7 @@ public:
 
 
 		lua_getglobal(state, name.c_str()); // push global function to stack
-		if(!lua_isfunction(state, -1)) // made sure its a function
+		if(!lua_isfunction(state, -1)) // make sure its a function
 			assert(false);
 
 		for(int i = 0; i < argCount; i++) {
@@ -112,6 +117,52 @@ public:
 			assert(false);
 
 		//lua_pop(state, argCount); //pop parameters
+	}
+
+	template<typename... Ts>
+	static void CallEvent(const string& eventName, int argCount, ...) {
+		auto arr = std::array<size_t, sizeof...(Ts)>{ GetTypeId<Ts>()...  };
+
+		va_list ptr; // start variad iterator pointer
+		va_start(ptr, argCount);
+
+		lua_getglobal(Instance->state, "Backend_EventCall"); // push global function to stack
+		if(!lua_isfunction(Instance->state, -1)) // make sure its a function
+			assert(false);
+
+		lua_pushstring(Instance->state, eventName.c_str());
+#
+		for(int i = 0; i < argCount; i++) {
+			switch(arr[i]) { //check against valid hash codes
+			case 12638226781420530164: { //float
+				float arg = va_arg(ptr, float);
+				lua_pushnumber(Instance->state, arg);
+			} break;
+			case 12638230079955414429: { //double
+				double arg = va_arg(ptr, double);
+				lua_pushnumber(Instance->state, arg);
+			} break;
+			case 12638232278978672507: { //int
+				int arg = va_arg(ptr, int);
+				lua_pushnumber(Instance->state, arg);
+			} break;
+			case 17648624087129316105: { //const char*
+				const char* argCC = va_arg(ptr, const char*);
+				lua_pushstring(Instance->state, argCC);
+			} break;
+			case 10283618467285603348: {//string
+				const string& arg = va_arg(ptr, string);
+				lua_pushstring(Instance->state, arg.c_str());
+			} break;
+			}
+
+
+		}
+
+		va_end(ptr);
+
+		if(!LuaOK(Instance->state, lua_pcall(Instance->state, argCount+1, 0, 0)))
+			assert(false);
 	}
 
 	Scripting();

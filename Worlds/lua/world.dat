@@ -1,51 +1,9 @@
 {
-  "chunkHash": [
-    [
-      -15,
-      0,
-      -3
-    ],
-    [
-      -14,
-      1,
-      -5
-    ],
-    [
-      -14,
-      2,
-      -6
-    ],
-    [
-      -7,
-      -1,
-      4
-    ],
-    [
-      -7,
-      0,
-      4
-    ],
-    [
-      -1,
-      0,
-      -1
-    ],
-    [
-      0,
-      0,
-      -1
-    ]
-  ],
-  "chunksWithBlockData": [
-    [
-      -14,
-      2,
-      -6
-    ]
-  ],
+  "chunkHash": [],
+  "chunksWithBlockData": [],
   "playerData": [
     {
-      "gamemode": 0,
+      "gamemode": 1,
       "health": 20,
       "hunger": 20,
       "inventory": {
@@ -80,8 +38,15 @@
           },
           {
             "ID": 30,
-            "amount": 4,
+            "amount": 5,
             "posX": 4,
+            "posY": 0,
+            "type": 0
+          },
+          {
+            "ID": 22,
+            "amount": 5,
+            "posX": 5,
             "posY": 0,
             "type": 0
           }
@@ -89,14 +54,14 @@
       },
       "oxygen": 20,
       "position": [
-        -2.912977933883667,
-        2.5861012935638428,
-        -1.4267454147338867
+        -2.1898045539855957,
+        5.588537693023682,
+        -4.491574764251709
       ],
-      "saturation": 2,
-      "score": 28
+      "saturation": 10,
+      "score": 0
     }
   ],
-  "seed": 25475,
-  "worldName": "test"
+  "seed": 4979,
+  "worldName": "lua"
 }
