@@ -1,12 +1,5 @@
 #pragma once
 
-// i tried very hard to get C# Mono to work, but I couldnt!
-// i think it had something to do with how the executable was set up
-// it messed with some low level operating system stuff that just completely
-// disallowed mono to read from the assembly correctly
-
-// so i gave up, and caved in... fineeee, ill do luaaaa !
-
 #pragma warning( push )
 #pragma warning( disable : 28020)
 

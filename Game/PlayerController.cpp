@@ -451,6 +451,8 @@ void PlayerController::Update(float dTime)
 				if(_pCurrentPlayerData->IsCreative() || targetBlockDef.HasTag(BT_MINEABLE_ALL | (itemDef.GetTags() & MINEABLE_MASK))) {
 					Audio::Play("hit", 1.f);
 					chunkManager->SetBlockAtWorldPos(lookHitPoint, AIR);
+
+					Scripting::CallEvent<int,int,int,int,int>("Player.Mine", 4, lookHitPoint.x, lookHitPoint.y, lookHitPoint.z, (int)targetBlock, (int)invItem->ID);
 						
 					//_pCurrentPlayerData->ChangeScore(blockDef.GetTier());
 
@@ -521,6 +523,13 @@ void PlayerController::Update(float dTime)
 			Item::CallItemAction((ItemID)invItem->ID, this, _pCurrentPlayerData, chunkManager, lookHitPoint);
 
 			Scripting::CallEvent<int,int,int,int>("Player.Use", 4, lookHitPoint.x, lookHitPoint.y, lookHitPoint.z, (int)lookHitBlock);
+		}
+	}
+
+	if(Input::IsMouseKeyPressed(MOUSE_L)) {
+		InventoryItem* invItem;
+		if(inv->GetHeldItem(&invItem) && invItem->type == InventoryItem::ITEM) {
+			Scripting::CallEvent<int>("Player.Attack", 1, (int)invItem->ID);
 		}
 	}
 

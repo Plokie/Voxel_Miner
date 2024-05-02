@@ -139,6 +139,20 @@ The events defined are:
 
 	Called when the player right clicks with an item while looking at a block
 
+"Player.Mine" :
+	5 Args:
+		x,y,z - The int position parts of the block that was mined
+		blockid - The id of the block that was mined
+		itemid - The id of the item that was held when the block was mined
+
+	Called when the player left click and successfully mines a block
+
+"Player.Attack" :
+	1 Arg:
+		id - The item being held by the player when left clicked
+
+	Called when the player left clicks
+
 "Player.Loaded" :
 	No arguments
 
