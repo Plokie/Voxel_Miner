@@ -77,6 +77,10 @@ There are some classes provided by the script structure that should be used
 
 	Created by calling `Engine:NewObject3D(name)`
 
+	::  Create()
+		Must be called _once_. Call this function to add the object to the currently active scene.
+		An objects created state can be queried with Object.created
+
 	::	SetPosition(x,y,z)
 
 	::	Move(x,y,z)
@@ -84,6 +88,11 @@ There are some classes provided by the script structure that should be used
 	::	SetRotation(x,y,z)
 
 	::	Rotate(x,y,z)
+
+	::  Forward()
+	::  Up()
+	::  Left()
+		Returns a Vector3 of the object's corresponding local direction
 
 	::	AddModel(modelName)
 		Adds a model to the object, with modelName being the name of the mesh being added
@@ -106,6 +115,17 @@ There are some callable functions that allow manipulation / probing of the game 
 Game:GetBlock(x,y,z)
 
 Game:SetBlock(x,y,z,id)
+
+Game:CreateDroppedItem(x,y,z,type,id,amount)
+	x,y,z - Position to create the item
+	type - The type of item (item or block) 0 = Item, 1 = Block
+	id - The ID of the Item/Block to create a dropped version of
+	amount - The amount contained within the dropped item
+
+
+
+
+
 
 For a list of block IDs see Blocks.h in the Game/ folder
 
@@ -141,6 +161,8 @@ The events defined are:
 		id - The int id of the item being held / used
 
 	Called when the player right clicks with an item while looking at a block
+
+	For item ids, you can check Items.h in Game/
 
 "Player.Mine" :
 	5 Args:

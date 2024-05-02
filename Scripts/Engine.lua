@@ -64,6 +64,21 @@ function Engine:NewObject3D(nameArg)
 		Engine_SetObject3DRot(self.name, self.rotation.x, self.rotation.y, self.rotation.z)
 	end
 
+	function object:Forward()
+		x,y,z = Engine_GetObjectForward(self.name)
+		return Vector3(x,y,z)
+	end
+
+	function object:Left()
+		x,y,z = Engine_GetObjectLeft(self.name)
+		return Vector3(x,y,z)
+	end
+
+	function object:Up()
+		x,y,z = Engine_GetObjectUp(self.name)
+		return Vector3(x,y,z)
+	end
+
 	-- Adds a model to the object with a mesh
 	function object:AddModel(modelName)
 		Engine_AddObject3DModel(self.name, modelName)

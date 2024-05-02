@@ -255,6 +255,60 @@ int Scripting::GetObject3D(lua_State* state)
 	return 7;
 }
 
+int Scripting::GetObjectForward(lua_State* state)
+{
+	// get object name
+	string name = lua_tostring(state, 1);
+	
+	// find objects
+	Object3D* obj = Engine::Get()->GetCurrentScene()->GetObject3D(name);
+	if(obj) {
+		Vector3 fwd = obj->transform.forward();
+		lua_pushnumber(state, fwd.x); lua_pushnumber(state, fwd.y); lua_pushnumber(state, fwd.z);
+	}
+	else {
+		lua_pushnumber(state, 0); lua_pushnumber(state, 0); lua_pushnumber(state, 0);
+	}
+	
+	return 3;
+}
+
+int Scripting::GetObjectLeft(lua_State* state)
+{
+	// get object name
+	string name = lua_tostring(state, 1);
+
+	// find objects
+	Object3D* obj = Engine::Get()->GetCurrentScene()->GetObject3D(name);
+	if(obj) {
+		Vector3 left = obj->transform.left();
+		lua_pushnumber(state, left.x); lua_pushnumber(state, left.y); lua_pushnumber(state, left.z);
+	}
+	else {
+		lua_pushnumber(state, 0); lua_pushnumber(state, 0); lua_pushnumber(state, 0);
+	}
+
+	return 3;
+}
+
+int Scripting::GetObjectUp(lua_State* state)
+{
+	// get object name
+	string name = lua_tostring(state, 1);
+
+	// find objects
+	Object3D* obj = Engine::Get()->GetCurrentScene()->GetObject3D(name);
+	if(obj) {
+		Vector3 up = obj->transform.up();
+		lua_pushnumber(state, up.x); lua_pushnumber(state, up.y); lua_pushnumber(state, up.z);
+	}
+	else {
+		lua_pushnumber(state, 0); lua_pushnumber(state, 0); lua_pushnumber(state, 0);
+	}
+
+	return 3;
+}
+
 /// <summary>
 /// Purely just triggers a breakpoint to make sure code is executing in the right order from lua
 /// </summary>
@@ -303,6 +357,10 @@ Scripting::Scripting() {
 	lua_register(state, "Engine_LoadMesh", LoadMesh);
 	lua_register(state, "Engine_LoadTexture", LoadTexture);
 	lua_register(state, "Engine_GetObject3D", GetObject3D);
+
+	lua_register(state, "Engine_GetObjectForward", GetObjectForward);
+	lua_register(state, "Engine_GetObjectLeft", GetObjectLeft);
+	lua_register(state, "Engine_GetObjectUp", GetObjectUp);
 
 	lua_register(state, "Engine_DebugMessage", DebugMessage);
 

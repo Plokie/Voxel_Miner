@@ -77,6 +77,22 @@ void PlayerController::Start()
 	aabb = AABB(transform.position, playerHalfExtents);
 
 	chunkManager = engine->GetCurrentScene()->GetObject3D<ChunkManager>("AChunkManager");
+
+	// x, y, z, type, id, amt
+	Scripting::RegisterLuaFunc("CreateDroppedItem", [](lua_State* s) {
+		float x = (float)lua_tonumber(s, 2);
+		float y = (float)lua_tonumber(s, 3);
+		float z = (float)lua_tonumber(s, 4);
+		int type = (int)lua_tonumber(s, 5);
+		int id = (int)lua_tonumber(s, 6);
+		int amt = (int)lua_tonumber(s, 7);
+
+		InventoryItem* invItem = new InventoryItem((InventoryItem::Type)type, (unsigned short)id, 0, 0, amt);
+
+		DroppedItem::Create(invItem, Vector3(x,y,z));
+
+		return 0;
+	});
 }
 
 #define AABB_RANGE Vector3Int(1,2,1)

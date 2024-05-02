@@ -86,11 +86,18 @@ Engine.SubscribeEvent["Player.Loaded"] = function()
 end
 
 Engine.SubscribeEvent["Player.Use"] = function(x,y,z,itemid)
-	Engine_DebugMessage(tostring(itemid))
-	if (itemid == 21) then
+	if (itemid == 21) then -- if the player is holding a stick
 		local id = Game:GetBlockAt(x,y,z)
 		Game:SetBlockAt(x,y+1,z,id)
 		Game:SetBlockAt(x,y,z,1)
+	end
+
+	if (itemid == 4) then -- amethyst
+		local pc = Engine:GetObject3D("PlayerController")
+		if pc.created then
+			local fwd = pc:Forward()
+			Game:CreateDroppedItem(pc.position.x + fwd.x, pc.position.y + fwd.y, pc.position.z + fwd.z, 0, 28, 1)
+		end
 	end
 end
 
@@ -103,6 +110,7 @@ Engine.SubscribeEvent["ChunkLoaded"] = function(cx,cy,cz)
 			end
 		end
 
-	end
+		Game:SetBlockAt(cx*16, cy*16 + 1, cz*16, 48)
 
+	end
 end

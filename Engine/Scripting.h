@@ -49,6 +49,9 @@ private:
 	static int LoadMesh(lua_State* state);
 	static int LoadTexture(lua_State* state);
 	static int GetObject3D(lua_State* state);
+	static int GetObjectForward(lua_State* state);
+	static int GetObjectLeft(lua_State* state);
+	static int GetObjectUp(lua_State* state);
 
 	static int DebugMessage(lua_State* state);
 
