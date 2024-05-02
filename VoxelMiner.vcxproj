@@ -158,6 +158,7 @@
     <ClCompile Include="Audio\Audio.cpp" />
     <ClCompile Include="Engine\MathUtil.cpp" />
     <ClCompile Include="Engine\Scripting.cpp" />
+    <ClCompile Include="Engine\ScriptingEngineFuncs.cpp" />
     <ClCompile Include="Game\Biome.cpp" />
     <ClCompile Include="Game\BlockShape.cpp" />
     <ClCompile Include="Game\CreativeUI.cpp" />
