@@ -1,5 +1,6 @@
 @echo off
 xcopy x64\Release\VoxelMiner.exe Build\ /y
+xcopy x64\Release\lua54.dll Build\ /y
 xcopy Data Build\Data\ /s /e /h /y
 del Build\Data\Textures\*.kra
 del Build\Data\Textures\*.kra~
