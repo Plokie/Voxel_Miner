@@ -107,6 +107,9 @@ Game:GetBlock(x,y,z)
 
 Game:SetBlock(x,y,z,id)
 
+For a list of block IDs see Blocks.h in the Game/ folder
+
+
 Events_______________________________________
 
 An event is an identifier that can have a function assigned to it. The event is that called during the user's gameplay at different moments.

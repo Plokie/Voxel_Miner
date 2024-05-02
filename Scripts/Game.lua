@@ -1,4 +1,5 @@
 -- This is the frontend interface for game-related functions
+-- This should NOT be edited
 
 Game = {
 	
