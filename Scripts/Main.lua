@@ -91,6 +91,7 @@ Engine.SubscribeEvent["Player.Use"] = function(x,y,z,id)
 	Game:SetBlockAt(x,y,z,1)
 end
 
+-- Created a blackstone platform within the chunk index 1,1,1
 Engine.SubscribeEvent["ChunkLoaded"] = function(cx,cy,cz)
 	if(cx==1 and cy==1 and cz==1) then
 		for x=0,15 do

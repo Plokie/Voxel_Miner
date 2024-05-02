@@ -39,24 +39,24 @@ function Engine:NewObject3D(nameArg)
 		created = false
 	}
 
-	function object:testFunc()
-		testVar = testVar + 1
-	end
-
+	-- Sets the position of the object
 	function object:SetPosition(x, y, z)
 		self.position = Vector3(x,y,z)
 		Engine_SetObject3DPos(self.name, x, y, z)
 	end
+	-- Translates the object
 	function object:Move(x,y,z)
 		self.position.x = self.position.x + x
 		self.position.y = self.position.y + y
 		self.position.z = self.position.z + z
 		Engine_SetObject3DPos(self.name, self.position.x, self.position.y, self.position.z)
 	end
+	-- Sets the rotation of the object
 	function object:SetRotation(x,y,z)
 		self.rotation = Vector3(x,y,z)
 		Engine_SetObject3DRot(self.name, x, y, z)
 	end
+	-- Rotates the object
 	function object:Rotate(x,y,z)
 		self.rotation.x = self.rotation.x + x
 		self.rotation.y = self.rotation.y + y
@@ -64,13 +64,16 @@ function Engine:NewObject3D(nameArg)
 		Engine_SetObject3DRot(self.name, self.rotation.x, self.rotation.y, self.rotation.z)
 	end
 
+	-- Adds a model to the object with a mesh
 	function object:AddModel(modelName)
 		Engine_AddObject3DModel(self.name, modelName)
 	end
+	-- Sets the texture resource of a model within the object
 	function object:SetModelTexture(idx, textureName)
 		Engine_SetModelTexture(self.name, idx, textureName)
 	end
 
+	-- Creates the object
 	function object:Create()
 		if(self.created == false) then
 			Engine_CreateObject3D(self.name)
@@ -82,6 +85,7 @@ function Engine:NewObject3D(nameArg)
 	return object
 end
 
+-- Gets an objects within the active scene
 function Engine:GetObject3D(name)
 	local object = Engine:NewObject3D(name)
 	success, px, py, pz, rx, ry, rz = Engine_GetObject3D(name)
@@ -109,8 +113,7 @@ function Engine:GetObject3D(name)
 	return object
 end
 
-
-
+-- Called by c++ to handle events
 function Backend_EventCall(eventName, ...)
 	if(Engine.SubscribeEvent[eventName] ~= nil) then
 		Engine.SubscribeEvent[eventName](...)
