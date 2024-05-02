@@ -1,4 +1,4 @@
--- This is the frontend interface for game-related events
+-- This is the frontend interface for game-related functions
 
 Game = {
 	

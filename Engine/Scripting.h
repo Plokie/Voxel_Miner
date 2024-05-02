@@ -69,8 +69,6 @@ public:
 	static void RegisterLuaFunc(const string& name, function<int(lua_State*)> func);
 
 	void Update(float deltaTime);
-
-	int GetInt(lua_State* state, const string& name);
 	
 	template<typename T>
 	static size_t GetTypeId() {
