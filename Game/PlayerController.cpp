@@ -522,7 +522,7 @@ void PlayerController::Update(float dTime)
 		if(inv->GetHeldItem(&invItem) && invItem->type == InventoryItem::ITEM) {
 			Item::CallItemAction((ItemID)invItem->ID, this, _pCurrentPlayerData, chunkManager, lookHitPoint);
 
-			Scripting::CallEvent<int,int,int,int>("Player.Use", 4, lookHitPoint.x, lookHitPoint.y, lookHitPoint.z, (int)lookHitBlock);
+			Scripting::CallEvent<int,int,int,int>("Player.Use", 4, lookHitPoint.x, lookHitPoint.y, lookHitPoint.z, (int)invItem->ID);
 		}
 	}
 

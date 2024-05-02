@@ -85,10 +85,13 @@ Engine.SubscribeEvent["Player.Loaded"] = function()
 	loaded = true
 end
 
-Engine.SubscribeEvent["Player.Use"] = function(x,y,z,id)
-	local id = Game:GetBlockAt(x,y,z)
-	Game:SetBlockAt(x,y+1,z,id)
-	Game:SetBlockAt(x,y,z,1)
+Engine.SubscribeEvent["Player.Use"] = function(x,y,z,itemid)
+	Engine_DebugMessage(tostring(itemid))
+	if (itemid == 21) then
+		local id = Game:GetBlockAt(x,y,z)
+		Game:SetBlockAt(x,y+1,z,id)
+		Game:SetBlockAt(x,y,z,1)
+	end
 end
 
 -- Created a blackstone platform within the chunk index 1,1,1
