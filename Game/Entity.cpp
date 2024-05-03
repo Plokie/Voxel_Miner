@@ -12,17 +12,24 @@ vector<AABB> Entity::GetNearbyAABBs(ChunkManager* chunkManager, vector<AABB>* li
 		for(int y = -AABB_RANGE.y; y < AABB_RANGE.y + 1; y++) {
 			for(int x = -AABB_RANGE.x; x < AABB_RANGE.x + 1; x++) {
 				Vector3 offset = Vector3(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
-				Vector3Int playerBlockPos = Vector3Int::FloorToInt(transform.position);
-				Vector3Int blockPos = playerBlockPos + offset;
-				BlockID block = chunkManager->GetBlockAtWorldPos(blockPos);
+				Vector3Int entityBlockPos = Vector3Int::FloorToInt(transform.position);
+				Vector3Int blockPos = entityBlockPos + offset;
+				BlockID block = chunkManager->GetBlockAtWorldPos(blockPos.x, blockPos.y, blockPos.z, false);
 				AABB blockAABB = AABB(Vector3(static_cast<float>(blockPos.x), static_cast<float>(blockPos.y), static_cast<float>(blockPos.z)) + Vector3(0.5f, 0.5f, 0.5f), Vector3(0.5f, 0.5f, 0.5f));
-
-				if(!BlockDef::GetDef(block).HasTag(BT_NONSOLID)) {
-					ret.push_back(blockAABB);
+				
+				if(block == ERR) {
+					// leaves a small gap to hold the item in place
+					//if(x!=0&&y!=0&&z!=0) ret.push_back(blockAABB);
+					if(x == 0 && y == -1 && z == 0) ret.push_back(blockAABB);
 				}
+				else {
+					if(!BlockDef::GetDef(block).HasTag(BT_NONSOLID)) {
+						ret.push_back(blockAABB);
+					}
 
-				if(liquidAABBs && (block == WATER || block == LAVA)) {
-					liquidAABBs->push_back(blockAABB);
+					if(liquidAABBs && (block == WATER || block == LAVA)) {
+						liquidAABBs->push_back(blockAABB);
+					}
 				}
 			}
 		}

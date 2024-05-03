@@ -568,7 +568,7 @@ tuple<int, int, int> ChunkManager::ToChunkIndexPositionTuple(const int& x, const
 	);
 }
 
-BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& z)
+BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& z, bool worldgenFallback)
 {
 
 	if(this == nullptr || this->pendingDeletion) return WorldGen::GetBlockAt(x, y, z);
@@ -581,38 +581,38 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 	if(itFind != chunkMap.end()) {
 		Vector3Int localVoxelPos = Vector3Int(FloorMod(x, CHUNKSIZE_X), FloorMod(y, CHUNKSIZE_Y), FloorMod(z, CHUNKSIZE_Z));
 
-		//AcquireSRWLockExclusive(&this->gAccessMutex);
-		//unique_lock<std::mutex> lock(this->gAccessMutex);
-		//Chunk* chunk = chunkMap[chunkIndex];
 		Chunk* chunk = itFind->second;
 		chunkMapMutex.unlock();
-		// Okay this might seem redundant, but i promise its not (i think)
-		// this basically makes it so nothing else can modify it WHILE its being read from
-		// but if somethings already writing to it, we can read it anyway
-		//unique_lock<std::mutex> lock(chunk->gAccessMutex);
-		
-		//if(!(chunk == nullptr || chunk->pendingDeletion || !chunk->hasLoadedBlockData)) {
+
 		if(!(chunk == nullptr || chunk->pendingDeletion || chunk->currentGenerationPhase==BLOCKDATA)) {
 			bool didMutex = chunk->gAccessMutex.try_lock();
-			//TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
 
-			//bool didMutex = TryAcquireSRWLockExclusive(&chunk->gAccessMutex);
 
 			BlockID blockID = static_cast<BlockID>(chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z]);
-			//if(didMutex) ReleaseSRWLockExclusive(&chunk->gAccessMutex);
+			
 			if(didMutex) chunk->gAccessMutex.unlock();
-			//ReleaseSRWLockExclusive(&chunk->gAccessMutex);
-			//if(tryLockChunkMap) chunkMapMutex.unlock();
+			
+
 			return blockID;
 		}
-		return WorldGen::GetBlockAt(x, y, z);
-		//if(didMutex) chunk->gAccessMutex.unlock();
+
+		if(worldgenFallback) {
+			return WorldGen::GetBlockAt(x, y, z);
+		}
+		else {
+			return ERR;
+		}
 	}
 	chunkMapMutex.unlock();
 	//if(tryLockChunkMap) chunkMapMutex.unlock();
 
-	//todo: read from chunk cache of height,temp,moist samples?
-	return WorldGen::GetBlockAt(x, y, z);
+	if(worldgenFallback) {
+		//todo: read from chunk cache of height,temp,moist samples?
+		return WorldGen::GetBlockAt(x, y, z);
+	}
+	else {
+		return ERR;
+	}
 }
 
 BlockID ChunkManager::GetBlockAtWorldPos(const Vector3Int& v) {

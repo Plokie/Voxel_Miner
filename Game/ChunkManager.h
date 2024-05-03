@@ -92,7 +92,7 @@ public:
 	static Vector3Int ChunkFloorPosForPositionCalculation(Vector3 worldPosition);
 	static tuple<int, int, int> ToChunkIndexPositionTuple(const int& x, const int& y, const int& z);
 
-	BlockID GetBlockAtWorldPos(const int& x, const int& y, const int& z);
+	BlockID GetBlockAtWorldPos(const int& x, const int& y, const int& z, bool worldgenFallback = true);
 	BlockID GetBlockAtWorldPos(const Vector3Int& v);
 	void SetBlockAtWorldPos(const int& x, const int& y, const int& z, const BlockID& id);
 	void SetBlockAtWorldPos(const Vector3Int& pos, const BlockID& id);
