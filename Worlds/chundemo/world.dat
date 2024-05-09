@@ -1,5 +1,21 @@
 {
-  "chunkHash": [],
+  "chunkHash": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0
+    ],
+    [
+      3,
+      0,
+      2
+    ]
+  ],
   "chunksWithBlockData": [],
   "playerData": [
     {
@@ -51,31 +67,52 @@
             "type": 0
           },
           {
-            "ID": 24,
+            "ID": 2,
             "amount": 1,
             "posX": 6,
-            "posY": 0,
+            "posY": 1,
             "type": 1
           },
           {
-            "ID": 35,
+            "ID": 56,
+            "amount": 1,
+            "posX": 2,
+            "posY": 1,
+            "type": 1
+          },
+          {
+            "ID": 36,
             "amount": 1,
             "posX": 7,
-            "posY": 0,
+            "posY": 1,
+            "type": 1
+          },
+          {
+            "ID": 4,
+            "amount": 1,
+            "posX": 0,
+            "posY": 1,
+            "type": 1
+          },
+          {
+            "ID": 38,
+            "amount": 1,
+            "posX": 1,
+            "posY": 1,
             "type": 1
           }
         ]
       },
       "oxygen": 20,
       "position": [
-        -1324.84716796875,
-        15.519999504089355,
-        408.29998779296875
+        126.84968566894531,
+        3.5564920902252197,
+        404.4701232910156
       ],
       "saturation": 10,
       "score": 0
     }
   ],
-  "seed": -2559,
-  "worldName": "worldgentest"
+  "seed": 23798,
+  "worldName": "chundemo"
 }

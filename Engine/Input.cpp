@@ -268,15 +268,11 @@ void Input::EndUpdate(float dt) {
 	
 
 	if(_Instance->gamepads[0].port != -1 && _Instance->virtualMouseEnabled) {
-		//_Instance->mouseDelta = Input::LeftAxis(0);
-		
 		POINT cursorPos;
 		GetCursorPos(&cursorPos);
 		bool changed = false;
 
-		//_Instance->virtualMouseDelta += Input::LeftAxis(0) * dt * 400.f;
-		//_Instance->virtualMouseDelta += Input::LeftAxis(0) * (1.f / dt) * 400.f;
-		//_Instance->virtualMouseDelta += Input::LeftAxis(0) * 400.f;
+		_Instance->virtualMouseDelta += Input::LeftAxis(0) * dt * 400.f;
 		
 		if(_Instance->virtualMouseDelta.x > 1.f) {
 			cursorPos.x += 1;
@@ -302,9 +298,6 @@ void Input::EndUpdate(float dt) {
 
 		if(changed) SetCursorPos(cursorPos.x, cursorPos.y);
 
-		/*_Instance->mKeyBuffer[MOUSE_L] = Input::IsRightTriggerHeld(0);
-		_Instance->mKeyBuffer[MOUSE_R] = Input::IsLeftTriggerHeld(0);*/
-
 		if(Input::IsRightTriggerPressed(0)) 
 			_Instance->mKeyBuffer[MOUSE_L] = true;
 		if(Input::IsRightTriggerReleased(0)) 
@@ -314,12 +307,6 @@ void Input::EndUpdate(float dt) {
 			_Instance->mKeyBuffer[MOUSE_R] = true;
 		if(Input::IsLeftTriggerReleased(0)) 
 			_Instance->mKeyBuffer[MOUSE_R] = false;
-
-		/*POINT cursorPos;
-		GetCursorPos(&cursorPos);
-		
-		cursorPos.y += static_cast<int>(  min(1.f,Input::LeftAxis(0).y * -2.f)  );
-		SetCursorPos(cursorPos.x, cursorPos.y);*/
 	}
 
 	for(int i = 0; i < GAMEPAD_COUNT; i++) {

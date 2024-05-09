@@ -333,8 +333,6 @@ void ChunkManager::Thread() {
 
 
 		
-		 
-		
 		if(prevCamIndex != camIndex || forceRegenerateVisibility) {
 
 			const Vector3Int neighbourOffsets[] = {
@@ -587,11 +585,8 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 		if(!(chunk == nullptr || chunk->pendingDeletion || chunk->currentGenerationPhase==BLOCKDATA)) {
 			bool didMutex = chunk->gAccessMutex.try_lock();
 
-
 			BlockID blockID = static_cast<BlockID>(chunk->blockData[localVoxelPos.x][localVoxelPos.y][localVoxelPos.z]);
-			
 			if(didMutex) chunk->gAccessMutex.unlock();
-			
 
 			return blockID;
 		}
@@ -604,7 +599,6 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 		}
 	}
 	chunkMapMutex.unlock();
-	//if(tryLockChunkMap) chunkMapMutex.unlock();
 
 	if(worldgenFallback) {
 		//todo: read from chunk cache of height,temp,moist samples?
@@ -615,8 +609,8 @@ BlockID ChunkManager::GetBlockAtWorldPos(const int& x, const int& y, const int& 
 	}
 }
 
-BlockID ChunkManager::GetBlockAtWorldPos(const Vector3Int& v) {
-	return GetBlockAtWorldPos(v.x, v.y, v.z);
+BlockID ChunkManager::GetBlockAtWorldPos(const Vector3Int& v, bool worldgenFallback) {
+	return GetBlockAtWorldPos(v.x, v.y, v.z, worldgenFallback);
 }
 
 void ChunkManager::SetBlockAtWorldPos(const int& x, const int& y, const int& z, const BlockID& id) {

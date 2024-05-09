@@ -177,7 +177,7 @@
         "items": [
           {
             "ID": 61,
-            "amount": 1,
+            "amount": 3,
             "posX": 1,
             "posY": 0,
             "type": 1
@@ -226,7 +226,7 @@
           },
           {
             "ID": 8,
-            "amount": 1,
+            "amount": 2,
             "posX": 8,
             "posY": 0,
             "type": 1
@@ -261,18 +261,46 @@
           },
           {
             "ID": 60,
-            "amount": 1,
+            "amount": 2,
             "posX": 5,
             "posY": 4,
+            "type": 1
+          },
+          {
+            "ID": 24,
+            "amount": 1,
+            "posX": 4,
+            "posY": 0,
+            "type": 1
+          },
+          {
+            "ID": 9,
+            "amount": 2,
+            "posX": 1,
+            "posY": 1,
+            "type": 1
+          },
+          {
+            "ID": 21,
+            "amount": 1,
+            "posX": 2,
+            "posY": 1,
+            "type": 1
+          },
+          {
+            "ID": 32,
+            "amount": 2,
+            "posX": 3,
+            "posY": 1,
             "type": 1
           }
         ]
       },
       "oxygen": 20,
       "position": [
-        443.09368896484375,
-        11.595982551574707,
-        -1142.53759765625
+        316.0434875488281,
+        10.59954833984375,
+        -1075.3828125
       ],
       "saturation": 10,
       "score": 0
